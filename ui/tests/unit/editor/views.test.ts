@@ -130,6 +130,16 @@ describe('composed document model', () => {
       'views/inner.kui.json',
     ]);
     expect(neededViews(list, LIST_PATH, new Map())).toEqual([ROW_PATH]);
+    // KF-3X7MFF: a nested source resolves from the document that contains it.
+    expect(
+      neededViews(
+        listDocument({}, './rows/row.kui.json'),
+        LIST_PATH,
+        new Map([
+          ['views/rows/row.kui.json', { state: 'loaded', document: nested }],
+        ]),
+      ),
+    ).toEqual(['views/rows/row.kui.json', 'views/rows/inner.kui.json']);
     // A source outside the project is not loaded.
     expect(
       neededViews(listDocument({}, '../../../x.kui.json'), LIST_PATH, loads),
@@ -213,13 +223,17 @@ describe('composed document model', () => {
     expect(ownedViews(composed, 'v').root!.zones!.children![0]).toEqual({
       id: 'v',
       type: '#view',
-      src: ownedSource('v', './x.kui.json'),
+      src: ownedSource('v', 'x.kui.json'),
     });
+    // KF-3X7MFF: in a composed document at rows/, sources point from rows/.
+    expect(
+      ownedViews(composed, 'v', 'rows/row.kui.json').root!.zones!.children![0],
+    ).toMatchObject({ src: ownedSource('v', 'rows/x.kui.json') });
     // Without an owner, ids stay and only sources name their node.
     const top = ownedViews(composed).root!.zones!.children![0] as {
       src: string;
     };
-    expect(ownedSourceOf(top.src)).toEqual({ owner: 'b', src: './x.kui.json' });
+    expect(ownedSourceOf(top.src)).toEqual({ owner: 'b', src: 'x.kui.json' });
     const rootless = { ...composed, root: undefined };
     expect(ownedViews(rootless)).toBe(rootless);
   });
@@ -256,6 +270,25 @@ describe('composed document model', () => {
     expect(
       why(LIST_PATH, new Map([[ROW_PATH, { state: 'failed', error: 'nope' }]])),
     ).toContain('it could not be read: nope');
+    // KF-3X7MFF: a nested #view's source is looked for beside its document.
+    expect(
+      why(LIST_PATH, new Map(), {
+        ...missing,
+        path: '$.root.zones.children[0].template{./rows/row.kui.json}.root.src',
+        message: '#view "./cell.kui.json" was not found',
+      }),
+    ).toContain('it is loading');
+    expect(
+      why(
+        LIST_PATH,
+        new Map([['views/rows/cell.kui.json', { state: 'missing' }]]),
+        {
+          ...missing,
+          path: '$.root.zones.children[0].template{./rows/row.kui.json}.root.src',
+          message: '#view "./cell.kui.json" was not found',
+        },
+      ),
+    ).toContain('there is no views/rows/cell.kui.json');
   });
 
   it('exports a composing document’s module', () => {
@@ -300,6 +333,35 @@ describe('composed documents in the editor', () => {
       'messages.view.ts',
       expect.stringContaining('renderMessageRow'),
     );
+  });
+
+  it('renders a nested #view from the document that contains it (KF-3X7MFF)', async () => {
+    // messages composes ./rows/wrapper, whose ./message-row is rows/'s.
+    const wrapper = {
+      schema: 'kerf-ui-document/v1',
+      name: 'Wrapper',
+      catalogs: ['@kerfjs/ui'],
+      params: { title: { type: { kind: 'string' } } },
+      root: {
+        id: '01JC0V1EW0000000000000000W',
+        type: '#view',
+        src: './message-row.kui.json',
+        props: { title: { $param: 'title' } },
+      },
+    } as unknown as ViewDocument;
+    const { root, storage } = open({
+      [LIST_PATH]: text(listDocument(undefined, './rows/wrapper.kui.json')),
+      'views/rows/wrapper.kui.json': text(wrapper),
+      'views/rows/message-row.kui.json': text(rowDocument()),
+    });
+    await vi.waitFor(() =>
+      expect(canvas(root).textContent).toContain('Quarterly report'),
+    );
+    expect(storage.read).toHaveBeenCalledWith(
+      'views/rows/message-row.kui.json',
+    );
+    expect(storage.read).not.toHaveBeenCalledWith(ROW_PATH);
+    expect(problems(root)).toEqual([]);
   });
 
   it('edits the #view’s props as the composed document’s params', async () => {

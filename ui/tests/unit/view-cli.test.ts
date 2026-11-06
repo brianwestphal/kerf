@@ -166,6 +166,70 @@ describe('kerf-ui-view', () => {
     expect(run(['check', documentPath]).output).toContain('KUI-V012');
   });
 
+  it('resolves a nested #view from the document that contains it (KF-3X7MFF)', () => {
+    // views/list composes ./rows/row, whose ./cell is views/rows/cell, which
+    // is where the generated row module imports it from.
+    const ulid = (n: number) => `01JB8Z1M6Q8E1X9V4S7K2R3T${n}A`;
+    const composing = (name: string, n: number, src: string) => ({
+      schema: 'kerf-ui-document/v1',
+      name,
+      catalogs: ['@kerfjs/ui'],
+      root: {
+        id: ulid(n),
+        type: '@kerfjs/ui:list',
+        zones: {
+          children: [
+            { id: `01JB8Z1M6Q8E1X9V4S7K2R3T${n}B`, type: '#view', src },
+          ],
+        },
+      },
+    });
+    const cell = {
+      schema: 'kerf-ui-document/v1',
+      name: 'Cell',
+      catalogs: ['@kerfjs/ui'],
+      root: {
+        id: ulid(3),
+        type: '@kerfjs/ui:button',
+        props: { children: 'Cell', action: { $action: 'pick' } },
+      },
+    };
+    const views = join(folder, 'views');
+    mkdirSync(join(views, 'rows'), { recursive: true });
+    const list = join(views, 'list.kui.json');
+    const row = join(views, 'rows/row.kui.json');
+    writeFileSync(
+      list,
+      JSON.stringify(composing('List', 1, './rows/row.kui.json')),
+    );
+    writeFileSync(row, JSON.stringify(composing('Row', 2, './cell.kui.json')));
+    writeFileSync(join(views, 'rows/cell.kui.json'), JSON.stringify(cell));
+
+    const generated = run([
+      'generate',
+      list,
+      row,
+      join(views, 'rows/cell.kui.json'),
+    ]);
+    expect(generated).toMatchObject({ code: 0 });
+    expect(readFileSync(join(views, 'list.view.ts'), 'utf8')).toContain(
+      "import { renderRow } from './rows/row.view.js';",
+    );
+    expect(readFileSync(join(views, 'rows/row.view.ts'), 'utf8')).toContain(
+      "import { renderCell } from './cell.view.js';",
+    );
+    // The nested cell's action reaches the top document's contract.
+    expect(run(['diff', list]).output).toContain('contract unchanged');
+    expect(run(['check', list]).code).toBe(0);
+
+    // A cell beside the top document is not the row's ./cell.kui.json.
+    rmSync(join(views, 'rows/cell.kui.json'));
+    writeFileSync(join(views, 'cell.kui.json'), JSON.stringify(cell));
+    expect(run(['check', list]).output).toContain(
+      '{./rows/row.kui.json}.root.zones.children[0].src: #view "./cell.kui.json" was not found',
+    );
+  });
+
   it('refuses a rootless document (KUI-V017) without writing a module', () => {
     // KF-PK3GVY: an editor's empty draft saves with no root.
     writeFileSync(

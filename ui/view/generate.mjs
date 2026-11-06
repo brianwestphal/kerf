@@ -12,6 +12,7 @@ import {
 } from './contract.mjs';
 import {
   channelOf,
+  composedViewPath,
   fieldZoneOf,
   parseCssCall,
   withFieldZones,
@@ -581,7 +582,7 @@ function declarationsBlock(name, contract, includeRender) {
 
 /**
  * Generates a view module. `options.source` names the document file in the
- * header; `options.resolveView(src)` loads composed documents (required when
+ * header; `options.resolveView(src, path)` loads composed documents (required when
  * the document has `#view` nodes); `options.target` is `ts` (default) or `js`;
  * `options.declarationsOnly` omits `render<Name>` for documents an app loads
  * at runtime through `interpretView`.
@@ -604,7 +605,11 @@ export function generateView(document, catalog, options = {}) {
   const views = {};
   const collectViews = (node) => {
     if (!isObject(node)) return;
-    if (node.type === '#view') views[node.src] = options.resolveView(node.src);
+    if (node.type === '#view')
+      views[node.src] = options.resolveView(
+        node.src,
+        composedViewPath(undefined, node.src),
+      );
     for (const list of Object.values(isObject(node.zones) ? node.zones : {})) {
       for (const child of list) {
         if ('$each' in child) eachNodes(child).forEach(collectViews);

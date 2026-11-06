@@ -9,6 +9,7 @@ import * as cssValues from '../dist/css-values.js';
 import { contractDigest, contractOf } from './contract.mjs';
 import {
   channelOf,
+  composedViewPath,
   fieldZoneOf,
   parseCssTree,
   eachNodes,
@@ -60,7 +61,8 @@ function readPath(root, path) {
  * - `inputs`, `slots`: as the generated `render<Name>` takes them;
  * - `contract`: the `<name>Contract` digest the app compiled against;
  * - `onMismatch(error)`: returns fallback `SafeHtml` instead of throwing;
- * - `resolveView(src)`: loads composed documents synchronously.
+ * - `resolveView(src, path)`: loads composed documents synchronously; `path`
+ *   is where `src` points relative to the top document's folder.
  * Throws on an invalid document or a component missing from `components`.
  */
 export function interpretView(document, options) {
@@ -96,7 +98,12 @@ export function previewView(document, options) {
   return renderDocument(document, inputs, slots, options);
 }
 
-function renderDocument(document, inputs, slots, options) {
+/**
+ * `at` is the document's place relative to the top document's folder
+ * (undefined for the top one), so a nested `#view`'s `src` resolves from the
+ * document that contains it, as the validator resolves it (KF-3X7MFF).
+ */
+function renderDocument(document, inputs, slots, options, at) {
   const { catalog, components, resolveView } = options;
   const params = document.params ?? {};
 
@@ -232,8 +239,15 @@ function renderDocument(document, inputs, slots, options) {
       return slot ? jsx('span', { slot, children: text }) : text;
     }
     if (node.type === '#view') {
-      const child = resolveView(node.src);
-      return renderDocument(child, value(node.props ?? {}, scope), {}, options);
+      const path = composedViewPath(at, node.src);
+      const child = resolveView(node.src, path);
+      return renderDocument(
+        child,
+        value(node.props ?? {}, scope),
+        {},
+        options,
+        path,
+      );
     }
     const { component: definition, definitions } = catalog.components.get(
       node.type,

@@ -946,7 +946,7 @@ export function bindingOptions(
    * KF-5N26H6: loads a `#view`'s document, so a binding to one of its
    * params is checked against that param's type.
    */
-  resolveView?: (src: string) => unknown,
+  resolveView?: (src: string, path: string) => unknown,
 ): BindingOption[] {
   const params = document.params ?? {};
   const candidates: BindingOption[] = Object.keys(params).map((name) => ({

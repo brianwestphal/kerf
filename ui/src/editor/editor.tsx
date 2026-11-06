@@ -767,9 +767,11 @@ function canvasRenderer(
       // is a problem, so a placeholder), and the play stage has none.
       ...(composed
         ? {
+            // KF-3X7MFF: a key's source is already where it points from the
+            // top document's folder, and its own `#view`s resolve from there.
             resolveView: (key: string) => {
-              const { owner, src } = ownedSourceOf(key);
-              return ownedViews(resolveView(src)!, owner);
+              const { owner, src: at } = ownedSourceOf(key);
+              return ownedViews(resolveView(at)!, owner, at);
             },
           }
         : {}),
@@ -1086,10 +1088,17 @@ export function createEditor(options: EditorOptions) {
   const viewTrail = signal<readonly { path: string; node: string }[]>([]);
   /** Where `#view` sources resolve from: the current file, with storage. */
   const documentPath = () => (autosave ? autosave.path.value : undefined);
-  /** A composed document, once it has loaded. */
-  const resolveView = (src: string): ViewDocument | undefined => {
+  /**
+   * A composed document, once it has loaded. `at` is where `src` points
+   * relative to this document's folder (KF-3X7MFF: the validator passes it
+   * for a nested `#view`, whose `src` resolves from its own document).
+   */
+  const resolveView = (
+    src: string,
+    at: string = src,
+  ): ViewDocument | undefined => {
     const base = documentPath();
-    const path = base === undefined ? undefined : viewPath(base, src);
+    const path = base === undefined ? undefined : viewPath(base, at);
     const load = path === undefined ? undefined : viewLoads.value.get(path);
     return load?.state === 'loaded' ? load.document : undefined;
   };

@@ -6,6 +6,7 @@ import { describe, expect, it } from 'vitest';
 import { validateJsonSchemaSubset } from '../../scripts/lib/json-schema-subset.mjs';
 import {
   channelOf,
+  composedViewPath,
   createViewCatalog,
   dataAttributeProblem,
   isAssignable,
@@ -1080,6 +1081,66 @@ describe('validateView: composed documents (KUI-V012)', () => {
     );
     expect(codes(view({}, ''))).toEqual(['KUI-V012']);
     expect(codes(view({ anything: 1 }))).toEqual([]);
+  });
+
+  it('resolves a nested src from the document that contains it (KF-3X7MFF)', () => {
+    const resolveIn =
+      (files: Record<string, unknown>, seen: string[][] = []) =>
+      (src: string, path: string) => {
+        seen.push([src, path]);
+        return files[path];
+      };
+    const messages = (src: string, files: Record<string, unknown>) =>
+      validateView(view({}, src), catalog, {
+        resolveView: resolveIn(files),
+      }).diagnostics.map((item) => item.message);
+    // rows/row's ./row.kui.json is rows/row.kui.json itself: a cycle.
+    const seen: string[][] = [];
+    validateView(view({}, './rows/row.kui.json'), catalog, {
+      resolveView: resolveIn(
+        { 'rows/row.kui.json': view({}, './row.kui.json') },
+        seen,
+      ),
+    });
+    expect(seen).toEqual([['./rows/row.kui.json', 'rows/row.kui.json']]);
+    expect(
+      messages('./rows/row.kui.json', {
+        'rows/row.kui.json': view({}, './row.kui.json'),
+      }),
+    ).toEqual(['#view "./row.kui.json" is cyclic']);
+    // a -> rows/sub/b -> ../../a: a cycle through different texts.
+    expect(
+      messages('a.kui.json', {
+        'a.kui.json': view({}, './rows/sub/b.kui.json'),
+        'rows/sub/b.kui.json': view({}, '../../a.kui.json'),
+      }),
+    ).toEqual(['#view "../../a.kui.json" is cyclic']);
+    // x -> y/z -> ./x, which is y/x: the same text names another document.
+    expect(
+      messages('./x.kui.json', {
+        'x.kui.json': view({}, './y/z.kui.json'),
+        'y/z.kui.json': view({}, './x.kui.json'),
+        'y/x.kui.json': child,
+      }),
+    ).toEqual(['#view "./x.kui.json" requires param "label"']);
+  });
+
+  it('folds composed paths (composedViewPath)', () => {
+    expect(composedViewPath(undefined, './a/./b.kui.json')).toBe(
+      'a/b.kui.json',
+    );
+    expect(composedViewPath('rows/row.kui.json', '../../x.kui.json')).toBe(
+      '../x.kui.json',
+    );
+    expect(composedViewPath('../x.kui.json', '../y.kui.json')).toBe(
+      '../../y.kui.json',
+    );
+    expect(composedViewPath('rows/row.kui.json', '/abs/z.kui.json')).toBe(
+      '/abs/z.kui.json',
+    );
+    expect(composedViewPath('/abs/z.kui.json', '../../../w.kui.json')).toBe(
+      '/w.kui.json',
+    );
   });
 
   it('prefixes nested diagnostics with the composed source', () => {

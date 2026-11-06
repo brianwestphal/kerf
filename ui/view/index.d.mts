@@ -169,12 +169,24 @@ export interface ViewValidation {
   readonly actions: ReadonlyMap<string, 'row' | 'view'>;
 }
 
+/**
+ * Where a `#view`'s `src` points relative to the top document's folder, from
+ * the composing document at `from` (undefined for the top document): each
+ * `src` resolves from the folder of the document that contains it. The
+ * `path` every `resolveView(src, path)` receives.
+ */
+export function composedViewPath(from: string | undefined, src: string): string;
+
 export function validateView(
   document: unknown,
   catalog: ViewCatalog,
   options?: {
-    /** Loads a `#view` node's document; without it, `#view` is shape-checked only. */
-    resolveView?: (src: string) => unknown;
+    /**
+     * Loads a `#view` node's document; without it, `#view` is shape-checked
+     * only. `path` is where `src` points relative to the top document's
+     * folder: each `src` resolves from the document that contains it.
+     */
+    resolveView?: (src: string, path: string) => unknown;
     /** Known Lucide icon names; with it, an unknown `$icon` is `KUI-V013`. */
     icons?: Iterable<string>;
   },
@@ -308,7 +320,7 @@ export function typeText(type: ViewType): string;
 export function contractOf(
   document: unknown,
   catalog: ViewCatalog,
-  options?: { resolveView?: (src: string) => unknown },
+  options?: { resolveView?: (src: string, path: string) => unknown },
 ): ViewContract;
 /** The layout-independent contract digest. */
 export function contractDigest(contract: ViewContract): string;
@@ -343,7 +355,7 @@ export function generateView(
   options?: {
     /** The document file name recorded in the header. */
     source?: string;
-    resolveView?: (src: string) => unknown;
+    resolveView?: (src: string, path: string) => unknown;
     target?: 'ts' | 'js';
     declarationsOnly?: boolean;
     /** The generated module's folder; absolute component imports become relative to it. */
@@ -405,7 +417,7 @@ export function interpretView(
     /** The generated `<name>Contract` the application compiled against. */
     readonly contract: string;
     readonly onMismatch?: (error: KuiContractMismatch) => SafeHtmlLike;
-    readonly resolveView?: (src: string) => unknown;
+    readonly resolveView?: (src: string, path: string) => unknown;
     /** Lucide icon name → icon data, for every `$icon` the document uses. */
     readonly icons?: Readonly<Record<string, unknown>>;
   },
@@ -432,7 +444,7 @@ export function previewView(
     readonly inputs?: object;
     readonly slots?: object;
     readonly icons?: Readonly<Record<string, unknown>>;
-    readonly resolveView?: (src: string) => unknown;
+    readonly resolveView?: (src: string, path: string) => unknown;
     /** Ids of nodes the caller's validation flagged. */
     readonly broken?: ReadonlySet<string>;
     /** Renders in place of a broken node; `reason` is `problem` or the thrown message. */

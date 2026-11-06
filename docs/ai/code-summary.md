@@ -749,7 +749,9 @@ template wires it as `props:generate` / `props:check`. For components in app sou
 `ui/view/` is the published `@kerfjs/ui/view` subpath (KF-FB9340: view-document
 validator for the Kerf UI editor, `docs/26-ui-editor.md`). `validate.mjs`
 (`createViewCatalog`, `validateView`, `isAssignable`, `isLiteralOf`,
-`parseCssCall`, `channelOf`) is re-exported by `index.mjs` and typed by
+`parseCssCall`, `channelOf`, and `composedViewPath`, where a nested `#view`'s
+`src` points from the top document's folder, the `path` every
+`resolveView(src, path)` gets; KF-3X7MFF) is re-exported by `index.mjs` and typed by
 `index.d.mts`. The shape schema is `ui/ai/view-document.schema.json`, and the
 `KUI-V001`–`V017` ids are registered in
 `ui/ai/application-ui-diagnostic-ids-v1.json` (`KUI-V017`, KF-PK3GVY: a

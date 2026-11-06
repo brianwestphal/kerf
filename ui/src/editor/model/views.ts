@@ -3,11 +3,12 @@
 // are the pure parts: where a `src` points, what a composing document needs
 // loaded, the Inspector props a composed document's params make, and the copy
 // of a composed document the canvas renders so it selects as its `#view`.
-import type {
-  ViewChild,
-  ViewDiagnostic,
-  ViewDocument,
-  ViewNode,
+import {
+  composedViewPath,
+  type ViewChild,
+  type ViewDiagnostic,
+  type ViewDocument,
+  type ViewNode,
 } from '@kerfjs/ui/view';
 
 import type { PropsComponent } from '../catalog.js';
@@ -57,8 +58,8 @@ export type ViewLoad =
 
 /**
  * The project paths a document needs loaded to render: its own `#view`s and,
- * once loaded, theirs. Every source resolves from `documentPath`, as the
- * validator's one `resolveView` (and `kerf-ui-view`) resolves nested ones.
+ * once loaded, theirs. KF-3X7MFF: each source resolves from the document that
+ * contains it, as the validator, `kerf-ui-view`, and the generated imports do.
  */
 export function neededViews(
   document: ViewDocument,
@@ -66,13 +67,15 @@ export function neededViews(
   loads: ReadonlyMap<string, ViewLoad>,
 ): string[] {
   const needed: string[] = [];
-  const visit = (current: ViewDocument) => {
+  // `at`: where `current` is, relative to the top document's folder.
+  const visit = (current: ViewDocument, at?: string) => {
     for (const src of viewSources(current)) {
-      const path = viewPath(documentPath, src);
+      const from = composedViewPath(at, src);
+      const path = viewPath(documentPath, from);
       if (path === undefined || needed.includes(path)) continue;
       needed.push(path);
       const load = loads.get(path);
-      if (load?.state === 'loaded') visit(load.document);
+      if (load?.state === 'loaded') visit(load.document, from);
     }
   };
   visit(document);
@@ -120,12 +123,16 @@ export function ownedSourceOf(key: string): { owner: string; src: string } {
 
 /**
  * A copy of `document` for the canvas: every `#view`'s `src` names its owner
- * (`ownedSource`), and with `owner` every node carries that id, so a click
- * anywhere in a composed document selects the `#view` that renders it.
+ * and where it points relative to the top document's folder (`ownedSource`),
+ * and with `owner` every node carries that id, so a click anywhere in a
+ * composed document selects the `#view` that renders it. `at` is where
+ * `document` is (undefined for the top document): a nested `src` resolves
+ * from the document that contains it.
  */
 export function ownedViews(
   document: ViewDocument,
   owner?: string,
+  at?: string,
 ): ViewDocument {
   const node = (item: ViewNode): ViewNode => {
     const id = owner ?? item.id;
@@ -141,7 +148,7 @@ export function ownedViews(
       ...item,
       id,
       ...(item.type === '#view' && typeof item.src === 'string'
-        ? { src: ownedSource(id, item.src) }
+        ? { src: ownedSource(id, composedViewPath(at, item.src)) }
         : {}),
       ...(zones ? { zones } : {}),
     };
@@ -180,8 +187,15 @@ export function explainViewLoads(
     const found = /^#view "(.*)" was not found$/.exec(diagnostic.message);
     if (diagnostic.code !== 'KUI-V012' || !found) return diagnostic;
     const src = found[1]!;
+    // A nested `#view`'s path (`…{./rows/row.kui.json}…`) names the documents
+    // it is inside, each resolving from the one before.
+    const at = [...diagnostic.path.matchAll(/\{([^}]*)\}/g)].reduce<
+      string | undefined
+    >((from, [, inside]) => composedViewPath(from, inside!), undefined);
     const path =
-      documentPath === undefined ? undefined : viewPath(documentPath, src);
+      documentPath === undefined
+        ? undefined
+        : viewPath(documentPath, composedViewPath(at, src));
     const load = path === undefined ? undefined : loads.get(path);
     const why =
       documentPath === undefined

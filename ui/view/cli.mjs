@@ -146,10 +146,14 @@ function loadCatalog(options, documentPath) {
   });
 }
 
-/** Loads composed documents relative to the composing document's folder. */
-const viewResolver = (documentPath) => (src) => {
-  const path = resolve(dirname(documentPath), src);
-  return existsSync(path) ? readJson(path) : undefined;
+/**
+ * Loads composed documents: `path` is where a `#view`'s `src` points relative
+ * to the top document's folder, since each `src` resolves from the document
+ * that contains it, as each generated module imports its own children.
+ */
+const viewResolver = (documentPath) => (src, path) => {
+  const file = resolve(dirname(documentPath), path);
+  return existsSync(file) ? readJson(file) : undefined;
 };
 
 /** Runs one command; returns `{ code, output }` instead of exiting, for tests. */

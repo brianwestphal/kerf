@@ -280,6 +280,56 @@ describe('interpretView: node kinds', () => {
     expect(render(true)).toContain('Yes');
     expect(render(false)).toContain('No');
   });
+
+  it('resolves a nested #view from the document that contains it (KF-3X7MFF)', () => {
+    const leaf = {
+      schema: 'kerf-ui-document/v1',
+      name: 'Leaf',
+      catalogs: [ui],
+      root: {
+        id: '01JB8Z1M6Q8E1X9V4S7K2R3TCA',
+        type: `${ui}:text`,
+        props: { children: 'From rows' },
+      },
+    };
+    const composing = (name: string, n: string, src: string) => ({
+      schema: 'kerf-ui-document/v1',
+      name,
+      catalogs: [ui],
+      root: {
+        id: `01JB8Z1M6Q8E1X9V4S7K2R3T${n}A`,
+        type: `${ui}:list`,
+        zones: {
+          children: [
+            { id: `01JB8Z1M6Q8E1X9V4S7K2R3T${n}B`, type: '#view', src },
+          ],
+        },
+      },
+    });
+    const files: Record<string, unknown> = {
+      'rows/row.kui.json': composing('Row', 'D', './leaf.kui.json'),
+      'rows/leaf.kui.json': leaf,
+    };
+    const paths: string[] = [];
+    const resolveView = (_src: string, path: string) => {
+      paths.push(path);
+      return files[path];
+    };
+    const document = composing('Top', 'E', './rows/row.kui.json');
+    const { digest } = generateView(document, catalog, { resolveView });
+    paths.length = 0;
+    const html = String(
+      interpretView(document, {
+        catalog,
+        components,
+        contract: digest,
+        resolveView,
+      }),
+    );
+    expect(html).toContain('From rows');
+    expect(paths).toContain('rows/leaf.kui.json');
+    expect(paths).not.toContain('leaf.kui.json');
+  });
 });
 
 describe('a rootless document (KF-PK3GVY: KUI-V017)', () => {

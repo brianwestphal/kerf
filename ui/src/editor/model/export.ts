@@ -34,7 +34,7 @@ export function exportModule(
   catalog: ViewCatalog,
   kind: ExportKind,
   /** KF-5N26H6: loads a `#view`'s document, as `kerf-ui-view` does. */
-  resolveView?: (src: string) => unknown,
+  resolveView?: (src: string, path: string) => unknown,
 ): ExportResult {
   const generated = generateView(document, catalog, {
     source: documentFileName(document),

@@ -1127,12 +1127,26 @@ called on the subtree it rendered. Cycles are errors, and so is composing a
 document that declares slots: the parent has no way to fill them. That case
 stays out of v1 until a design names the parent-side slot surface.
 
+**Resolution** (KF-3X7MFF: nested sources resolve from their own document).
+A `src` resolves from the folder of the document that contains it, the way
+each generated module imports its children. When `views/list.kui.json`
+composes `./rows/row.kui.json` and that row composes `./cell.kui.json`, the
+cell is `views/rows/cell.kui.json`. `validateView`, `contractOf`,
+`generateView`, `interpretView`, and `previewView` call
+`resolveView(src, path)`, where `path` is where `src` points relative to the
+top document's folder (`rows/cell.kui.json`; it may start with `../`).
+`composedViewPath(from, src)` computes it. A resolver that reads only `src`
+still resolves the top document's own `#view`s, since for those `path` is the
+normalized `src`. Cycles compare paths, not `src` text, so the same `src` in
+two folders names two documents and `./rows/b.kui.json` composing
+`../a.kui.json` back is a cycle.
+
 **In the editor** (KF-5N26H6: row template phase 1). With storage, the
 editor loads each `#view`'s document through `EditorStorage.read`, resolving
 `src` from the composing document's folder as `kerf-ui-view` does (`./row.kui.json`
 beside `views/list.kui.json` is `views/row.kui.json`; a source that leaves
 the project is not loaded). A composed document's own `#view`s load too,
-resolved the same way, because validation passes one resolver down. Loads
+each resolved from the document that contains it (Resolution, above). Loads
 start again whenever a document opens, and whenever its `#view` set names a
 document not loaded yet; a draft resolves from the drafts folder, so a
 composing document belongs beside its rows before they render.
@@ -1198,7 +1212,7 @@ composing document belongs beside its rows before they render.
     Save As wrote does.
 
 Play mode does not load composed documents yet: a `#view` plays as a
-placeholder (KF-85SCQD). Nested sources resolve from the top document, as `kerf-ui-view` resolves them today (KF-3X7MFF).
+placeholder (KF-85SCQD).
 
 ## 4. The generated view module
 
@@ -1537,7 +1551,7 @@ surface a human reads: "adds the action `archive`, removes the input
 
 ## 8. Validation
 
-`validateView(document, catalog, { resolveView? })` from `@kerfjs/ui/view`
+`validateView(document, catalog, { resolveView?(src, path) })` from `@kerfjs/ui/view`
 (and later `kerf-ui-view check` and the editor) reports diagnostics with stable
 ids. `catalog` comes from `createViewCatalog({ props, composition })` over
 `component-props.json` / `component-composition.json` documents (Kerf UI's and

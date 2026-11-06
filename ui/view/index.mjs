@@ -3,6 +3,7 @@
 // its clients; neither owns the format.
 export {
   channelOf,
+  composedViewPath,
   createViewCatalog,
   dataAttributeProblem,
   fieldZoneOf,

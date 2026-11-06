@@ -1441,6 +1441,27 @@ function checkChild(ctx, child, at, scope, rowScoped, parentKey, text = false) {
   checkNode(ctx, child, at, scope, rowScoped, parentKey, text);
 }
 
+/**
+ * KF-3X7MFF: where a `#view`'s `src` points, relative to the top document's
+ * folder, from the composing document at `from` (undefined for the top
+ * document): `src` resolves from the folder of the document that contains it,
+ * as each generated module imports its children. A posix path with `.`
+ * segments removed and `..` folded; it may start with `../` (or `/`).
+ */
+export function composedViewPath(from, src) {
+  const parts = from === undefined ? [] : from.split('/').slice(0, -1);
+  if (src.startsWith('/')) parts.length = 0;
+  for (const part of src.split('/')) {
+    if (part === '' || part === '.') continue;
+    if (part !== '..') parts.push(part);
+    // `..` folds a folder; above the root (`/`) it stays at the root.
+    else if (parts.length && parts.at(-1) !== '..') {
+      if (parts.at(-1) !== '') parts.pop();
+    } else parts.push(part);
+  }
+  return `${src.startsWith('/') ? '/' : ''}${parts.join('/')}`;
+}
+
 function checkView(ctx, node, at, scope, rowScoped) {
   if (typeof node.src !== 'string' || node.src === '') {
     ctx.report(
@@ -1451,11 +1472,14 @@ function checkView(ctx, node, at, scope, rowScoped) {
     return;
   }
   if (!ctx.resolveView) return;
-  if (ctx.viewStack.includes(node.src)) {
+  // Cycles compare where sources point, not their text: the same `src` in
+  // two folders names two documents.
+  const path = composedViewPath(ctx.viewPath, node.src);
+  if (ctx.viewStack.includes(path)) {
     ctx.report('KUI-V012', `${at}.src`, `#view "${node.src}" is cyclic`);
     return;
   }
-  const child = ctx.resolveView(node.src);
+  const child = ctx.resolveView(node.src, path);
   if (!isObject(child)) {
     ctx.report('KUI-V012', `${at}.src`, `#view "${node.src}" was not found`);
     return;
@@ -1500,7 +1524,8 @@ function checkView(ctx, node, at, scope, rowScoped) {
   const nested = validateView(child, ctx.catalog, {
     resolveView: ctx.resolveView,
     icons: ctx.icons,
-    viewStack: [...ctx.viewStack, node.src],
+    viewStack: [...ctx.viewStack, path],
+    viewPath: path,
     // A composed document inside a control renders inside it too.
     interactiveHost: ctx.interactiveHost,
     // ... and one inside a row renders inside that row.
@@ -1757,8 +1782,10 @@ function hintUnsizedLayouts(node, at, sized, hints, isRoot = false) {
  * or a `KUI-L201`–`L204` composition id) and `actions` maps each action name
  * to its `row` or `view` scope. `hints` are non-blocking `KUI-H###` advice
  * about a valid document (a nested layout with no height); they never make it
- * invalid. `options.resolveView(src)` loads a composed document; without it,
- * `#view` nodes are checked for shape only.
+ * invalid. `options.resolveView(src, path)` loads a composed document, where
+ * `path` is where `src` points relative to the top document's folder (each
+ * `src` resolves from the document that contains it); without it, `#view`
+ * nodes are checked for shape only.
  */
 export function validateView(document, catalog, options = {}) {
   return runView(document, catalog, options);
@@ -1782,6 +1809,7 @@ function createContext(catalog, options, trace) {
     resolveView: options.resolveView,
     icons: options.icons ? new Set(options.icons) : undefined,
     viewStack: options.viewStack ?? [],
+    viewPath: options.viewPath,
     params: new Map(),
     slots: new Map(),
     checkedSlots: new WeakSet(),
