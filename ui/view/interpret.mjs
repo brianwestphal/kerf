@@ -102,8 +102,10 @@ export function previewView(document, options) {
  * `at` is the document's place relative to the top document's folder
  * (undefined for the top one), so a nested `#view`'s `src` resolves from the
  * document that contains it, as the validator resolves it (KF-3X7MFF).
+ * `inRow` marks a composed document rendered inside a composing document's
+ * `$each` row, through any number of `#view` levels.
  */
-function renderDocument(document, inputs, slots, options, at) {
+function renderDocument(document, inputs, slots, options, at, inRow = false) {
   const { catalog, components, resolveView } = options;
   const params = document.params ?? {};
 
@@ -161,6 +163,14 @@ function renderDocument(document, inputs, slots, options, at) {
       // The key path starts with `as` (validation requires it); read the rest
       // from the item.
       const rest = child.key.split('.').slice(1);
+      // KF-A01VDM: a composed document's own repeat inside a row is the shape
+      // validation rejects (KUI-V016). Name it, rather than letting each()
+      // refuse the keyed list inside the row with a generic error.
+      if (inRow && !scope.size) {
+        throw new Error(
+          `KUI-V016 ${at} is composed into a row, so it cannot repeat`,
+        );
+      }
       const items = value(child.$each, scope);
       const row = (item) => {
         const inner = new Map(scope).set(child.as, item);
@@ -247,6 +257,7 @@ function renderDocument(document, inputs, slots, options, at) {
         {},
         options,
         path,
+        inRow || scope.size > 0,
       );
     }
     const { component: definition, definitions } = catalog.components.get(

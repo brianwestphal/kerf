@@ -478,6 +478,65 @@ describe('composed documents in the editor', () => {
     ).toContain('requires param');
   });
 
+  it('reports a row document with its own repeat as KUI-V016 (KF-A01VDM)', async () => {
+    // A row whose document repeats its own list: the shape validation rejects,
+    // because that list would be a keyed each() inside the composing row.
+    const repeating = {
+      ...rowDocument(),
+      params: {
+        title: { type: { kind: 'string' } },
+        tags: {
+          type: {
+            kind: 'array',
+            items: {
+              kind: 'object',
+              props: [{ name: 'id', type: { kind: 'string' }, required: true }],
+            },
+          },
+          default: [{ id: 't1' }],
+        },
+      },
+      root: {
+        id: '01JC0V1EW0000000000000000R',
+        type: '@kerfjs/ui:list',
+        props: { ariaLabel: 'Tags' },
+        zones: {
+          children: [
+            {
+              $each: { $param: 'tags' },
+              as: 'tag',
+              key: 'tag.id',
+              template: {
+                id: '01JC0V1EW0000000000000000T',
+                type: '@kerfjs/ui:list-item',
+                props: { label: { $bind: 'tag.id' } },
+              },
+            },
+          ],
+        },
+      },
+    } as unknown as ViewDocument;
+    const { root, editor } = open(files(listDocument(), text(repeating)));
+    await vi.waitFor(() => expect(editor.document.value.name).toBe('Messages'));
+    // The Problems list names the rule at the composed `$each`.
+    await vi.waitFor(() =>
+      expect(root.textContent).toContain(
+        'a document composed into an `$each` row cannot repeat',
+      ),
+    );
+    expect(root.textContent).toContain(
+      'KUI-V016 · $.root.zones.children[0].template{./message-row.kui.json}.root.zones.children[0]',
+    );
+    // Each row stands in for itself; the editor keeps rendering.
+    await vi.waitFor(() =>
+      expect(
+        canvas(root).querySelectorAll(`[data-kerf-node="${ROW_VIEW}"]`),
+      ).toHaveLength(2),
+    );
+    expect(canvas(root).textContent).toContain('cannot render');
+    expect(canvas(root).textContent).not.toContain('t1');
+  });
+
   it('reports a #view it cannot load instead of failing', async () => {
     const cases: [Record<string, string>, string][] = [
       [{ [LIST_PATH]: text(listDocument()) }, `there is no ${ROW_PATH}`],

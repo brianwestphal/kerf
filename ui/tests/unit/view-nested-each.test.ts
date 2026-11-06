@@ -15,6 +15,8 @@ import { ListItem } from '../../src/list-item.js';
 import { Pane } from '../../src/pane.js';
 import { Text } from '../../src/text.js';
 import {
+  contractDigest,
+  contractOf,
   createViewCatalog,
   generateView,
   interpretView,
@@ -383,6 +385,108 @@ describe('KUI-V016: a composed repeat inside a row', () => {
     });
     expect(diagnostics.map((diagnostic) => diagnostic.code)).toEqual([
       'KUI-V016',
+    ]);
+  });
+
+  // KF-A01VDM: interpretView refuses the shape as an invalid document, and a
+  // preview names KUI-V016 in its placeholder instead of letting each()
+  // refuse the keyed list inside the row with a generic error.
+  const groups = {
+    groups: [
+      { id: 'g1', label: 'One', tabs: [{ id: 'a', label: 'Alpha' }] },
+      { id: 'g2', label: 'Two', tabs: [{ id: 'b', label: 'Beta' }] },
+    ],
+    tabs: [{ id: 'c', label: 'Gamma' }],
+  };
+  const interpret = (inRow: boolean) => {
+    const host = window.document.createElement('div');
+    const document = composing(inRow);
+    mount(host, () =>
+      interpretView(document, {
+        catalog,
+        components,
+        inputs: groups,
+        resolveView,
+        // An invalid document has no contract: interpretView refuses it.
+        contract: inRow
+          ? 'invalid'
+          : contractDigest(contractOf(document, catalog, { resolveView })),
+      }),
+    );
+    return host;
+  };
+
+  it('refuses the composed repeat in a row in interpretView, naming KUI-V016', () => {
+    expect(() => interpret(true)).toThrow(/first: KUI-V016 at /);
+  });
+
+  it('renders the same composition outside a row as a keyed list', () => {
+    const host = interpret(false);
+    expect(host.textContent).toContain('Gamma');
+    expect(host.innerHTML).toContain('<!--kf-list:');
+  });
+
+  it('previews the composed repeat in a row as a placeholder naming KUI-V016', () => {
+    const host = window.document.createElement('div');
+    const placeholder = vi.fn((node: { id: string }) => node.id as never);
+    mount(host, () =>
+      previewView(composing(true), {
+        catalog,
+        components,
+        inputs: groups,
+        resolveView,
+        placeholder,
+      }),
+    );
+    // Each row's composed List stands in for itself; the rows still render.
+    expect(placeholder).toHaveBeenCalledTimes(2);
+    expect(placeholder).toHaveBeenCalledWith(
+      expect.objectContaining({ id: tabsDocument.root.id }),
+      expect.stringContaining('KUI-V016'),
+    );
+    expect(host.querySelectorAll('[data-key^="g"]')).toHaveLength(2);
+  });
+
+  it('carries the row into a second level of composition when it renders', () => {
+    const outer = {
+      ...tabsDocument,
+      name: 'Outer',
+      root: {
+        id: '01JB8Z1M6Q8E1X9V4S7K2R3N15',
+        type: `${ui}:pane`,
+        zones: {
+          content: [
+            {
+              id: '01JB8Z1M6Q8E1X9V4S7K2R3N16',
+              type: '#view',
+              src: './tabs.kui.json',
+              props: { tabs: { $param: 'tabs' } },
+            },
+          ],
+        },
+      },
+    };
+    const document = composing(true);
+    (
+      document.root.zones.content[0] as {
+        template: { zones: { content: { src: string }[] } };
+      }
+    ).template.zones.content[0]!.src = './outer.kui.json';
+    const placeholder = vi.fn((_node: unknown, reason: string) => reason);
+    const host = window.document.createElement('div');
+    mount(host, () =>
+      previewView(document, {
+        catalog,
+        components,
+        inputs: groups,
+        resolveView: (src: string) =>
+          src === './outer.kui.json' ? outer : tabsDocument,
+        placeholder: placeholder as never,
+      }),
+    );
+    expect(placeholder.mock.calls.map(([, reason]) => reason)).toEqual([
+      expect.stringContaining('KUI-V016 tabs.kui.json'),
+      expect.stringContaining('KUI-V016 tabs.kui.json'),
     ]);
   });
 });

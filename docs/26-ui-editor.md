@@ -1119,7 +1119,11 @@ never styled from outside. This matches Kerf UI's "configure, never override".
   - A `#view` inside an `$each` template cannot compose a document that has
     its own top-level `$each` (`KUI-V016`): that document's generated module
     renders a keyed `each()`, and it cannot know it is rendered inside a
-    row. Put the repeat in the composing document instead.
+    row. Put the repeat in the composing document instead. `interpretView`
+    refuses such a document as invalid; a preview (`previewView`, the
+    editor's canvas and play) renders the node holding that `$each` as a
+    placeholder whose reason names `KUI-V016`, and the editor lists the
+    problem at the composed `$each` (KF-A01VDM).
 - **`$if`**: `{ "$if": <boolean value>, "then": <child>, "else"?: <child> }`.
   The condition is a param, a binding, or a literal.
 
