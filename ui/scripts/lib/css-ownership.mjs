@@ -9,6 +9,7 @@
  * the unit suite can feed them known-bad and sanctioned selectors.
  */
 import postcss from 'postcss';
+import ts from 'typescript';
 
 import {
   complexSelectorParts,
@@ -159,21 +160,31 @@ function componentName(filename) {
     .join('');
 }
 
-/** The end index of a JSX opening tag that starts at `start` (`<`). */
-function openingTagEnd(source, start) {
-  let depth = 0;
-  let quote = null;
-  for (let index = start + 1; index < source.length; index += 1) {
-    const char = source[index];
-    if (quote) {
-      if (char === '\\') index += 1;
-      else if (char === quote) quote = null;
-    } else if (char === '"' || char === "'" || char === '`') quote = char;
-    else if (char === '{') depth += 1;
-    else if (char === '}') depth -= 1;
-    else if (char === '>' && depth === 0) return index;
-  }
-  return source.length;
+/**
+ * Each JSX opening or self-closing tag in a component source: its tag name
+ * and its text (attributes included, children not). Read from the
+ * TypeScript AST rather than scanned, so an apostrophe in a comment or in
+ * JSX text inside a prop never shifts where a tag ends (KF-FQ6XYJ).
+ */
+function jsxOpeningTags(source) {
+  const file = ts.createSourceFile(
+    'component.tsx',
+    source,
+    ts.ScriptTarget.Latest,
+    false,
+    ts.ScriptKind.TSX,
+  );
+  const tags = [];
+  const visit = (node) => {
+    if (ts.isJsxOpeningElement(node) || ts.isJsxSelfClosingElement(node))
+      tags.push({
+        name: node.tagName.getText(file),
+        text: source.slice(node.getStart(file), node.end),
+      });
+    ts.forEachChild(node, visit);
+  };
+  visit(file);
+  return tags;
 }
 
 function classAttributeValues(openingTag) {
@@ -205,6 +216,13 @@ function classAttributeValues(openingTag) {
  * sources (`{ filename, source }` records named relative to `src/`).
  */
 export function buildOwnershipModel({ stylesheets, sources }) {
+  const parsed = new Map();
+  /** A component sheet's JSX tags, parsed once per model. */
+  const jsxTagsOf = (sheet) => {
+    if (!parsed.has(sheet.filename))
+      parsed.set(sheet.filename, jsxOpeningTags(sheet.source));
+    return parsed.get(sheet.filename);
+  };
   const sourceByStem = new Map(
     sources.map(({ filename, source }) => [
       filename.replace(/\.tsx?$/, ''),
@@ -270,17 +288,13 @@ export function buildOwnershipModel({ stylesheets, sources }) {
 
   for (const sheet of sheets.values()) {
     if (!sheet.component) continue;
-    const { source } = sheet;
-    for (const match of source.matchAll(/<(wa-[a-z0-9-]+)\b/g)) {
-      const opening = source.slice(
-        match.index,
-        openingTagEnd(source, match.index),
-      );
-      const classes = classAttributeValues(opening).flatMap((value) =>
+    for (const tag of jsxTagsOf(sheet)) {
+      if (!/^wa-[a-z0-9-]+$/.test(tag.name)) continue;
+      const classes = classAttributeValues(tag.text).flatMap((value) =>
         [...value.matchAll(/\bkui-[a-z0-9_-]+/g)].map(([name]) => name),
       );
       const host = classes.some((name) => sheet.roots.includes(name));
-      (host ? sheet.hostTags : sheet.internalTags).add(match[1]);
+      (host ? sheet.hostTags : sheet.internalTags).add(tag.name);
     }
     for (const tag of sheet.hostTags) sheet.internalTags.delete(tag);
     for (const [tag, host] of [
@@ -311,16 +325,12 @@ export function buildOwnershipModel({ stylesheets, sources }) {
           composed.add(name.trim());
       }
     }
-    for (const match of source.matchAll(/<([A-Z][A-Za-z0-9]*)\b/g)) {
-      if (!composed.has(match[1])) continue;
-      const opening = source.slice(
-        match.index,
-        openingTagEnd(source, match.index),
-      );
-      for (const value of classAttributeValues(opening)) {
+    for (const tag of jsxTagsOf(sheet)) {
+      if (!composed.has(tag.name)) continue;
+      for (const value of classAttributeValues(tag.text)) {
         for (const [name] of value.matchAll(/\bkui-[a-z0-9_-]+/g)) {
           if (sheet.roots.some((root) => ownsClass(root, name)))
-            sheet.hookClasses.set(name, match[1]);
+            sheet.hookClasses.set(name, tag.name);
         }
       }
     }

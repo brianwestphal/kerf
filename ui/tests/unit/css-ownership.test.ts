@@ -71,6 +71,64 @@ describe('CSS ownership gate', { timeout: loadScaledTimeout(30_000) }, () => {
     expect(checkPackageStylesheet(model, filename, css)).toEqual([]);
   });
 
+  // KF-FQ6XYJ: a composed component's opening tag ends where the JSX says,
+  // whatever apostrophes its comments or nested text hold, so a class on a
+  // sibling after it is not a hook class on it.
+  it('reads where a composed tag ends past apostrophes in comments and text', () => {
+    const filename = 'components/demo/demo-shell/demo-shell.css';
+    const css = '.kui-demo-shell__chip { position: fixed; }';
+    const source = `import { Workbench } from '../workbench/workbench.js';
+export function DemoShell() {
+  return (
+    <div>
+      <Workbench
+        // the shell's own rail
+        label="Shell"
+        title={<span>Wrap</span>}
+      />
+      <div class="kui-demo-shell__chip" />
+    </div>
+  );
+}`;
+    const model = buildOwnershipModel({
+      stylesheets: [
+        { filename, source: css },
+        { filename: 'components/demo/workbench/workbench.css', source: '' },
+      ],
+      sources: [
+        { filename: 'components/demo/demo-shell/demo-shell.tsx', source },
+        {
+          filename: 'components/demo/workbench/workbench.tsx',
+          source: 'export function Workbench() { return <section />; }',
+        },
+      ],
+    });
+    expect(checkPackageStylesheet(model, filename, css)).toEqual([]);
+    // The same class on the Workbench itself is still a hook class.
+    const hooked = buildOwnershipModel({
+      stylesheets: [
+        { filename, source: css },
+        { filename: 'components/demo/workbench/workbench.css', source: '' },
+      ],
+      sources: [
+        {
+          filename: 'components/demo/demo-shell/demo-shell.tsx',
+          source: source.replace(
+            'label="Shell"',
+            'label="Shell"\n        class="kui-demo-shell__chip"',
+          ),
+        },
+        {
+          filename: 'components/demo/workbench/workbench.tsx',
+          source: 'export function Workbench() { return <section />; }',
+        },
+      ],
+    });
+    expect(
+      checkPackageStylesheet(hooked, filename, css).map(({ rule }) => rule),
+    ).toContain('hook-class');
+  });
+
   // KF-Z2K3RR: no Kerf component renders a Web Awesome element, so a
   // component stylesheet names one only to exclude a state (`:not(:has(
   // wa-dropdown[open]))`); rules for raw Web Awesome children belong in the
