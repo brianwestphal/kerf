@@ -111,8 +111,9 @@ const CAPTION_END = 8;
 
 /**
  * Wires pointer dragging on the canvas `[data-editor-canvas]` under `root`,
- * drawing into its `.kui-editor__drop` overlay, its `.kui-editor__drop-caption`,
- * `.kui-editor__drag-source`, and `.kui-editor__drag-chip` hosts. Returns a
+ * drawing into its `.kui-editor__drop` overlay, its `.kui-editor__drop-caption`
+ * and `.kui-editor__drag-source` hosts, and the `.kui-editor__drag-chip` host
+ * under `root` (outside the canvas, so it draws over the rails). Returns a
  * disposer.
  */
 export function wireCanvasDrag(
@@ -139,7 +140,10 @@ export function wireCanvasDrag(
   const overlay = () =>
     canvas().querySelector<HTMLElement>('.kui-editor__drop')!;
   const part = (name: string) =>
-    canvas().querySelector<HTMLElement>(`.kui-editor__${name}`);
+    // KF-23EBGS: the pointer chip sits outside the canvas, over the rails.
+    (name === 'drag-chip' ? root : canvas()).querySelector<HTMLElement>(
+      `.kui-editor__${name}`,
+    );
   const caption = () => part('drop-caption');
   const hide = () => {
     overlay().hidden = true;

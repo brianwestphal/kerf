@@ -135,14 +135,18 @@ describe('canvas drag', () => {
   it('names the dragged node and its landing place, and dims its place', () => {
     const { root, node, pointer, hover } = setUp();
     const canvas = root.querySelector('[data-editor-canvas]')!;
+    // KF-23EBGS: the chip lives outside the canvas, over the rails.
     const part = (name: string) =>
-      canvas.querySelector<HTMLElement>(`.kui-editor__${name}`)!;
+      (name === 'drag-chip' ? root : canvas).querySelector<HTMLElement>(
+        `.kui-editor__${name}`,
+      )!;
     const compose = node(COMPOSE);
     const folders = node(FOLDERS);
     at(compose, 600, 10, 100, 40);
     at(folders, 0, 100, 800, 120);
     pointer('pointerdown', compose, 610, 20);
     expect(part('drag-chip').hidden).toBe(true);
+    expect(canvas.contains(part('drag-chip'))).toBe(false);
     hover(folders);
     pointer('pointermove', compose, 50, 210);
     // The chip follows the pointer and names the node.
@@ -362,7 +366,9 @@ describe('canvas drag', () => {
       const { root, node, pointer, hover } = setUp();
       const canvas = root.querySelector('[data-editor-canvas]')!;
       const part = (name: string) =>
-        canvas.querySelector<HTMLElement>(`.kui-editor__${name}`)!;
+        (name === 'drag-chip' ? root : canvas).querySelector<HTMLElement>(
+          `.kui-editor__${name}`,
+        )!;
       const badge = paletteRow(root, '@kerfjs/ui:badge');
       at(node(FOLDERS), 0, 100, 800, 120);
       pointer('pointerdown', badge, 10, 700);

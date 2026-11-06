@@ -1024,9 +1024,17 @@ test('drags a palette component onto an outline row', async ({
     steps: 6,
   });
   await expect(target).toHaveAttribute('data-drop-position', 'inside');
-  await expect(
-    page.locator('[data-editor-canvas] .kui-editor__drag-chip'),
-  ).toContainText('Text');
+  const chip = page.locator('.kui-editor__drag-chip');
+  await expect(chip).toContainText('Text');
+  // KF-23EBGS: the chip draws over the rail; no ancestor clips it (a pane
+  // did in WebKit).
+  expect(
+    await chip.evaluate((element) => {
+      for (let at = element.parentElement; at; at = at.parentElement)
+        if (getComputedStyle(at).overflow !== 'visible') return at.className;
+      return '';
+    }),
+  ).toBe('');
   await page.screenshot({
     path: info.outputPath('KF-67K2VP-outline-drop-1440.png'),
     animations: 'disabled',
@@ -1068,7 +1076,7 @@ test('drags components from the palette onto the canvas', async ({
     await page.mouse.move(to.x, to.y, { steps: 8 });
     await expect(canvas.locator('.kui-editor__drop')).toBeVisible();
     // KF-Y4GHQV: a chip names what is dragged, and a caption where it lands.
-    await expect(canvas.locator('.kui-editor__drag-chip')).toBeVisible();
+    await expect(page.locator('.kui-editor__drag-chip')).toBeVisible();
     await expect(canvas.locator('.kui-editor__drop-caption')).toBeVisible();
     if (shot)
       await page.screenshot({
@@ -1123,9 +1131,7 @@ test('drags components from the palette onto the canvas', async ({
   await page.mouse.down();
   await page.mouse.move(first.x + 20, first.y + 2, { steps: 8 });
   await expect(canvas.locator('.kui-editor__drag-source')).toBeVisible();
-  await expect(canvas.locator('.kui-editor__drag-chip')).toContainText(
-    'Button',
-  );
+  await expect(page.locator('.kui-editor__drag-chip')).toContainText('Button');
   await expect(canvas.locator('.kui-editor__drop-caption')).toContainText(
     'Before Text',
   );
@@ -1135,7 +1141,7 @@ test('drags components from the palette onto the canvas', async ({
   });
   await page.mouse.up();
   for (const part of ['drag-chip', 'drag-source', 'drop-caption'])
-    await expect(canvas.locator(`.kui-editor__${part}`)).toBeHidden();
+    await expect(page.locator(`.kui-editor__${part}`)).toBeHidden();
 });
 
 // KF-5QXNWS: the Inspector's title and tab strip stay pinned under its

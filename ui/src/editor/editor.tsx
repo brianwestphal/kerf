@@ -3869,7 +3869,7 @@ export function createEditor(options: EditorOptions) {
         hidden
       />
       <div class="kui-editor__drop" data-morph-skip aria-hidden="true" hidden />
-      {/* KF-Y4GHQV: the drag's caption, dimmed source, and pointer chip. */}
+      {/* KF-Y4GHQV: the drag's caption and dimmed source. */}
       <div
         class="kui-editor__drop-caption"
         data-morph-skip
@@ -3878,12 +3878,6 @@ export function createEditor(options: EditorOptions) {
       />
       <div
         class="kui-editor__drag-source"
-        data-morph-skip
-        aria-hidden="true"
-        hidden
-      />
-      <div
-        class="kui-editor__drag-chip"
         data-morph-skip
         aria-hidden="true"
         hidden
@@ -4274,6 +4268,16 @@ export function createEditor(options: EditorOptions) {
           {contextMenu()}
         </div>
         {playing.value ? playMode() : undefined}
+        {/* KF-Y4GHQV: the chip naming what is dragged follows the pointer.
+            KF-23EBGS: it lives outside the panes, so it draws over the rails
+            too (a pane clips it in WebKit) while a drag heads for a spring
+            tab or the outline. */}
+        <div
+          class="kui-editor__drag-chip"
+          data-morph-skip
+          aria-hidden="true"
+          hidden
+        />
       </List>
     );
   };
