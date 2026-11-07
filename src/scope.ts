@@ -205,6 +205,11 @@ export function disposeSubtree(root: Element): void {
  * moved or reordered within `root` remains live. One observer covers the whole
  * tree. Returns a disconnect function. Note: `MutationObserver` fires
  * asynchronously, so final containment and disposal run after the mutation.
+ *
+ * Containment is judged against this observer's own `root` only: a node moved
+ * out of `root` is disposed even if it lands inside another observed root that
+ * contains this one. Nested observers are deliberately independent (no shared
+ * registry, so no module-level state) — observe the outermost root instead.
  */
 export function observeRemovals(root: Element): () => void {
   const observer = new MutationObserver((records) => {

@@ -917,6 +917,8 @@ const stop = observeRemovals(document.body); // auto-dispose on removal, app-wid
 
 Installs a `MutationObserver` on `root` that auto-runs a node's scope (via `disposeSubtree`) when that node — or an ancestor — is **permanently** removed from the subtree. One observer covers the whole tree. A node moved between descendants of `root`, or reordered under the same parent, remains live because containment is checked when the asynchronous observer callback runs. Returns a disconnect function.
 
+Containment is judged against this observer's own `root` only. A node moved out of `root` counts as removed and is disposed even when it lands elsewhere in the document, including inside another observed root that contains this one: with `observeRemovals(outer)` and `observeRemovals(inner)` both active, moving a scoped node from `inner` to a sibling of `inner` disposes it. One observer on the outermost root you move nodes within is enough; a nested observer adds nothing except this per-root disposal. To relocate a scoped node outside its observed root (a portal, for example), observe a root that contains both positions.
+
 ### `Scope` (type)
 
 The handle returned by `disposeScope`, exported for annotation: `{ add, mount, effect, delegate, dispose }` (see `disposeScope` above).
