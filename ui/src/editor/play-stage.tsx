@@ -22,6 +22,7 @@ import { Select } from '../components/forms/select/select.js';
 import { TextField } from '../components/forms/text-field/text-field.js';
 import { LucideIcon } from '../components/media/lucide-icon/lucide-icon.js';
 import { Text } from '../components/typography/text/text.js';
+import { HOOK, hook } from './dom-hooks.js';
 import {
   type ActionLogEntry,
   type ActionOutcome,
@@ -347,7 +348,7 @@ export function createPlayStage({ presets, doneAction }: PlayStageOptions) {
                   src={playPageUrl(globalThis.location.href)}
                   width={String(emulated.viewport.width)}
                   height={String(emulated.viewport.height)}
-                  data-editor-play-frame
+                  {...{ [HOOK.playFrame]: true }}
                 />
                 <span class="kui-editor__device-status" aria-hidden="true">
                   <span class="kui-editor__device-time">12:00</span>
@@ -463,9 +464,7 @@ export function createPlayStage({ presets, doneAction }: PlayStageOptions) {
     )!;
     const body = box.querySelector<HTMLElement>('[data-editor-play-body]')!;
     const screen = box.querySelector<HTMLElement>('[data-editor-play-device]')!;
-    const frame = box.querySelector<HTMLIFrameElement>(
-      '[data-editor-play-frame]',
-    )!;
+    const frame = box.querySelector<HTMLIFrameElement>(hook(HOOK.playFrame))!;
     const handles = [
       ...box.querySelectorAll<HTMLElement>('.kui-editor__resize'),
     ];

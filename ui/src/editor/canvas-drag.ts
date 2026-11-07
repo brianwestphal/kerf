@@ -11,14 +11,15 @@ import type {
   TreeListMove,
 } from '../components/collections/tree-list/wiring/wire-tree-list.js';
 import { Badge } from '../components/feedback/badge/badge.js';
+import { HOOK, hook } from './dom-hooks.js';
 
 /** Elements the canvas drags and drops on: nodes and slot placeholders. */
-const DRAGGABLE = '[data-kerf-node], [data-editor-slot-address]';
+const DRAGGABLE = `[data-kerf-node], ${hook(HOOK.slotAddress)}`;
 /**
  * What a drag drops on: what it drags, and an empty zone's placeholder
  * (KF-7BB55F), which takes a drop inside only.
  */
-const TARGETS = `${DRAGGABLE}, [data-editor-empty]`;
+const TARGETS = `${DRAGGABLE}, ${hook(HOOK.empty)}`;
 /** How far the pointer moves before a press becomes a drag. */
 const DRAG_THRESHOLD = 4;
 
@@ -237,7 +238,7 @@ export function wireCanvasDrag(
     | undefined;
   let suppressClick = false;
 
-  const canvas = () => root.querySelector<HTMLElement>('[data-editor-canvas]')!;
+  const canvas = () => root.querySelector<HTMLElement>(hook(HOOK.canvas))!;
   const overlay = () =>
     canvas().querySelector<HTMLElement>('.kui-editor__drop')!;
   const part = (name: string) =>
@@ -366,13 +367,13 @@ export function wireCanvasDrag(
     if (id === press.source) return undefined;
     const across = horizontal(element);
     const positions: readonly TreeListDropPosition[] = element.matches(
-      '[data-editor-empty]',
+      hook(HOOK.empty),
     )
       ? ['inside']
       : positionsAt(element.getBoundingClientRect(), x, y, across);
     // KF-WKABP2: a container's zones, where they render; the pointer picks
     // one. Only a thin band along its edges still drops beside it.
-    const zones = element.matches('[data-editor-empty]')
+    const zones = element.matches(hook(HOOK.empty))
       ? undefined
       : options.zonesOf?.(element, press.source);
     // A point over no legal zone drops as anywhere else would.

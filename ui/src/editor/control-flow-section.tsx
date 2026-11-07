@@ -17,6 +17,7 @@ import { Select } from '../components/forms/select/select.js';
 import { Switch } from '../components/forms/switch/switch.js';
 import { TextField } from '../components/forms/text-field/text-field.js';
 import { Text } from '../components/typography/text/text.js';
+import { HOOK } from './dom-hooks.js';
 import {
   conditionOptions,
   controlOf,
@@ -167,7 +168,7 @@ export function controlFlowSection(
               ? 'This node shows while the condition does not hold; changing it changes both branches.'
               : 'Show this node only while a true/false param or item field is true.'
           }
-          rootAttributes={{ 'data-editor-control': 'condition' }}
+          rootAttributes={{ [HOOK.control]: 'condition' }}
         />
         {control.condition !== undefined && control.branch !== 'else'
           ? otherwiseSelect(control.otherwise, otherwiseChoices)
@@ -189,7 +190,7 @@ export function controlFlowSection(
               ? 'Render this node once per item of a list.'
               : 'No list of objects in scope can repeat this node.'
           }
-          rootAttributes={{ 'data-editor-control': 'repeat' }}
+          rootAttributes={{ [HOOK.control]: 'repeat' }}
         />
         {control.repeat ? (
           <TextField
@@ -197,7 +198,7 @@ export function controlFlowSection(
             value={control.repeat.as}
             hint={`Rows are keyed by ${control.repeat.key}. Renaming updates the row's bindings.`}
             error={itemError}
-            rootAttributes={{ 'data-editor-control': 'item' }}
+            rootAttributes={{ [HOOK.control]: 'item' }}
           />
         ) : undefined}
       </List>
@@ -265,7 +266,7 @@ function rowDesignFields(
                   'Choose a value',
                 ).slice(1)}
                 hint={`Design ${rows.index + 1} of ${rows.branches.length}. An item whose value matches several designs shows the first.`}
-                rootAttributes={{ 'data-editor-control': 'row-condition' }}
+                rootAttributes={{ [HOOK.control]: 'row-condition' }}
               />
             )}
             {moveRowDesignButtons(document, id)}
@@ -287,7 +288,7 @@ function rowDesignFields(
               value={own}
               choices={choices}
               hint="A row of another component, for the items a true/false value picks."
-              rootAttributes={{ 'data-editor-row-design': 'component' }}
+              rootAttributes={{ [HOOK.rowDesign]: 'component' }}
             />
             <Select
               name="row-design-condition"
@@ -297,7 +298,7 @@ function rowDesignFields(
                 value: JSON.stringify(option.value),
                 label: option.label,
               }))}
-              rootAttributes={{ 'data-editor-row-design': 'condition' }}
+              rootAttributes={{ [HOOK.rowDesign]: 'condition' }}
             />
             <Button
               emphasis="secondary"
@@ -315,7 +316,7 @@ function rowDesignFields(
             value=""
             choices={choicesWith(kinds, undefined, 'Not by kind')}
             hint="A text field of the item names each row's design; this one becomes the default."
-            rootAttributes={{ 'data-editor-control': 'row-kind' }}
+            rootAttributes={{ [HOOK.control]: 'row-kind' }}
           />
         ) : undefined}
       </List>
@@ -375,7 +376,7 @@ function kindFields(
             'Choose a value',
           ).slice(1)}
           hint="Each item shows the design named by this text value."
-          rootAttributes={{ 'data-editor-control': 'row-kind' }}
+          rootAttributes={{ [HOOK.control]: 'row-kind' }}
         />
         <TextField
           label="Kind"
@@ -387,7 +388,7 @@ function kindFields(
               : 'Items whose kind is this name show this design.'
           }
           error={error}
-          rootAttributes={{ 'data-editor-control': 'kind-name' }}
+          rootAttributes={{ [HOOK.control]: 'kind-name' }}
         />
         {moveRowDesignButtons(document, id)}
         {fallback ? undefined : (
@@ -403,14 +404,14 @@ function kindFields(
           label="Add a kind"
           placeholder="header"
           error={addError}
-          rootAttributes={{ 'data-editor-kind': 'name' }}
+          rootAttributes={{ [HOOK.kind]: 'name' }}
         />
         <Select
           name="kind-component"
           label="Shown as"
           value={own}
           choices={choices}
-          rootAttributes={{ 'data-editor-kind': 'component' }}
+          rootAttributes={{ [HOOK.kind]: 'component' }}
         />
         <Button emphasis="secondary" size="compact" action={ADD_KIND_ACTION}>
           Add kind
@@ -451,7 +452,7 @@ function otherwiseSelect(
           : []),
       ]}
       hint="Shows in this node's place while the condition does not hold."
-      rootAttributes={{ 'data-editor-control': 'otherwise' }}
+      rootAttributes={{ [HOOK.control]: 'otherwise' }}
     />
   );
 }
@@ -470,13 +471,13 @@ export function addSlotFields(
         placeholder="actions"
         hint="The application fills a slot with its own content."
         error={error}
-        rootAttributes={{ 'data-editor-slot': 'name' }}
+        rootAttributes={{ [HOOK.slot]: 'name' }}
       />
       {inRow ? (
         <Switch
           label="Pass the row item"
           checked
-          rootAttributes={{ 'data-editor-slot': 'pass-item' }}
+          rootAttributes={{ [HOOK.slot]: 'pass-item' }}
         />
       ) : undefined}
       <Button emphasis="secondary" size="compact" action={ADD_SLOT_ACTION}>
@@ -524,7 +525,7 @@ export function slotEditor(
                   slot.input?.[input.name],
                   'Not set',
                 )}
-                rootAttributes={{ 'data-editor-slot-input': input.name }}
+                rootAttributes={{ [HOOK.slotInput]: input.name }}
               />
             ))}
           </List>

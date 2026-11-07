@@ -154,6 +154,7 @@ import {
   REMOVE_ROW_DESIGN_ACTION,
   slotEditor,
 } from './control-flow-section.js';
+import { HOOK, hook } from './dom-hooks.js';
 import {
   type FieldEditorContext,
   fieldEditorFor,
@@ -673,7 +674,7 @@ const slotPlaceholders = (
         return () => (
           <div
             class="kui-editor__empty"
-            data-editor-empty={JSON.stringify(slot.address)}
+            {...{ [HOOK.empty]: JSON.stringify(slot.address) }}
           >
             {Text({ children: emptyLabel(slot), tone: 'quiet' })}
           </div>
@@ -683,7 +684,7 @@ const slotPlaceholders = (
           ? Text({
               children: `${slot.name} slot`,
               tone: 'quiet',
-              'data-editor-slot-address': JSON.stringify(slot.address),
+              [HOOK.slotAddress]: JSON.stringify(slot.address),
             })
           : Text({ children: `${String(name)} slot`, tone: 'quiet' });
     },
@@ -1585,7 +1586,7 @@ export function createEditor(options: EditorOptions) {
                   ) : (
                     <div
                       class="kui-editor__palette-thumb"
-                      data-editor-palette-thumb={item.key}
+                      {...{ [HOOK.paletteThumb]: item.key }}
                       data-morph-skip
                       aria-hidden="true"
                       inert
@@ -1860,7 +1861,7 @@ export function createEditor(options: EditorOptions) {
           hint="Check every choice the value holds; none is an empty list."
           rootAttributes={{
             'data-editor-prop': place.prop,
-            'data-editor-kind': 'value-choices',
+            [HOOK.kind]: 'value-choices',
             'data-key': controlKey(place),
           }}
         />
@@ -1902,7 +1903,7 @@ export function createEditor(options: EditorOptions) {
           }
           rootAttributes={{
             'data-editor-prop': place.prop,
-            'data-editor-kind': 'value-choice',
+            [HOOK.kind]: 'value-choice',
             'data-key': controlKey(place),
           }}
         />
@@ -1911,12 +1912,12 @@ export function createEditor(options: EditorOptions) {
       place.path.length
         ? {
             'data-editor-field': JSON.stringify(place),
-            'data-editor-kind': kind,
+            [HOOK.kind]: kind,
             'data-key': controlKey(place),
           }
         : {
             'data-editor-prop': place.prop,
-            'data-editor-kind': kind,
+            [HOOK.kind]: kind,
             'data-key': controlKey(place),
           };
     // KF-PE0PTT: a color field suggests color builders, not a length.
@@ -2562,7 +2563,7 @@ export function createEditor(options: EditorOptions) {
               error={fieldErrors.value[key]}
               rootAttributes={{
                 'data-editor-field': JSON.stringify(place),
-                'data-editor-kind': 'list',
+                [HOOK.kind]: 'list',
               }}
             />
           </List>
@@ -2839,7 +2840,7 @@ export function createEditor(options: EditorOptions) {
         }))}
         rootAttributes={{
           'data-editor-field': JSON.stringify(place),
-          'data-editor-kind': 'choice',
+          [HOOK.kind]: 'choice',
           'data-key': `${controlKey(place)}-${field}`,
         }}
       />
@@ -2908,7 +2909,7 @@ export function createEditor(options: EditorOptions) {
           prop: place.prop,
           path: [...place.path, ...path],
         }),
-        'data-editor-kind': kind,
+        [HOOK.kind]: kind,
       }),
       form: (path = []) =>
         objectForm(node, { prop: place.prop, path: [...place.path, ...path] }),
@@ -4160,7 +4161,7 @@ export function createEditor(options: EditorOptions) {
             </Button>
           </List>
         }
-        rootAttributes={{ 'data-editor-empty': ROOT_EMPTY }}
+        rootAttributes={{ [HOOK.empty]: ROOT_EMPTY }}
       />
     );
   };
@@ -4811,7 +4812,7 @@ export function createEditor(options: EditorOptions) {
   });
 
   const canvas = () => (
-    <div class="kui-editor__canvas" data-editor-canvas>
+    <div class="kui-editor__canvas" {...{ [HOOK.canvas]: true }}>
       {doc.value.root ? preview.value : firstRoot()}
       <div
         class="kui-editor__selection"
@@ -5666,7 +5667,7 @@ export function createEditor(options: EditorOptions) {
 
   /** Draws the selection highlight over the selected node on the canvas. */
   const placeHighlight = (root: HTMLElement) => {
-    const canvas = root.querySelector<HTMLElement>('[data-editor-canvas]');
+    const canvas = root.querySelector<HTMLElement>(hook(HOOK.canvas));
     const highlight = canvas?.querySelector<HTMLElement>(
       '.kui-editor__selection',
     );
@@ -5677,9 +5678,7 @@ export function createEditor(options: EditorOptions) {
         ? canvas.querySelector<HTMLElement>(`[data-kerf-node="${current.id}"]`)
         : current?.kind === 'slot'
           ? ([
-              ...canvas.querySelectorAll<HTMLElement>(
-                '[data-editor-slot-address]',
-              ),
+              ...canvas.querySelectorAll<HTMLElement>(hook(HOOK.slotAddress)),
             ].find(
               (element) =>
                 element.dataset.editorSlotAddress ===
@@ -5965,7 +5964,7 @@ export function createEditor(options: EditorOptions) {
         : { id: itemSlotRowNode(id) ?? id, element: row };
     }
     const node = target.closest<HTMLElement>('[data-kerf-node]');
-    return node && root.querySelector('[data-editor-canvas]')!.contains(node)
+    return node && root.querySelector(hook(HOOK.canvas))!.contains(node)
       ? { id: node.dataset.kerfNode!, element: node }
       : undefined;
   };
@@ -6398,13 +6397,11 @@ export function createEditor(options: EditorOptions) {
     const root = document.querySelector<HTMLElement>(
       `[data-editor-add="zone"]`,
     );
-    const field = document.querySelector<HTMLElement>(
-      '[data-editor-slot="name"]',
-    );
+    const field = document.querySelector<HTMLElement>(hook(HOOK.slot, 'name'));
     if (!id || !field) return;
     const zone = root ? String(controlValue(root)) : addZone.value;
     const pass = document.querySelector<HTMLElement>(
-      '[data-editor-slot="pass-item"]',
+      hook(HOOK.slot, 'pass-item'),
     );
     const result = insertSlot(
       doc.value,
@@ -6433,7 +6430,7 @@ export function createEditor(options: EditorOptions) {
     // The form shows only for a selected repeated node, with both values.
     const id = selectedNodeId()!;
     const field = (name: string) =>
-      document.querySelector<HTMLElement>(`[data-editor-row-design="${name}"]`);
+      document.querySelector<HTMLElement>(hook(HOOK.rowDesign, name));
     const type = String(controlValue(field('component')!));
     const condition = String(controlValue(field('condition')!));
     const node = seededNode(type);
@@ -6454,7 +6451,7 @@ export function createEditor(options: EditorOptions) {
     // The form shows only for a selected node in a list keyed by kind.
     const id = selectedNodeId()!;
     const field = (name: string) =>
-      document.querySelector<HTMLElement>(`[data-editor-kind="${name}"]`)!;
+      document.querySelector<HTMLElement>(hook(HOOK.kind, name))!;
     const type = String(controlValue(field('component')));
     const node = seededNode(type);
     const result = addKind(
@@ -6862,7 +6859,7 @@ export function createEditor(options: EditorOptions) {
 
   /** The stage's frame window, while playing. */
   const playWindow = (root: HTMLElement) =>
-    root.querySelector<HTMLIFrameElement>('[data-editor-play-frame]')
+    root.querySelector<HTMLIFrameElement>(hook(HOOK.playFrame))
       ?.contentWindow ?? null;
 
   /** KF-R7KXSN: tells the played view its device's safe areas. */
@@ -6887,9 +6884,7 @@ export function createEditor(options: EditorOptions) {
   const wirePlay = (root: HTMLElement) => {
     const view = root.ownerDocument.defaultView!;
     const onMessage = (event: MessageEvent) => {
-      const frame = root.querySelector<HTMLIFrameElement>(
-        '[data-editor-play-frame]',
-      );
+      const frame = root.querySelector<HTMLIFrameElement>(hook(HOOK.playFrame));
       if (
         !playing.value ||
         !frame?.contentWindow ||
@@ -6947,13 +6942,13 @@ export function createEditor(options: EditorOptions) {
       delegate<HTMLElement>(
         root,
         'change',
-        '[data-editor-prop]:not([data-editor-kind="tags"])',
+        `[data-editor-prop]:not(${hook(HOOK.kind, 'tags')})`,
         (_event, field) => editProp(field),
       ),
       delegate<HTMLElement>(
         root,
         'change',
-        '[data-editor-field]:not([data-editor-kind="tags"])',
+        `[data-editor-field]:not(${hook(HOOK.kind, 'tags')})`,
         (_event, field) => editField(field),
       ),
       delegate<HTMLElement>(
@@ -7106,13 +7101,13 @@ export function createEditor(options: EditorOptions) {
       delegate<HTMLElement>(
         root,
         'change',
-        '[data-editor-control]',
+        hook(HOOK.control),
         (_event, field) => editControl(field),
       ),
       delegate<HTMLElement>(
         root,
         'change',
-        '[data-editor-slot-input]',
+        hook(HOOK.slotInput),
         (_event, field) => {
           const current = selection.value;
           if (current?.kind !== 'slot') return;
@@ -7724,13 +7719,12 @@ export function createEditor(options: EditorOptions) {
       ),
       // Canvas clicks select the innermost node; the previewed document's own
       // links, buttons, and form controls never act.
-      delegate(root, 'click', '[data-editor-canvas]', (event) => {
+      delegate(root, 'click', hook(HOOK.canvas), (event) => {
         // KF-PK3GVY: a rootless canvas's picker is the editor's own control.
-        if ((event.target as Element).closest('[data-editor-empty="root"]'))
-          return;
+        if ((event.target as Element).closest(hook(HOOK.empty, 'root'))) return;
         event.preventDefault();
         const placeholder = (event.target as Element).closest<HTMLElement>(
-          '[data-editor-slot-address]',
+          hook(HOOK.slotAddress),
         );
         if (placeholder) {
           select({
@@ -7744,10 +7738,7 @@ export function createEditor(options: EditorOptions) {
         const node = (event.target as Element).closest<HTMLElement>(
           '[data-kerf-node]',
         );
-        if (
-          node &&
-          root.querySelector('[data-editor-canvas]')!.contains(node)
-        ) {
+        if (node && root.querySelector(hook(HOOK.canvas))!.contains(node)) {
           select({ kind: 'node', id: node.dataset.kerfNode! });
         }
       }),
@@ -7974,7 +7965,7 @@ export function createEditor(options: EditorOptions) {
     if (autosave) stops.push(...wireAutosave(root));
     stops.push(wirePlay(root), wireLibrary(root));
     const observer = new ResizeObserver(() => placeHighlight(root));
-    observer.observe(root.querySelector('[data-editor-canvas]')!);
+    observer.observe(root.querySelector(hook(HOOK.canvas))!);
     return () => {
       observer.disconnect();
       for (const stop of stops) stop();

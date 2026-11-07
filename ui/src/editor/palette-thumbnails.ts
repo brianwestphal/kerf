@@ -6,6 +6,7 @@
 // the one on the canvas), and the editor's own queries and wiring never
 // reach it. The page's stylesheets are shared into every shadow root.
 
+import { HOOK, hook } from './dom-hooks.js';
 /** Where a thumbnail lays out before it is scaled into its tile. */
 const STAGE_WIDTH = 220;
 const STAGE_HEIGHT = 165;
@@ -130,7 +131,7 @@ export function wirePaletteThumbnails(
   };
   const scan = () => {
     for (const host of root.querySelectorAll<HTMLElement>(
-      '[data-editor-palette-thumb]',
+      hook(HOOK.paletteThumb),
     ))
       fill(host);
   };
@@ -140,7 +141,7 @@ export function wirePaletteThumbnails(
     childList: true,
     subtree: true,
     attributes: true,
-    attributeFilter: ['data-editor-palette-thumb'],
+    attributeFilter: [HOOK.paletteThumb],
   });
   return () => {
     observer.disconnect();
