@@ -15,15 +15,14 @@ Both are static asset bundles. There is no server-side rendering, no API. The si
 
 ## 9.2 How it builds
 
-`npm run site:build` runs `astro build`, whose `prebuild` npm hook chains five steps before Astro itself runs:
+`npm run site:build` runs `astro build`, whose `prebuild` npm hook chains four steps before Astro itself runs. (The published Starlight pages are hand-owned consumer documentation, so no step copies `docs/*.md` into the site. `site/scripts/lib/published-docs.mjs` lists the numbered docs published verbatim — currently none — for the documentation-ticket gate.)
 
-1. **`sync-docs`** — currently writes no files. The published Starlight pages are hand-owned consumer documentation; `site/scripts/sync-docs.mjs` retains a source-to-site map (all current targets are `null`) because the documentation-ticket coverage gate imports that inventory. The hook remains in the pipeline so a future verbatim mapping can be re-enabled in one place.
-2. **`typecheck`** — runs `astro sync` to generate Astro's module declarations on a fresh install, then checks the site source and the Kerf TSX examples in separate TypeScript projects. `site/tsconfig.json` excludes `src/examples/`; `site/src/examples/tsconfig.json` supplies `jsxImportSource: "kerfjs"` and includes both basic and complete examples. Run `npm run typecheck` from `site/` to check both without building.
-3. **`build-examples`** — runs in two passes:
+1. **`typecheck`** — runs `astro sync` to generate Astro's module declarations on a fresh install, then checks the site source and the Kerf TSX examples in separate TypeScript projects. `site/tsconfig.json` excludes `src/examples/`; `site/src/examples/tsconfig.json` supplies `jsxImportSource: "kerfjs"` and includes both basic and complete examples. Run `npm run typecheck` from `site/` to check both without building.
+2. **`build-examples`** — runs in two passes:
    - Builds each complete app (`site/src/examples/complete/<name>/`) via Vite into `site/public/run/<name>/`. Each app's docs page links here as **Run live →**.
    - Builds the nine-section reactivity demo (`examples/reactivity-demo/`) via its own Vite config (base `/kerf/demo/`) and copies the result into `site/public/demo/`.
-4. **`build-icons`** — generates the site's icon assets.
-5. **`gen-llms-txt`** — regenerates the site's `llms.txt` AI-discovery index.
+3. **`build-icons`** — generates the site's icon assets.
+4. **`gen-llms-txt`** — regenerates the site's `llms.txt` AI-discovery index.
 
 Astro then runs and copies `public/` into `dist/` as part of its normal static asset handling. The result: `site/dist/` contains the Starlight site at the root, the runnable complete apps under `dist/run/<name>/`, and the reactivity demo under `dist/demo/`. One artifact, one upload, no manual `cp` step.
 
@@ -43,7 +42,7 @@ The basic single-concept examples (9 of them) are **not** built by this pipeline
 
 1. `npm ci` → installs kerf's deps.
 2. `npm run build` → emits `dist/` for the kerf package itself. This must happen before the site install/build: the site and examples consume local `file:` dependencies, while the site's install-script policy deliberately blocks the repository package's `prepare` script from building it implicitly.
-3. `npm run site:build` → runs `npm install` in `site/`, then `prebuild` (the no-op sync-docs inventory pass + separate site/example typechecks + build-examples + build-icons + gen-llms-txt) and `astro build`, producing the combined `site/dist/`.
+3. `npm run site:build` → runs `npm install` in `site/`, then `prebuild` (separate site/example typechecks + build-examples + build-icons + gen-llms-txt) and `astro build`, producing the combined `site/dist/`.
 4. `actions/configure-pages@v6` → wires up Pages metadata.
 5. `actions/upload-pages-artifact@v5` with `path: site/dist` → uploads the bundle.
 6. A separate `deploy` job uses `actions/deploy-pages@v5` to publish.
@@ -106,7 +105,7 @@ npm run site:dev:hmr # `astro dev` instead — fast HMR for editing content,
 # but search and Pagefind index are disabled.
 ```
 
-Both scripts run the no-op `sync-docs` inventory pass plus `build-examples`, `build-icons`, and `gen-llms-txt` (via `prebuild` for `site:dev`, `predev:hmr` for `site:dev:hmr`), so `/kerf/`, `/kerf/demo/`, and `/kerf/run/<name>/` all resolve from one local server.
+Both scripts run `build-examples`, `build-icons`, and `gen-llms-txt` (via `prebuild` for `site:dev`, `predev:hmr` for `site:dev:hmr`), so `/kerf/`, `/kerf/demo/`, and `/kerf/run/<name>/` all resolve from one local server.
 
 The first run takes longer because that pre-step builds each complete app + copies the reactivity demo into `site/public/`. Subsequent runs reuse the build cache.
 

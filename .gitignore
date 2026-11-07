@@ -55,3 +55,6 @@ bench/results.local.md
 .hotsheet2/store
 /.hotsheet/*
 !/.hotsheet/settings.json
+
+# Per-run capture configs written (and removed) by capture-demos.sh
+site/scripts/demo-captures/.*.capture.json

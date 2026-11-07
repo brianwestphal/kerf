@@ -15,9 +15,12 @@ serializes the result to a self-contained SVG with CSS keyframe transitions
 bash site/scripts/demo-captures/capture-demos.sh
 ```
 
-That script builds each app, serves them, and runs `domotion animate` over the
-per-app config in this directory. Re-run it whenever an example app's UI or its
-headline interaction changes.
+That script builds each app (the list comes from
+`site/scripts/lib/complete-apps.mjs`), serves them with `serve-static.mjs` on a
+free local port, and runs `domotion animate` over the per-app config in this
+directory. Each config's `vars.base` is a placeholder; the script captures from
+a temporary copy with `vars.base` pointed at that run's server. Re-run it
+whenever an example app's UI or its headline interaction changes.
 
 ## The configs
 

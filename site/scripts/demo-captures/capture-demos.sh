@@ -22,7 +22,7 @@ REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../.." && pwd)"
 cd "$REPO_ROOT"
 
 SERVE_DIR="$(mktemp -d)"
-SERVE_PORT=4188
+PORT_FILE="$SERVE_DIR.port"
 CONFIG_DIR="site/scripts/demo-captures"
 # The app list comes from the one shared module the build scripts use.
 read -r -a APPS <<< "$(node --input-type=module -e \
@@ -38,12 +38,13 @@ PAGES=(architecture getting-started)
 
 cleanup() {
   [[ -n "${SERVE_PID:-}" ]] && kill "$SERVE_PID" 2>/dev/null || true
-  rm -rf "$SERVE_DIR"
+  rm -rf "$SERVE_DIR" "$PORT_FILE"
+  rm -f "$CONFIG_DIR"/.*.capture.json
 }
 trap cleanup EXIT
 
 # 1. Build each app with a per-app base into the temp serve root so a single
-#    static server can host them all at http://localhost:$SERVE_PORT/<name>/.
+#    static server can host them all at http://127.0.0.1:<port>/<name>/.
 echo "[demos] building example apps → $SERVE_DIR"
 ( cd site && node scripts/build-demos-for-capture.mjs "$SERVE_DIR" )
 
@@ -53,27 +54,30 @@ for page in "${PAGES[@]}"; do
 done
 
 # 2. Serve the build output, then WAIT until it actually accepts connections.
-#    A fixed `sleep` races against `npx serve`'s startup: on a cold/slow machine
-#    `npx --yes serve` can take several seconds to bind, and domotion would then
-#    navigate to a not-yet-listening port, load nothing, and only fail ~90s later
-#    waiting for the app's root selector (which never mounts) — a "selector
-#    timeout" that looks like a config bug but is really a startup race. Poll the
-#    first app until it answers, and fail loudly if it never does.
-npx --yes serve -l "$SERVE_PORT" "$SERVE_DIR" >/dev/null 2>&1 &
+#    serve-static.mjs (Node built-ins only, so nothing is downloaded) binds an
+#    OS-assigned free port and writes it to $PORT_FILE, so the readiness poll
+#    can only ever reach this server, never another one left on a fixed port.
+#    Poll the first app until it answers rather than sleeping: domotion would
+#    otherwise navigate to a not-yet-listening port and fail ~90s later on a
+#    selector timeout that looks like a config bug.
+node "$CONFIG_DIR/serve-static.mjs" "$SERVE_DIR" "$PORT_FILE" &
 SERVE_PID=$!
-echo "[demos] waiting for server on :$SERVE_PORT"
 server_ready=""
 for _ in $(seq 1 60); do
-  if curl -sf -o /dev/null "http://localhost:$SERVE_PORT/${APPS[0]}/"; then
-    server_ready=1
-    break
+  if [[ -s "$PORT_FILE" ]]; then
+    BASE_URL="http://127.0.0.1:$(cat "$PORT_FILE")"
+    if curl -sf -o /dev/null "$BASE_URL/${APPS[0]}/"; then
+      server_ready=1
+      break
+    fi
   fi
   sleep 0.5
 done
 if [[ -z "$server_ready" ]]; then
-  echo "[demos] ERROR: server did not accept connections on :$SERVE_PORT within 30s" >&2
+  echo "[demos] ERROR: the static server did not accept connections within 30s" >&2
   exit 1
 fi
+echo "[demos] serving $SERVE_DIR at $BASE_URL"
 
 # 3. Capture each app. domotion-svg ≥ 0.18.0 emits `step-end` directly on every
 #    hard-cut opacity track and keeps it through SVGO (`optimize: true`), so cut
@@ -82,9 +86,25 @@ fi
 #    workaround is gone now that the fix lives upstream. tests/unit/demo-configs.test.ts
 #    still asserts every committed SVG's fv-N track carries `step-end`.)
 mkdir -p site/public/demos
+# Each committed config names its server as vars.base (a fixed placeholder
+# URL). Capture from a run copy next to it, with vars.base pointed at this
+# run's server; staying in the same directory keeps the config's relative
+# paths unchanged. cleanup() removes the copies.
 for app in "${APPS[@]}" "${PAGES[@]}"; do
   echo "[demos] capturing $app"
-  npx domotion animate "$CONFIG_DIR/$app.json" --quiet
+  run_config="$CONFIG_DIR/.$app.capture.json"
+  node -e '
+    const fs = require("node:fs");
+    const [src, dst, base] = process.argv.slice(1);
+    const config = JSON.parse(fs.readFileSync(src, "utf8"));
+    if (!config.vars || typeof config.vars.base !== "string") {
+      console.error(`[demos] ERROR: ${src} has no vars.base to point at the server`);
+      process.exit(1);
+    }
+    config.vars.base = base;
+    fs.writeFileSync(dst, JSON.stringify(config, null, 2));
+  ' "$CONFIG_DIR/$app.json" "$run_config" "$BASE_URL"
+  npx domotion animate "$run_config" --quiet
 done
 
 echo "[demos] done → site/public/demos/"

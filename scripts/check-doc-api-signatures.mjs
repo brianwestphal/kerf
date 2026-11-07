@@ -484,8 +484,8 @@ function main() {
     console.error(`  - ${name}: ${detail}`);
   }
   console.error(
-    '\nUpdate the signature shown in docs/8-api-reference.md (then run ' +
-      '`node site/scripts/sync-docs.mjs`), or fix the export. See the matching rule ' +
+    '\nUpdate the signature shown in docs/8-api-reference.md (and the hand-authored ' +
+      'site/src/content/docs/api.md), or fix the export. See the matching rule ' +
       'documented at the top of scripts/check-doc-api-signatures.mjs.',
   );
   process.exit(1);

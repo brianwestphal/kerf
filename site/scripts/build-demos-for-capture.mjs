@@ -6,6 +6,7 @@
 // site/scripts/demo-captures/capture-demos.sh when regenerating the demos.
 
 import { mkdirSync } from 'node:fs';
+import { tmpdir } from 'node:os';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -14,7 +15,9 @@ import { buildCompleteApp, COMPLETE_APPS } from './lib/complete-apps.mjs';
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const siteRoot = resolve(__dirname, '..');
 
-const outRoot = process.argv[2] || '/tmp/claude/kerf-demos';
+// capture-demos.sh always passes its own temp serve root; the fallback is for
+// a manual run.
+const outRoot = process.argv[2] || resolve(tmpdir(), 'kerf-demos');
 
 async function main() {
   mkdirSync(outRoot, { recursive: true });

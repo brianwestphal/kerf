@@ -16,8 +16,8 @@
  * (`kerfjs@4.1.0` in the "for reproducibility" note) is fine too: the check is on the
  * MAJOR, so it passes until the major moves and then correctly demands an update.
  *
- * What it asserts, over the SOURCE docs only (the Starlight copies are regenerated
- * from these by `sync-docs.mjs`, so the source is the single place to fix):
+ * What it asserts, over the source docs below (the site's own pages are
+ * hand-authored and carry their own pins, outside this scan):
  *  - every `kerfjs@<version>` reference is on `package.json`'s major, and
  *  - every `@preact/signals-core@<version>` reference is on the major of the
  *    `@preact/signals-core` range in `package.json`'s `dependencies`.
@@ -33,9 +33,9 @@ import { fileURLToPath } from 'node:url';
 
 const REPO_ROOT = dirname(dirname(fileURLToPath(import.meta.url)));
 
-// Source docs that carry pinned CDN URLs. The site copies under
-// site/src/content/docs/ are generated from docs/*.md by sync-docs.mjs, so
-// fixing the source and re-syncing is the whole workflow — we scan source only.
+// Source docs that carry pinned CDN URLs. The site pages under
+// site/src/content/docs/ are hand-authored (not generated from these), so a
+// site page that drifts is updated directly.
 const SCANNED = [
   'README.md',
   'docs/6-jsx-runtime.md',
@@ -130,8 +130,7 @@ function main() {
     console.error(`    ${snippet}`);
   }
   console.error(
-    `\nBump the pins to the current major, then re-run \`node site/scripts/sync-docs.mjs\`\n` +
-      `so the generated site copies follow. See docs/6-jsx-runtime.md §6.11.1.\n`,
+    `\nBump the pins to the current major. See docs/6-jsx-runtime.md §6.11.1.\n`,
   );
   process.exit(1);
 }

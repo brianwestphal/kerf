@@ -8,12 +8,11 @@
  * page before anyone noticed.
  *
  * What it scans:
- *  - Every `docs/*.md` that `site/scripts/sync-docs.mjs` publishes — the list
- *    is IMPORTED from that script's `MAP`, so a doc added to the sync map is
- *    covered automatically without touching this file.
+ *  - Every `docs/*.md` the site publishes verbatim — the list is IMPORTED
+ *    from `site/scripts/lib/published-docs.mjs` (currently empty), so a doc
+ *    added there is covered automatically without touching this file.
  *  - Every `.md` / `.mdx` under `site/src/content/docs/` — the hand-authored
- *    site pages plus the generated copies of the docs above (gitignored, and
- *    simply absent on a fresh clone, which is fine).
+ *    site pages.
  *
  * The scan is whole-file: prose, HTML comments, and fenced code blocks all
  * count, because Starlight renders all three.
@@ -27,7 +26,7 @@ import { readdirSync, readFileSync, statSync } from 'node:fs';
 import { dirname, join, relative } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-import { MAP } from '../site/scripts/sync-docs.mjs';
+import { PUBLISHED_SOURCE_DOCS } from '../site/scripts/lib/published-docs.mjs';
 
 const REPO_ROOT = dirname(dirname(fileURLToPath(import.meta.url)));
 const SITE_DOCS_DIR = join(REPO_ROOT, 'site/src/content/docs');
@@ -39,7 +38,6 @@ function walkMarkdown(dir, out = []) {
   try {
     entries = readdirSync(dir);
   } catch {
-    // Generated Starlight copies are gitignored — absent on a fresh clone.
     return out;
   }
   for (const name of entries) {
@@ -54,9 +52,9 @@ function walkMarkdown(dir, out = []) {
 }
 
 function publishedSourceDocs() {
-  return Object.entries(MAP)
-    .filter(([, cfg]) => cfg.target)
-    .map(([srcName]) => join(REPO_ROOT, 'docs', srcName));
+  return PUBLISHED_SOURCE_DOCS.map((srcName) =>
+    join(REPO_ROOT, 'docs', srcName),
+  );
 }
 
 function findMarkers(path) {
@@ -105,9 +103,7 @@ function main() {
   console.error(
     '\nHot Sheet is local-only, so a bare KF-NN is unlookable for a site reader.\n' +
       'Replace each marker with the self-contained summary it stands for (usually\n' +
-      'the surrounding prose already says it, so the marker is a straight deletion).\n' +
-      'If the offender is a generated file under site/src/content/docs/, fix the\n' +
-      'source doc and re-run `node site/scripts/sync-docs.mjs`.\n',
+      'the surrounding prose already says it, so the marker is a straight deletion).\n',
   );
   process.exit(1);
 }

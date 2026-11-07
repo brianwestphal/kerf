@@ -30,7 +30,6 @@ jobs:
       - run: npm ci
       - run: npm run build
       # site:build's prebuild hook handles everything else:
-      #   - sync-docs (currently a no-op; its MAP feeds the doc-ticket inventory gate)
       #   - build-examples (each complete app → public/run/<name>/, reactivity-demo → public/demo/)
       #   - build-icons + gen-llms-txt
       # The root build above is required first: the site/examples consume the
