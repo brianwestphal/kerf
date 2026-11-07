@@ -1,5 +1,7 @@
 import { expect, type Page, test } from '@playwright/test';
 
+import { animationsSettled } from '../helpers/animations-settled.js';
+
 function nestedMenu(page: Page) {
   const root = page
     .locator(
@@ -39,7 +41,7 @@ test('nested PopupMenu rows are hoverable and clickable with a pointer', async (
   const other = submenu.locator('[data-decision="other"]');
   await expect(other).toBeVisible();
   // Let the submenu's fade settle before probing geometry.
-  await page.waitForTimeout(300);
+  await animationsSettled(page);
 
   const box = (await other.boundingBox())!;
   const center = { x: box.x + box.width / 2, y: box.y + box.height / 2 };
@@ -100,7 +102,7 @@ test('a diagonal move toward the submenu crosses a sibling row without closing i
   const moreBox = (await more.boundingBox())!;
   await page.mouse.move(moreBox.x + 12, moreBox.y + moreBox.height / 2);
   await expect(submenu).toBeVisible();
-  await page.waitForTimeout(200);
+  await animationsSettled(page);
   const last = submenu.locator('[data-test-row="1"]');
   const lastBox = (await last.boundingBox())!;
   const archiveBox = (await archive.boundingBox())!;
@@ -109,6 +111,9 @@ test('a diagonal move toward the submenu crosses a sibling row without closing i
   await page.mouse.move(lastBox.x + 8, lastBox.y + lastBox.height / 2, {
     steps: 16,
   });
+  // Intentional fixed wait: it proves a negative (the submenu stays open),
+  // so it must outlast the popup menu's 100 ms SUBMENU_CLOSE_DELAY grace
+  // timer; there is no event for a close that does not happen.
   await page.waitForTimeout(250);
   await expect(submenu).toBeVisible();
   await expect(more).toHaveAttribute('aria-expanded', 'true');
@@ -138,7 +143,7 @@ test('the safe triangle tracks the placed submenu and never covers the parent ro
   const row = (await parent.boundingBox())!;
   const rowY = row.y + row.height / 2;
   const other = submenu.locator('[data-decision="other"]');
-  await page.waitForTimeout(300);
+  await animationsSettled(page);
   const box = (await other.boundingBox())!;
   await page.mouse.move(row.x + row.width - 4, rowY, { steps: 4 });
   await page.mouse.move(box.x + box.width / 2, rowY, { steps: 4 });

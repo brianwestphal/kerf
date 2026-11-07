@@ -1,5 +1,7 @@
 import { expect, test } from '@playwright/test';
 
+import { animationsSettled } from '../helpers/animations-settled.js';
+
 // KF-JY68DQ: ColumnExplorer in the catalog demo, driven by real pointer and
 // keys: opening columns, the preview, keyboard moves, and the paged layout.
 test('ColumnExplorer opens columns, previews a file, and moves by keyboard', async ({
@@ -91,7 +93,7 @@ for (const scheme of ['light', 'dark'] as const) {
       await page.goto('/?component=column-explorer');
       const demo = page.locator('[data-demo="column-explorer"]');
       await expect(demo.getByRole('region').first()).toBeVisible();
-      await page.waitForTimeout(250);
+      await animationsSettled(page);
       await demo.screenshot({
         path: info.outputPath(
           `kf-jy68dq-column-explorer-${scheme}-${width}.png`,

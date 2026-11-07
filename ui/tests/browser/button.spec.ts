@@ -1,6 +1,7 @@
 import { expect, type Locator, type Page, test } from '@playwright/test';
 
 import { contrastRatio } from '../../evaluator/index.mjs';
+import { animationsSettled } from '../helpers/animations-settled.js';
 import { sampleInsetRing } from './fixtures/focus-ring-inset.js';
 
 // Button is a native button (or link): it activates from the keyboard, never
@@ -108,7 +109,7 @@ test('success Button stays legible across emphases and states in both themes', a
         expect(contrastRatio(idle.text, idle.fill)).toBeGreaterThanOrEqual(4.5);
       }
       await button.hover();
-      await page.waitForTimeout(120);
+      await animationsSettled(page);
       const hovered = await paintedButtonColors(button);
       expect(hovered.background).not.toBe('rgba(0, 0, 0, 0)');
       expect(
@@ -160,7 +161,7 @@ test('brand secondary Button clears text contrast on a strong quiet hover fill',
     button.style.setProperty('--kui-color-brand-on-quiet', '#4b8af6');
   });
   await button.hover();
-  await page.waitForTimeout(120);
+  await animationsSettled(page);
   const hovered = await paintedButtonColors(button);
   expect(hovered.fill).toEqual([183, 212, 246]);
   expect(contrastRatio(hovered.text, hovered.fill)).toBeGreaterThanOrEqual(4.5);
@@ -572,6 +573,8 @@ test('a pressed Button toggles, stays legible, and an icon-only one shows its he
   await expect(remove).toHaveAccessibleName('Delete');
   await expect(remove).toHaveAttribute('title', 'Delete the Selected Draft');
   await remove.hover();
+  // Intentional fixed wait: it proves a negative (no help tag appears), so
+  // it must outlast HELP_TAG_SHOW_DELAY (500 ms).
   await page.waitForTimeout(800);
   await expect(
     page.locator('.kui-help-tag', { hasText: 'Delete' }),

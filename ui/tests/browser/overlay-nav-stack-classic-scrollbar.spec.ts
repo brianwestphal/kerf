@@ -4,6 +4,8 @@ import { resolve } from 'node:path';
 import { expect, type Page, test } from '@playwright/test';
 import { build } from 'esbuild';
 
+import { navStackSettled } from '../helpers/animations-settled.js';
+
 // KF-1N0S19: with a classic (space-taking) scrollbar, overlay NavStack chrome
 // leaves the active view's scrollbar strip uncovered, so its thumb and buttons
 // stay visible and usable, for a plain view and for a pushed sole Pane alike.
@@ -124,7 +126,7 @@ test('the overlay chrome leaves the active view scrollbar uncovered, before and 
       await page.evaluate(() =>
         (globalThis as unknown as { push(): void }).push(),
       );
-      await page.waitForTimeout(350);
+      await navStackSettled(page);
     }
     const result = await strip(page);
     expect(result.scrollbar).toBeGreaterThan(0);
@@ -151,7 +153,7 @@ test('the overlay bottom toolbar leaves the active view scrollbar uncovered, bef
       await page.evaluate(() =>
         (globalThis as unknown as { push(): void }).push(),
       );
-      await page.waitForTimeout(350);
+      await navStackSettled(page);
     }
     for (const edge of ['top', 'bottom'] as const) {
       const result = await strip(page, edge);

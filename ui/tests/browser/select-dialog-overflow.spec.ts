@@ -1,5 +1,7 @@
 import { expect, type Page, test } from '@playwright/test';
 
+import { animationsSettled } from '../helpers/animations-settled.js';
+
 // A Select inside a scrolling dialog body must not leave its closed listbox
 // behind as scrollable overflow. WebKit kept the popup's last box in the
 // body's scroll extent after the popover left the top layer, so the body
@@ -36,7 +38,7 @@ async function mountDialog(page: Page) {
   const dialog = page.locator('[data-overflow-fixture]');
   await expect(dialog).toHaveAttribute('open', '');
   // Let the dialog's show animation settle before measuring.
-  await page.waitForTimeout(500);
+  await animationsSettled(page);
   return dialog;
 }
 
@@ -67,7 +69,7 @@ test('closing a Select in a scrolling dialog leaves no blank scroll space', asyn
   const select = await openSelect(page);
   await page.keyboard.press('Escape');
   await expect(select).not.toHaveAttribute('open');
-  await page.waitForTimeout(300);
+  await animationsSettled(page);
   expect(await scrollExtent(page)).toEqual(initial);
   await expect(select.getByRole('combobox')).toBeFocused();
 
@@ -84,7 +86,7 @@ test('closing a Select in a scrolling dialog leaves no blank scroll space', asyn
     .nth(1)
     .click();
   await expect(select).not.toHaveAttribute('open');
-  await page.waitForTimeout(300);
+  await animationsSettled(page);
   expect(await scrollExtent(page)).toEqual(initial);
   await expect(page.locator('[data-overflow-fixture]')).toHaveAttribute(
     'open',

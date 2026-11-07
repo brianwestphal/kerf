@@ -1,5 +1,7 @@
 import { expect, test } from '@playwright/test';
 
+import { animationsSettled } from '../helpers/animations-settled.js';
+
 test('the SearchField demo shows and drives the collapsible state', async ({
   page,
   browserName,
@@ -130,8 +132,8 @@ test('empty blur waits for the pressed control click before collapsing a shiftin
     before!.y + before!.height / 2,
   );
   await page.mouse.down();
-  await page.waitForTimeout(50);
   await expect(field).toHaveAttribute('data-expanded', 'true');
+  await animationsSettled(page);
   expect(Math.abs((await target.boundingBox())!.y - before!.y)).toBeLessThan(1);
   await page.mouse.up();
   await expect(page.locator('body')).toHaveAttribute(

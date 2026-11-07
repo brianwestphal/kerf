@@ -1,5 +1,7 @@
 import { expect, test } from '@playwright/test';
 
+import { animationsSettled } from '../helpers/animations-settled.js';
+
 // KF-ECR4XG: TreeList in the catalog demo, driven by real pointer and keys.
 test('TreeList opens, navigates, and chooses with the pointer and keyboard', async ({
   page,
@@ -71,7 +73,7 @@ for (const scheme of ['light', 'dark'] as const) {
       await expect(demo.getByRole('tree', { name: 'Files' })).toBeVisible();
       await demo.getByRole('treeitem', { name: 'src' }).focus();
       await page.keyboard.press('ArrowDown');
-      await page.waitForTimeout(250);
+      await animationsSettled(page);
       await demo.screenshot({
         path: info.outputPath(`kf-ecr4xg-tree-list-${scheme}-${width}.png`),
         animations: 'disabled',

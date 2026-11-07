@@ -3,6 +3,8 @@ import { resolve } from 'node:path';
 import { expect, type Page, test } from '@playwright/test';
 import { build } from 'esbuild';
 
+import { animationsSettled } from '../helpers/animations-settled.js';
+
 // An overlay rail opened from a persistent toggle outside the Workbench takes
 // focus once it becomes focusable, as it does from the Workbench's own
 // relocating toggle; inline, focus stays on the toggle.
@@ -65,6 +67,6 @@ test('an inline rail opened from a persistent external toggle leaves focus on it
   await toggle.focus();
   await page.keyboard.press('Enter');
   await expect(toggle).toHaveAttribute('aria-expanded', 'true');
-  await page.waitForTimeout(300);
+  await animationsSettled(page);
   await expect(toggle).toBeFocused();
 });

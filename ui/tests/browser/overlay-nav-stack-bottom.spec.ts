@@ -5,6 +5,7 @@ import { expect, type Page, test } from '@playwright/test';
 import { build } from 'esbuild';
 
 import { contrastRatio } from '../../evaluator/index.mjs';
+import { navStackSettled } from '../helpers/animations-settled.js';
 
 // KF-Z4NSDF overlay NavStack bottom toolbar: `bottomToolbarPresentation=
 // "overlay"` lays the bottom toolbar over the active view on the translucent
@@ -119,7 +120,7 @@ async function geometry(
 }
 
 /** Let the transition finish and the observers report. */
-const settle = (page: Page) => page.waitForTimeout(350);
+const settle = navStackSettled;
 
 test.beforeEach(async ({ page }) => {
   await mountFixture(page);

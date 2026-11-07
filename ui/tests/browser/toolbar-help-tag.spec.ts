@@ -85,6 +85,8 @@ test('hovering an icon-only toolbar button shows its name after a delay', async 
   // A press hides it and it stays hidden while the pointer stays.
   await pin.click();
   await expect(layerTagBody(page, 'Pin View')).toBeHidden();
+  // Intentional fixed wait: it proves a negative (no tag returns), so it
+  // must outlast HELP_TAG_SHOW_DELAY (500 ms); there is no event to wait on.
   await page.waitForTimeout(700);
   await expect(layerTagBody(page, 'Pin View')).toBeHidden();
 
@@ -133,6 +135,8 @@ test('a toolbar button with a native title keeps it and gets no second tag', asy
     button.setAttribute('title', 'Pin View');
   });
   await pin.hover();
+  // Intentional fixed wait: it proves a negative (no second tag appears), so
+  // it must outlast HELP_TAG_SHOW_DELAY (500 ms).
   await page.waitForTimeout(800);
   await expect(layerTag(page, 'Pin View')).toHaveCount(0);
   await pin.focus();

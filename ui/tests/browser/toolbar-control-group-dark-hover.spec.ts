@@ -1,6 +1,7 @@
 import { expect, type Locator, type Page, test } from '@playwright/test';
 
 import { contrastRatio } from '../../evaluator/index.mjs';
+import { animationsSettled } from '../helpers/animations-settled.js';
 
 // KF-5YKYTA: a lone control's hover replaces a group's whole fill. The dark
 // tone's hover tint is a translucent surface wash meant to lie over its loud
@@ -45,7 +46,7 @@ async function iconColor(page: Page, control: Locator): Promise<number[]> {
 async function hoveredContrast(page: Page, group: Locator, control: Locator) {
   await control.hover();
   // Let the group's 0.2s background transition settle.
-  await page.waitForTimeout(500);
+  await animationsSettled(page);
   return contrastRatio(
     await iconColor(page, control),
     await paintedFill(page, group),
@@ -86,7 +87,7 @@ for (const scheme of ['light', 'dark'] as const)
     const pair = page.getByRole('button', { name: 'Previous' });
     await pair.scrollIntoViewIfNeeded();
     await pair.hover();
-    await page.waitForTimeout(500);
+    await animationsSettled(page);
     const reference = await paintedFill(page, pair);
 
     await page.goto('/?component=anchored-surface');
@@ -96,7 +97,7 @@ for (const scheme of ['light', 'dark'] as const)
     const control = single.locator('[data-anchored-surface-trigger="media"]');
     await control.scrollIntoViewIfNeeded();
     await control.hover();
-    await page.waitForTimeout(500);
+    await animationsSettled(page);
     const painted = await paintedFill(page, single);
     // Both are the same wash over the same translucent fill; the two catalog
     // stages' page colors show through slightly differently.

@@ -100,7 +100,9 @@ test('opening the popup hides the tag, and the tag follows the selection', async
   await expect(select).toHaveAttribute('open', '');
   await expect(tagBody(select, 'Filter by Label')).toBeHidden();
 
-  // Hovering the open popup's options never brings it back.
+  // Hovering the open popup's options never brings it back. The fixed waits
+  // below are intentional: each proves a negative (no tag appears), so it
+  // must outlast HELP_TAG_SHOW_DELAY (500 ms); there is no event to wait on.
   await select.locator('.kui-select__option[data-value="bug"]').hover();
   await page.waitForTimeout(700);
   await expect(tagBody(select, 'Filter by Label')).toBeHidden();
@@ -151,6 +153,8 @@ test('keyboard focus shows the tag at once; a click focus does not', async ({
   await expect(tagBody(select, 'Filter by Label')).toBeHidden();
   await page.keyboard.press('Escape');
   await expect(select).not.toHaveAttribute('open', '');
+  // Intentional fixed wait: proves a negative (closing does not re-show the
+  // focus tag), which has no event to wait on.
   await page.waitForTimeout(300);
   await expect(tagBody(select, 'Filter by Label')).toBeHidden();
 
@@ -217,6 +221,7 @@ test('a single icon-only Select names its control and current choice', async ({
   // A labeled (not icon-only) Select has no tag.
   const labeled = page.locator('kui-select[name="labeled-rendering-balance"]');
   await labeled.hover();
+  // Intentional fixed wait: proves a negative past HELP_TAG_SHOW_DELAY.
   await page.waitForTimeout(700);
   await expect(helpTag(labeled, 'Rendering Preference')).toHaveCount(0);
 });
@@ -282,6 +287,7 @@ test('an icon-only PopupMenu names its trigger; a text trigger has no tag', asyn
     .locator('[data-demo="popup-menu"] .kui-popup-menu')
     .nth(1);
   await textMenu.getByRole('button', { name: 'Actions', exact: true }).hover();
+  // Intentional fixed wait: proves a negative past HELP_TAG_SHOW_DELAY.
   await page.waitForTimeout(700);
   await expect(layerTag('Actions')).toHaveCount(0);
 });

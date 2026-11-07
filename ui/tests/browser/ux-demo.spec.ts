@@ -7,6 +7,7 @@ import {
   isDiscouragedWebAwesome,
   kerfCatalog,
 } from '../../ux-demo/catalog.js';
+import { animationsSettled } from '../helpers/animations-settled.js';
 import { minPaintedTextContrast } from './painted-contrast.js';
 
 async function activateWithKeyboard(page: Page, locator: Locator) {
@@ -2242,7 +2243,7 @@ test('switches catalog background patterns and surfaces across entries and theme
   expect(menuBounds!.x + menuBounds!.width).toBeLessThanOrEqual(390);
   await page.keyboard.press('Escape');
   if (browserName === 'chromium') {
-    await page.waitForTimeout(300);
+    await animationsSettled(page);
     await page.screenshot({
       path: 'test-results/catalog-background-layout-guide-narrow-dark.png',
     });

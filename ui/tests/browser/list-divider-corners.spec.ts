@@ -1,5 +1,7 @@
 import { expect, type Page, test } from '@playwright/test';
 
+import { animationsSettled } from '../helpers/animations-settled.js';
+
 type Corners = [string, string, string, string];
 
 /** Each row's top-left, top-right, bottom-right, bottom-left radius. */
@@ -63,7 +65,7 @@ test('divided list rows round only the outer corners of the group', async ({
     await page.locator(list).scrollIntoViewIfNeeded();
     for (const index of [0, 3]) {
       await page.locator(`${list} > :nth-child(${index + 1})`).hover();
-      await page.waitForTimeout(250);
+      await animationsSettled(page);
       await page.locator(list).screenshot({
         path: testInfo.outputPath(`divided-list-hover-${index}-${width}.png`),
       });

@@ -1,5 +1,7 @@
 import { expect, type Page, test } from '@playwright/test';
 
+import { animationsSettled } from '../helpers/animations-settled.js';
+
 // A collapsible toolbar-group SearchField inside a search group must
 // expand (and collapse) as ONE surface: the field fills the group on every
 // frame, so the pill never shows an empty band beside a narrower field, and a
@@ -117,7 +119,7 @@ for (const { width, animates } of [
     await page.setViewportSize({ width: Math.max(width, 480), height: 800 });
     await mountFixture(page, width);
     // Let the initial collapsed layout settle without transitions.
-    await page.waitForTimeout(400);
+    await animationsSettled(page);
     const host = page.locator('[data-grow-expand-fixture]');
 
     const opening = await sample(page, true);
@@ -166,7 +168,7 @@ test('reduced motion snaps the grow search group open in one frame', async ({
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.setViewportSize({ width: 1440, height: 800 });
   await mountFixture(page, 1440);
-  await page.waitForTimeout(100);
+  await animationsSettled(page);
   const opening = await sample(page, true);
   const settled = opening.at(-1)!;
   expect(opening[0]!.group).toBe(settled.group);
@@ -182,7 +184,7 @@ for (const width of [1440, 420]) {
   }) => {
     await page.setViewportSize({ width: Math.max(width, 480), height: 800 });
     await mountFixture(page, width, false);
-    await page.waitForTimeout(400);
+    await animationsSettled(page);
     const host = page.locator('[data-grow-expand-fixture]');
 
     const opening = await sample(page, true);
@@ -221,7 +223,7 @@ test('reduced motion snaps the plain search group open in one frame', async ({
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.setViewportSize({ width: 1440, height: 800 });
   await mountFixture(page, 1440, false);
-  await page.waitForTimeout(100);
+  await animationsSettled(page);
   const opening = await sample(page, true);
   const settled = opening.at(-1)!;
   expect(opening[0]!.group).toBe(settled.group);

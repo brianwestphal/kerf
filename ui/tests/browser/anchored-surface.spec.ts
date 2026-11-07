@@ -1,5 +1,7 @@
 import { expect, test } from '@playwright/test';
 
+import { animationsSettled } from '../helpers/animations-settled.js';
+
 const surface = '[data-component="anchored-surface"]';
 
 test('element help owns focus, dismissal, and visible surface at wide and narrow widths', async ({
@@ -90,7 +92,9 @@ test('interactive help remains usable inside a DialogSurface', async ({
     await expect(help).toHaveCount(0);
     await expect(explain).toBeFocused();
     await expect(modal).toHaveAttribute('open');
-    await page.waitForTimeout(300); // a stray close request would animate out
+    // Intentional fixed wait: it proves a negative (no stray close request
+    // animates the dialog out), which has no event to wait on.
+    await page.waitForTimeout(300);
     await expect(modal).toHaveAttribute('open');
 
     // Pointer input reaches the surface: its action closes it.
@@ -140,7 +144,7 @@ test('a surface already showing is re-hosted above a DialogSurface that opens la
     const r = el.getBoundingClientRect();
     return { x: r.left, y: r.top, width: r.width, height: r.height };
   });
-  await page.waitForTimeout(400); // let the dialog's show animation settle
+  await animationsSettled(page); // let the dialog's show animation settle
   const shown = await page.screenshot({ clip });
   await help.evaluate((el: HTMLElement) => (el.style.visibility = 'hidden'));
   const hidden = await page.screenshot({ clip });

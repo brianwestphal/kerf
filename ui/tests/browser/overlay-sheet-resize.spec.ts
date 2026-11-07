@@ -4,6 +4,8 @@ import { resolve } from 'node:path';
 import { expect, type Page, test } from '@playwright/test';
 import { build } from 'esbuild';
 
+import { animationsSettled } from '../helpers/animations-settled.js';
+
 // wireOverlaySheets: a core kerfjs/overlay bottom sheet with the
 // kui-overlay-sheet-resizable class gets a resizable DialogSurface sheet's
 // grabber, on the plain and the native host: drag and keyboard resize the
@@ -154,6 +156,8 @@ test('a sheet without the opt-in class gets no grabber', async ({ page }) => {
     host.append(document.createElement('div'));
     document.body.append(host);
   });
-  await page.waitForTimeout(50);
+  // A negative: give the sheet wiring's observers a few frames to (not) add
+  // a grabber before asserting there is none.
+  await animationsSettled(page);
   await expect(page.locator('.kui-overlay-sheet-handle')).toHaveCount(0);
 });

@@ -1,5 +1,10 @@
 import { expect, type Page, test } from '@playwright/test';
 
+import {
+  animationProgressed,
+  animationsSettled,
+} from '../helpers/animations-settled.js';
+
 async function example(page: Page) {
   await page.goto('/?component=list');
   const root = page.locator('[data-demo-view-transitions]');
@@ -103,7 +108,7 @@ for (const { width, height } of [
         .getByRole('button', { name: action })
         .evaluate((element: HTMLElement) => element.click());
       if (action === 'Remove Last' && testInfo.project.name === 'webkit') {
-        await page.waitForTimeout(90);
+        await animationProgressed(page, 90);
         await root.screenshot({
           path: testInfo.outputPath(`list-remove-last-${width}-motion.png`),
         });
@@ -145,7 +150,7 @@ for (const width of [1402, 390]) {
       const during = await position();
       expect(during.scrollTop).toBeCloseTo(baseline.scrollTop, 0);
       expect(during.top).toBeCloseTo(baseline.top, 0);
-      await page.waitForTimeout(400);
+      await animationsSettled(page);
       const settled = await position();
       expect(settled.scrollTop).toBeCloseTo(baseline.scrollTop, 0);
       expect(settled.top).toBeCloseTo(baseline.top, 0);
@@ -180,7 +185,7 @@ for (const width of [1200, 390]) {
       await root.screenshot({
         path: testInfo.outputPath(`list-view-transitions-${width}-motion.png`),
       });
-    await page.waitForTimeout(400);
+    await animationsSettled(page);
     if (testInfo.project.name === 'chromium')
       await root.screenshot({
         path: testInfo.outputPath(`list-view-transitions-${width}-settled.png`),
@@ -292,7 +297,7 @@ for (const { width, height } of [
         page.evaluate(() => document.documentElement.style.viewTransitionName),
       )
       .toBe('none');
-    await page.waitForTimeout(90);
+    await animationProgressed(page, 90);
     const during = await page.screenshot({
       path:
         testInfo.project.name === 'webkit'

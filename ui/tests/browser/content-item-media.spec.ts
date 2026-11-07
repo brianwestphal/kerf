@@ -1,6 +1,7 @@
 import { expect, type Locator, type Page, test } from '@playwright/test';
 
 import { contrastRatio } from '../../evaluator/index.mjs';
+import { scrollSettled } from '../helpers/animations-settled.js';
 
 async function feed(page: Page, waitReady = true) {
   await page.goto('/?component=content-item');
@@ -92,15 +93,9 @@ test('feed cards have independent image timelines in one scroller and reverse on
       return rect.width / rect.height;
     });
   expect(ratio).toBeCloseTo(16 / 9, 2);
-  await scroller.evaluate((element) => {
-    element.scrollTop = 0;
-  });
-  await page.waitForTimeout(100);
+  await scrollSettled(scroller, 0);
   const first = await offset(cards.nth(0));
-  await scroller.evaluate((element) => {
-    element.scrollTop = 110;
-  });
-  await page.waitForTimeout(100);
+  await scrollSettled(scroller, 110);
   const moved = await offset(cards.nth(0));
   const next = await offset(cards.nth(1));
   if (supported) {
@@ -254,10 +249,7 @@ test('broken and replaced images switch between ordinary and tinted card surface
 test('reduced motion leaves feed images sharp and static', async ({ page }) => {
   await page.emulateMedia({ reducedMotion: 'reduce' });
   const { cards, scroller } = await feed(page);
-  await scroller.evaluate((element) => {
-    element.scrollTop = 110;
-  });
-  await page.waitForTimeout(100);
+  await scrollSettled(scroller, 110);
   expect(await offset(cards.nth(0))).toBe(0);
   expect(
     await cards
@@ -275,10 +267,7 @@ test('static effects stop motion and nested source and save actions stay keyboar
   await page.evaluate(() =>
     document.documentElement.setAttribute('data-kui-effects', 'static'),
   );
-  await scroller.evaluate((element) => {
-    element.scrollTop = 110;
-  });
-  await page.waitForTimeout(100);
+  await scrollSettled(scroller, 110);
   expect(await offset(card)).toBe(0);
   const link = card.getByRole('link', { name: 'Source' });
   await link.focus();
@@ -436,10 +425,7 @@ test('increased contrast and forced colors stop feed image movement', async ({
 }) => {
   await page.emulateMedia({ contrast: 'more' });
   let { cards, scroller } = await feed(page);
-  await scroller.evaluate((element) => {
-    element.scrollTop = 110;
-  });
-  await page.waitForTimeout(100);
+  await scrollSettled(scroller, 110);
   expect(await offset(cards.nth(0))).toBe(0);
   await page.emulateMedia({ forcedColors: 'active' });
   await page.reload();

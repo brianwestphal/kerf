@@ -5,6 +5,7 @@ import { expect, type Page, test } from '@playwright/test';
 import { build } from 'esbuild';
 
 import { contrastRatio } from '../../evaluator/index.mjs';
+import { navStackSettled } from '../helpers/animations-settled.js';
 
 // KF-1N0S19 overlay NavStack chrome: `chromePresentation="overlay"` lays the
 // top chrome over the active view on the translucent chrome material.
@@ -108,7 +109,7 @@ async function geometry(
 }
 
 /** Let the transition finish and the observers report. */
-const settle = (page: Page) => page.waitForTimeout(350);
+const settle = navStackSettled;
 
 test.beforeEach(async ({ page }) => {
   await mountFixture(page);

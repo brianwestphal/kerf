@@ -3,6 +3,8 @@ import { resolve } from 'node:path';
 import { expect, type Page, test } from '@playwright/test';
 import { build } from 'esbuild';
 
+import { animationsSettled } from '../helpers/animations-settled.js';
+
 // `visibility="yield-to-priority-row"` hides a trailing sibling exactly while
 // the Toolbar's trailing-priority row is active, from the same container query
 // as the row itself: at a 704px content width (a 720px viewport with the
@@ -85,6 +87,11 @@ test('one pixel past the compact width the row stays off and nothing yields', as
   expect(await contentWidth(page)).toBe(705);
   await page.getByRole('button', { name: 'Open search' }).click();
   await expect(page.locator('[data-settings]')).toBeVisible();
-  await page.waitForTimeout(400);
+  await expect(
+    page.locator('.kui-toolbar-control-group[data-content="search"]'),
+  ).toHaveAttribute('data-expanded', 'true');
+  // The negative (nothing yields) is only meaningful once the expansion has
+  // finished animating and the toolbar has re-measured.
+  await animationsSettled(page);
   expect(await rows(page)).toBe(1);
 });

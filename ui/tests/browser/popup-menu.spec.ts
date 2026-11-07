@@ -1,5 +1,7 @@
 import { expect, type Locator, type Page, test } from '@playwright/test';
 
+import { animationsSettled } from '../helpers/animations-settled.js';
+
 async function expectDemoTriggerAlignment(page: Page, label: string) {
   const offset = await page
     .locator('[data-catalog-example]')
@@ -845,7 +847,7 @@ test('End pressed as a long submenu opens leaves the last choice focused and scr
   await page.keyboard.press('ArrowRight');
   await page.keyboard.press('End');
   await expect(last).toBeFocused();
-  await page.waitForTimeout(400);
+  await animationsSettled(page);
   await expect(last).toBeFocused();
   await expect
     .poll(() =>
@@ -1030,6 +1032,8 @@ test('a Badge content trigger opens the menu, keeps its submenu, and draws a pil
     await page.keyboard.press('Escape');
     // No help tag repeats the name over a visible badge.
     await trigger.hover();
+    // Intentional fixed wait: it proves a negative (no help tag appears), so
+    // it must outlast HELP_TAG_SHOW_DELAY (500 ms).
     await page.waitForTimeout(800);
     await expect(page.locator('.kui-help-tag:popover-open')).toHaveCount(0);
   }

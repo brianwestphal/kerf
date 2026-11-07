@@ -3,6 +3,8 @@ import { resolve } from 'node:path';
 import { expect, type Page, test } from '@playwright/test';
 import { build } from 'esbuild';
 
+import { animationsSettled } from '../helpers/animations-settled.js';
+
 // A `fill` SearchField inside a `sizing="grow"` group keeps the group's grow
 // basis when it opens: the grown group shares its line with the trailing
 // siblings instead of taking the whole line and wrapping every one of them.
@@ -51,7 +53,7 @@ for (const width of [1600, 900]) {
     await expect(search).toHaveAttribute('data-expanded', 'true');
     await expect(search).toHaveAttribute('data-sizing', 'grow');
     // Let the 0.25s basis motion settle.
-    await page.waitForTimeout(400);
+    await animationsSettled(page);
     const searchBox = (await search.boundingBox())!;
     const settingsBox = (await settings.boundingBox())!;
     // One row: Settings sits beside the search, not below it.
