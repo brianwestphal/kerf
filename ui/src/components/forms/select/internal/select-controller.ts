@@ -144,7 +144,13 @@ export function installSelects(doc: Document = document): void {
     restore.observe(trigger, {
       attributeFilter: ['aria-expanded', 'disabled'],
     });
-    restore.observe(popup, { attributeFilter: ['style'] });
+    // KF-XJPZJ3: a re-render that removes the focused option drops focus to
+    // the body, where the listbox's keys are dead; option changes re-check.
+    restore.observe(popup, {
+      attributeFilter: ['style'],
+      childList: true,
+      subtree: true,
+    });
     following.set(popup, () => {
       restore.disconnect();
       stopFollowing();

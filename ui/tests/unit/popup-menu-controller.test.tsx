@@ -1,3 +1,4 @@
+import { morph } from 'kerfjs';
 import {
   afterEach,
   beforeAll,
@@ -538,6 +539,64 @@ describe('PopupMenu register: keyboard navigation', () => {
     vi.advanceTimersByTime(TYPEAHEAD_RESET);
     // Without a query, Space is left to the button (which chooses).
     expect(key(document.activeElement!, ' ').defaultPrevented).toBe(false);
+  });
+
+  it('keeps an open menu across a same-items re-render and rebuilds it when its items change (KF-XJPZJ3)', async () => {
+    const items: PopupMenuEntry[] = [
+      { label: 'Copy', action: 'copy' },
+      { label: 'Cut', action: 'cut' },
+      { label: 'Paste', action: 'paste' },
+    ];
+    const { host, trigger, menu, item, root } = setup({ items });
+    click(trigger);
+    key(document.activeElement!, 'End');
+    expect(document.activeElement).toBe(item('Paste'));
+    // Same items: the morph skips the menu's children, so the open menu and
+    // its focused item survive.
+    morph(host, PopupMenu({ text: 'Actions', items } as PopupMenuProps));
+    await flush();
+    expect(host.firstElementChild).toBe(root);
+    expect(isShown(menu)).toBe(true);
+    expect(document.activeElement).toBe(item('Paste'));
+    // Changed items: the content key rebuilds the whole menu (by design), so
+    // the open one goes with its old root and the new one opens and navigates.
+    morph(
+      host,
+      PopupMenu({
+        text: 'Actions',
+        items: items.slice(0, 2),
+      } as PopupMenuProps),
+    );
+    await flush();
+    const rebuilt = host.firstElementChild as HTMLElement;
+    expect(rebuilt).not.toBe(root);
+    expect(root.isConnected).toBe(false);
+    const nextTrigger = rebuilt.querySelector<HTMLButtonElement>(
+      ':scope > .kui-popup-menu__trigger',
+    )!;
+    const nextMenu = rebuilt.querySelector<HTMLElement>(
+      ':scope > .kui-popup-menu__menu',
+    )!;
+    expect(isShown(nextMenu)).toBe(false);
+    click(nextTrigger);
+    expect(isShown(nextMenu)).toBe(true);
+    key(document.activeElement!, 'End');
+    expect(document.activeElement?.textContent).toBe('Cut');
+  });
+
+  it('refocuses the menu when only its focused item is removed (KF-XJPZJ3)', async () => {
+    const { trigger, menu, item } = setup({
+      items: [{ label: 'Copy' }, { label: 'Cut' }, { label: 'Paste' }],
+    });
+    click(trigger);
+    key(document.activeElement!, 'End');
+    item('Paste').remove();
+    await flush();
+    expect(menu.contains(document.activeElement)).toBe(true);
+    expect(key(document.activeElement!, 'ArrowDown').defaultPrevented).toBe(
+      true,
+    );
+    expect(menu.contains(document.activeElement)).toBe(true);
   });
 
   it('backs up a query with Backspace, as Select does (KF-NF65PK)', () => {

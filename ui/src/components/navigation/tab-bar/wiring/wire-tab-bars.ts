@@ -453,6 +453,8 @@ export function wireTabBars(
     });
 
   const onDragStart = (event: Event) => {
+    // KF-XJPZJ3: a new drag ends any previous one whose dragend was lost.
+    clear();
     const dragEvent = event as DragEvent;
     const tab = tabRoot(event.target);
     const bar = tab && tabBar(tab);
@@ -468,6 +470,16 @@ export function wireTabBars(
       return;
     dragged = { barId: sourceBarId, tabId: sourceId, tab };
     tab.dataset.tabDragging = 'true';
+    // KF-XJPZJ3: dragend fires on the source node. A controlled re-render
+    // that replaces the dragged tab detaches it, so the event never bubbles
+    // to `root`; listening on the source itself still ends the drag.
+    tab.addEventListener(
+      'dragend',
+      () => {
+        if (dragged?.tab === tab) clear();
+      },
+      { once: true },
+    );
     if (dragEvent.dataTransfer) {
       dragEvent.dataTransfer.effectAllowed = 'move';
       dragEvent.dataTransfer.setData(
@@ -691,7 +703,13 @@ export function wireTabBars(
     subtree: true,
     childList: true,
     attributes: true,
-    attributeFilter: ['aria-selected', 'dir', 'data-snap-tabs'],
+    // `data-tab-bar-id`: a morph that renames a bar re-reports its fit.
+    attributeFilter: [
+      'aria-selected',
+      'dir',
+      'data-snap-tabs',
+      'data-tab-bar-id',
+    ],
   });
 
   return () => {

@@ -35,6 +35,7 @@ vi.mock('@floating-ui/dom', () => ({
   size: () => ({ name: 'size', fn: () => ({}) }),
 }));
 
+import { morph } from 'kerfjs';
 import { ListFilter } from 'lucide';
 
 import {
@@ -276,6 +277,77 @@ describe('Select register: edges', () => {
     popup.removeAttribute('style');
     await flush();
     expect(trigger.getAttribute('aria-expanded')).toBe('false');
+  });
+
+  it('keeps keyboard focus in an open listbox whose focused option a re-render removes (KF-XJPZJ3)', async () => {
+    const { host, root, trigger, popup, option } = setup();
+    click(trigger);
+    await flush();
+    key(document.activeElement!, 'End');
+    expect(document.activeElement).toBe(option('Thorough'));
+    // The application re-renders without the focused option.
+    morph(
+      host,
+      Select({
+        name: 'speed',
+        label: 'Speed',
+        value: 'balanced',
+        choices: CHOICES.filter((choice) => choice.value !== 'thorough'),
+      } as SelectProps),
+    );
+    await flush();
+    expect(isShown(popup)).toBe(true);
+    expect(popup.contains(document.activeElement)).toBe(true);
+    key(document.activeElement!, 'ArrowDown');
+    expect(popup.contains(document.activeElement)).toBe(true);
+    key(document.activeElement!, 'Home');
+    expect(document.activeElement).toBe(option('Fast'));
+    key(document.activeElement!, 'Enter');
+    expect(root.value).toBe('fast');
+  });
+
+  it('refocuses the listbox when only its focused option is removed (KF-XJPZJ3)', async () => {
+    const { trigger, popup, option } = setup();
+    click(trigger);
+    await flush();
+    key(document.activeElement!, 'End');
+    // A list-only update (the trigger's attributes untouched) drops the
+    // focused option; focus would otherwise fall to the body.
+    option('Thorough').remove();
+    await flush();
+    expect(document.activeElement).toBe(option('Balanced'));
+    expect(key(document.activeElement!, 'ArrowDown').defaultPrevented).toBe(
+      true,
+    );
+    expect(popup.contains(document.activeElement)).toBe(true);
+  });
+
+  it('removes the chosen option while open, then follows a programmatic value (KF-XJPZJ3)', async () => {
+    const { host, root, trigger, popup, option } = setup();
+    click(trigger);
+    await flush();
+    expect(document.activeElement).toBe(option('Balanced'));
+    morph(
+      host,
+      Select({
+        name: 'speed',
+        label: 'Speed',
+        // The application's value no longer names a choice.
+        value: '',
+        choices: CHOICES.filter((choice) => choice.value !== 'balanced'),
+      } as SelectProps),
+    );
+    await flush();
+    expect(root.value).toBe('');
+    expect(popup.contains(document.activeElement)).toBe(true);
+    // Setting the value while open chooses without closing.
+    root.value = 'thorough';
+    expect(root.value).toBe('thorough');
+    expect(isShown(popup)).toBe(true);
+    expect(option('Thorough').getAttribute('aria-selected')).toBe('true');
+    key(document.activeElement!, 'Escape');
+    expect(isShown(popup)).toBe(false);
+    expect(root.value).toBe('thorough');
   });
 
   it('closes when disabled while open', async () => {

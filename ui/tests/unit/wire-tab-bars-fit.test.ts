@@ -332,6 +332,45 @@ describe('wireTabBars onFitChange', () => {
     stop();
   });
 
+  it('reports under the new id when a morph renames the same bar (KF-XJPZJ3)', async () => {
+    const root = render();
+    layout(root, 400, 100);
+    const onFitChange = vi.fn();
+    const stop = wireTabBars(root, { onReorder: () => {}, onFitChange });
+    runFrames();
+    expect(onFitChange).toHaveBeenCalledTimes(1);
+    // Same element, same geometry, new identity.
+    parts(root).bar.setAttribute('data-tab-bar-id', 'archive');
+    await Promise.resolve();
+    runFrames();
+    expect(onFitChange).toHaveBeenCalledTimes(2);
+    expect((onFitChange.mock.lastCall![0] as TabBarFit).barId).toBe('archive');
+    stop();
+  });
+
+  it('reports a bar again after it leaves the root and comes back (KF-XJPZJ3)', async () => {
+    const root = render();
+    layout(root, 400, 100);
+    const onFitChange = vi.fn();
+    const stop = wireTabBars(root, { onReorder: () => {}, onFitChange });
+    runFrames();
+    expect(onFitChange).toHaveBeenCalledTimes(1);
+    const { bar } = parts(root);
+    const parking = document.createElement('div');
+    document.body.append(parking);
+    parking.append(bar);
+    await Promise.resolve();
+    runFrames();
+    expect(onFitChange).toHaveBeenCalledTimes(1);
+    root.append(bar);
+    await Promise.resolve();
+    runFrames();
+    expect(onFitChange).toHaveBeenCalledTimes(2);
+    expect((onFitChange.mock.lastCall![0] as TabBarFit).barId).toBe('projects');
+    parking.remove();
+    stop();
+  });
+
   it('cancels a pending report and disconnects on dispose', () => {
     const root = render();
     layout(root, 400, 100);

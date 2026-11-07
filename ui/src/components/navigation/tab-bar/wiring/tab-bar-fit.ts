@@ -32,9 +32,12 @@ const TAB_BAR = '[data-component="tab-bar"]';
 
 type Measured = Omit<TabBarFit, 'barId'>;
 
-function sameFit(a: Measured | undefined, b: Measured): boolean {
+// KF-XJPZJ3: the id is part of the identity compared, so a morph that renames
+// `data-tab-bar-id` on the same element reports under the new id.
+function sameFit(a: TabBarFit | undefined, b: TabBarFit): boolean {
   return (
     a !== undefined &&
+    a.barId === b.barId &&
     a.overflowing === b.overflowing &&
     a.stripWidth === b.stripWidth &&
     a.tabsWidth === b.tabsWidth &&
@@ -103,8 +106,9 @@ export function trackTabBarFit(
   onFitChange: (fit: TabBarFit) => void,
 ): TabBarFitTracker {
   // Keyed by element: a bar a route or remount renders afresh reports again,
-  // so app state reset with that view is re-derived.
-  const reported = new WeakMap<HTMLElement, Measured>();
+  // so app state reset with that view is re-derived. A bar that leaves the
+  // root is forgotten (KF-XJPZJ3), so it reports again when it comes back.
+  const reported = new Map<HTMLElement, TabBarFit>();
   const pending = new Set<HTMLElement>();
   const observed = new Set<Element>();
   let frame: number | undefined;
@@ -117,10 +121,12 @@ export function trackTabBarFit(
     for (const bar of bars) {
       const id = bar.dataset.tabBarId;
       if (disposed || !id || !root.contains(bar)) continue;
-      const fit = measure(view, bar);
-      if (!fit || sameFit(reported.get(bar), fit)) continue;
+      const measured = measure(view, bar);
+      if (!measured) continue;
+      const fit: TabBarFit = { barId: id, ...measured };
+      if (sameFit(reported.get(bar), fit)) continue;
       reported.set(bar, fit);
-      onFitChange({ barId: id, ...fit });
+      onFitChange({ ...fit });
     }
   };
   const schedule = (bar: HTMLElement) => {
@@ -154,6 +160,8 @@ export function trackTabBarFit(
       }
     },
     release() {
+      for (const bar of reported.keys())
+        if (!root.contains(bar)) reported.delete(bar);
       for (const element of observed)
         if (!root.contains(element)) {
           resizeObserver?.unobserve(element);
@@ -166,6 +174,7 @@ export function trackTabBarFit(
       resizeObserver?.disconnect();
       observed.clear();
       pending.clear();
+      reported.clear();
     },
   };
 }

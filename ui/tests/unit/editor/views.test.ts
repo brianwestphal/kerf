@@ -683,6 +683,50 @@ describe('composed documents in the editor', () => {
     );
   });
 
+  it('keeps an edit made before opening a composed document, saved but no longer undoable, after Back (KF-XJPZJ3)', async () => {
+    const { root, editor, stored } = open(files());
+    await vi.waitFor(() =>
+      expect(canvas(root).textContent).toContain('Quarterly report'),
+    );
+    select(editor);
+    const undo = () =>
+      root.querySelector<HTMLElement>('[data-action="editor-undo"]')!;
+    type Composing = ViewDocument & {
+      root: {
+        zones: { children: [{ template: { props: { unread?: unknown } } }] };
+      };
+    };
+    const unreadOf = (document: ViewDocument) =>
+      (document as Composing).root.zones.children[0].template.props.unread;
+    // An edit in the composing document: the #view's unread param.
+    const unread = root.querySelector<HTMLElement>(
+      '[data-editor-prop="unread"]',
+    )!;
+    unread.querySelector('input')!.checked = true;
+    unread.dispatchEvent(new Event('change', { bubbles: true }));
+    expect(unreadOf(editor.document.value)).toBe(true);
+    expect(undo().hasAttribute('disabled')).toBe(false);
+    root
+      .querySelector<HTMLElement>('[data-action="editor-open-view"]')!
+      .click();
+    await vi.waitFor(() =>
+      expect(editor.document.value.name).toBe('MessageRow'),
+    );
+    // Opening another document starts a fresh history.
+    expect(undo().hasAttribute('disabled')).toBe(true);
+    root
+      .querySelector<HTMLElement>('[data-action="editor-view-back"]')!
+      .click();
+    await vi.waitFor(() => expect(editor.document.value.name).toBe('Messages'));
+    // The edit was saved on the way out, so it comes back with the
+    // document — but the history it lived in is gone: Undo cannot revert it.
+    expect(unreadOf(editor.document.value)).toBe(true);
+    expect(unreadOf(JSON.parse(stored.get(LIST_PATH)!))).toBe(true);
+    expect(undo().hasAttribute('disabled')).toBe(true);
+    undo().click();
+    expect(unreadOf(editor.document.value)).toBe(true);
+  });
+
   it('keeps the trail when the way back cannot open', async () => {
     const { root, editor, stored, failing } = open(files());
     await vi.waitFor(() =>

@@ -162,7 +162,20 @@ export function installPopupMenus(doc: Document = document): void {
       }
       void Promise.resolve(place()).then(reveal);
     });
-    following.set(menu, stop);
+    // KF-XJPZJ3: a re-render that removes the focused item drops focus to
+    // the body, where the menu's keys are dead. Return it to the menu's
+    // first item (an open submenu below refocuses its own items).
+    const refocus = new win.MutationObserver(() => {
+      if (!isOpen(menu) || openSubmenus(menu).length) return;
+      const active = doc.activeElement;
+      if (active && active !== doc.body && active.isConnected) return;
+      focusItem(menu, 'first');
+    });
+    refocus.observe(menu, { childList: true, subtree: true });
+    following.set(menu, () => {
+      refocus.disconnect();
+      stop();
+    });
   };
 
   const stopFollowing = (menu: HTMLElement) => {

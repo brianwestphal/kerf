@@ -508,6 +508,35 @@ describe('History', () => {
   });
 });
 
+describe('History cap (KF-XJPZJ3)', () => {
+  it('keeps the newest 200 entries by default, so undo stops at the 200th-newest state', () => {
+    const history = new History();
+    const states = Array.from({ length: 202 }, (_, index) =>
+      setProp(inbox, COMPOSE, 'children', `Compose ${index}`),
+    );
+    // 201 edits: states[0] → states[1] → … → states[201].
+    for (let index = 0; index < 201; index++) history.record(states[index]!);
+    let current = states[201]!;
+    let undone = 0;
+    while (history.canUndo) {
+      current = history.undo(current);
+      undone++;
+    }
+    expect(undone).toBe(200);
+    // The oldest entry fell off the cap: the first edit can no longer undo.
+    expect(current).toBe(states[1]);
+    expect(history.undo(current)).toBe(current);
+    // Every undone state is still redoable, newest last.
+    let redone = 0;
+    while (history.canRedo) {
+      current = history.redo(current);
+      redone++;
+    }
+    expect(redone).toBe(200);
+    expect(current).toBe(states[201]);
+  });
+});
+
 describe('bindingOptions', () => {
   // KF-K5TKCV: the sources the validator accepts for a prop.
   const labels = (id: string, prop: string) =>

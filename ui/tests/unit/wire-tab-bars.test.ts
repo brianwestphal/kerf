@@ -648,6 +648,79 @@ describe('TabBar wiring', () => {
     stop();
   });
 
+  it('clears drag state when a re-render detaches the dragged tab before dragend (KF-XJPZJ3)', () => {
+    const root = bar();
+    const strip = root.querySelector<HTMLElement>('[data-kui-tab-list]')!;
+    const source = root.querySelector<HTMLElement>(
+      '.kui-tab-bar-item[data-tab-id="one"]',
+    )!;
+    const target = root.querySelector<HTMLElement>(
+      '.kui-tab-bar-item[data-tab-id="three"]',
+    )!;
+    Object.defineProperties(strip, {
+      clientWidth: { configurable: true, value: 200 },
+      scrollWidth: { configurable: true, value: 600 },
+    });
+    Object.defineProperty(strip, 'getBoundingClientRect', {
+      value: () => ({
+        left: 0,
+        width: 200,
+        right: 200,
+        top: 0,
+        bottom: 40,
+        height: 40,
+        x: 0,
+        y: 0,
+        toJSON: () => ({}),
+      }),
+    });
+    strip.scrollLeft = 100;
+    vi.spyOn(window, 'requestAnimationFrame').mockImplementation(() => 1);
+    const cancel = vi
+      .spyOn(window, 'cancelAnimationFrame')
+      .mockImplementation(() => undefined);
+    const onReorder = vi.fn();
+    const stop = wireTabBars(root, { onReorder });
+    source.dispatchEvent(new Event('dragstart', { bubbles: true }));
+    const nearEnd = new Event('dragover', { bubbles: true, cancelable: true });
+    Object.defineProperty(nearEnd, 'clientX', { value: 198 });
+    target.dispatchEvent(nearEnd);
+    expect(strip.dataset.tabAutoscroll).toBe('end');
+    expect(target.dataset.tabDropPosition).toBeDefined();
+
+    // A controlled re-render replaces the dragged tab; the browser then fires
+    // dragend on the detached source, which never reaches the root.
+    const replacement = source.cloneNode(true) as HTMLElement;
+    source.replaceWith(replacement);
+    source.dispatchEvent(new Event('dragend', { bubbles: true }));
+
+    expect(strip.hasAttribute('data-tab-autoscroll')).toBe(false);
+    expect(cancel).toHaveBeenCalled();
+    expect(root.querySelector('[data-tab-drop-position]')).toBeNull();
+    expect(root.querySelector('[data-tab-dragging]')).toBeNull();
+    // No drag is underway any more: a stray dragover is not claimed.
+    const stray = new Event('dragover', { bubbles: true, cancelable: true });
+    Object.defineProperty(stray, 'clientX', { value: 100 });
+    target.dispatchEvent(stray);
+    expect(stray.defaultPrevented).toBe(false);
+    stop();
+  });
+
+  it('starts each drag fresh even when the previous one never ended (KF-XJPZJ3)', () => {
+    const root = bar();
+    const [one, two, three] =
+      root.querySelectorAll<HTMLElement>('.kui-tab-bar-item');
+    const stop = wireTabBars(root, { onReorder: vi.fn() });
+    one.dispatchEvent(new Event('dragstart', { bubbles: true }));
+    expect(one.dataset.tabDragging).toBe('true');
+    // The first drag's dragend was lost; a new drag begins from another tab.
+    two.dispatchEvent(new Event('dragstart', { bubbles: true }));
+    expect(one.hasAttribute('data-tab-dragging')).toBe(false);
+    expect(two.dataset.tabDragging).toBe('true');
+    expect(three.hasAttribute('data-tab-dragging')).toBe(false);
+    stop();
+  });
+
   it('titles a tab with its full name only while the name is ellipsized (KF-VQ1Z8H)', () => {
     const root = bar();
     const dispose = wireTabBars(root, { onReorder: () => {} });
