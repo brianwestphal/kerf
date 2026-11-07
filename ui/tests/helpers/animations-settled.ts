@@ -7,9 +7,10 @@ import type { Locator, Page } from '@playwright/test';
  *
  * Use this instead of a fixed `waitForTimeout` after a state change that
  * animates (KF-BG83G7: replace browser-suite sleeps with state-based waits).
- * Infinite animations (spinners, shimmer) and paused ones are ignored, so the
- * wait cannot hang on decoration. It loops because a finished transition can
- * start the next one (a pop that cross-fades after a slide).
+ * Infinite animations (spinners, shimmer) and paused ones are ignored. Check
+ * each frame instead of awaiting `finished`: an animation can pause after it
+ * was sampled, leaving that promise pending. Two consecutive quiet frames
+ * catch a transition that starts after another one finishes.
  */
 export async function animationsSettled(page: Page): Promise<void> {
   const settle = async (): Promise<void> => {
@@ -17,24 +18,19 @@ export async function animationsSettled(page: Page): Promise<void> {
       new Promise((resolve) =>
         globalThis.requestAnimationFrame(() => resolve()),
       );
-    // Two frames first: a transition triggered by the last style change is
-    // only registered once the engine has computed the new style.
-    await frame();
-    await frame();
-    for (let round = 0; round < 20; round++) {
+    const deadline = performance.now() + 10_000;
+    let quietFrames = 0;
+    while (quietFrames < 2) {
+      await frame();
       const running = document.getAnimations().filter((animation) => {
         if (animation.playState !== 'running') return false;
         const end = animation.effect?.getComputedTiming().endTime;
         return typeof end === 'number' && Number.isFinite(end);
       });
-      if (running.length === 0) break;
-      await Promise.all(
-        running.map((animation) => animation.finished.catch(() => undefined)),
-      );
-      await frame();
+      quietFrames = running.length === 0 ? quietFrames + 1 : 0;
+      if (performance.now() > deadline)
+        throw new Error('Finite animations did not settle within 10 seconds.');
     }
-    await frame();
-    await frame();
   };
   await page.evaluate(settle);
 }
@@ -64,25 +60,35 @@ export async function scrollSettled(
 }
 
 /**
- * Wait until a running finite animation has played at least `ms`, or until
- * none is running. Use it to capture a mid-motion frame at a known point in
- * the motion instead of sleeping a fixed interval from the trigger.
+ * Wait until a running finite view-transition animation has played at least
+ * `ms`. A missing or completed animation must fail rather than yield a
+ * pre-motion or final screenshot as supposed mid-motion evidence.
  */
 export async function animationProgressed(
   page: Page,
   ms: number,
 ): Promise<void> {
-  await page.waitForFunction((minimum) => {
-    const running = document.getAnimations().filter((animation) => {
-      if (animation.playState !== 'running') return false;
-      const end = animation.effect?.getComputedTiming().endTime;
-      return typeof end === 'number' && Number.isFinite(end);
-    });
-    return (
-      running.length === 0 ||
-      running.some((animation) => Number(animation.currentTime) >= minimum)
-    );
-  }, ms);
+  await page.waitForFunction(
+    (minimum) => {
+      const running = document.getAnimations().filter((animation) => {
+        if (animation.playState !== 'running') return false;
+        const effect = animation.effect as KeyframeEffect | null;
+        const end = effect?.getComputedTiming().endTime;
+        return (
+          effect?.pseudoElement?.includes('view-transition') &&
+          typeof end === 'number' &&
+          Number.isFinite(end)
+        );
+      });
+      return running.some((animation) => {
+        const end = animation.effect?.getComputedTiming().endTime;
+        const elapsed = Number(animation.currentTime);
+        return typeof end === 'number' && elapsed >= minimum && elapsed < end;
+      });
+    },
+    ms,
+    { timeout: 5_000 },
+  );
 }
 
 /**
