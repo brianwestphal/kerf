@@ -327,36 +327,11 @@ function placeCaretAfterToken(editor: HTMLElement, chip: HTMLElement): void {
  * expand/collapse/focus. Returns a {@link SearchFieldsHandle} — a disposer that also
  * exposes the managed `expanded` state per field id.
  */
-export function wireSearchFields(
+/** Position suggestion popups and restore live placeholder state after renders. */
+function watchSearchFieldPresentation(
   root: HTMLElement,
-  {
-    models = {},
-    onSubmit,
-    onEdit,
-    collapsible = true,
-    keyboard = false,
-  }: WireSearchFieldsOptions = {},
-): SearchFieldsHandle {
-  const managed = collapsible !== false;
-  const config = typeof collapsible === 'object' ? collapsible : {};
-  const expandOnActivate = managed && (config.expandOnActivate ?? true);
-  const collapseOnEmptyBlur = managed && (config.collapseOnEmptyBlur ?? true);
-  const collapseOnEscape = managed && (config.collapseOnEscape ?? true);
-  const manageFocus = managed && (config.manageFocus ?? true);
-  const keepOpenOn = config.keepOpenOn;
-  const keyboardOn = keyboard !== false || Object.keys(models).length > 0;
-  const keyboardConfig = typeof keyboard === 'object' ? keyboard : undefined;
-  const removeAdjacentToken =
-    keyboardOn && (keyboardConfig?.removeAdjacentToken ?? true);
-  const moveCaretPastToken =
-    keyboardOn && (keyboardConfig?.moveCaretPastToken ?? true);
-  const onRemoveToken = keyboardConfig?.onRemoveToken;
-  const adopted = config.signals ?? {};
-  const created = new Map<string, Signal<boolean>>();
-  let disposed = false;
-  let pointerActivationTarget: Element | null = null;
-  const pendingPointerBlurCollapses = new Map<string, () => void>();
-  let pointerReleaseTimer: number | undefined;
+  isDisposed: () => boolean,
+) {
   const positionedSuggestions = new Map<HTMLElement, () => void>();
 
   const syncSuggestions = () => {
@@ -402,7 +377,7 @@ export function wireSearchFields(
             }),
           ],
         });
-        if (!active || disposed || !popup.isConnected) return;
+        if (!active || isDisposed() || !popup.isConnected) return;
         popup.style.left = `${position.x}px`;
         popup.style.top = `${position.y}px`;
         popup.style.visibility = 'visible';
@@ -459,144 +434,36 @@ export function wireSearchFields(
     subtree: true,
   });
   syncSuggestions();
+  return () => {
+    suggestionsObserver.disconnect();
+    placeholderObserver.disconnect();
+    for (const stop of positionedSuggestions.values()) stop();
+    positionedSuggestions.clear();
+  };
+}
 
-  /** True when focus moving to `element` should keep an empty field expanded. */
-  const isExemptTarget = (element: Element | null): boolean => {
-    if (!element) return false;
-    if (element.closest('[data-search-field-keep-open]')) return true;
-    return keepOpenOn ? keepOpenOn(element) : false;
-  };
-
-  // WebKit can report `focusout.relatedTarget === null` while a pointer is
-  // moving focus into a sibling button. Preserve the actual activation target
-  // across that focus transition so a keep-open surface cannot be collapsed
-  // (and removed) between pointerdown and click.
-  const trackPointerActivation = (event: Event) => {
-    if (pointerReleaseTimer !== undefined)
-      view().clearTimeout(pointerReleaseTimer);
-    pointerReleaseTimer = undefined;
-    pointerActivationTarget =
-      event.target instanceof Element ? event.target : null;
-  };
-  const flushPointerBlurCollapses = () => {
-    if (pointerReleaseTimer !== undefined)
-      view().clearTimeout(pointerReleaseTimer);
-    pointerReleaseTimer = undefined;
-    for (const collapse of pendingPointerBlurCollapses.values()) collapse();
-    pendingPointerBlurCollapses.clear();
-  };
-  // The click has reached the window, the end of its propagation path, so
-  // every app handler has run: collapse in the same task as the click's own
-  // render, so the browser pays one style recalc and layout for both.
-  const flushAfterClickDispatch = () => {
-    view().queueMicrotask(flushPointerBlurCollapses);
-  };
-  const flushAfterPointerClick = () => {
-    if (pendingPointerBlurCollapses.size === 0) return;
-    if (pointerReleaseTimer !== undefined)
-      view().clearTimeout(pointerReleaseTimer);
-    // A pointerup can have no click (drag/cancel); a click can run app handlers
-    // after capture. A task after either event preserves the pressed target.
-    pointerReleaseTimer = view().setTimeout(flushPointerBlurCollapses, 0);
-  };
-  const clearPointerActivation = () => {
-    pointerActivationTarget = null;
-  };
-  const clearPointerActivationAfterDefault = () => {
-    view().queueMicrotask(clearPointerActivation);
-    flushAfterPointerClick();
-  };
-  const clearPointerActivationAfterClick = () => {
-    clearPointerActivation();
-    flushAfterPointerClick();
-    // The task above stays the fallback for a click whose propagation stops
-    // before the window, or that is dispatched outside the document.
-    if (pendingPointerBlurCollapses.size > 0)
-      view().addEventListener('click', flushAfterClickDispatch, {
-        once: true,
-      });
-  };
-  const cancelPointerActivation = () => {
-    clearPointerActivation();
-    flushAfterPointerClick();
-  };
-
-  const signalFor = (id: string): Signal<boolean> => {
-    const own = adopted[id];
-    if (own) return own;
-    let field = created.get(id);
-    if (!field) {
-      field = signal(false);
-      created.set(id, field);
-    }
-    return field;
-  };
-  const setExpanded = (id: string, next: boolean) => {
-    const state = signalFor(id);
-    if (state.value !== next) state.value = next;
-  };
+/** Capture, normalize, and restore controlled token deletion around input renders. */
+function createDeletionController(
+  root: HTMLElement,
+  {
+    models,
+    onEdit,
+    manageFocus,
+    setExpanded,
+    focusAfterRender,
+  }: {
+    models: NonNullable<WireSearchFieldsOptions['models']>;
+    onEdit: WireSearchFieldsOptions['onEdit'];
+    manageFocus: boolean;
+    setExpanded: (id: string, next: boolean) => void;
+    focusAfterRender: (
+      id: string,
+      selector: string,
+      guardMovedFocus?: boolean,
+    ) => void;
+  },
+) {
   const view = () => root.ownerDocument.defaultView!;
-  const focusing = new Map<string, () => void>();
-  const focusAfterRender = (
-    id: string,
-    selector: string,
-    guardMovedFocus = false,
-  ) => {
-    focusing.get(id)?.();
-    let frame: number | undefined;
-    const stop = () => {
-      observer.disconnect();
-      if (frame !== undefined) view().cancelAnimationFrame(frame);
-      if (focusing.get(id) === stop) focusing.delete(id);
-    };
-    const restore = () => {
-      if (disposed) return stop();
-      const field = root.querySelector<HTMLElement>(
-        `[data-component="search-field"][data-search-field-id="${CSS.escape(id)}"]`,
-      );
-      const target = field?.querySelector<HTMLElement>(selector);
-      if (!field || !target) return;
-      const active = field.ownerDocument.activeElement;
-      // A later focus move to another control wins. The original editor may
-      // have been replaced, leaving body active; controls of this field are
-      // still part of the same interaction.
-      if (
-        guardMovedFocus &&
-        active !== field.ownerDocument.body &&
-        active !== target &&
-        !field.contains(active)
-      )
-        return stop();
-      stop();
-      if (target.matches('[data-search-field-editor]'))
-        placeSearchFieldCaret(target);
-      else target.focus();
-    };
-    const observer = new (realmOf(root).MutationObserver)(restore);
-    observer.observe(root, { childList: true, subtree: true });
-    focusing.set(id, stop);
-    view().queueMicrotask(restore);
-    // A collapsed field may reveal its editor in the next render frame.
-    // The microtask/mutation path runs first; this bounded fallback keeps
-    // opening reliable without reclaiming focus a user moved elsewhere.
-    frame = view().requestAnimationFrame(() => {
-      frame = undefined;
-      restore();
-      stop();
-    });
-  };
-  const openField = (id: string) => {
-    setExpanded(id, true);
-    if (manageFocus) focusAfterRender(id, '[data-search-field-editor]');
-  };
-  const closeField = (id: string) => {
-    setExpanded(id, false);
-    if (manageFocus) focusAfterRender(id, '.kui-search-field__expand');
-  };
-
-  const clearing = new Map<string, () => void>();
-  /** Whether a search field held focus when its ✕ was pressed. */
-  const focusAtClearPress = new WeakMap<Element, boolean>();
   const pending = new Map<string, PendingTokenDeletion>();
   const deleting = new Map<string, () => void>();
   const selectAllIntents = new WeakSet<HTMLElement>();
@@ -793,18 +660,374 @@ export function wireSearchFields(
   root.addEventListener('keydown', trackSelectAllIntent, true);
   root.addEventListener('pointerdown', clearSelectAllIntent, true);
   root.addEventListener('focusout', clearSelectAllIntent, true);
-
-  const disposers: Array<() => void> = [
-    () => {
+  return {
+    deleting,
+    restoreDeletion,
+    dispose: () => {
       pending.clear();
       for (const stop of deleting.values()) stop();
+      root.removeEventListener('beforeinput', onBeforeInput, true);
+      root.removeEventListener('input', onInput, true);
+      root.removeEventListener('keydown', trackSelectAllIntent, true);
+      root.removeEventListener('pointerdown', clearSelectAllIntent, true);
+      root.removeEventListener('focusout', clearSelectAllIntent, true);
     },
-    () => root.removeEventListener('beforeinput', onBeforeInput, true),
-    () => root.removeEventListener('input', onInput, true),
-    () => root.removeEventListener('keydown', trackSelectAllIntent, true),
-    () => root.removeEventListener('pointerdown', clearSelectAllIntent, true),
-    () => root.removeEventListener('focusout', clearSelectAllIntent, true),
-  ];
+  };
+}
+
+/** Restore focus after controlled renders and retain clear-button focus state. */
+function createFocusController(
+  root: HTMLElement,
+  setExpanded: (id: string, next: boolean) => void,
+  manageFocus: boolean,
+  isDisposed: () => boolean,
+) {
+  const view = () => root.ownerDocument.defaultView!;
+  const focusing = new Map<string, () => void>();
+  const focusAfterRender = (
+    id: string,
+    selector: string,
+    guardMovedFocus = false,
+  ) => {
+    focusing.get(id)?.();
+    let frame: number | undefined;
+    const stop = () => {
+      observer.disconnect();
+      if (frame !== undefined) view().cancelAnimationFrame(frame);
+      if (focusing.get(id) === stop) focusing.delete(id);
+    };
+    const restore = () => {
+      if (isDisposed()) return stop();
+      const field = root.querySelector<HTMLElement>(
+        `[data-component="search-field"][data-search-field-id="${CSS.escape(id)}"]`,
+      );
+      const target = field?.querySelector<HTMLElement>(selector);
+      if (!field || !target) return;
+      const active = field.ownerDocument.activeElement;
+      // A later focus move to another control wins. The original editor may
+      // have been replaced, leaving body active; controls of this field are
+      // still part of the same interaction.
+      if (
+        guardMovedFocus &&
+        active !== field.ownerDocument.body &&
+        active !== target &&
+        !field.contains(active)
+      )
+        return stop();
+      stop();
+      if (target.matches('[data-search-field-editor]'))
+        placeSearchFieldCaret(target);
+      else target.focus();
+    };
+    const observer = new MutationObserver(restore);
+    observer.observe(root, { childList: true, subtree: true });
+    focusing.set(id, stop);
+    view().queueMicrotask(restore);
+    // A collapsed field may reveal its editor in the next render frame.
+    // The microtask/mutation path runs first; this bounded fallback keeps
+    // opening reliable without reclaiming focus a user moved elsewhere.
+    frame = view().requestAnimationFrame(() => {
+      frame = undefined;
+      restore();
+      stop();
+    });
+  };
+  const openField = (id: string) => {
+    setExpanded(id, true);
+    if (manageFocus) focusAfterRender(id, '[data-search-field-editor]');
+  };
+  const closeField = (id: string) => {
+    setExpanded(id, false);
+    if (manageFocus) focusAfterRender(id, '.kui-search-field__expand');
+  };
+
+  const clearing = new Map<string, () => void>();
+  /** Whether a search field held focus when its ✕ was pressed. */
+  const focusAtClearPress = new WeakMap<Element, boolean>();
+  return {
+    focusAfterRender,
+    openField,
+    closeField,
+    clearing,
+    focusAtClearPress,
+    dispose: () => {
+      for (const stop of focusing.values()) stop();
+    },
+  };
+}
+
+/** Defer empty-field blur collapse through pointer activation and click dispatch. */
+function createCollapseController(
+  root: HTMLElement,
+  {
+    enabled,
+    keepOpenOn,
+    clearing,
+    deleting,
+    manageFocus,
+    setExpanded,
+    isDisposed,
+  }: {
+    enabled: boolean;
+    keepOpenOn: SearchFieldCollapsibleOptions['keepOpenOn'];
+    clearing: ReadonlyMap<string, () => void>;
+    deleting: ReadonlyMap<string, () => void>;
+    manageFocus: boolean;
+    setExpanded: (id: string, next: boolean) => void;
+    isDisposed: () => boolean;
+  },
+) {
+  const view = () => root.ownerDocument.defaultView!;
+  let pointerActivationTarget: Element | null = null;
+  const pendingPointerBlurCollapses = new Map<string, () => void>();
+  let pointerReleaseTimer: number | undefined;
+  /** True when focus moving to `element` should keep an empty field expanded. */
+  const isExemptTarget = (element: Element | null): boolean => {
+    if (!element) return false;
+    if (element.closest('[data-search-field-keep-open]')) return true;
+    return keepOpenOn ? keepOpenOn(element) : false;
+  };
+
+  // WebKit can report `focusout.relatedTarget === null` while a pointer is
+  // moving focus into a sibling button. Preserve the actual activation target
+  // across that focus transition so a keep-open surface cannot be collapsed
+  // (and removed) between pointerdown and click.
+  const trackPointerActivation = (event: Event) => {
+    if (pointerReleaseTimer !== undefined)
+      view().clearTimeout(pointerReleaseTimer);
+    pointerReleaseTimer = undefined;
+    pointerActivationTarget =
+      event.target instanceof Element ? event.target : null;
+  };
+  const flushPointerBlurCollapses = () => {
+    if (pointerReleaseTimer !== undefined)
+      view().clearTimeout(pointerReleaseTimer);
+    pointerReleaseTimer = undefined;
+    for (const collapse of pendingPointerBlurCollapses.values()) collapse();
+    pendingPointerBlurCollapses.clear();
+  };
+  // The click has reached the window, the end of its propagation path, so
+  // every app handler has run: collapse in the same task as the click's own
+  // render, so the browser pays one style recalc and layout for both.
+  const flushAfterClickDispatch = () => {
+    view().queueMicrotask(flushPointerBlurCollapses);
+  };
+  const flushAfterPointerClick = () => {
+    if (pendingPointerBlurCollapses.size === 0) return;
+    if (pointerReleaseTimer !== undefined)
+      view().clearTimeout(pointerReleaseTimer);
+    // A pointerup can have no click (drag/cancel); a click can run app handlers
+    // after capture. A task after either event preserves the pressed target.
+    pointerReleaseTimer = view().setTimeout(flushPointerBlurCollapses, 0);
+  };
+  const clearPointerActivation = () => {
+    pointerActivationTarget = null;
+  };
+  const clearPointerActivationAfterDefault = () => {
+    view().queueMicrotask(clearPointerActivation);
+    flushAfterPointerClick();
+  };
+  const clearPointerActivationAfterClick = () => {
+    clearPointerActivation();
+    flushAfterPointerClick();
+    // The task above stays the fallback for a click whose propagation stops
+    // before the window, or that is dispatched outside the document.
+    if (pendingPointerBlurCollapses.size > 0)
+      view().addEventListener('click', flushAfterClickDispatch, {
+        once: true,
+      });
+  };
+  const cancelPointerActivation = () => {
+    clearPointerActivation();
+    flushAfterPointerClick();
+  };
+
+  const install = (disposers: Array<() => void>) => {
+    if (enabled) {
+      root.ownerDocument.addEventListener(
+        'pointerdown',
+        trackPointerActivation,
+        true,
+      );
+      root.ownerDocument.addEventListener(
+        'pointerup',
+        clearPointerActivationAfterDefault,
+        true,
+      );
+      root.ownerDocument.addEventListener(
+        'pointercancel',
+        cancelPointerActivation,
+        true,
+      );
+      root.ownerDocument.addEventListener(
+        'click',
+        clearPointerActivationAfterClick,
+        true,
+      );
+      disposers.push(
+        () =>
+          root.ownerDocument.removeEventListener(
+            'pointerdown',
+            trackPointerActivation,
+            true,
+          ),
+        () =>
+          root.ownerDocument.removeEventListener(
+            'pointerup',
+            clearPointerActivationAfterDefault,
+            true,
+          ),
+        () =>
+          root.ownerDocument.removeEventListener(
+            'pointercancel',
+            cancelPointerActivation,
+            true,
+          ),
+        () =>
+          root.ownerDocument.removeEventListener(
+            'click',
+            clearPointerActivationAfterClick,
+            true,
+          ),
+      );
+      // Pressing an in-field control (clear, trailing, token, or the trigger) must not
+      // blur the editor — otherwise the transient blur would collapse the field before
+      // the control's own handler runs. Keeping focus also keeps the click firing.
+      disposers.push(
+        delegate(
+          root,
+          'mousedown',
+          '[data-component="search-field"][data-collapsible="true"] button',
+          (event) => {
+            event.preventDefault();
+          },
+        ),
+      );
+      disposers.push(
+        delegate(
+          root,
+          'focusout',
+          '[data-search-field-editor]',
+          (event, element) => {
+            const editor = element as HTMLElement;
+            const field = editor.closest<HTMLElement>(
+              '[data-component="search-field"]',
+            );
+            const id = field?.dataset.searchFieldId;
+            if (
+              !id ||
+              field?.dataset.collapsible !== 'true' ||
+              field.dataset.disabled === 'true'
+            )
+              return;
+            const relatedTarget = (event as FocusEvent).relatedTarget;
+            const next =
+              relatedTarget instanceof Element
+                ? relatedTarget
+                : pointerActivationTarget;
+            if (
+              !next &&
+              (clearing.has(id) || (manageFocus && deleting.has(id)))
+            )
+              return;
+            if (next instanceof Node && field.contains(next)) return;
+            if (isExemptTarget(next instanceof Element ? next : null)) return;
+            if (!editorIsEmpty(editor)) return;
+            const collapseIfStillEmptyAndBlurred = () => {
+              if (isDisposed() || !editorIsEmpty(editor)) return;
+              const active = field.ownerDocument.activeElement;
+              if (!field.contains(active) && !isExemptTarget(active))
+                setExpanded(id, false);
+            };
+            if (pointerActivationTarget)
+              pendingPointerBlurCollapses.set(
+                id,
+                collapseIfStillEmptyAndBlurred,
+              );
+            else view().queueMicrotask(collapseIfStillEmptyAndBlurred);
+          },
+        ),
+      );
+    }
+  };
+  return {
+    install,
+    dispose: () => {
+      if (pointerReleaseTimer !== undefined)
+        view().clearTimeout(pointerReleaseTimer);
+      view().removeEventListener('click', flushAfterClickDispatch);
+      pendingPointerBlurCollapses.clear();
+    },
+  };
+}
+
+export function wireSearchFields(
+  root: HTMLElement,
+  {
+    models = {},
+    onSubmit,
+    onEdit,
+    collapsible = true,
+    keyboard = false,
+  }: WireSearchFieldsOptions = {},
+): SearchFieldsHandle {
+  const managed = collapsible !== false;
+  const config = typeof collapsible === 'object' ? collapsible : {};
+  const expandOnActivate = managed && (config.expandOnActivate ?? true);
+  const collapseOnEmptyBlur = managed && (config.collapseOnEmptyBlur ?? true);
+  const collapseOnEscape = managed && (config.collapseOnEscape ?? true);
+  const manageFocus = managed && (config.manageFocus ?? true);
+  const keepOpenOn = config.keepOpenOn;
+  const keyboardOn = keyboard !== false || Object.keys(models).length > 0;
+  const keyboardConfig = typeof keyboard === 'object' ? keyboard : undefined;
+  const removeAdjacentToken =
+    keyboardOn && (keyboardConfig?.removeAdjacentToken ?? true);
+  const moveCaretPastToken =
+    keyboardOn && (keyboardConfig?.moveCaretPastToken ?? true);
+  const onRemoveToken = keyboardConfig?.onRemoveToken;
+  const adopted = config.signals ?? {};
+  const created = new Map<string, Signal<boolean>>();
+  let disposed = false;
+  const stopPresentation = watchSearchFieldPresentation(root, () => disposed);
+
+  const signalFor = (id: string): Signal<boolean> => {
+    const own = adopted[id];
+    if (own) return own;
+    let field = created.get(id);
+    if (!field) {
+      field = signal(false);
+      created.set(id, field);
+    }
+    return field;
+  };
+  const setExpanded = (id: string, next: boolean) => {
+    const state = signalFor(id);
+    if (state.value !== next) state.value = next;
+  };
+  const view = () => root.ownerDocument.defaultView!;
+  const focus = createFocusController(
+    root,
+    setExpanded,
+    manageFocus,
+    () => disposed,
+  );
+  const {
+    focusAfterRender,
+    openField,
+    closeField,
+    clearing,
+    focusAtClearPress,
+  } = focus;
+  const deletion = createDeletionController(root, {
+    models,
+    onEdit,
+    manageFocus,
+    setExpanded,
+    focusAfterRender,
+  });
+  const { deleting, restoreDeletion } = deletion;
+
+  const disposers: Array<() => void> = [deletion.dispose];
 
   disposers.push(
     delegate(
@@ -1118,118 +1341,22 @@ export function wireSearchFields(
     );
   }
 
-  if (collapseOnEmptyBlur) {
-    root.ownerDocument.addEventListener(
-      'pointerdown',
-      trackPointerActivation,
-      true,
-    );
-    root.ownerDocument.addEventListener(
-      'pointerup',
-      clearPointerActivationAfterDefault,
-      true,
-    );
-    root.ownerDocument.addEventListener(
-      'pointercancel',
-      cancelPointerActivation,
-      true,
-    );
-    root.ownerDocument.addEventListener(
-      'click',
-      clearPointerActivationAfterClick,
-      true,
-    );
-    disposers.push(
-      () =>
-        root.ownerDocument.removeEventListener(
-          'pointerdown',
-          trackPointerActivation,
-          true,
-        ),
-      () =>
-        root.ownerDocument.removeEventListener(
-          'pointerup',
-          clearPointerActivationAfterDefault,
-          true,
-        ),
-      () =>
-        root.ownerDocument.removeEventListener(
-          'pointercancel',
-          cancelPointerActivation,
-          true,
-        ),
-      () =>
-        root.ownerDocument.removeEventListener(
-          'click',
-          clearPointerActivationAfterClick,
-          true,
-        ),
-    );
-    // Pressing an in-field control (clear, trailing, token, or the trigger) must not
-    // blur the editor — otherwise the transient blur would collapse the field before
-    // the control's own handler runs. Keeping focus also keeps the click firing.
-    disposers.push(
-      delegate(
-        root,
-        'mousedown',
-        '[data-component="search-field"][data-collapsible="true"] button',
-        (event) => {
-          event.preventDefault();
-        },
-      ),
-    );
-    disposers.push(
-      delegate(
-        root,
-        'focusout',
-        '[data-search-field-editor]',
-        (event, element) => {
-          const editor = element as HTMLElement;
-          const field = editor.closest<HTMLElement>(
-            '[data-component="search-field"]',
-          );
-          const id = field?.dataset.searchFieldId;
-          if (
-            !id ||
-            field?.dataset.collapsible !== 'true' ||
-            field.dataset.disabled === 'true'
-          )
-            return;
-          const relatedTarget = (event as FocusEvent).relatedTarget;
-          const next =
-            relatedTarget instanceof Element
-              ? relatedTarget
-              : pointerActivationTarget;
-          if (!next && (clearing.has(id) || (manageFocus && deleting.has(id))))
-            return;
-          if (next instanceof Node && field.contains(next)) return;
-          if (isExemptTarget(next instanceof Element ? next : null)) return;
-          if (!editorIsEmpty(editor)) return;
-          const collapseIfStillEmptyAndBlurred = () => {
-            if (disposed || !editorIsEmpty(editor)) return;
-            const active = field.ownerDocument.activeElement;
-            if (!field.contains(active) && !isExemptTarget(active))
-              setExpanded(id, false);
-          };
-          if (pointerActivationTarget)
-            pendingPointerBlurCollapses.set(id, collapseIfStillEmptyAndBlurred);
-          else view().queueMicrotask(collapseIfStillEmptyAndBlurred);
-        },
-      ),
-    );
-  }
+  const collapse = createCollapseController(root, {
+    enabled: collapseOnEmptyBlur,
+    keepOpenOn,
+    clearing,
+    deleting,
+    manageFocus,
+    setExpanded,
+    isDisposed: () => disposed,
+  });
+  collapse.install(disposers);
 
   const dispose = () => {
     disposed = true;
-    if (pointerReleaseTimer !== undefined)
-      view().clearTimeout(pointerReleaseTimer);
-    view().removeEventListener('click', flushAfterClickDispatch);
-    pendingPointerBlurCollapses.clear();
-    suggestionsObserver.disconnect();
-    placeholderObserver.disconnect();
-    for (const stop of positionedSuggestions.values()) stop();
-    positionedSuggestions.clear();
-    for (const stop of focusing.values()) stop();
+    collapse.dispose();
+    stopPresentation();
+    focus.dispose();
     for (const stop of disposers.splice(0)) stop();
   };
   const handle = (() => dispose()) as SearchFieldsHandle;
