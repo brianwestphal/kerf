@@ -18,6 +18,28 @@ interface ListVirtualizationControllerOptions<T> {
   rows: ListRowController<T>;
 }
 
+/** A measured row's seed before its first report: pixels, or derived from the item. */
+type Estimate<T> = number | ((item: T, index: number) => number);
+
+// The height-model tags. Small integers rather than strings: the tag is
+// compared on every row of `rebuildOffsets` and the names below keep the
+// switches readable, while the literals cost nothing in the bundle.
+const FIXED = 0;
+const DECLARED = 1;
+const MEASURED = 2;
+
+/**
+ * `rowHeight` normalized once into the three height models (docs/17): every
+ * row a fixed pixel height, app-declared variable heights derived from the
+ * item, or measured heights the app reports after layout, seeded by an
+ * estimate. Every mode-dependent decision below switches on `kind`, so adding
+ * a model fails to compile at each site that has to know about it.
+ */
+type HeightModel<T> =
+  | { kind: typeof FIXED; px: number }
+  | { kind: typeof DECLARED; at: (item: T, index: number) => number }
+  | { kind: typeof MEASURED; estimate: Estimate<T> };
+
 /** A pixel height: a finite number >= 0 (zero-height rows are allowed). */
 function assertHeight(value: unknown, what: string): number {
   if (!(typeof value === 'number' && value >= 0 && value < Infinity))
@@ -27,11 +49,44 @@ function assertHeight(value: unknown, what: string): number {
   return value;
 }
 
-/** Reject an invalid `virtualize` configuration before any DOM is touched. */
-function validateVirtualize<T>(
+/**
+ * Validate `rowHeight` and classify it into its height model, in one pass over
+ * its runtime type. Rejects an invalid value before any DOM is touched.
+ */
+function heightModelOf<T>(
+  virtualize: NonNullable<BindListOptions<T>['virtualize']>,
+): HeightModel<T> {
+  const { rowHeight } = virtualize;
+  switch (typeof rowHeight) {
+    case 'number':
+      // Window mode divides by a fixed height; content-visibility only uses it
+      // as a placeholder size, where zero is harmless.
+      if (
+        assertHeight(rowHeight, 'rowHeight') === 0 &&
+        virtualize.mode !== 'content-visibility'
+      )
+        throw new RangeError(
+          'bindList: a fixed rowHeight must be > 0 in window mode',
+        );
+      return { kind: FIXED, px: rowHeight };
+    case 'function':
+      return { kind: DECLARED, at: rowHeight };
+    default: {
+      // Untrusted input: `rowHeight` may be anything at runtime, so read the
+      // estimate off an optional shape before trusting the declared type.
+      const estimate = (rowHeight as { estimate?: unknown } | null)?.estimate;
+      if (typeof estimate !== 'function')
+        assertHeight(estimate, 'rowHeight.estimate');
+      return { kind: MEASURED, estimate: rowHeight.estimate };
+    }
+  }
+}
+
+/** Reject invalid `overscan` / `minRows` before any DOM is touched. */
+function validateCounts<T>(
   virtualize: NonNullable<BindListOptions<T>['virtualize']>,
 ): void {
-  const { rowHeight, overscan, minRows } = virtualize;
+  const { overscan, minRows } = virtualize;
   for (const [name, count] of [
     ['overscan', overscan],
     ['minRows', minRows],
@@ -41,21 +96,6 @@ function validateVirtualize<T>(
         `bindList: virtualize.${name} must be an integer >= 0 (got ${count})`,
       );
   }
-  if (typeof rowHeight === 'number') {
-    // Window mode divides by a fixed height; content-visibility only uses it as
-    // a placeholder size, where zero is harmless.
-    if (
-      assertHeight(rowHeight, 'rowHeight') === 0 &&
-      virtualize.mode !== 'content-visibility'
-    )
-      throw new RangeError(
-        'bindList: a fixed rowHeight must be > 0 in window mode',
-      );
-  } else if (typeof rowHeight !== 'function') {
-    const estimate = (rowHeight as { estimate?: unknown } | null)?.estimate;
-    if (typeof estimate !== 'function')
-      assertHeight(estimate, 'rowHeight.estimate');
-  }
 }
 
 /** Own window calculation, height models, scheduling, observers, and CSS strategy. */
@@ -63,12 +103,11 @@ export function createListVirtualizationController<T>(
   options: ListVirtualizationControllerOptions<T>,
 ): ListVirtualizationController<T> {
   const { parent, container, virtualize, key, rows } = options;
-  validateVirtualize(virtualize);
+  validateCounts(virtualize);
   const overscan = virtualize.overscan ?? 3;
-  const { minRows, rowHeight } = virtualize;
+  const { minRows } = virtualize;
   const contentVisibility = virtualize.mode === 'content-visibility';
-  const fixedHeight = typeof rowHeight === 'number' ? rowHeight : null;
-  const measuring = typeof rowHeight === 'object' && rowHeight !== null;
+  const model = heightModelOf(virtualize);
   const measured = new Map<ListKey, number>();
   const indexByKey = new Map<ListKey, number>();
   const renderSubscribers = new Set<() => void>();
@@ -85,36 +124,33 @@ export function createListVirtualizationController<T>(
   let rafPending = false;
   let disposed = false;
 
-  const estimateAt = (index: number): number => {
-    const estimate = (
-      rowHeight as { estimate: number | ((item: T, index: number) => number) }
-    ).estimate;
-    return typeof estimate === 'function'
+  const estimateOf = (estimate: Estimate<T>, index: number): number =>
+    typeof estimate === 'function'
       ? assertHeight(
           estimate(items[index], index),
           `rowHeight.estimate(item, ${index})`,
         )
       : estimate;
+
+  /** The model's height for row `index` (a measured row's report once it has one). */
+  const heightAt = (index: number): number => {
+    switch (model.kind) {
+      case FIXED:
+        return model.px;
+      case DECLARED:
+        return assertHeight(
+          model.at(items[index], index),
+          `rowHeight(item, ${index})`,
+        );
+      case MEASURED:
+        return (
+          measured.get(key(items[index])) ?? estimateOf(model.estimate, index)
+        );
+    }
   };
-  const variableHeightAt: ((index: number) => number) | null =
-    fixedHeight !== null
-      ? null
-      : measuring
-        ? (index): number =>
-            measured.get(key(items[index])) ?? estimateAt(index)
-        : (index): number =>
-            assertHeight(
-              (rowHeight as (item: T, index: number) => number)(
-                items[index],
-                index,
-              ),
-              `rowHeight(item, ${index})`,
-            );
-  const intrinsicSizeAt = (index: number): number =>
-    fixedHeight ?? (variableHeightAt as (index: number) => number)(index);
 
   const rebuildOffsets = (): void => {
-    const heightAt = variableHeightAt as (index: number) => number;
+    const measuring = model.kind === MEASURED;
     offsets = new Array<number>(items.length + 1);
     offsets[0] = 0;
     if (measuring) indexByKey.clear();
@@ -155,11 +191,14 @@ export function createListVirtualizationController<T>(
   };
 
   const sizeRows = (start: number): void => {
-    if (measuring) return;
+    // A measured row is sized by its own content; the app reports the result.
+    if (model.kind === MEASURED) return;
     for (let index = 0; index < rows.order.length; index++) {
       const absoluteIndex = start + index;
       const height =
-        fixedHeight ?? offsets[absoluteIndex + 1] - offsets[absoluteIndex];
+        model.kind === FIXED
+          ? model.px
+          : offsets[absoluteIndex + 1] - offsets[absoluteIndex];
       rows.order[index].el.style.height = `${height}px`;
     }
   };
@@ -170,7 +209,7 @@ export function createListVirtualizationController<T>(
       for (let index = 0; index < rows.order.length; index++) {
         const el = rows.order[index].el;
         el.style.contentVisibility = 'auto';
-        el.style.containIntrinsicSize = `0 ${intrinsicSizeAt(index)}px`;
+        el.style.containIntrinsicSize = `0 ${heightAt(index)}px`;
       }
       return;
     }
@@ -181,7 +220,7 @@ export function createListVirtualizationController<T>(
     let padTop: number;
     let padBottom: number;
     if (minRows !== undefined && total < minRows) {
-      if (fixedHeight === null && heightsDirty) {
+      if (model.kind !== FIXED && heightsDirty) {
         rebuildOffsets();
         heightsDirty = false;
       }
@@ -189,27 +228,35 @@ export function createListVirtualizationController<T>(
       end = total;
       padTop = 0;
       padBottom = 0;
-    } else if (fixedHeight !== null) {
-      const viewportBottom = parent.scrollTop + parent.clientHeight;
-      // Clamp to `total`: a source that shrinks while scrolled deep (before the
-      // browser clamps scrollTop) must not pad past the content (KF-FJ40AE).
-      start = Math.min(
-        total,
-        Math.max(0, Math.floor(parent.scrollTop / fixedHeight) - overscan),
-      );
-      end = Math.min(total, Math.ceil(viewportBottom / fixedHeight) + overscan);
-      padTop = start * fixedHeight;
-      padBottom = Math.max(0, total - end) * fixedHeight;
     } else {
-      if (heightsDirty) {
-        rebuildOffsets();
-        heightsDirty = false;
+      const { scrollTop } = parent;
+      const viewportBottom = scrollTop + parent.clientHeight;
+      switch (model.kind) {
+        case FIXED: {
+          const { px } = model;
+          // Clamp to `total`: a source that shrinks while scrolled deep (before
+          // the browser clamps scrollTop) must not pad past the content
+          // (KF-FJ40AE).
+          start = Math.min(
+            total,
+            Math.max(0, Math.floor(scrollTop / px) - overscan),
+          );
+          end = Math.min(total, Math.ceil(viewportBottom / px) + overscan);
+          padTop = start * px;
+          padBottom = Math.max(0, total - end) * px;
+          break;
+        }
+        case DECLARED:
+        case MEASURED:
+          if (heightsDirty) {
+            rebuildOffsets();
+            heightsDirty = false;
+          }
+          start = Math.max(0, findStart(scrollTop, total) - overscan);
+          end = Math.min(total, findEnd(viewportBottom, total) + overscan);
+          padTop = offsets[start];
+          padBottom = offsets[total] - offsets[end];
       }
-      const viewportBottom = parent.scrollTop + parent.clientHeight;
-      start = Math.max(0, findStart(parent.scrollTop, total) - overscan);
-      end = Math.min(total, findEnd(viewportBottom, total) + overscan);
-      padTop = offsets[start];
-      padBottom = offsets[total] - offsets[end];
     }
     rows.sync(items.slice(start, end));
     sizeRows(start);
@@ -264,10 +311,10 @@ export function createListVirtualizationController<T>(
 
   const setHeight = (rowKey: ListKey, height: number): void => {
     assertHeight(height, 'setHeight()');
-    if (!measuring || contentVisibility) return;
+    if (model.kind !== MEASURED || contentVisibility) return;
     const index = indexByKey.get(rowKey);
     if (index === undefined) return;
-    const oldHeight = measured.get(rowKey) ?? estimateAt(index);
+    const oldHeight = measured.get(rowKey) ?? estimateOf(model.estimate, index);
     if (height === oldHeight) return;
     measured.set(rowKey, height);
     if (!pendingAnchorBaselines.has(rowKey))
