@@ -645,6 +645,24 @@ function resetInspectorScroll(root: HTMLElement): void {
     if (element.scrollTop) element.scrollTop = 0;
 }
 
+/** Text-entry input types whose draft a document value backs. */
+const DRAFT_INPUT = /^(text|search|url|email|tel|number|password)?$/;
+
+/**
+ * Writes every drafted text field in `scope` back to its rendered value: an
+ * input to its `value` attribute, a textarea to its text (KF-0Y88XZ). An
+ * input with no `value` attribute holds nothing the document renders, so it
+ * is left alone.
+ */
+function discardDrafts(scope: ParentNode): void {
+  for (const input of scope.querySelectorAll('input')) {
+    if (!input.hasAttribute('value') || !DRAFT_INPUT.test(input.type)) continue;
+    if (input.value !== input.defaultValue) input.value = input.defaultValue;
+  }
+  for (const area of scope.querySelectorAll('textarea'))
+    if (area.value !== area.defaultValue) area.value = area.defaultValue;
+}
+
 /** Adds a listener and returns its disposer. */
 function on(
   target: EventTarget,
@@ -5136,17 +5154,28 @@ export function createEditor(options: EditorOptions) {
       : undefined;
   };
 
+  // KF-0Y88XZ: undo and redo discard every Inspector draft along with its
+  // error. A refused draft (an invalid name) leaves the field's `value`
+  // attribute on the document's value, so the re-render never touches the
+  // live `.value`; write it back here, after the render, so the field shows
+  // the document again rather than text the document does not hold.
+  const discardInspectorDrafts = () => {
+    const stack = wired?.querySelector(`#${INSPECTOR_STACK}`);
+    if (stack) discardDrafts(stack);
+  };
   const undo = () => {
     if (!history.canUndo) return;
     doc.value = history.undo(doc.value);
     fieldErrors.value = {};
     historyVersion.value += 1;
+    discardInspectorDrafts();
   };
   const redo = () => {
     if (!history.canRedo) return;
     doc.value = history.redo(doc.value);
     fieldErrors.value = {};
     historyVersion.value += 1;
+    discardInspectorDrafts();
   };
 
   const moveSelected = (delta: -1 | 1) => {

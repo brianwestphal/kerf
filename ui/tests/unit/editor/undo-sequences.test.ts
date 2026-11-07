@@ -41,21 +41,22 @@ describe('undo sequences', () => {
     expect(node()?.name).toBe('composeButton');
   });
 
-  // KF-0Y88XZ: undo clears the refusal but leaves the refused text in the
-  // field, which now shows a name the document does not have. Flip to `it`
-  // when fixed.
-  it.fails(
-    'shows the document value again in a field whose invalid draft undo discarded',
-    () => {
-      const { root } = open();
-      choose(field(root, '[data-editor-prop="tone"]'), 'danger');
-      type(field(root, '[data-editor-name]'), 'Send Button');
-      click(root, 'editor-undo');
-      expect(
-        field(root, '[data-editor-name]').querySelector('input')!.value,
-      ).toBe('composeButton');
-    },
-  );
+  // KF-0Y88XZ: undo discards the refused text with its message, so the field
+  // shows the document's name again rather than one the document lacks.
+  it('shows the document value again in a field whose invalid draft undo discarded', () => {
+    const { root } = open();
+    choose(field(root, '[data-editor-prop="tone"]'), 'danger');
+    type(field(root, '[data-editor-name]'), 'Send Button');
+    click(root, 'editor-undo');
+    expect(
+      field(root, '[data-editor-name]').querySelector('input')!.value,
+    ).toBe('composeButton');
+    // Redo restores the edit, not the refused draft.
+    click(root, 'editor-redo');
+    expect(
+      field(root, '[data-editor-name]').querySelector('input')!.value,
+    ).toBe('composeButton');
+  });
 
   it('clears the inspector when undo removes the selected node, and redo brings it back', () => {
     const { root, editor } = open(TOOLBAR);
