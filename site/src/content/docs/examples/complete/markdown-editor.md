@@ -64,7 +64,7 @@ mount(root, () => (
   </div>
 ));
 
-delegate(root, "input", ".editor-input", (_e, el) => {
+void delegate(root, "input", ".editor-input", (_e, el) => {
   source.value = (el as HTMLElement).innerText;
 });
 ```

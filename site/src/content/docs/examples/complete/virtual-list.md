@@ -56,7 +56,7 @@ bindList(listEl, filtered, {
   virtualize: { rowHeight: 36, overscan: 4 }, // only the visible slice renders
 });
 
-delegate(listEl, "click", "[data-del]", (_e, el) => {
+void delegate(listEl, "click", "[data-del]", (_e, el) => {
   const row = all.value.find(
     (r) => r.id === Number(el.getAttribute("data-del")),
   )!;

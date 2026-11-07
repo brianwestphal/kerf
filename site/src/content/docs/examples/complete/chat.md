@@ -109,19 +109,19 @@ effect(() => {
 });
 
 // Tier 1 delegations — clicks, keydown, submit all bubble.
-delegate(root, "keydown", "[data-input]", (e, el) => {
+void delegate(root, "keydown", "[data-input]", (e, el) => {
   const ev = e as KeyboardEvent;
   if (ev.key !== "Enter" || ev.shiftKey) return;
   ev.preventDefault();
   send((el as HTMLTextAreaElement).value);
 });
-delegate(root, "submit", "[data-composer]", (e) => {
+void delegate(root, "submit", "[data-composer]", (e) => {
   e.preventDefault();
   send((root.querySelector("[data-input]") as HTMLTextAreaElement).value);
 });
 // Copy a finished bot bubble. ACTIONS.copy.selector is pre-escaped at module
 // load — renaming the action key updates JSX and the delegate target together.
-delegate(root, "click", ACTIONS.copy.selector, (_e, el) => {
+void delegate(root, "click", ACTIONS.copy.selector, (_e, el) => {
   const id = (el as HTMLElement).dataset.id;
   const msg = messages.value.find((m) => m.id === id);
   if (msg) void navigator.clipboard.writeText(msg.text);

@@ -61,6 +61,8 @@ mount(root, () => (
         {source.value}
       </div>
     </div>
+    {/* `html` is DOMPurify-sanitized above, so raw() here is the safe pattern. */}
+    {/* eslint-disable-next-line kerfjs/no-raw-with-dynamic-arg */}
     <article class="pane preview">{raw(html.value)}</article>
   </div>
 ));

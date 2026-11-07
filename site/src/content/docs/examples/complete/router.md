@@ -60,7 +60,7 @@ mount(app, () => (
 ));
 
 // The fake browser's Back / Forward buttons drive real history — one delegated listener.
-delegate(app, "click", "[data-nav]", (_e, el) => {
+void delegate(app, "click", "[data-nav]", (_e, el) => {
   if ((el as HTMLElement).dataset.nav === "back") router.back();
   else router.forward();
 });

@@ -108,13 +108,16 @@ mount(document.getElementById('dom')!, () => (
 
 // One delegated `input` listener drives the query signal; the debouncedSignal +
 // computed do the rest — the filter recomputes only after typing settles.
-delegate(document.body, 'input', '#search', (_event, el) => {
+// Both listeners below are page-lifetime (attached once at module load, never
+// torn down), so the leading `void` is the explicit-discard sigil for
+// `kerfjs/require-delegate-disposer`.
+void delegate(document.body, 'input', '#search', (_event, el) => {
   query.value = (el as HTMLInputElement).value;
 });
 
 // Confirm-to-delete via kerfjs/overlay; a toast confirms the action. One delegated
 // `click` listener matches every row's Delete button (walk-up `closest()`).
-delegate(listEl, 'click', '[data-del]', (_event, el) => {
+void delegate(listEl, 'click', '[data-del]', (_event, el) => {
   const id = Number(el.getAttribute('data-del'));
   const row = all.value.find((r) => r.id === id);
   if (row === undefined) return;

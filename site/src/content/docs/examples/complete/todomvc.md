@@ -164,24 +164,24 @@ mount(root, () => {
 });
 
 // Tier 1 click delegations — `.selector` is pre-computed and CSS-escaped:
-delegate(root, "click", ACTIONS.toggle.selector, (_e, el) =>
+void delegate(root, "click", ACTIONS.toggle.selector, (_e, el) =>
   todos.actions.toggle((el as HTMLElement).dataset.id!),
 );
-delegate(root, "click", ACTIONS.remove.selector, (_e, el) =>
+void delegate(root, "click", ACTIONS.remove.selector, (_e, el) =>
   todos.actions.remove((el as HTMLElement).dataset.id!),
 );
-delegate(root, "click", ACTIONS.edit.selector, (_e, el) =>
+void delegate(root, "click", ACTIONS.edit.selector, (_e, el) =>
   todos.actions.startEdit((el as HTMLElement).dataset.id!),
 );
-delegate(root, "click", ACTIONS.filter.selector, (_e, el) =>
+void delegate(root, "click", ACTIONS.filter.selector, (_e, el) =>
   todos.actions.setFilter((el as HTMLElement).dataset.value as Filter),
 );
-delegate(root, "click", ACTIONS.clearDone.selector, () =>
+void delegate(root, "click", ACTIONS.clearDone.selector, () =>
   todos.actions.clearDone(),
 );
 
 // Enter on the new-todo input.
-delegate(root, "keydown", "[data-new]", (e, el) => {
+void delegate(root, "keydown", "[data-new]", (e, el) => {
   if ((e as KeyboardEvent).key !== "Enter") return;
   const input = el as HTMLInputElement;
   todos.actions.add(input.value);
@@ -189,7 +189,7 @@ delegate(root, "keydown", "[data-new]", (e, el) => {
 });
 
 // Enter / Esc on the edit input.
-delegate(root, "keydown", "[data-edit]", (e, el) => {
+void delegate(root, "keydown", "[data-edit]", (e, el) => {
   const ev = e as KeyboardEvent;
   const input = el as HTMLInputElement;
   if (ev.key === "Enter")

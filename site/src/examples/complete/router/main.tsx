@@ -207,7 +207,9 @@ mount(app, () => (
 ));
 
 // The chrome's Back/Forward buttons drive real history — one delegated listener.
-delegate(app, 'click', '[data-nav]', (_e, el) => {
+// Page-lifetime (the app root is never torn down), so the leading `void` is the
+// explicit-discard sigil for `kerfjs/require-delegate-disposer`.
+void delegate(app, 'click', '[data-nav]', (_e, el) => {
   if ((el as HTMLElement).dataset.nav === 'back') router.back();
   else router.forward();
 });
