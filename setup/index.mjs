@@ -72,27 +72,35 @@ const describeValue = (key, value) =>
     ? '<redacted>'
     : redactText(JSON.stringify(value));
 
+/** A file's text, or null when it does not exist; other read errors propagate. */
 async function readText(path) {
   try {
     return await readFile(path, 'utf8');
-  } catch {
-    return null;
-  }
-}
-
-async function readJson(path) {
-  const source = await readText(path);
-  if (source === null) return null;
-  return JSON.parse(source);
-}
-
-async function readWorkspaceManifest(path) {
-  try {
-    return JSON.parse(await readFile(path, 'utf8'));
   } catch (error) {
     if (error?.code === 'ENOENT') return null;
     throw error;
   }
+}
+
+/**
+ * Parses a file's JSON text (null stays null). Malformed JSON names the file,
+ * relative to `root` when given: `<path> is invalid JSON: …`.
+ */
+function parseJsonFile(source, path, root) {
+  if (source === null) return null;
+  try {
+    return JSON.parse(source);
+  } catch (error) {
+    throw new Error(
+      `${root ? portable(root, path) : path} is invalid JSON: ${error.message}`,
+      { cause: error },
+    );
+  }
+}
+
+/** A file's parsed JSON, or null when it does not exist. */
+async function readJson(path, root) {
+  return parseJsonFile(await readText(path), path, root);
 }
 
 function validateSetupState(state) {
@@ -227,7 +235,7 @@ async function pnpmWorkspacePatterns(root) {
 }
 
 async function workspacePackages(root) {
-  const rootManifest = await readJson(resolve(root, 'package.json'));
+  const rootManifest = await readJson(resolve(root, 'package.json'), root);
   if (!rootManifest) throw new Error(`${root} has no package.json.`);
   let manifestPatterns = [];
   if (rootManifest.workspaces !== undefined) {
@@ -277,17 +285,13 @@ async function workspacePackages(root) {
           throw new Error(
             `Workspace package symlink escapes the workspace: ${childRelative}.`,
           );
-        const manifest = await readWorkspaceManifest(
-          resolve(child, 'package.json'),
-        );
+        const manifest = await readJson(resolve(child, 'package.json'), root);
         if (manifest)
           candidates.set(childRelative, { directory: child, manifest });
         continue;
       }
       if (!entry.isDirectory()) continue;
-      const manifest = await readWorkspaceManifest(
-        resolve(child, 'package.json'),
-      );
+      const manifest = await readJson(resolve(child, 'package.json'), root);
       if (manifest)
         candidates.set(childRelative, { directory: child, manifest });
       await visit(child, childRelative);
@@ -528,7 +532,7 @@ function metadataTemplate() {
 }
 
 async function packageManagerInfo(root) {
-  const manifest = await readJson(resolve(root, 'package.json'));
+  const manifest = await readJson(resolve(root, 'package.json'), root);
   const declared = manifest?.packageManager?.match(/^(npm|pnpm|yarn)@(.+)$/);
   if (manifest?.packageManager && !declared)
     throw new Error(
@@ -660,87 +664,80 @@ function mergeProfile(current, recommended, context) {
   return output;
 }
 
-export async function planKerfSetup({
-  root = process.cwd(),
-  package: selector,
-  mode: requestedMode,
-  version,
-  resolutions = {},
-  guidanceSource,
-} = {}) {
-  root = resolve(root);
-  const selected = await selectPackage(root, selector, requestedMode);
-  const detectedMode = await detectMode(selected);
-  const mode = requestedMode ?? detectedMode;
-  if (!mode) throw new Error('Pass --core or --ui for a new Kerf package.');
-  if (requestedMode && detectedMode && requestedMode !== detectedMode)
+/**
+ * Validates an explicit or remembered shared-guidance source and returns its
+ * workspace-relative path (undefined when there is none).
+ */
+async function validatedGuidanceSource(root, guidanceSource) {
+  if (!guidanceSource) return guidanceSource;
+  const sourcePath = resolve(root, guidanceSource);
+  if (!sourcePath.startsWith(`${root}/`))
     throw new Error(
-      `Requested ${requestedMode} conflicts with detected ${detectedMode} usage.`,
+      'Shared guidance source must be inside the workspace root.',
     );
-  const ownManifest = await readJson(resolve(packageRoot, 'package.json'));
-  const setupVersion = version ?? ownManifest.version;
-  const conflicts = [];
-  const actions = [];
-  const generatedPaths = [];
-  const statePath = resolve(root, '.kerf-ai-setup.json');
-  const priorState = (await readJson(statePath)) ?? {};
-  if (Object.keys(priorState).length) validateSetupState(priorState);
-  const packageKey = portable(root, selected.directory);
-  const legacyPackageState =
-    priorState.packagePath === packageKey ? priorState : {};
-  const priorPackageState =
-    priorState.packages?.[packageKey] ?? legacyPackageState;
-  guidanceSource ??= priorPackageState.guidanceSource;
-  if (guidanceSource) {
-    const sourcePath = resolve(root, guidanceSource);
-    if (!sourcePath.startsWith(`${root}/`))
-      throw new Error(
-        'Shared guidance source must be inside the workspace root.',
-      );
-    const actualSourcePath = await realpath(sourcePath).catch(() => null);
-    if (
-      actualSourcePath &&
-      !actualSourcePath.startsWith(`${await realpath(root)}/`)
-    )
-      throw new Error(
-        'Shared guidance source must resolve inside the workspace root.',
-      );
-    const source = await readText(sourcePath);
-    if (
-      !source ||
-      !/\bkerf(?:js)?\b/i.test(source) ||
-      !/(?:kerf:check|npm run check)/i.test(source)
-    )
-      throw new Error(
-        'Shared guidance source must exist and describe Kerf and a project check command.',
-      );
-    guidanceSource = portable(root, sourcePath);
-  }
+  const actualSourcePath = await realpath(sourcePath).catch(() => null);
   if (
-    priorPackageState.package &&
-    priorPackageState.package !== (selected.manifest.name ?? packageKey)
+    actualSourcePath &&
+    !actualSourcePath.startsWith(`${await realpath(root)}/`)
   )
-    throw new Error(`Setup state package identity changed at ${packageKey}.`);
-  const requestedResolutions = { ...resolutions };
-  resolutions = { ...(priorPackageState.resolutions ?? {}), ...resolutions };
-  const managedBefore = priorPackageState.managed ?? {};
-  const managedAfter = {};
-  const knownResolutionIds = new Set();
-  const activeConflictIds = new Set();
-  const activeProposalIds = new Set();
-  const context = {
-    conflicts,
-    managedBefore,
-    managedAfter,
+    throw new Error(
+      'Shared guidance source must resolve inside the workspace root.',
+    );
+  const source = await readText(sourcePath);
+  if (
+    !source ||
+    !/\bkerf(?:js)?\b/i.test(source) ||
+    !/(?:kerf:check|npm run check)/i.test(source)
+  )
+    throw new Error(
+      'Shared guidance source must exist and describe Kerf and a project check command.',
+    );
+  return portable(root, sourcePath);
+}
+
+/**
+ * The shared accumulator every planning phase writes into: planned file
+ * actions, conflicts, managed hashes, and the resolution bookkeeping that
+ * `reconcileValue` / `addMapValues` read through `context`.
+ */
+function createPlanAccumulator({
+  root,
+  selected,
+  mode,
+  setupVersion,
+  resolutions,
+  requestedResolutions,
+  managedBefore,
+}) {
+  const plan = {
+    root,
+    selected,
+    mode,
+    setupVersion,
     resolutions,
-    knownResolutionIds,
-    activeConflictIds,
-    activeProposalIds,
+    requestedResolutions,
+    managedBefore,
+    conflicts: [],
+    actions: [],
+    generatedPaths: [],
+    managedAfter: {},
+    knownResolutionIds: new Set(),
+    activeConflictIds: new Set(),
+    activeProposalIds: new Set(),
   };
-  const addAction = async (path, value, kind = 'write') => {
+  plan.context = {
+    conflicts: plan.conflicts,
+    managedBefore,
+    managedAfter: plan.managedAfter,
+    resolutions,
+    knownResolutionIds: plan.knownResolutionIds,
+    activeConflictIds: plan.activeConflictIds,
+    activeProposalIds: plan.activeProposalIds,
+  };
+  plan.addAction = async (path, value, kind = 'write') => {
     const before = await readText(path);
     if (before !== value)
-      actions.push({
+      plan.actions.push({
         path: portable(root, path),
         absolutePath: path,
         before,
@@ -748,21 +745,30 @@ export async function planKerfSetup({
         kind,
       });
   };
+  return plan;
+}
 
-  const aiManifest = await readJson(resolve(packageRoot, 'ai/manifest.json'));
+/** Conflicts when the running setup differs from the project's installed kerfjs. */
+async function planKerfVersion(plan) {
+  const { selected, setupVersion, resolutions } = plan;
   const projectKerfVersion = await installedVersion(
     selected.directory,
     'kerfjs',
   );
-  knownResolutionIds.add('kerfjs-version');
+  plan.knownResolutionIds.add('kerfjs-version');
   if (projectKerfVersion && projectKerfVersion !== setupVersion) {
-    activeConflictIds.add('kerfjs-version');
+    plan.activeConflictIds.add('kerfjs-version');
     if (!resolutions['kerfjs-version'])
-      conflicts.push({
+      plan.conflicts.push({
         id: 'kerfjs-version',
         message: `running setup ${setupVersion} differs from installed kerfjs ${projectKerfVersion}; rerun with kerfjs@${projectKerfVersion}, or choose keep to retain project declarations or kerf to update them`,
       });
   }
+}
+
+/** The canonical AI guidance files (skills, cursorrules) and shared-guidance imports. */
+async function planAiFiles(plan, aiManifest, guidanceSource) {
+  const { root, mode, resolutions, managedAfter } = plan;
   for (const file of aiManifest.files) {
     if (file.name === 'ui-skill' && mode !== 'ui') continue;
     if (
@@ -784,10 +790,10 @@ export async function planKerfSetup({
           ? `---\nname: kerf-ui\ndescription: Use shared workspace guidance and the installed @kerfjs/ui instructions.\n---\n\n@${importPath}\n\nIn the selected package, read \`node_modules/@kerfjs/ui/llms.txt\` first, then \`node_modules/@kerfjs/ui/ai/skill.md\` and the component references they name.\n`
           : `---\nname: kerf-app\ndescription: Use the shared workspace guidance for Kerf application work.\n---\n\n@${importPath}\n`;
       const current = await readText(destination);
-      knownResolutionIds.add(file.dest);
+      plan.knownResolutionIds.add(file.dest);
       if (current !== null && current !== shared && !resolutions[file.dest]) {
-        activeConflictIds.add(file.dest);
-        conflicts.push({
+        plan.activeConflictIds.add(file.dest);
+        plan.conflicts.push({
           id: file.dest,
           message: 'shared guidance import differs from existing skill',
         });
@@ -796,10 +802,10 @@ export async function planKerfSetup({
         current === shared ||
         resolutions[file.dest] === 'kerf'
       ) {
-        await addAction(destination, shared, 'canonical');
+        await plan.addAction(destination, shared, 'canonical');
         managedAfter[file.dest] = { sha256: sha256(shared) };
       } else {
-        activeConflictIds.add(file.dest);
+        plan.activeConflictIds.add(file.dest);
       }
       continue;
     }
@@ -809,25 +815,43 @@ export async function planKerfSetup({
       file.history ?? {},
       file.version,
     );
-    knownResolutionIds.add(file.dest);
+    plan.knownResolutionIds.add(file.dest);
     if (merged.conflict) {
-      activeConflictIds.add(file.dest);
+      plan.activeConflictIds.add(file.dest);
       if (!resolutions[file.dest])
-        conflicts.push({ id: file.dest, message: merged.conflict });
+        plan.conflicts.push({ id: file.dest, message: merged.conflict });
       else if (resolutions[file.dest] === 'kerf') {
         const local = splitCanonical((await readText(destination)) ?? '');
         const replacement = local.error ? bundled : bundled + local.append;
-        await addAction(destination, replacement, 'canonical');
+        await plan.addAction(destination, replacement, 'canonical');
         managedAfter[file.dest] = { sha256: sha256(bundled) };
       }
     } else {
-      await addAction(destination, merged.value, 'canonical');
+      await plan.addAction(destination, merged.value, 'canonical');
       managedAfter[file.dest] = {
         sha256: sha256(splitCanonical(merged.value).canonical),
       };
     }
   }
+}
 
+/**
+ * The selected package's package.json: scripts, tool devDependencies, the
+ * kerfjs / @kerfjs/ui dependency reconciliation, and (UI) the component
+ * catalog configuration. Returns the next manifest plus the facts later
+ * phases share.
+ */
+async function planManifest(plan, priorPackageState, packageKey) {
+  const {
+    root,
+    selected,
+    mode,
+    setupVersion,
+    resolutions,
+    requestedResolutions,
+    managedBefore,
+    context,
+  } = plan;
   const packagePath = resolve(selected.directory, 'package.json');
   const nextManifest = JSON.parse(JSON.stringify(selected.manifest));
   const freshUiApp =
@@ -915,7 +939,7 @@ export async function planKerfSetup({
       allowsVersion(nextManifest[section][name], setupVersion) &&
       managedBefore[id]?.sha256 !== hashValue(nextManifest[section][name])
     ) {
-      knownResolutionIds.add(id);
+      plan.knownResolutionIds.add(id);
       return;
     }
     const dependencyContext =
@@ -963,8 +987,13 @@ export async function planKerfSetup({
           `kerfComponentCatalog.${key} must stay inside the selected package.`,
         );
   }
-  await addAction(packagePath, stableJson(nextManifest), 'json');
+  await plan.addAction(packagePath, stableJson(nextManifest), 'json');
+  return { nextManifest, scaffoldUiApp, packageDoctorConfig };
+}
 
+/** tsconfig.json: create it, or merge the recommended compiler options as JSONC edits. */
+async function planTsconfig(plan) {
+  const { selected, mode, resolutions, managedAfter, context } = plan;
   const tsconfigPath = resolve(selected.directory, 'tsconfig.json');
   const tsconfigSource = await readText(tsconfigPath);
   const tsconfigRecommendations = {
@@ -984,92 +1013,98 @@ export async function planKerfSetup({
       'tsconfig.json#compilerOptions',
       context,
     );
-    await addAction(tsconfigPath, stableJson(tsconfig), 'json');
-  } else {
-    const parsed = parseJsoncDocument(tsconfigSource, 'tsconfig.json');
-    const rootId = 'tsconfig.json';
-    if (parsed.root.type !== 'object') {
-      knownResolutionIds.add(rootId);
-      activeConflictIds.add(rootId);
-      if (!resolutions[rootId])
-        conflicts.push({ id: rootId, message: 'root value must be an object' });
-      else if (resolutions[rootId] === 'kerf') {
-        const replacement = {
-          compilerOptions: { ...tsconfigRecommendations },
-          include: ['src'],
+    await plan.addAction(tsconfigPath, stableJson(tsconfig), 'json');
+    return;
+  }
+  const parsed = parseJsoncDocument(tsconfigSource, 'tsconfig.json');
+  const rootId = 'tsconfig.json';
+  if (parsed.root.type !== 'object') {
+    plan.knownResolutionIds.add(rootId);
+    plan.activeConflictIds.add(rootId);
+    if (!resolutions[rootId])
+      plan.conflicts.push({
+        id: rootId,
+        message: 'root value must be an object',
+      });
+    else if (resolutions[rootId] === 'kerf') {
+      const replacement = {
+        compilerOptions: { ...tsconfigRecommendations },
+        include: ['src'],
+      };
+      for (const [key, value] of Object.entries(tsconfigRecommendations))
+        managedAfter[`tsconfig.json#compilerOptions.${key}`] = {
+          sha256: hashValue(value),
         };
-        for (const [key, value] of Object.entries(tsconfigRecommendations))
-          managedAfter[`tsconfig.json#compilerOptions.${key}`] = {
-            sha256: hashValue(value),
-          };
-        await addAction(tsconfigPath, stableJson(replacement), 'json');
-      }
-    } else {
-      const edits = [];
-      const rootInsertions = [];
-      const compilerProperty = parsed.root.properties.get('compilerOptions');
-      if (compilerProperty && compilerProperty.valueNode.type !== 'object') {
-        const id = 'tsconfig.json#compilerOptions';
-        knownResolutionIds.add(id);
-        activeConflictIds.add(id);
-        if (!resolutions[id])
-          conflicts.push({ id, message: 'existing value must be an object' });
-        else if (resolutions[id] === 'kerf') {
-          edits.push(
-            jsoncValueEdit(
-              compilerProperty.valueNode,
-              tsconfigRecommendations,
-              tsconfigSource,
-            ),
-          );
-          for (const [key, value] of Object.entries(tsconfigRecommendations))
-            managedAfter[`tsconfig.json#compilerOptions.${key}`] = {
-              sha256: hashValue(value),
-            };
-        }
-      } else {
-        const compilerOptions = compilerProperty?.valueNode.value ?? {};
-        const before = { ...compilerOptions };
-        addMapValues(
-          compilerOptions,
-          tsconfigRecommendations,
-          'tsconfig.json#compilerOptions',
-          context,
-        );
-        if (compilerProperty) {
-          const missing = [];
-          for (const [key, value] of Object.entries(compilerOptions)) {
-            const property = compilerProperty.valueNode.properties.get(key);
-            if (!property) missing.push([key, value]);
-            else if (before[key] !== value)
-              edits.push(
-                jsoncValueEdit(property.valueNode, value, tsconfigSource),
-              );
-          }
-          edits.push(
-            ...jsoncInsertProperties(
-              tsconfigSource,
-              compilerProperty.valueNode,
-              missing,
-            ),
-          );
-        } else {
-          rootInsertions.push(['compilerOptions', compilerOptions]);
-        }
-      }
-      if (!parsed.root.properties.has('include'))
-        rootInsertions.push(['include', ['src']]);
+      await plan.addAction(tsconfigPath, stableJson(replacement), 'json');
+    }
+    return;
+  }
+  const edits = [];
+  const rootInsertions = [];
+  const compilerProperty = parsed.root.properties.get('compilerOptions');
+  if (compilerProperty && compilerProperty.valueNode.type !== 'object') {
+    const id = 'tsconfig.json#compilerOptions';
+    plan.knownResolutionIds.add(id);
+    plan.activeConflictIds.add(id);
+    if (!resolutions[id])
+      plan.conflicts.push({ id, message: 'existing value must be an object' });
+    else if (resolutions[id] === 'kerf') {
       edits.push(
-        ...jsoncInsertProperties(tsconfigSource, parsed.root, rootInsertions),
+        jsoncValueEdit(
+          compilerProperty.valueNode,
+          tsconfigRecommendations,
+          tsconfigSource,
+        ),
       );
-      await addAction(
-        tsconfigPath,
-        applyJsoncEdits(tsconfigSource, edits),
-        'jsonc',
+      for (const [key, value] of Object.entries(tsconfigRecommendations))
+        managedAfter[`tsconfig.json#compilerOptions.${key}`] = {
+          sha256: hashValue(value),
+        };
+    }
+  } else {
+    const compilerOptions = compilerProperty?.valueNode.value ?? {};
+    const before = { ...compilerOptions };
+    addMapValues(
+      compilerOptions,
+      tsconfigRecommendations,
+      'tsconfig.json#compilerOptions',
+      context,
+    );
+    if (compilerProperty) {
+      const missing = [];
+      for (const [key, value] of Object.entries(compilerOptions)) {
+        const property = compilerProperty.valueNode.properties.get(key);
+        if (!property) missing.push([key, value]);
+        else if (before[key] !== value)
+          edits.push(jsoncValueEdit(property.valueNode, value, tsconfigSource));
+      }
+      edits.push(
+        ...jsoncInsertProperties(
+          tsconfigSource,
+          compilerProperty.valueNode,
+          missing,
+        ),
       );
+    } else {
+      rootInsertions.push(['compilerOptions', compilerOptions]);
     }
   }
+  if (!parsed.root.properties.has('include'))
+    rootInsertions.push(['include', ['src']]);
+  edits.push(
+    ...jsoncInsertProperties(tsconfigSource, parsed.root, rootInsertions),
+  );
+  await plan.addAction(
+    tsconfigPath,
+    applyJsoncEdits(tsconfigSource, edits),
+    'jsonc',
+  );
+}
 
+/** The ESLint flat config: generate one, or merge / conflict on an existing one. */
+async function planEslint(plan, nextManifest) {
+  const { root, selected, mode, resolutions, managedBefore, managedAfter } =
+    plan;
   const eslintNames = [
     'eslint.config.js',
     'eslint.config.mjs',
@@ -1084,188 +1119,199 @@ export async function planKerfSetup({
   if (!eslintPath) {
     const generatedPath = resolve(selected.directory, 'eslint.config.mjs');
     const generated = eslintTemplate(mode);
-    await addAction(generatedPath, generated);
+    await plan.addAction(generatedPath, generated);
     managedAfter[portable(root, generatedPath)] = { sha256: sha256(generated) };
+    return;
+  }
+  const source = await readText(eslintPath);
+  const id = portable(root, eslintPath);
+  plan.knownResolutionIds.add(id);
+  const commonjs =
+    eslintPath.endsWith('.cjs') ||
+    (eslintPath.endsWith('.js') && nextManifest.type !== 'module');
+  const template = eslintTemplate(mode, commonjs ? 'commonjs' : 'module');
+  const wasManaged = managedBefore[id]?.sha256 === sha256(source);
+  const wasEditedManaged = Boolean(managedBefore[id]) && !wasManaged;
+  const merged = wasManaged
+    ? { value: template }
+    : wasEditedManaged
+      ? { conflict: 'setup-authored config was customized' }
+      : mode === 'ui'
+        ? source === template
+          ? { value: source }
+          : {
+              conflict:
+                'existing UI ESLint config needs the full typed Kerf baseline',
+            }
+        : commonjs
+          ? {
+              conflict:
+                'CommonJS config requires an explicit Kerf preset merge',
+            }
+          : mergeEslintConfig(source, mode);
+  if (merged.conflict) {
+    plan.activeConflictIds.add(id);
+    if (!resolutions[id])
+      plan.conflicts.push({
+        id,
+        message: `${merged.conflict}; choose keep or kerf`,
+      });
+    else if (resolutions[id] === 'kerf') {
+      const generated = template;
+      await plan.addAction(eslintPath, generated);
+      managedAfter[id] = { sha256: sha256(generated) };
+    }
   } else {
-    const source = await readText(eslintPath);
-    const id = portable(root, eslintPath);
-    knownResolutionIds.add(id);
-    const commonjs =
-      eslintPath.endsWith('.cjs') ||
-      (eslintPath.endsWith('.js') && nextManifest.type !== 'module');
-    const template = eslintTemplate(mode, commonjs ? 'commonjs' : 'module');
-    const wasManaged = managedBefore[id]?.sha256 === sha256(source);
-    const wasEditedManaged = Boolean(managedBefore[id]) && !wasManaged;
-    const merged = wasManaged
-      ? { value: template }
-      : wasEditedManaged
-        ? { conflict: 'setup-authored config was customized' }
-        : mode === 'ui'
-          ? source === template
-            ? { value: source }
-            : {
-                conflict:
-                  'existing UI ESLint config needs the full typed Kerf baseline',
-              }
-          : commonjs
-            ? {
-                conflict:
-                  'CommonJS config requires an explicit Kerf preset merge',
-              }
-            : mergeEslintConfig(source, mode);
-    if (merged.conflict) {
-      activeConflictIds.add(id);
-      if (!resolutions[id])
-        conflicts.push({
-          id,
-          message: `${merged.conflict}; choose keep or kerf`,
-        });
-      else if (resolutions[id] === 'kerf') {
-        const generated = template;
-        await addAction(eslintPath, generated);
-        managedAfter[id] = { sha256: sha256(generated) };
-      }
-    } else {
-      await addAction(eslintPath, merged.value);
-      if (wasManaged) managedAfter[id] = { sha256: sha256(merged.value) };
-    }
+    await plan.addAction(eslintPath, merged.value);
+    if (wasManaged) managedAfter[id] = { sha256: sha256(merged.value) };
   }
-  if (mode === 'ui') {
-    const prettierFiles = [
-      'prettier.config.mjs',
-      'prettier.config.js',
-      '.prettierrc',
-      '.prettierrc.json',
-      '.prettierrc.js',
-      '.prettierrc.mjs',
-    ];
-    if (
-      !(
-        await Promise.all(
-          prettierFiles.map((name) =>
-            exists(resolve(selected.directory, name)),
-          ),
-        )
-      ).some(Boolean)
-    ) {
-      await addAction(
-        resolve(selected.directory, 'prettier.config.mjs'),
-        uiPrettierConfig,
-      );
-    }
-    if (!(await exists(packageDoctorConfig)))
-      await addAction(packageDoctorConfig, stableJson(uiDoctorConfig), 'json');
-    if (scaffoldUiApp)
-      for (const [path, content] of Object.entries(uiAppFiles())) {
-        const destination = resolve(selected.directory, path);
-        const id = portable(root, destination);
-        const current = await readText(destination);
-        knownResolutionIds.add(id);
-        if (
-          current !== null &&
-          current !== content &&
-          managedBefore[id]?.sha256 !== sha256(current)
-        ) {
-          activeConflictIds.add(id);
-          if (!resolutions[id]) {
-            conflicts.push({
-              id,
-              message: 'app scaffold file was customized; choose keep or kerf',
-            });
-            continue;
-          }
-          if (resolutions[id] === 'keep') continue;
-        }
-        await addAction(destination, content);
-        managedAfter[id] = { sha256: sha256(content) };
-      }
-    if (!nextManifest.name)
-      throw new Error(
-        'UI setup requires package.json name for catalog identity.',
-      );
-    if (nextManifest.kerfComponentCatalog !== undefined) {
-      const profilePath = resolve(root, '.kerf-ui-profile.json');
-      const currentProfileSource = await readText(profilePath);
-      const currentProfile =
-        currentProfileSource === null
-          ? undefined
-          : JSON.parse(currentProfileSource);
-      const profileCatalogPath = (configuredPath) => {
-        const relative = portable(
-          root,
-          resolve(selected.directory, configuredPath),
-        );
-        return relative.startsWith('.') ? relative : `./${relative}`;
-      };
-      const profile = mergeProfile(
-        currentProfile,
-        profileTemplate(
-          nextManifest.name,
-          profileCatalogPath(nextManifest.kerfComponentCatalog.output),
-          nextManifest.kerfComponentCatalog.selectionOutput
-            ? profileCatalogPath(
-                nextManifest.kerfComponentCatalog.selectionOutput,
-              )
-            : undefined,
-        ),
-        context,
-      );
-      await addAction(profilePath, stableJson(profile), 'json');
-      const metadataPath = resolve(
-        selected.directory,
-        nextManifest.kerfComponentCatalog.source,
-      );
-      if (nextManifest.kerfComponentCatalog.selectionOutput) {
-        const metadata = await readJson(metadataPath);
-        if (
-          !metadata ||
-          typeof metadata.description !== 'string' ||
-          !metadata.description.trim()
-        )
-          throw new Error(
-            `${portable(root, metadataPath)}: selectionOutput requires an authored metadata source with a nonempty description. Add the source and description before running setup.`,
-          );
-      } else if (!(await exists(metadataPath)))
-        await addAction(metadataPath, stableJson(metadataTemplate()), 'json');
-      if (
-        nextManifest.scripts['catalog:generate'] &&
-        dependencies(nextManifest)['create-kerf-component']
-      ) {
-        generatedPaths.push(
-          resolve(selected.directory, nextManifest.kerfComponentCatalog.output),
-        );
-        if (nextManifest.kerfComponentCatalog.selectionOutput)
-          generatedPaths.push(
-            resolve(
-              selected.directory,
-              nextManifest.kerfComponentCatalog.selectionOutput,
-            ),
-          );
-      }
-    }
-  }
+}
 
-  for (const [id, resolution] of Object.entries(requestedResolutions)) {
+/** UI mode: Prettier config, doctor config, and the fresh-app scaffold files. */
+async function planUiBaseline(plan, { scaffoldUiApp, packageDoctorConfig }) {
+  const { root, selected, resolutions, managedBefore, managedAfter } = plan;
+  const prettierFiles = [
+    'prettier.config.mjs',
+    'prettier.config.js',
+    '.prettierrc',
+    '.prettierrc.json',
+    '.prettierrc.js',
+    '.prettierrc.mjs',
+  ];
+  if (
+    !(
+      await Promise.all(
+        prettierFiles.map((name) => exists(resolve(selected.directory, name))),
+      )
+    ).some(Boolean)
+  ) {
+    await plan.addAction(
+      resolve(selected.directory, 'prettier.config.mjs'),
+      uiPrettierConfig,
+    );
+  }
+  if (!(await exists(packageDoctorConfig)))
+    await plan.addAction(
+      packageDoctorConfig,
+      stableJson(uiDoctorConfig),
+      'json',
+    );
+  if (!scaffoldUiApp) return;
+  for (const [path, content] of Object.entries(uiAppFiles())) {
+    const destination = resolve(selected.directory, path);
+    const id = portable(root, destination);
+    const current = await readText(destination);
+    plan.knownResolutionIds.add(id);
+    if (
+      current !== null &&
+      current !== content &&
+      managedBefore[id]?.sha256 !== sha256(current)
+    ) {
+      plan.activeConflictIds.add(id);
+      if (!resolutions[id]) {
+        plan.conflicts.push({
+          id,
+          message: 'app scaffold file was customized; choose keep or kerf',
+        });
+        continue;
+      }
+      if (resolutions[id] === 'keep') continue;
+    }
+    await plan.addAction(destination, content);
+    managedAfter[id] = { sha256: sha256(content) };
+  }
+}
+
+/**
+ * UI mode with a component catalog: the workspace .kerf-ui-profile.json
+ * catalog entry, the catalog metadata source, and the generated catalog paths.
+ */
+async function planUiCatalog(plan, nextManifest) {
+  const { root, selected, context } = plan;
+  const profilePath = resolve(root, '.kerf-ui-profile.json');
+  const currentProfileSource = await readText(profilePath);
+  const currentProfile =
+    currentProfileSource === null
+      ? undefined
+      : parseJsonFile(currentProfileSource, profilePath, root);
+  const profileCatalogPath = (configuredPath) => {
+    const relative = portable(
+      root,
+      resolve(selected.directory, configuredPath),
+    );
+    return relative.startsWith('.') ? relative : `./${relative}`;
+  };
+  const profile = mergeProfile(
+    currentProfile,
+    profileTemplate(
+      nextManifest.name,
+      profileCatalogPath(nextManifest.kerfComponentCatalog.output),
+      nextManifest.kerfComponentCatalog.selectionOutput
+        ? profileCatalogPath(nextManifest.kerfComponentCatalog.selectionOutput)
+        : undefined,
+    ),
+    context,
+  );
+  await plan.addAction(profilePath, stableJson(profile), 'json');
+  const metadataPath = resolve(
+    selected.directory,
+    nextManifest.kerfComponentCatalog.source,
+  );
+  if (nextManifest.kerfComponentCatalog.selectionOutput) {
+    const metadata = await readJson(metadataPath, root);
+    if (
+      !metadata ||
+      typeof metadata.description !== 'string' ||
+      !metadata.description.trim()
+    )
+      throw new Error(
+        `${portable(root, metadataPath)}: selectionOutput requires an authored metadata source with a nonempty description. Add the source and description before running setup.`,
+      );
+  } else if (!(await exists(metadataPath)))
+    await plan.addAction(metadataPath, stableJson(metadataTemplate()), 'json');
+  if (
+    nextManifest.scripts['catalog:generate'] &&
+    dependencies(nextManifest)['create-kerf-component']
+  ) {
+    plan.generatedPaths.push(
+      resolve(selected.directory, nextManifest.kerfComponentCatalog.output),
+    );
+    if (nextManifest.kerfComponentCatalog.selectionOutput)
+      plan.generatedPaths.push(
+        resolve(
+          selected.directory,
+          nextManifest.kerfComponentCatalog.selectionOutput,
+        ),
+      );
+  }
+}
+
+/** Every requested resolution must name a live conflict or proposal. */
+function validateRequestedResolutions(plan) {
+  for (const [id, resolution] of Object.entries(plan.requestedResolutions)) {
     if (!['keep', 'kerf', 'skip'].includes(resolution))
       throw new Error(`Resolution ${id} must be keep, kerf, or skip.`);
-    if (!knownResolutionIds.has(id))
+    if (!plan.knownResolutionIds.has(id))
       throw new Error(`Unknown resolution id ${id}.`);
-    if (resolution === 'skip' && activeConflictIds.has(id))
+    if (resolution === 'skip' && plan.activeConflictIds.has(id))
       throw new Error(
         `Resolution ${id} cannot skip a conflict; choose keep or kerf.`,
       );
     if (
-      !activeConflictIds.has(id) &&
-      !(resolution !== 'keep' && activeProposalIds.has(id))
+      !plan.activeConflictIds.has(id) &&
+      !(resolution !== 'keep' && plan.activeProposalIds.has(id))
     )
       throw new Error(
         `Stale resolution id ${id}; there is no applicable conflict or proposal.`,
       );
   }
-  const manager = await packageManagerInfo(root);
-  const state = {
+}
+
+/** The next .kerf-ai-setup.json: prior package states plus this package's. */
+function nextSetupState(plan, { manager, priorState, packageEntry }) {
+  return {
     schemaVersion: 2,
-    setupVersion,
+    setupVersion: plan.setupVersion,
     packageManager: manager.name,
     ...(manager.version ? { packageManagerVersion: manager.version } : {}),
     ...(manager.variant ? { packageManagerVariant: manager.variant } : {}),
@@ -1285,25 +1331,104 @@ export async function planKerfSetup({
               },
             }
           : {})),
-      [packageKey]: {
-        mode,
-        package: nextManifest.name ?? packageKey,
-        packagePath: packageKey,
-        ...(guidanceSource ? { guidanceSource } : {}),
-        managed: managedAfter,
-        resolutions: Object.fromEntries(
-          [...new Set([...activeConflictIds, ...activeProposalIds])]
-            .filter(
-              (id) =>
-                (activeConflictIds.has(id) && resolutions[id] === 'keep') ||
-                (activeProposalIds.has(id) && resolutions[id] === 'skip'),
-            )
-            .map((id) => [id, resolutions[id]]),
-        ),
-      },
+      [packageEntry.packagePath]: packageEntry,
     },
   };
-  await addAction(statePath, stableJson(state), 'state');
+}
+
+export async function planKerfSetup({
+  root = process.cwd(),
+  package: selector,
+  mode: requestedMode,
+  version,
+  resolutions = {},
+  guidanceSource,
+} = {}) {
+  root = resolve(root);
+  const selected = await selectPackage(root, selector, requestedMode);
+  const detectedMode = await detectMode(selected);
+  const mode = requestedMode ?? detectedMode;
+  if (!mode) throw new Error('Pass --core or --ui for a new Kerf package.');
+  if (requestedMode && detectedMode && requestedMode !== detectedMode)
+    throw new Error(
+      `Requested ${requestedMode} conflicts with detected ${detectedMode} usage.`,
+    );
+  const ownManifest = await readJson(resolve(packageRoot, 'package.json'));
+  const setupVersion = version ?? ownManifest.version;
+  const statePath = resolve(root, '.kerf-ai-setup.json');
+  const priorState = (await readJson(statePath, root)) ?? {};
+  if (Object.keys(priorState).length) validateSetupState(priorState);
+  const packageKey = portable(root, selected.directory);
+  const legacyPackageState =
+    priorState.packagePath === packageKey ? priorState : {};
+  const priorPackageState =
+    priorState.packages?.[packageKey] ?? legacyPackageState;
+  guidanceSource = await validatedGuidanceSource(
+    root,
+    guidanceSource ?? priorPackageState.guidanceSource,
+  );
+  if (
+    priorPackageState.package &&
+    priorPackageState.package !== (selected.manifest.name ?? packageKey)
+  )
+    throw new Error(`Setup state package identity changed at ${packageKey}.`);
+
+  const plan = createPlanAccumulator({
+    root,
+    selected,
+    mode,
+    setupVersion,
+    requestedResolutions: { ...resolutions },
+    resolutions: { ...(priorPackageState.resolutions ?? {}), ...resolutions },
+    managedBefore: priorPackageState.managed ?? {},
+  });
+  const aiManifest = await readJson(resolve(packageRoot, 'ai/manifest.json'));
+  await planKerfVersion(plan);
+  await planAiFiles(plan, aiManifest, guidanceSource);
+  const manifestPlan = await planManifest(plan, priorPackageState, packageKey);
+  const { nextManifest } = manifestPlan;
+  await planTsconfig(plan);
+  await planEslint(plan, nextManifest);
+  if (mode === 'ui') {
+    await planUiBaseline(plan, manifestPlan);
+    if (!nextManifest.name)
+      throw new Error(
+        'UI setup requires package.json name for catalog identity.',
+      );
+    if (nextManifest.kerfComponentCatalog !== undefined)
+      await planUiCatalog(plan, nextManifest);
+  }
+  validateRequestedResolutions(plan);
+
+  const {
+    resolutions: effectiveResolutions,
+    activeConflictIds,
+    activeProposalIds,
+  } = plan;
+  const manager = await packageManagerInfo(root);
+  const state = nextSetupState(plan, {
+    manager,
+    priorState,
+    packageEntry: {
+      mode,
+      package: nextManifest.name ?? packageKey,
+      packagePath: packageKey,
+      ...(guidanceSource ? { guidanceSource } : {}),
+      managed: plan.managedAfter,
+      resolutions: Object.fromEntries(
+        [...new Set([...activeConflictIds, ...activeProposalIds])]
+          .filter(
+            (id) =>
+              (activeConflictIds.has(id) &&
+                effectiveResolutions[id] === 'keep') ||
+              (activeProposalIds.has(id) &&
+                effectiveResolutions[id] === 'skip'),
+          )
+          .map((id) => [id, effectiveResolutions[id]]),
+      ),
+    },
+  });
+  await plan.addAction(statePath, stableJson(state), 'state');
   return {
     schemaVersion: 1,
     root,
@@ -1314,12 +1439,12 @@ export async function planKerfSetup({
     packageManagerVariant: manager.variant,
     mode,
     setupVersion,
-    actions,
+    actions: plan.actions,
     proposalIds: [...activeProposalIds].filter(
-      (id) => resolutions[id] !== 'skip',
+      (id) => effectiveResolutions[id] !== 'skip',
     ),
-    conflicts,
-    generatedPaths,
+    conflicts: plan.conflicts,
+    generatedPaths: plan.generatedPaths,
   };
 }
 
