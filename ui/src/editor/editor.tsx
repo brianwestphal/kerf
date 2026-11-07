@@ -39,7 +39,6 @@ import {
   FileText,
   FolderOpen,
   GitCompare,
-  icons as lucideIcons,
   LayoutGrid,
   List as ListIcon,
   Play,
@@ -165,6 +164,7 @@ import {
   type OpenField,
   placeKey,
 } from './field-place.js';
+import { createIconDialog } from './icon-dialog.js';
 import {
   insertDocumentDialog,
   type InsertDocumentFiles,
@@ -303,12 +303,7 @@ import {
   withRequiredFilled,
   withValueAt,
 } from './model/fields.js';
-import {
-  iconAliases,
-  iconNameEdit,
-  iconNames,
-  matchIcons,
-} from './model/icons.js';
+import { iconNameEdit } from './model/icons.js';
 import {
   documentFolder,
   documentName,
@@ -902,9 +897,6 @@ export function createEditor(options: EditorOptions) {
   const insertQuery = signal('');
   const insertQueryRevision = signal(0);
   const insertError = signal('');
-  /** Every Lucide icon's document name, listed on first use. */
-  let allIcons: readonly string[] | undefined;
-  let allAliases: ReadonlyMap<string, readonly string[]> | undefined;
   /** The Library filter's text (KF-Y26SKM), and its editor's revision. */
   const paletteFilter = signal('');
   const paletteFilterRevision = signal(0);
@@ -1742,74 +1734,12 @@ export function createEditor(options: EditorOptions) {
    * The icon picker: a search over the Lucide names and the matching icons
    * themselves; choosing one writes `{ $icon: name }`.
    */
-  const iconDialog = () => {
-    const place = iconPicker.value;
-    const id = selectedNodeId();
-    const open = place && id ? place : undefined;
-    const current = open
-      ? (
-          valueAt(
-            findNode(doc.value, id!)!.node.props?.[open.prop] as
-              ViewValue | undefined,
-            open.path,
-          ) as { $icon?: string } | undefined
-        )?.$icon
-      : undefined;
-    if (open) {
-      allIcons ??= iconNames(lucideIcons);
-      allAliases ??= iconAliases(lucideIcons);
-    }
-    const found = open
-      ? matchIcons(allIcons!, iconQuery.value, undefined, allAliases)
-      : { names: [], total: 0 };
-    return (
-      <DialogSurface
-        id={ICON_DIALOG}
-        label={open ? `Choose ${stepTitle(open)}` : 'Choose an icon'}
-        size="medium"
-        rootAttributes={{ 'data-key': ICON_DIALOG }}
-        footer={
-          <>
-            {current ? (
-              <Button action={ICON_REMOVE_ACTION}>Remove icon</Button>
-            ) : undefined}
-            <Button rootAttributes={{ 'data-dialog-close': '' }}>Cancel</Button>
-          </>
-        }
-      >
-        <List controlInsets="trbl" gap>
-          <SearchField
-            id="editor-icon-search"
-            label="Search icons"
-            placeholder="Search icons"
-            query={iconQuery.value}
-            revision={iconQueryRevision.value}
-            clearAction={ICON_CLEAR_ACTION}
-            clearLabel="Clear Search"
-            editorAttributes={{ 'data-editor-icon-search': '' }}
-          />
-          <Text tone="quiet">
-            {found.total > found.names.length
-              ? `Showing ${found.names.length} of ${found.total} icons; search to narrow them.`
-              : `${found.total} ${found.total === 1 ? 'icon' : 'icons'}`}
-          </Text>
-          <Grid minColumnWidth={px(44)} gap="s">
-            {found.names.map((name) => (
-              <Button
-                icon={iconOf(name)!}
-                ariaLabel={name}
-                title={name}
-                emphasis="secondary"
-                pressed={name === current}
-                action={ICON_CHOOSE_ACTION}
-                rootAttributes={{ 'data-editor-icon': name }}
-              />
-            ))}
-          </Grid>
-        </List>
-      </DialogSurface>
-    );
-  };
+  const iconDialog = createIconDialog(ctx, {
+    iconPicker,
+    iconQuery,
+    iconQueryRevision,
+    iconOf,
+  });
 
   /** What a field of the selected node's prop is: its type and value. */
   const fieldContext = (node: ViewNode, place: FieldPlace) => {
