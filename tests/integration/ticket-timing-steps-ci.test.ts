@@ -101,6 +101,41 @@ describe(
       });
     });
 
+    it('drops --skip steps and refuses a skip that names no step', async () => {
+      const dir = await scratch('kerf-check-steps-skip-');
+      await writeFile(
+        join(dir.root, 'package.json'),
+        JSON.stringify({
+          scripts: {
+            chain: [
+              node('require("fs").writeFileSync("first", "")'),
+              `npm run --silent fail`,
+              node('require("fs").writeFileSync("third", "")'),
+            ].join(' && '),
+            fail: node('process.exit(3)'),
+          },
+        }),
+      );
+      await execFileAsync(
+        process.execPath,
+        [runner, 'chain', '--skip', 'fail'],
+        {
+          cwd: dir.root,
+          env: process.env,
+        },
+      );
+      await expect(readFile(join(dir.root, 'third'), 'utf8')).resolves.toBe('');
+      await expect(
+        execFileAsync(process.execPath, [runner, 'chain', '--skip', 'nope'], {
+          cwd: dir.root,
+          env: process.env,
+        }),
+      ).rejects.toMatchObject({
+        code: 2,
+        stderr: expect.stringMatching(/--skip names no step of chain: nope/),
+      });
+    });
+
     it('preserves a failed pre-push gate without writing a timing note', async () => {
       const dir = await scratch('kerf-check-steps-push-');
       const repo = join(dir.root, 'repo');

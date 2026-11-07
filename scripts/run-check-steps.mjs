@@ -6,6 +6,11 @@
 // names a file, the step identifiers and durations are written there after
 // every step so a caller (the pre-push timing wrapper) can attach them to its
 // timing record even when the chain fails or is interrupted part-way.
+//
+// `--skip id,id` drops the named step identifiers from the chain. CI uses it
+// to run the gates no other CI job covers without re-running lint, the unit
+// suites, and the dist suites twice. An identifier that names no step fails
+// the run, so a renamed step cannot silently fall out of CI.
 
 import { spawn } from 'node:child_process';
 import { readFile, writeFile } from 'node:fs/promises';
@@ -13,15 +18,34 @@ import process from 'node:process';
 
 import { splitCheckChain, stepIdentifiers } from './lib/check-steps.mjs';
 
-const scriptName = process.argv[2];
-if (!scriptName) {
-  console.error('Usage: node scripts/run-check-steps.mjs <npm-script-name>');
+const args = process.argv.slice(2);
+const skipIndex = args.indexOf('--skip');
+const skip = new Set(
+  skipIndex === -1
+    ? []
+    : (args.splice(skipIndex, 2)[1] ?? '').split(',').filter(Boolean),
+);
+const scriptName = args[0];
+if (!scriptName || (skipIndex !== -1 && skip.size === 0)) {
+  console.error(
+    'Usage: node scripts/run-check-steps.mjs <npm-script-name> [--skip <step-id>,...]',
+  );
   process.exit(2);
 }
 
 const manifest = JSON.parse(await readFile('package.json', 'utf8'));
-const segments = splitCheckChain(manifest.scripts?.[scriptName]);
-const names = stepIdentifiers(segments);
+const allSegments = splitCheckChain(manifest.scripts?.[scriptName]);
+const allNames = stepIdentifiers(allSegments);
+const unknown = [...skip].filter((name) => !allNames.includes(name));
+if (unknown.length > 0) {
+  console.error(
+    `--skip names no step of ${scriptName}: ${unknown.join(', ')}\nSteps: ${allNames.join(', ')}`,
+  );
+  process.exit(2);
+}
+const kept = allNames.flatMap((name, index) => (skip.has(name) ? [] : [index]));
+const segments = kept.map((index) => allSegments[index]);
+const names = kept.map((index) => allNames[index]);
 const logPath = process.env.KERF_CHECK_STEP_LOG;
 const steps = [];
 
