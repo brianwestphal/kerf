@@ -5,6 +5,7 @@ import { Group } from 'lucide';
 import { ListActionRow } from '../components/collections/list-action-row/list-action-row.js';
 import { ListItem } from '../components/collections/list-item/list-item.js';
 import { LucideIcon } from '../components/media/lucide-icon/lucide-icon.js';
+import { HOOK } from './dom-hooks.js';
 import type { Problem } from './model/problems.js';
 import { EMBED_ACTION, EMBED_FIRST, PROBLEM_ACTION } from './shell-names.js';
 
@@ -41,7 +42,7 @@ export const hintRows = (hints: readonly Problem[]) => {
         trailingActionLabel="Embed in SizedRegion"
         trailingActionIcon={<LucideIcon icon={Group} name="group" />}
         trailingActionAttributes={{
-          'data-editor-embed': EMBED_FIRST[0]!,
+          [HOOK.embed]: EMBED_FIRST[0]!,
           'data-editor-embed-node': nodeId!,
         }}
       />

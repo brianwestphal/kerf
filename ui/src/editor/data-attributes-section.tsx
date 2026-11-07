@@ -13,6 +13,7 @@ import { LucideIcon } from '../components/media/lucide-icon/lucide-icon.js';
 import { Text } from '../components/typography/text/text.js';
 import { px } from '../shared/styles/css-values.js';
 import type { PropsComponent } from './catalog.js';
+import { HOOK } from './dom-hooks.js';
 import type { EditorContext } from './editor-context.js';
 import {
   DATA_ATTRIBUTES_PROP,
@@ -79,7 +80,7 @@ export function dataAttributesSection(
                     spellcheck={false}
                     autocapitalize="off"
                     rootAttributes={{
-                      'data-editor-attribute': `${index}`,
+                      [HOOK.attribute]: `${index}`,
                       'data-editor-attribute-part': 'name',
                     }}
                   />
@@ -87,7 +88,7 @@ export function dataAttributesSection(
                     label="Value"
                     value={text}
                     rootAttributes={{
-                      'data-editor-attribute': `${index}`,
+                      [HOOK.attribute]: `${index}`,
                       'data-editor-attribute-part': 'value',
                     }}
                   />

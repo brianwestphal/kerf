@@ -17,6 +17,7 @@ import { Text } from '../components/typography/text/text.js';
 import type { PropsComponent } from './catalog.js';
 import { addSlotFields, controlFlowSection } from './control-flow-section.js';
 import { dataAttributesSection } from './data-attributes-section.js';
+import { HOOK } from './dom-hooks.js';
 import type { EditorContext } from './editor-context.js';
 import { embedSection, extractSection } from './embed-extract-views.js';
 import type { createFieldEditorViews } from './field-editor-views.js';
@@ -167,7 +168,7 @@ export function createNodeInspectorViews(
               value={param}
               hint="Renaming the param updates every prop that uses it."
               error={fieldErrors.value[`#param:${param}`]}
-              rootAttributes={{ 'data-editor-param': param }}
+              rootAttributes={{ [HOOK.param]: param }}
             />
           ),
         };
@@ -344,7 +345,7 @@ export function createNodeInspectorViews(
             value={node.name ?? ''}
             hint="A name makes the node a typed ref in the generated module."
             error={fieldErrors.value['#name']}
-            rootAttributes={{ 'data-editor-name': 'true' }}
+            rootAttributes={{ [HOOK.name]: 'true' }}
           />
         </List>
         {groupedProps(component).map((section) => {
@@ -428,7 +429,7 @@ export function createNodeInspectorViews(
                       value={param}
                       hint="Renaming the param updates every prop that uses it."
                       error={fieldErrors.value[`#param:${param}`]}
-                      rootAttributes={{ 'data-editor-param': param }}
+                      rootAttributes={{ [HOOK.param]: param }}
                     />
                   ),
                 },
@@ -474,7 +475,7 @@ export function createNodeInspectorViews(
                   value: prop.name,
                   label: propLabel(prop.name),
                 }))}
-                rootAttributes={{ 'data-editor-promote': 'true' }}
+                rootAttributes={{ [HOOK.promote]: 'true' }}
               />
               <Button
                 emphasis="secondary"
@@ -523,14 +524,14 @@ export function createNodeInspectorViews(
                   ? { disabled: true, disabledReason: option.disabledReason }
                   : {}),
               }))}
-              rootAttributes={{ 'data-editor-add': 'zone' }}
+              rootAttributes={{ [HOOK.add]: 'zone' }}
             />
             <Select
               name="add-component"
               label="Component"
               value={chosen?.value ?? ''}
               choices={addable}
-              rootAttributes={{ 'data-editor-add': 'component' }}
+              rootAttributes={{ [HOOK.add]: 'component' }}
             />
             <Button emphasis="secondary" size="compact" action={ADD_ACTION}>
               Add

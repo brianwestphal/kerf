@@ -16,6 +16,7 @@ import { TextField } from '../components/forms/text-field/text-field.js';
 import { LucideIcon } from '../components/media/lucide-icon/lucide-icon.js';
 import { DialogSurface } from '../components/surfaces/surface-scaffold/surface-scaffold.js';
 import type { EditorCatalog } from './catalog.js';
+import { HOOK } from './dom-hooks.js';
 import {
   EMBED_ACTION,
   EMBED_CLEAR_ACTION,
@@ -76,7 +77,7 @@ export function embedDialog({
           revision={queryRevision.value}
           clearAction={EMBED_CLEAR_ACTION}
           clearLabel="Clear Filter"
-          editorAttributes={{ 'data-editor-embed-search': '' }}
+          editorAttributes={{ [HOOK.embedSearch]: '' }}
         />
       </List>
       {choices.length ? (
@@ -86,7 +87,7 @@ export function embedDialog({
               label={item.name}
               action={EMBED_ACTION}
               itemId={item.key}
-              rootAttributes={{ 'data-editor-embed': item.key }}
+              rootAttributes={{ [HOOK.embed]: item.key }}
             />
           ))}
         </List>
@@ -129,7 +130,7 @@ export function embedSection({
             itemId={key}
             disabled={!legal}
             description={legal ? undefined : 'It cannot hold this node here.'}
-            rootAttributes={{ 'data-editor-embed': key }}
+            rootAttributes={{ [HOOK.embed]: key }}
           />
         );
       })}
@@ -162,7 +163,7 @@ export function extractSection(
         disabled={!!blocked}
         description={blocked}
         trailing={<LucideIcon icon={ChevronRight} name="chevron-right" />}
-        rootAttributes={{ 'data-editor-extract': 'open' }}
+        rootAttributes={{ [HOOK.extract]: 'open' }}
       />
     </List>
   );
@@ -191,7 +192,7 @@ export function extractDialog({ path, error }: ExtractDialogState): SafeHtml {
           <Button
             tone="brand"
             action={EXTRACT_ACTION}
-            rootAttributes={{ 'data-editor-extract': 'confirm' }}
+            rootAttributes={{ [HOOK.extract]: 'confirm' }}
           >
             Extract
           </Button>
@@ -207,7 +208,7 @@ export function extractDialog({ path, error }: ExtractDialogState): SafeHtml {
         spellcheck={false}
         autocapitalize="off"
         autocorrect="off"
-        rootAttributes={{ 'data-editor-extract': 'path' }}
+        rootAttributes={{ [HOOK.extract]: 'path' }}
       />
     </DialogSurface>
   );

@@ -98,7 +98,7 @@ export function createInspectorControls(
           value={picked}
           hint="Check every choice the value holds; none is an empty list."
           rootAttributes={{
-            'data-editor-prop': place.prop,
+            [HOOK.prop]: place.prop,
             [HOOK.kind]: 'value-choices',
             'data-key': controlKey(place),
           }}
@@ -140,7 +140,7 @@ export function createInspectorControls(
               : 'This value is not one of the choices; pick one.'
           }
           rootAttributes={{
-            'data-editor-prop': place.prop,
+            [HOOK.prop]: place.prop,
             [HOOK.kind]: 'value-choice',
             'data-key': controlKey(place),
           }}
@@ -149,12 +149,12 @@ export function createInspectorControls(
     const marker = (kind: ControlKind) =>
       place.path.length
         ? {
-            'data-editor-field': JSON.stringify(place),
+            [HOOK.field]: JSON.stringify(place),
             [HOOK.kind]: kind,
             'data-key': controlKey(place),
           }
         : {
-            'data-editor-prop': place.prop,
+            [HOOK.prop]: place.prop,
             [HOOK.kind]: kind,
             'data-key': controlKey(place),
           };
@@ -179,6 +179,20 @@ export function createInspectorControls(
           control.raw === CUSTOM_SIZE ||
           ((control.raw === '' || place.path.length > 0) &&
             customSize.value === `${selectedNodeId()} ${key}`);
+        const sizeChoiceLabel = (choice: string): string => {
+          if (choice === '')
+            return prop.default !== undefined
+              ? `Default (${String(prop.default)})`
+              : 'Not set';
+          switch (choice) {
+            case CUSTOM_SIZE:
+              return 'Custom…';
+            case AXES_SIZE:
+              return 'Columns and rows…';
+            default:
+              return choice;
+          }
+        };
         return (
           <>
             <Select
@@ -187,16 +201,7 @@ export function createInspectorControls(
               value={custom ? CUSTOM_SIZE : String(control.raw)}
               choices={control.choices!.map((choice) => ({
                 value: choice,
-                label:
-                  choice === ''
-                    ? prop.default !== undefined
-                      ? `Default (${String(prop.default)})`
-                      : 'Not set'
-                    : choice === CUSTOM_SIZE
-                      ? 'Custom…'
-                      : choice === AXES_SIZE
-                        ? 'Columns and rows…'
-                        : choice,
+                label: sizeChoiceLabel(choice),
               }))}
               rootAttributes={marker('size')}
             />
@@ -219,7 +224,16 @@ export function createInspectorControls(
           </>
         );
       }
-      case 'select':
+      case 'select': {
+        const choiceLabel = (choice: string): string => {
+          if (choice === '')
+            return prop.default !== undefined
+              ? `Default (${String(prop.default)})`
+              : 'Not set';
+          if (prop.type.kind === 'boolean')
+            return choice === 'true' ? 'On' : 'Off';
+          return choice;
+        };
         return (
           <Select
             name={`prop-${key}`}
@@ -227,20 +241,12 @@ export function createInspectorControls(
             value={String(control.raw)}
             choices={control.choices!.map((choice) => ({
               value: choice,
-              label:
-                choice === ''
-                  ? prop.default !== undefined
-                    ? `Default (${String(prop.default)})`
-                    : 'Not set'
-                  : prop.type.kind === 'boolean'
-                    ? choice === 'true'
-                      ? 'On'
-                      : 'Off'
-                    : choice,
+              label: choiceLabel(choice),
             }))}
             rootAttributes={marker('select')}
           />
         );
+      }
       case 'switch':
         return (
           <Switch
@@ -365,6 +371,11 @@ export function createInspectorControls(
         // Enter types one, and the field commits on change (blur).
         const multiline =
           control.kind === 'text' && prop.control === 'textarea';
+        let placeholder: string | undefined;
+        if (control.kind === 'css')
+          placeholder = cssPlaceholder(prop.cssValue?.helpers, grammar);
+        else if (prop.default !== undefined) placeholder = String(prop.default);
+        else if (unsettable && value === undefined) placeholder = 'Not set';
         return (
           <TextField
             label={propLabel(prop.name)}
@@ -377,16 +388,7 @@ export function createInspectorControls(
                 ? cssHint(prop.cssValue?.helpers, grammar)
                 : undefined
             }
-            placeholder={
-              control.kind === 'css'
-                ? cssPlaceholder(prop.cssValue?.helpers, grammar)
-                : prop.default !== undefined
-                  ? String(prop.default)
-                  : unsettable && value === undefined
-                    ? // The toggle's state in words, as the Selects say it.
-                      'Not set'
-                    : undefined
-            }
+            placeholder={placeholder}
             error={error}
             toggle={
               unsettable
@@ -420,7 +422,7 @@ export function createInspectorControls(
       accessibleLabel={`Configure ${label.toLowerCase()}`}
       action={FIELD_OPEN_ACTION}
       trailing={<LucideIcon icon={ChevronRight} name="chevron-right" />}
-      rootAttributes={{ 'data-editor-open': JSON.stringify(place) }}
+      rootAttributes={{ [HOOK.open]: JSON.stringify(place) }}
     />
   );
 

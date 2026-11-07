@@ -6,6 +6,7 @@ import { List } from '../components/collections/list/list.js';
 import { ListHeader } from '../components/collections/list-header/list-header.js';
 import { Select } from '../components/forms/select/select.js';
 import type { PropsComponent } from './catalog.js';
+import { HOOK } from './dom-hooks.js';
 import type { EditorContext } from './editor-context.js';
 import { bindingOptions } from './model/edits.js';
 import { propLabel } from './model/fields.js';
@@ -57,7 +58,7 @@ export function inspectorBindSection(
             value: item.name,
             label: propLabel(item.name),
           }))}
-          rootAttributes={{ 'data-editor-bind': 'prop' }}
+          rootAttributes={{ [HOOK.bind]: 'prop' }}
         />
         <Select
           name="bind-source"
@@ -70,7 +71,7 @@ export function inspectorBindSection(
               : 'No param or item field in scope fits this prop.'
           }
           rootAttributes={{
-            'data-editor-bind': 'source',
+            [HOOK.bind]: 'source',
             'data-editor-bind-prop': prop.name,
           }}
         />

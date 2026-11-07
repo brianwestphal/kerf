@@ -9,6 +9,7 @@ import { Grid } from '../components/layout/grid/grid.js';
 import { DialogSurface } from '../components/surfaces/surface-scaffold/surface-scaffold.js';
 import { Text } from '../components/typography/text/text.js';
 import { px } from '../shared/styles/css-values.js';
+import { HOOK } from './dom-hooks.js';
 import type { EditorContext } from './editor-context.js';
 import type { FieldPlace } from './field-place.js';
 import { findNode } from './model/document.js';
@@ -78,7 +79,7 @@ export function createIconDialog(
             revision={iconQueryRevision.value}
             clearAction={ICON_CLEAR_ACTION}
             clearLabel="Clear Search"
-            editorAttributes={{ 'data-editor-icon-search': '' }}
+            editorAttributes={{ [HOOK.iconSearch]: '' }}
           />
           <Text tone="quiet">
             {found.total > found.names.length
@@ -94,7 +95,7 @@ export function createIconDialog(
                 emphasis="secondary"
                 pressed={name === current}
                 action={ICON_CHOOSE_ACTION}
-                rootAttributes={{ 'data-editor-icon': name }}
+                rootAttributes={{ [HOOK.icon]: name }}
               />
             ))}
           </Grid>

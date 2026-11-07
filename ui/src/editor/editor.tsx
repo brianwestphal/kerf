@@ -24,7 +24,7 @@ import {
   type SafeHtml,
   signal,
 } from 'kerfjs';
-import { delegateActions } from 'kerfjs/actions';
+import { type ActionHandler, delegateActions } from 'kerfjs/actions';
 import {
   ArrowDown,
   ArrowLeft,
@@ -1891,7 +1891,7 @@ export function createEditor(options: EditorOptions) {
     const id = selectedNodeId()!;
     const from = saver.path.peek();
     const given = dialog
-      .querySelector<HTMLInputElement>('[data-editor-extract="path"] input')!
+      .querySelector<HTMLInputElement>(`${hook(HOOK.extract, 'path')} input`)!
       .value.trim();
     const path = viewPath('', given);
     const fail = (message: string) => {
@@ -1958,7 +1958,7 @@ export function createEditor(options: EditorOptions) {
     insertQueryRevision.value += 1;
     if (!storage.list) {
       dialog.querySelector<HTMLInputElement>(
-        '[data-editor-insert-document="path"] input',
+        `${hook(HOOK.insertDocument, 'path')} input`,
       )!.value = '';
       openDialog(dialog);
       return;
@@ -1984,9 +1984,7 @@ export function createEditor(options: EditorOptions) {
       },
     );
     openDialog(dialog);
-    root
-      .querySelector<HTMLElement>('[data-editor-insert-document-search]')!
-      .focus();
+    root.querySelector<HTMLElement>(hook(HOOK.insertDocumentSearch))!.focus();
   };
 
   /**
@@ -2050,6 +2048,38 @@ export function createEditor(options: EditorOptions) {
    */
   const playMode = () =>
     playStage.render(`${documentFileName(doc.value)} (playing)`);
+
+  const renderMainHeader = (document: ViewDocument, problems: number) => {
+    if (editNotice.value)
+      return <StateBanner tone="warning" title={editNotice.value} />;
+    if (loadError.value)
+      return (
+        <StateBanner
+          tone="danger"
+          title="That file could not be opened"
+          detail={loadError.value}
+        />
+      );
+    const exported = lastExport.value;
+    if (exported && !problems)
+      return (
+        <StateBanner
+          tone={exported.report.breaking ? 'warning' : 'info'}
+          title={exported.report.title}
+          detail={exported.report.detail}
+        />
+      );
+    // KF-PK3GVY: a rootless document's canvas already says what it needs.
+    if (problems && document.root)
+      return (
+        <StateBanner
+          tone="warning"
+          title={`${problems} ${problems === 1 ? 'problem' : 'problems'} in this document`}
+          detail="Each one is listed under Problems in the Document rail; select one to inspect its node."
+        />
+      );
+    return undefined;
+  };
 
   const render = () => {
     const document = doc.value;
@@ -2299,31 +2329,7 @@ export function createEditor(options: EditorOptions) {
                   </Button>,
                 ],
               }}
-              mainHeader={
-                editNotice.value ? (
-                  <StateBanner tone="warning" title={editNotice.value} />
-                ) : loadError.value ? (
-                  <StateBanner
-                    tone="danger"
-                    title="That file could not be opened"
-                    detail={loadError.value}
-                  />
-                ) : lastExport.value && !problems ? (
-                  <StateBanner
-                    tone={lastExport.value.report.breaking ? 'warning' : 'info'}
-                    title={lastExport.value.report.title}
-                    detail={lastExport.value.report.detail}
-                  />
-                ) : problems && document.root ? (
-                  // KF-PK3GVY: a rootless document's canvas already says
-                  // what it needs.
-                  <StateBanner
-                    tone="warning"
-                    title={`${problems} ${problems === 1 ? 'problem' : 'problems'} in this document`}
-                    detail="Each one is listed under Problems in the Document rail; select one to inspect its node."
-                  />
-                ) : undefined
-              }
+              mainHeader={renderMainHeader(document, problems)}
               main={canvas()}
               rightRail={{
                 label: 'Inspector',
@@ -2882,7 +2888,7 @@ export function createEditor(options: EditorOptions) {
     embedQuery.value = '';
     embedQueryRevision.value += 1;
     openDialog(root.querySelector<HTMLDialogElement>(`#${EMBED_DIALOG}`)!);
-    root.querySelector<HTMLElement>('[data-editor-embed-search]')!.focus();
+    root.querySelector<HTMLElement>(hook(HOOK.embedSearch))!.focus();
   };
 
   /** Removes the selected slot, or the selected node when it can go. */
@@ -2995,13 +3001,11 @@ export function createEditor(options: EditorOptions) {
   const addChild = (chosen?: { zone: string; key: string }) => {
     const id = selectedNodeId();
     if (!id) return;
-    const root = document.querySelector<HTMLElement>(
-      `[data-editor-add="zone"]`,
-    );
+    const root = document.querySelector<HTMLElement>(hook(HOOK.add, 'zone'));
     const zone =
       chosen?.zone ?? (root ? String(controlValue(root)) : addZone.value);
     const picker = document.querySelector<HTMLElement>(
-      `[data-editor-add="component"]`,
+      hook(HOOK.add, 'component'),
     );
     const key =
       chosen?.key ??
@@ -3035,7 +3039,7 @@ export function createEditor(options: EditorOptions) {
     // so it does not stay on the Add button at the bottom of the old form.
     realmOf(wired!).requestAnimationFrame(() =>
       wired
-        ?.querySelector<HTMLInputElement>('[data-editor-name] input')
+        ?.querySelector<HTMLInputElement>(`${hook(HOOK.name)} input`)
         ?.focus(),
     );
   };
@@ -3046,7 +3050,7 @@ export function createEditor(options: EditorOptions) {
     if (!id) return;
     const node = findNode(doc.value, id)!.node;
     const component = propsByKey.get(node.type);
-    const picker = document.querySelector<HTMLElement>('[data-editor-promote]');
+    const picker = document.querySelector<HTMLElement>(hook(HOOK.promote));
     const name =
       chosen ?? (picker ? String(controlValue(picker)) : promoteProp.value);
     const prop = component?.props.find((item) => item.name === name);
@@ -3122,9 +3126,7 @@ export function createEditor(options: EditorOptions) {
   /** Adds a `$slot` to the chosen zone of the selected node (KF-90GTJN). */
   const addSlot = () => {
     const id = selectedNodeId();
-    const root = document.querySelector<HTMLElement>(
-      `[data-editor-add="zone"]`,
-    );
+    const root = document.querySelector<HTMLElement>(hook(HOOK.add, 'zone'));
     const field = document.querySelector<HTMLElement>(hook(HOOK.slot, 'name'));
     if (!id || !field) return;
     const zone = root ? String(controlValue(root)) : addZone.value;
@@ -3518,9 +3520,7 @@ export function createEditor(options: EditorOptions) {
     };
     const onToggle = (event: Event) => {
       if ((event as ToggleEvent).newState === 'open') {
-        surface
-          .querySelector<HTMLElement>('[data-editor-palette-filter]')
-          ?.focus();
+        surface.querySelector<HTMLElement>(hook(HOOK.paletteFilter))?.focus();
         listLibraryDocuments();
         return;
       }
@@ -3650,6 +3650,767 @@ export function createEditor(options: EditorOptions) {
     };
   };
 
+  const wireInspectorChanges = (root: HTMLElement) => [
+    delegate<HTMLElement>(
+      root,
+      'change',
+      `${hook(HOOK.prop)}:not(${hook(HOOK.kind, 'tags')})`,
+      (_event, field) => editProp(field),
+    ),
+    delegate<HTMLElement>(
+      root,
+      'change',
+      `${hook(HOOK.field)}:not(${hook(HOOK.kind, 'tags')})`,
+      (_event, field) => editField(field),
+    ),
+    delegate<HTMLElement>(
+      root,
+      'change',
+      hook(HOOK.attribute),
+      (_event, field) => {
+        const index = Number(field.dataset.editorAttribute);
+        const raw = String(controlValue(field));
+        editDataAttribute(
+          field.dataset.editorAttributePart === 'name'
+            ? { kind: 'name', index, name: raw.trim() }
+            : { kind: 'value', index, value: raw },
+        );
+      },
+    ),
+    delegate<HTMLElement>(root, 'change', hook(HOOK.name), (_event, field) => {
+      const id = selectedNodeId();
+      if (!id) return;
+      const result = renameNode(doc.value, id, controlValue(field) as string);
+      if ('error' in result) fieldErrors.value = { '#name': result.error };
+      else commit(result.document);
+    }),
+    delegate<HTMLElement>(
+      root,
+      'change',
+      '[data-editor-text-run]',
+      (_event, field) =>
+        commit(
+          setTextRun(
+            doc.value,
+            field.dataset.editorTextRun!,
+            String(controlValue(field)),
+          ),
+        ),
+    ),
+    delegate<HTMLElement>(root, 'change', hook(HOOK.param), (_event, field) => {
+      const from = field.dataset.editorParam!;
+      const result = renameParam(
+        doc.value,
+        from,
+        String(controlValue(field)).trim(),
+      );
+      if ('error' in result)
+        fieldErrors.value = { [`#param:${from}`]: result.error };
+      else commit(result.document);
+    }),
+    delegate<HTMLElement>(
+      root,
+      'change',
+      '[data-editor-root]',
+      (_event, field) => {
+        rootComponent.value = String(controlValue(field));
+      },
+    ),
+    delegate<HTMLElement>(root, 'change', hook(HOOK.add), (_event, field) => {
+      const value = String(controlValue(field));
+      // A new zone starts on its own first suggestion.
+      if (field.dataset.editorAdd === 'zone') {
+        addZone.value = value;
+        addComponent.value = '';
+      } else addComponent.value = value;
+    }),
+    delegate<HTMLElement>(root, 'change', hook(HOOK.bind), (_event, field) => {
+      const value = String(controlValue(field));
+      if (field.dataset.editorBind === 'prop') {
+        bindProp.value = value;
+        return;
+      }
+      if (field.dataset.editorBind === 'field') {
+        bindField.value = value;
+        return;
+      }
+      const id = selectedNodeId();
+      if (!id) return;
+      // KF-3QEZFB: a field's source binds or unbinds just that field.
+      if (field.dataset.editorBind === 'field-source') {
+        const at = JSON.parse(field.dataset.editorBindPlace!) as FieldPlace;
+        const own = findNode(doc.value, id)!.node.props?.[at.prop];
+        if (!value && !isParamOrBind(valueAt(own, at.path))) return;
+        commit(
+          setField(
+            doc.value,
+            id,
+            at.prop,
+            at.path,
+            value ? (JSON.parse(value) as ViewValue) : undefined,
+          ),
+        );
+        return;
+      }
+      // Not bound clears a binding; a literal value stays as it is.
+      const name = field.dataset.editorBindProp!;
+      const current = findNode(doc.value, id)!.node.props?.[name];
+      const wasBound =
+        current !== null &&
+        typeof current === 'object' &&
+        ('$param' in current || '$bind' in current);
+      if (!value && !wasBound) return;
+      commit(
+        setProp(
+          doc.value,
+          id,
+          name,
+          value ? (JSON.parse(value) as ViewValue) : undefined,
+        ),
+      );
+    }),
+    delegate<HTMLElement>(
+      root,
+      'change',
+      '[data-editor-move]',
+      (_event, field) => {
+        const id = selectedNodeId();
+        const value = String(controlValue(field));
+        if (!id || !value) return;
+        const { parent, zone } = JSON.parse(value) as {
+          parent: string;
+          zone: string;
+        };
+        const index =
+          findNode(doc.value, parent)!.node.zones?.[zone]?.length ?? 0;
+        commit(placeNode(doc.value, id, { parent, zone, index }));
+      },
+    ),
+    delegate<HTMLElement>(root, 'change', hook(HOOK.control), (_event, field) =>
+      editControl(field),
+    ),
+    delegate<HTMLElement>(
+      root,
+      'change',
+      hook(HOOK.slotInput),
+      (_event, field) => {
+        const current = selection.value;
+        if (current?.kind !== 'slot') return;
+        const value = String(controlValue(field));
+        commit(
+          setSlotInput(
+            doc.value,
+            current.address,
+            field.dataset.editorSlotInput!,
+            value ? (JSON.parse(value) as ViewValue) : undefined,
+          ),
+        );
+      },
+    ),
+    delegate<HTMLElement>(
+      root,
+      'change',
+      hook(HOOK.promote),
+      (_event, field) => {
+        promoteProp.value = String(controlValue(field));
+      },
+    ),
+  ];
+
+  const wireSearch = (root: HTMLElement) => [
+    delegate<HTMLElement>(
+      root,
+      'input',
+      hook(HOOK.embedSearch),
+      (_event, editor) => {
+        embedQuery.value = readSearchField(editor).query;
+      },
+    ),
+    delegate<HTMLElement>(
+      root,
+      'input',
+      hook(HOOK.insertDocumentSearch),
+      (_event, editor) => {
+        insertQuery.value = readSearchField(editor).query;
+      },
+    ),
+    delegate<HTMLElement>(
+      root,
+      'input',
+      hook(HOOK.iconSearch),
+      (_event, editor) => {
+        iconQuery.value = readSearchField(editor).query;
+      },
+    ),
+    delegate<HTMLElement>(
+      root,
+      'input',
+      hook(HOOK.paletteFilter),
+      (_event, editor) => {
+        paletteFilter.value = readSearchField(editor).query;
+      },
+    ),
+  ];
+
+  const paletteAndShellActions = (
+    root: HTMLElement,
+  ): Record<string, ActionHandler<HTMLElement>> => ({
+    [PALETTE_VIEW_ACTION]: (_event, target) => {
+      const view: PaletteView =
+        target.dataset.segmentValue === 'grid' ? 'grid' : 'list';
+      paletteView.value = view;
+      rememberPaletteView(view);
+    },
+    [PALETTE_CLEAR_ACTION]: () => {
+      paletteFilter.value = '';
+      paletteFilterRevision.value += 1;
+      root.querySelector<HTMLElement>(hook(HOOK.paletteFilter))?.focus();
+    },
+    [PLAY_ACTION]: () => enterPlay(root),
+    [PLAY_DONE_ACTION]: () => leavePlay(root),
+    [UNDO_ACTION]: () => undo(),
+    [REDO_ACTION]: () => redo(),
+    [MOVE_UP_ACTION]: () => moveSelected(-1),
+    [MOVE_DOWN_ACTION]: () => moveSelected(1),
+    [DELETE_ACTION]: () => deleteSelected(),
+    [DUPLICATE_ACTION]: () => duplicate(),
+    [OPEN_VIEW_ACTION]: () => void openView(),
+    [VIEW_BACK_ACTION]: () => void viewBack(),
+    // KF-JV7XW1: the node context menu's commands.
+    [CONTEXT_MOVE_UP_ACTION]: () => moveSelected(-1),
+    [CONTEXT_MOVE_DOWN_ACTION]: () => moveSelected(1),
+    [CONTEXT_DUPLICATE_ACTION]: () => duplicate(),
+    [CONTEXT_DELETE_ACTION]: () => deleteSelected(),
+    // KF-WKABP2: the drop menu's choice, and a confirmed replacement.
+    [DROP_CHOICE_ACTION]: (_event, target) => {
+      const choice = dropChoices.value[Number(target.dataset.editorDropChoice)];
+      if (choice) applyMove(choice.move);
+    },
+    [REPLACE_CONFIRM_ACTION]: () => {
+      const move = pendingReplace.value;
+      pendingReplace.value = null;
+      closeDialog(root.querySelector<HTMLDialogElement>(`#${REPLACE_DIALOG}`)!);
+      if (move) commitReplace(move);
+    },
+    [CONTEXT_EMBED_ACTION]: (_event, target) =>
+      embed(selectedNodeId()!, target.dataset.editorContextEmbed!),
+    [CONTEXT_EMBED_OTHER_ACTION]: () => openEmbedDialog(root),
+    [ADD_ACTION]: () => addChild(),
+  });
+
+  const inspectorFieldActions = (): Record<
+    string,
+    ActionHandler<HTMLElement>
+  > => ({
+    [UNSET_ACTION]: (_event, target) => {
+      const field = target.closest<HTMLElement>(
+        `${hook(HOOK.prop)}, ${hook(HOOK.field)}`,
+      )!;
+      // Pressed means Not set: un-pressing sets it, to the empty string.
+      const next =
+        target.getAttribute('aria-pressed') === 'true' ? '' : undefined;
+      if (field.dataset.editorField) {
+        writeField(JSON.parse(field.dataset.editorField) as FieldPlace, next);
+        return;
+      }
+      const id = selectedNodeId();
+      if (id) commit(setProp(doc.value, id, field.dataset.editorProp!, next));
+    },
+    [CONTENT_ADD_ACTION]: (_event, target) => {
+      leaveFieldEditor(target);
+      const zone = target.dataset.editorContentAdd!;
+      const id = selectedNodeId()!;
+      const parent = findNode(doc.value, id)!.node;
+      const key = suggestionFor(parent, zone);
+      if (key) addChild({ zone, key });
+      else {
+        // Nothing to suggest: choose one in the Children area.
+        addZone.value = zone;
+        addComponent.value = '';
+        inspectorArea.value = 'children';
+      }
+    },
+    [REPLACE_ROOT_ACTION]: () => replaceRootWith(),
+    [FIRST_ROOT_ACTION]: () => replaceRootWith(),
+    [CONTENT_TO_NODES_ACTION]: (_event, target) => {
+      const id = selectedNodeId();
+      if (id) commit(textToNodes(doc.value, id, target.dataset.editorContent!));
+    },
+    [CONTENT_TO_TEXT_ACTION]: (_event, target) => {
+      const id = selectedNodeId();
+      if (id) commit(nodesToText(doc.value, id, target.dataset.editorContent!));
+    },
+    // A list row's action is its inner button; the row carries the place.
+    [FIELD_OPEN_ACTION]: (_event, target) =>
+      openFieldAt(
+        JSON.parse(
+          target.closest<HTMLElement>(hook(HOOK.open))!.dataset.editorOpen!,
+        ) as FieldPlace,
+      ),
+    [FIELD_BACK_ACTION]: fieldBack,
+    [FIELD_ADD_ITEM_ACTION]: (_event, target) => {
+      const place = JSON.parse(target.dataset.editorStep!) as FieldPlace;
+      const { definitions, type, value } = fieldContext(
+        findNode(doc.value, selectedNodeId()!)!.node,
+        place,
+      );
+      const items = Array.isArray(value) ? value : [];
+      const member = listMembers(type, definitions, stepTitle(place))[
+        Number(target.dataset.editorMember)
+      ]!;
+      // A new item is numbered after the list ("Choice 4"); an object
+      // no placeholder can stand for (a required color) starts empty
+      // for its form to fill. Text always has one.
+      const item =
+        exampleValue(
+          member.type,
+          definitions,
+          stepTitle(place),
+          slotNamer(usedSlots(doc.value)),
+          items.length + 1,
+        ) ?? {};
+      writeField(place, [...items, item]);
+    },
+    [FIELD_SET_ACTION]: (_event, target) => {
+      const { editorValue } = target.dataset;
+      writeField(
+        JSON.parse(target.dataset.editorStep!) as FieldPlace,
+        editorValue ? (JSON.parse(editorValue) as ViewValue) : undefined,
+      );
+    },
+    [FIELD_REMOVE_ITEM_ACTION]: (_event, target) => {
+      writeField(
+        JSON.parse(target.dataset.editorItem!) as FieldPlace,
+        undefined,
+      );
+    },
+  });
+
+  const dialogActions = (
+    root: HTMLElement,
+  ): Record<string, ActionHandler<HTMLElement>> => ({
+    [ICON_OPEN_ACTION]: (_event, target) => {
+      iconPicker.value = JSON.parse(
+        target.dataset.editorIconPlace!,
+      ) as FieldPlace;
+      iconQuery.value = '';
+      iconQueryRevision.value += 1;
+      openDialog(root.querySelector<HTMLDialogElement>(`#${ICON_DIALOG}`)!);
+      // KF-GQHRC0: typing searches at once.
+      root.querySelector<HTMLElement>(hook(HOOK.iconSearch))!.focus();
+    },
+    // KF-6MGYSG: Embed in, from the Inspector's menu, its Other… dialog,
+    // or a hint row's fix (which names the node it is about).
+    [EMBED_ACTION]: (_event, target) => {
+      // The Flow section and Other… act on the selected node.
+      const id =
+        target.dataset.editorEmbedNode ??
+        embedTarget.value ??
+        selectedNodeId()!;
+      const dialog = root.querySelector<HTMLDialogElement>(`#${EMBED_DIALOG}`)!;
+      if (dialog.open) closeDialog(dialog);
+      embedTarget.value = null;
+      embed(id, target.dataset.editorEmbed!);
+    },
+    [SHOW_VIEW_ACTION]: (_event, target) => {
+      const { id, index } = JSON.parse(target.dataset.editorShowView!) as {
+        id: string;
+        index: number;
+      };
+      const next = new Map(canvasViews.value);
+      // The top view is the default, so choosing it clears the choice.
+      const views = findNode(doc.value, id)!.node.props!.views as unknown[];
+      if (index === views.length - 1) next.delete(id);
+      else next.set(id, index);
+      canvasViews.value = next;
+    },
+    [EMBED_OTHER_ACTION]: () => openEmbedDialog(root),
+    // KF-PX5EVZ: a picked document, or the path field's Insert.
+    [INSERT_DOCUMENT_ACTION]: (_event, target) => {
+      const dialog = root.querySelector<HTMLDialogElement>(
+        `#${INSERT_DOCUMENT_DIALOG}`,
+      )!;
+      const picked = target.dataset.editorInsertDocument!;
+      void insertDocument(
+        dialog,
+        picked === 'confirm'
+          ? dialog.querySelector<HTMLInputElement>(
+              `${hook(HOOK.insertDocument, 'path')} input`,
+            )!.value
+          : picked,
+      );
+    },
+    [INSERT_DOCUMENT_CLEAR_ACTION]: () => {
+      insertQuery.value = '';
+      insertQueryRevision.value += 1;
+      root.querySelector<HTMLElement>(hook(HOOK.insertDocumentSearch))!.focus();
+    },
+    [EMBED_CLEAR_ACTION]: () => {
+      embedQuery.value = '';
+      embedQueryRevision.value += 1;
+      root.querySelector<HTMLElement>(hook(HOOK.embedSearch))!.focus();
+    },
+    [ICON_CLEAR_ACTION]: () => {
+      iconQuery.value = '';
+      iconQueryRevision.value += 1;
+      root.querySelector<HTMLElement>(hook(HOOK.iconSearch))!.focus();
+    },
+    [ICON_CHOOSE_ACTION]: (_event, target) => {
+      const place = iconPicker.value!;
+      const icon = target.dataset.editorIcon!;
+      const id = selectedNodeId()!;
+      const node = findNode(doc.value, id)!.node;
+      // KF-DQFXWG, KF-3J47BY: a string `name` beside a node's icon, or
+      // `iconName` (else `name`) beside an item's, follows the icon until
+      // the author names it otherwise.
+      const parent = place.path.slice(0, -1);
+      const strings = (
+        place.path.length
+          ? objectFields(
+              fieldContext(node, { prop: place.prop, path: parent }).type,
+              definitionsOf(node.type),
+            )
+          : propsEntryOf(node)!.props
+      )
+        .filter((field) => field.type.kind === 'string')
+        .map((field) => field.name);
+      const current = node.props?.[place.prop] as ViewValue | undefined;
+      const named = iconNameEdit(
+        strings,
+        (place.path.length ? valueAt(current, parent) : node.props) as
+          Record<string, ViewValue> | undefined,
+        (valueAt(current, place.path) as { $icon?: string } | undefined)?.$icon,
+        icon,
+        componentNames.get(node.type)!,
+      );
+      if (!named) writeField(place, { $icon: icon });
+      else if (!place.path.length)
+        commit(
+          setProp(
+            setProp(doc.value, id, place.prop, { $icon: icon }),
+            id,
+            named.key,
+            named.value,
+          ),
+        );
+      else
+        commit(
+          setProp(
+            doc.value,
+            id,
+            place.prop,
+            withValueAt(
+              withValueAt(current, place.path, { $icon: icon }),
+              [...parent, named.key],
+              named.value,
+            ),
+          ),
+        );
+      closeDialog(root.querySelector<HTMLDialogElement>(`#${ICON_DIALOG}`)!);
+    },
+    [ICON_REMOVE_ACTION]: () => {
+      writeField(iconPicker.value!, undefined);
+      closeDialog(root.querySelector<HTMLDialogElement>(`#${ICON_DIALOG}`)!);
+    },
+    [FIELD_DONE_ACTION]: () =>
+      closeDialog(root.querySelector<HTMLDialogElement>(`#${FIELD_DIALOG}`)!),
+    [FIELD_RESET_ACTION]: (_event, target) => {
+      writeField(
+        JSON.parse(target.dataset.editorStep!) as FieldPlace,
+        undefined,
+      );
+    },
+    [FIELD_EXAMPLE_ACTION]: (_event, target) => {
+      const place = JSON.parse(target.dataset.editorStep!) as FieldPlace;
+      const { definitions, type } = fieldContext(
+        findNode(doc.value, selectedNodeId()!)!.node,
+        place,
+      );
+      // The button shows only for a step that has an example.
+      writeField(
+        place,
+        exampleValue(
+          type,
+          definitions,
+          stepTitle(place),
+          slotNamer(usedSlots(doc.value)),
+        )!,
+      );
+    },
+    [FIELD_JSON_ACTION]: (_event, target) => {
+      const key = placeKey(
+        JSON.parse(target.dataset.editorStep!) as FieldPlace,
+      );
+      const next = new Set(jsonSteps.value);
+      if (!next.delete(key)) next.add(key);
+      jsonSteps.value = next;
+    },
+  });
+
+  const inspectorFlowActions = (): Record<
+    string,
+    ActionHandler<HTMLElement>
+  > => ({
+    [EXAMPLE_ACTION]: (_event, target) => {
+      // The button shows only for the selected node's required prop
+      // that has an example.
+      const id = selectedNodeId()!;
+      const name = target.dataset.editorExample!;
+      const node = findNode(doc.value, id)!.node;
+      const prop = propsEntryOf(node)!.props.find(
+        (item) => item.name === name,
+      )!;
+      commit(
+        setProp(
+          doc.value,
+          id,
+          name,
+          exampleValue(
+            prop.type as never,
+            definitionsOf(node.type),
+            name,
+            slotNamer(usedSlots(doc.value)),
+          )!,
+        ),
+      );
+    },
+    [DATA_ATTRIBUTE_ADD_ACTION]: () => {
+      const node = findNode(doc.value, selectedNodeId()!)!.node;
+      const attributes = dataAttributes(
+        node.props?.[DATA_ATTRIBUTES_PROP] as ViewValue | undefined,
+      )!;
+      const prop = propsByKey
+        .get(node.type)!
+        .props.find((item) => item.name === DATA_ATTRIBUTES_PROP)!;
+      editDataAttribute({
+        kind: 'add',
+        name: newDataAttributeName(
+          attributes,
+          protectedDataAttributes(prop.type as never, definitionsOf(node.type)),
+        ),
+      });
+    },
+    [DATA_ATTRIBUTE_REMOVE_ACTION]: (_event, target) =>
+      editDataAttribute({
+        kind: 'remove',
+        index: Number(target.dataset.editorAttributeRemove),
+      }),
+    [ADD_SLOT_ACTION]: () => addSlot(),
+    [ADD_ROW_DESIGN_ACTION]: () => addRow(),
+    [ADD_KIND_ACTION]: () => addRowKind(),
+    [REMOVE_ROW_DESIGN_ACTION]: () => removeRow(),
+    // KF-STBQBG: the moved design stays selected.
+    [MOVE_ROW_DESIGN_EARLIER_ACTION]: () =>
+      commit(moveRowDesign(doc.value, selectedNodeId()!, -1)),
+    [MOVE_ROW_DESIGN_LATER_ACTION]: () =>
+      commit(moveRowDesign(doc.value, selectedNodeId()!, 1)),
+    [PROMOTE_ACTION]: () => promote(),
+    [PROMOTE_PROP_ACTION]: (_event, target) =>
+      promote(target.dataset.editorPromoteProp),
+    [PROMOTE_FIELD_ACTION]: (_event, target) =>
+      promoteField(
+        JSON.parse(target.dataset.editorPromoteField!) as FieldPlace,
+      ),
+  });
+
+  const outlineAndDocumentActions = (
+    root: HTMLElement,
+  ): Record<string, ActionHandler<HTMLElement>> => ({
+    [OUTLINE_ACTION]: (_event, target) => {
+      leaveFieldEditor(target);
+      const id = target.dataset.itemId!;
+      const address = slotRowAddress(id);
+      // An item slot row selects the node whose prop holds it (KF-SXDM56).
+      select(
+        address
+          ? { kind: 'slot', address }
+          : { kind: 'node', id: itemSlotRowNode(id) ?? id },
+      );
+    },
+    [OUTLINE_TOGGLE_ACTION]: (_event, target) => {
+      const next = new Set(collapsed.value);
+      const id = target.dataset.itemId!;
+      if (!next.delete(id)) next.add(id);
+      collapsed.value = next;
+    },
+    [PROBLEM_ACTION]: (_event, target) =>
+      select({ kind: 'node', id: target.dataset.itemId! }),
+    [PALETTE_ACTION]: (_event, target) =>
+      select({ kind: 'component', key: target.dataset.itemId! }),
+    [PALETTE_DOCUMENT_ACTION]: (event, target) =>
+      void insertFromLibrary(
+        root,
+        target.dataset.editorPaletteDocument!,
+        (event as MouseEvent).altKey,
+      ),
+    [EXPORT_MODULE_ACTION]: () => exportAs('module'),
+    [EXPORT_DECLARATIONS_ACTION]: () => exportAs('declarations'),
+    // KF-QSSTMX: a new empty document; with storage it is a new draft,
+    // and the previous document stays in its file.
+    [NEW_ACTION]: () => load(emptyDocument()),
+    [DOCUMENT_TAB_ACTION]: (_event, target) => {
+      documentArea.value = target.dataset.tabId!.slice(
+        DOCUMENT_AREAS.length + 1,
+      ) as DocumentArea;
+    },
+    [INSPECTOR_TAB_ACTION]: (_event, target) => {
+      inspectorArea.value = target.dataset.tabId!.slice(
+        'editor-inspector-areas-'.length,
+      ) as InspectorArea;
+    },
+  });
+
+  const documentDialogActions = (
+    root: HTMLElement,
+  ): Record<string, ActionHandler<HTMLElement>> => ({
+    [EXTRACT_ACTION]: (_event, target) => {
+      const dialog = root.querySelector<HTMLDialogElement>(
+        `#${EXTRACT_DIALOG}`,
+      )!;
+      if (target.dataset.editorExtract === 'confirm') {
+        void extract(dialog);
+        return;
+      }
+      const path = autosave!.path.peek();
+      extractError.value = '';
+      extractPath.value = extractSuggestion(
+        doc.value,
+        isDraft(path) ? undefined : path,
+        selectedNodeId()!,
+      );
+      // A path typed last time is not this node's: start from the
+      // suggestion even when it is the same text as before.
+      dialog.querySelector<HTMLInputElement>(
+        `${hook(HOOK.extract, 'path')} input`,
+      )!.value = extractPath.value;
+      openDialog(dialog);
+    },
+    [SAVE_AS_ACTION]: (_event, target) => {
+      const dialog = root.querySelector<HTMLDialogElement>(
+        `#${SAVE_AS_DIALOG}`,
+      )!;
+      if (target.dataset.editorSaveAs !== 'confirm') {
+        saveAsError.value = '';
+        openDialog(dialog);
+        return;
+      }
+      const path = dialog
+        .querySelector<HTMLInputElement>('[data-editor-save-as="path"] input')!
+        .value.trim()
+        .replace(/^\.\//, '');
+      if (!path.endsWith('.kui.json') || isDraft(path)) {
+        saveAsError.value = 'Name a .kui.json file outside the drafts folder.';
+        return;
+      }
+      void autosave!.saveAs(path, fileText(doc.value)).then((failure) => {
+        saveAsError.value = failure ?? '';
+        if (!failure) closeDialog(dialog);
+      });
+    },
+    [SAVE_ACTION]: () => {
+      const document = doc.value;
+      (options.save ?? download)(
+        documentFileName(document),
+        fileText(document),
+      );
+    },
+  });
+
+  const wireActions = (root: HTMLElement) =>
+    delegateActions<HTMLElement>(root, 'click', {
+      ...paletteAndShellActions(root),
+      ...inspectorFieldActions(),
+      ...dialogActions(root),
+      ...inspectorFlowActions(),
+      ...outlineAndDocumentActions(root),
+      ...documentDialogActions(root),
+    });
+
+  const wireCanvasDragHandlers = (root: HTMLElement) =>
+    wireCanvasDrag(root, {
+      sourceOf: (element) => {
+        const address = element.dataset.editorSlotAddress;
+        if (address) {
+          const { parent, zone, index } = JSON.parse(address) as SlotAddress;
+          return slotRowId(parent, zone, index);
+        }
+        const id = element.dataset.kerfNode!;
+        return isMovable(doc.value, id).placed ? id : undefined;
+      },
+      targetOf: (element) => {
+        // KF-7BB55F: an empty zone's placeholder targets that zone.
+        const empty = element.dataset.editorEmpty;
+        if (empty === ROOT_EMPTY) return ROOT_TARGET;
+        if (empty) return `${EMPTY_ZONE_TARGET}${empty}`;
+        const address = element.dataset.editorSlotAddress;
+        if (!address) return element.dataset.kerfNode!;
+        const { parent, zone, index } = JSON.parse(address) as SlotAddress;
+        return slotRowId(parent, zone, index);
+      },
+      canDrop: (move) => dropFor(move) !== undefined,
+      onMove: (move) => moveOrAsk(root, move),
+      // KF-WKABP2: a container's zones where they render, replacing a
+      // node alone in its zone, and the menu a drop asks with.
+      zonesOf: canvasZones,
+      replaceOf: (element, sourceId) => {
+        const node = canvasNode(element);
+        return node ? replaceMove(sourceId, node.id) : undefined;
+      },
+      choicesOf: (element, sourceId) => {
+        const node = canvasNode(element);
+        return node
+          ? dropChoicesFor(node.id, sourceId)
+          : { choices: [], ambiguous: false };
+      },
+      choose: (choices, point) => askDrop(root, choices, point),
+      // KF-WKABP2: a container's untouched seed placeholder ("Main") is
+      // part of its container's zones; replacing it is the Main region.
+      passesThrough: (element) => {
+        const node = canvasNode(element);
+        return node
+          ? isSeedPlaceholder(doc.value, node.id, (key) =>
+              componentNames.get(key)!,
+            )
+          : false;
+      },
+      // KF-PK3GVY: a rootless document's blank canvas takes its root.
+      rootOf: () => doc.value.root?.id ?? ROOT_TARGET,
+      labelOf: (sourceId) =>
+        sourceId.startsWith(PALETTE_SOURCE)
+          ? componentNames.get(sourceId.slice(PALETTE_SOURCE.length))!
+          : sourceId.startsWith(DOCUMENT_SOURCE)
+            ? documentName(sourceId.slice(DOCUMENT_SOURCE.length))
+            : rowLabel(sourceId),
+      captionOf: dropCaption,
+      refusalOf: dropRefusal,
+      // KF-67K2VP: a drag also drops on the outline's rows, and resting on
+      // a Document tab opens it, so a palette drag can reach the outline.
+      surfaces: [
+        treeListExternalDrop(root, {
+          canDrop: (move) => dropFor(move) !== undefined,
+        }),
+        springTabs(),
+      ],
+      // KF-FXACB5: a Library document drags as a `#view`.
+      external: {
+        selector: `${hook(HOOK.palette)}, ${hook(HOOK.paletteDocument)}`,
+        sourceOf: (element) =>
+          element.dataset.editorPalette
+            ? `${PALETTE_SOURCE}${element.dataset.editorPalette}`
+            : `${DOCUMENT_SOURCE}${element.dataset.editorPaletteDocument}`,
+      },
+      onDragStart: (sourceId, altKey) => {
+        if (!fromLibrary(sourceId)) return;
+        // The read answers before most drops; a drop waits for it.
+        const path = documentSource(sourceId);
+        if (path !== undefined) void readLibraryDocument(path);
+        libraryDragStarted(root, altKey);
+      },
+      onDragEnd: ({ sourceId, dropped, altKey }) => {
+        if (fromLibrary(sourceId)) libraryDragEnded(root, dropped, altKey);
+      },
+    });
+
   const wire = (root: HTMLElement) => {
     wired = root;
     const toggle = (action: string, collapsed: typeof documentCollapsed) =>
@@ -3666,197 +4427,7 @@ export function createEditor(options: EditorOptions) {
           rightRail: { size: inspectorSize, collapsed: inspectorCollapsed },
         },
       }),
-      delegate<HTMLElement>(
-        root,
-        'change',
-        `[data-editor-prop]:not(${hook(HOOK.kind, 'tags')})`,
-        (_event, field) => editProp(field),
-      ),
-      delegate<HTMLElement>(
-        root,
-        'change',
-        `[data-editor-field]:not(${hook(HOOK.kind, 'tags')})`,
-        (_event, field) => editField(field),
-      ),
-      delegate<HTMLElement>(
-        root,
-        'change',
-        '[data-editor-attribute]',
-        (_event, field) => {
-          const index = Number(field.dataset.editorAttribute);
-          const raw = String(controlValue(field));
-          editDataAttribute(
-            field.dataset.editorAttributePart === 'name'
-              ? { kind: 'name', index, name: raw.trim() }
-              : { kind: 'value', index, value: raw },
-          );
-        },
-      ),
-      delegate<HTMLElement>(
-        root,
-        'change',
-        '[data-editor-name]',
-        (_event, field) => {
-          const id = selectedNodeId();
-          if (!id) return;
-          const result = renameNode(
-            doc.value,
-            id,
-            controlValue(field) as string,
-          );
-          if ('error' in result) fieldErrors.value = { '#name': result.error };
-          else commit(result.document);
-        },
-      ),
-      delegate<HTMLElement>(
-        root,
-        'change',
-        '[data-editor-text-run]',
-        (_event, field) =>
-          commit(
-            setTextRun(
-              doc.value,
-              field.dataset.editorTextRun!,
-              String(controlValue(field)),
-            ),
-          ),
-      ),
-      delegate<HTMLElement>(
-        root,
-        'change',
-        '[data-editor-param]',
-        (_event, field) => {
-          const from = field.dataset.editorParam!;
-          const result = renameParam(
-            doc.value,
-            from,
-            String(controlValue(field)).trim(),
-          );
-          if ('error' in result)
-            fieldErrors.value = { [`#param:${from}`]: result.error };
-          else commit(result.document);
-        },
-      ),
-      delegate<HTMLElement>(
-        root,
-        'change',
-        '[data-editor-root]',
-        (_event, field) => {
-          rootComponent.value = String(controlValue(field));
-        },
-      ),
-      delegate<HTMLElement>(
-        root,
-        'change',
-        '[data-editor-add]',
-        (_event, field) => {
-          const value = String(controlValue(field));
-          // A new zone starts on its own first suggestion.
-          if (field.dataset.editorAdd === 'zone') {
-            addZone.value = value;
-            addComponent.value = '';
-          } else addComponent.value = value;
-        },
-      ),
-      delegate<HTMLElement>(
-        root,
-        'change',
-        '[data-editor-bind]',
-        (_event, field) => {
-          const value = String(controlValue(field));
-          if (field.dataset.editorBind === 'prop') {
-            bindProp.value = value;
-            return;
-          }
-          if (field.dataset.editorBind === 'field') {
-            bindField.value = value;
-            return;
-          }
-          const id = selectedNodeId();
-          if (!id) return;
-          // KF-3QEZFB: a field's source binds or unbinds just that field.
-          if (field.dataset.editorBind === 'field-source') {
-            const at = JSON.parse(field.dataset.editorBindPlace!) as FieldPlace;
-            const own = findNode(doc.value, id)!.node.props?.[at.prop];
-            if (!value && !isParamOrBind(valueAt(own, at.path))) return;
-            commit(
-              setField(
-                doc.value,
-                id,
-                at.prop,
-                at.path,
-                value ? (JSON.parse(value) as ViewValue) : undefined,
-              ),
-            );
-            return;
-          }
-          // Not bound clears a binding; a literal value stays as it is.
-          const name = field.dataset.editorBindProp!;
-          const current = findNode(doc.value, id)!.node.props?.[name];
-          const wasBound =
-            current !== null &&
-            typeof current === 'object' &&
-            ('$param' in current || '$bind' in current);
-          if (!value && !wasBound) return;
-          commit(
-            setProp(
-              doc.value,
-              id,
-              name,
-              value ? (JSON.parse(value) as ViewValue) : undefined,
-            ),
-          );
-        },
-      ),
-      delegate<HTMLElement>(
-        root,
-        'change',
-        '[data-editor-move]',
-        (_event, field) => {
-          const id = selectedNodeId();
-          const value = String(controlValue(field));
-          if (!id || !value) return;
-          const { parent, zone } = JSON.parse(value) as {
-            parent: string;
-            zone: string;
-          };
-          const index =
-            findNode(doc.value, parent)!.node.zones?.[zone]?.length ?? 0;
-          commit(placeNode(doc.value, id, { parent, zone, index }));
-        },
-      ),
-      delegate<HTMLElement>(
-        root,
-        'change',
-        hook(HOOK.control),
-        (_event, field) => editControl(field),
-      ),
-      delegate<HTMLElement>(
-        root,
-        'change',
-        hook(HOOK.slotInput),
-        (_event, field) => {
-          const current = selection.value;
-          if (current?.kind !== 'slot') return;
-          const value = String(controlValue(field));
-          commit(
-            setSlotInput(
-              doc.value,
-              current.address,
-              field.dataset.editorSlotInput!,
-              value ? (JSON.parse(value) as ViewValue) : undefined,
-            ),
-          );
-        },
-      ),
-      delegate<HTMLElement>(
-        root,
-        'change',
-        '[data-editor-promote]',
-        (_event, field) => {
-          promoteProp.value = String(controlValue(field));
-        },
-      ),
+      ...wireInspectorChanges(root),
       on(root.ownerDocument, 'keydown', (event) => {
         const key = event as KeyboardEvent;
         // KF-60BEEJ: no editing key works while playing. A key inside the
@@ -3910,503 +4481,8 @@ export function createEditor(options: EditorOptions) {
             paste(clipboard);
         }
       }),
-      delegate<HTMLElement>(
-        root,
-        'input',
-        '[data-editor-embed-search]',
-        (_event, editor) => {
-          embedQuery.value = readSearchField(editor).query;
-        },
-      ),
-      delegate<HTMLElement>(
-        root,
-        'input',
-        '[data-editor-insert-document-search]',
-        (_event, editor) => {
-          insertQuery.value = readSearchField(editor).query;
-        },
-      ),
-      delegate<HTMLElement>(
-        root,
-        'input',
-        '[data-editor-icon-search]',
-        (_event, editor) => {
-          iconQuery.value = readSearchField(editor).query;
-        },
-      ),
-      delegate<HTMLElement>(
-        root,
-        'input',
-        '[data-editor-palette-filter]',
-        (_event, editor) => {
-          paletteFilter.value = readSearchField(editor).query;
-        },
-      ),
-      delegateActions<HTMLElement>(root, 'click', {
-        [PALETTE_VIEW_ACTION]: (_event, target) => {
-          const view: PaletteView =
-            target.dataset.segmentValue === 'grid' ? 'grid' : 'list';
-          paletteView.value = view;
-          rememberPaletteView(view);
-        },
-        [PALETTE_CLEAR_ACTION]: () => {
-          paletteFilter.value = '';
-          paletteFilterRevision.value += 1;
-          root
-            .querySelector<HTMLElement>('[data-editor-palette-filter]')
-            ?.focus();
-        },
-        [PLAY_ACTION]: () => enterPlay(root),
-        [PLAY_DONE_ACTION]: () => leavePlay(root),
-        [UNDO_ACTION]: () => undo(),
-        [REDO_ACTION]: () => redo(),
-        [MOVE_UP_ACTION]: () => moveSelected(-1),
-        [MOVE_DOWN_ACTION]: () => moveSelected(1),
-        [DELETE_ACTION]: () => deleteSelected(),
-        [DUPLICATE_ACTION]: () => duplicate(),
-        [OPEN_VIEW_ACTION]: () => void openView(),
-        [VIEW_BACK_ACTION]: () => void viewBack(),
-        // KF-JV7XW1: the node context menu's commands.
-        [CONTEXT_MOVE_UP_ACTION]: () => moveSelected(-1),
-        [CONTEXT_MOVE_DOWN_ACTION]: () => moveSelected(1),
-        [CONTEXT_DUPLICATE_ACTION]: () => duplicate(),
-        [CONTEXT_DELETE_ACTION]: () => deleteSelected(),
-        // KF-WKABP2: the drop menu's choice, and a confirmed replacement.
-        [DROP_CHOICE_ACTION]: (_event, target) => {
-          const choice =
-            dropChoices.value[Number(target.dataset.editorDropChoice)];
-          if (choice) applyMove(choice.move);
-        },
-        [REPLACE_CONFIRM_ACTION]: () => {
-          const move = pendingReplace.value;
-          pendingReplace.value = null;
-          closeDialog(
-            root.querySelector<HTMLDialogElement>(`#${REPLACE_DIALOG}`)!,
-          );
-          if (move) commitReplace(move);
-        },
-        [CONTEXT_EMBED_ACTION]: (_event, target) =>
-          embed(selectedNodeId()!, target.dataset.editorContextEmbed!),
-        [CONTEXT_EMBED_OTHER_ACTION]: () => openEmbedDialog(root),
-        [ADD_ACTION]: () => addChild(),
-        [UNSET_ACTION]: (_event, target) => {
-          const field = target.closest<HTMLElement>(
-            '[data-editor-prop], [data-editor-field]',
-          )!;
-          // Pressed means Not set: un-pressing sets it, to the empty string.
-          const next =
-            target.getAttribute('aria-pressed') === 'true' ? '' : undefined;
-          if (field.dataset.editorField) {
-            writeField(
-              JSON.parse(field.dataset.editorField) as FieldPlace,
-              next,
-            );
-            return;
-          }
-          const id = selectedNodeId();
-          if (id)
-            commit(setProp(doc.value, id, field.dataset.editorProp!, next));
-        },
-        [CONTENT_ADD_ACTION]: (_event, target) => {
-          leaveFieldEditor(target);
-          const zone = target.dataset.editorContentAdd!;
-          const id = selectedNodeId()!;
-          const parent = findNode(doc.value, id)!.node;
-          const key = suggestionFor(parent, zone);
-          if (key) addChild({ zone, key });
-          else {
-            // Nothing to suggest: choose one in the Children area.
-            addZone.value = zone;
-            addComponent.value = '';
-            inspectorArea.value = 'children';
-          }
-        },
-        [REPLACE_ROOT_ACTION]: () => replaceRootWith(),
-        [FIRST_ROOT_ACTION]: () => replaceRootWith(),
-        [CONTENT_TO_NODES_ACTION]: (_event, target) => {
-          const id = selectedNodeId();
-          if (id)
-            commit(textToNodes(doc.value, id, target.dataset.editorContent!));
-        },
-        [CONTENT_TO_TEXT_ACTION]: (_event, target) => {
-          const id = selectedNodeId();
-          if (id)
-            commit(nodesToText(doc.value, id, target.dataset.editorContent!));
-        },
-        // A list row's action is its inner button; the row carries the place.
-        [FIELD_OPEN_ACTION]: (_event, target) =>
-          openFieldAt(
-            JSON.parse(
-              target.closest<HTMLElement>('[data-editor-open]')!.dataset
-                .editorOpen!,
-            ) as FieldPlace,
-          ),
-        [FIELD_BACK_ACTION]: fieldBack,
-        [FIELD_ADD_ITEM_ACTION]: (_event, target) => {
-          const place = JSON.parse(target.dataset.editorStep!) as FieldPlace;
-          const { definitions, type, value } = fieldContext(
-            findNode(doc.value, selectedNodeId()!)!.node,
-            place,
-          );
-          const items = Array.isArray(value) ? value : [];
-          const member = listMembers(type, definitions, stepTitle(place))[
-            Number(target.dataset.editorMember)
-          ]!;
-          // A new item is numbered after the list ("Choice 4"); an object
-          // no placeholder can stand for (a required color) starts empty
-          // for its form to fill. Text always has one.
-          const item =
-            exampleValue(
-              member.type,
-              definitions,
-              stepTitle(place),
-              slotNamer(usedSlots(doc.value)),
-              items.length + 1,
-            ) ?? {};
-          writeField(place, [...items, item]);
-        },
-        [FIELD_SET_ACTION]: (_event, target) => {
-          const { editorValue } = target.dataset;
-          writeField(
-            JSON.parse(target.dataset.editorStep!) as FieldPlace,
-            editorValue ? (JSON.parse(editorValue) as ViewValue) : undefined,
-          );
-        },
-        [FIELD_REMOVE_ITEM_ACTION]: (_event, target) => {
-          writeField(
-            JSON.parse(target.dataset.editorItem!) as FieldPlace,
-            undefined,
-          );
-        },
-        [ICON_OPEN_ACTION]: (_event, target) => {
-          iconPicker.value = JSON.parse(
-            target.dataset.editorIconPlace!,
-          ) as FieldPlace;
-          iconQuery.value = '';
-          iconQueryRevision.value += 1;
-          openDialog(root.querySelector<HTMLDialogElement>(`#${ICON_DIALOG}`)!);
-          // KF-GQHRC0: typing searches at once.
-          root.querySelector<HTMLElement>('[data-editor-icon-search]')!.focus();
-        },
-        // KF-6MGYSG: Embed in, from the Inspector's menu, its Other… dialog,
-        // or a hint row's fix (which names the node it is about).
-        [EMBED_ACTION]: (_event, target) => {
-          // The Flow section and Other… act on the selected node.
-          const id =
-            target.dataset.editorEmbedNode ??
-            embedTarget.value ??
-            selectedNodeId()!;
-          const dialog = root.querySelector<HTMLDialogElement>(
-            `#${EMBED_DIALOG}`,
-          )!;
-          if (dialog.open) closeDialog(dialog);
-          embedTarget.value = null;
-          embed(id, target.dataset.editorEmbed!);
-        },
-        [SHOW_VIEW_ACTION]: (_event, target) => {
-          const { id, index } = JSON.parse(target.dataset.editorShowView!) as {
-            id: string;
-            index: number;
-          };
-          const next = new Map(canvasViews.value);
-          // The top view is the default, so choosing it clears the choice.
-          const views = findNode(doc.value, id)!.node.props!.views as unknown[];
-          if (index === views.length - 1) next.delete(id);
-          else next.set(id, index);
-          canvasViews.value = next;
-        },
-        [EMBED_OTHER_ACTION]: () => openEmbedDialog(root),
-        // KF-PX5EVZ: a picked document, or the path field's Insert.
-        [INSERT_DOCUMENT_ACTION]: (_event, target) => {
-          const dialog = root.querySelector<HTMLDialogElement>(
-            `#${INSERT_DOCUMENT_DIALOG}`,
-          )!;
-          const picked = target.dataset.editorInsertDocument!;
-          void insertDocument(
-            dialog,
-            picked === 'confirm'
-              ? dialog.querySelector<HTMLInputElement>(
-                  '[data-editor-insert-document="path"] input',
-                )!.value
-              : picked,
-          );
-        },
-        [INSERT_DOCUMENT_CLEAR_ACTION]: () => {
-          insertQuery.value = '';
-          insertQueryRevision.value += 1;
-          root
-            .querySelector<HTMLElement>('[data-editor-insert-document-search]')!
-            .focus();
-        },
-        [EMBED_CLEAR_ACTION]: () => {
-          embedQuery.value = '';
-          embedQueryRevision.value += 1;
-          root
-            .querySelector<HTMLElement>('[data-editor-embed-search]')!
-            .focus();
-        },
-        [ICON_CLEAR_ACTION]: () => {
-          iconQuery.value = '';
-          iconQueryRevision.value += 1;
-          root.querySelector<HTMLElement>('[data-editor-icon-search]')!.focus();
-        },
-        [ICON_CHOOSE_ACTION]: (_event, target) => {
-          const place = iconPicker.value!;
-          const icon = target.dataset.editorIcon!;
-          const id = selectedNodeId()!;
-          const node = findNode(doc.value, id)!.node;
-          // KF-DQFXWG, KF-3J47BY: a string `name` beside a node's icon, or
-          // `iconName` (else `name`) beside an item's, follows the icon until
-          // the author names it otherwise.
-          const parent = place.path.slice(0, -1);
-          const strings = (
-            place.path.length
-              ? objectFields(
-                  fieldContext(node, { prop: place.prop, path: parent }).type,
-                  definitionsOf(node.type),
-                )
-              : propsEntryOf(node)!.props
-          )
-            .filter((field) => field.type.kind === 'string')
-            .map((field) => field.name);
-          const current = node.props?.[place.prop] as ViewValue | undefined;
-          const named = iconNameEdit(
-            strings,
-            (place.path.length ? valueAt(current, parent) : node.props) as
-              Record<string, ViewValue> | undefined,
-            (valueAt(current, place.path) as { $icon?: string } | undefined)
-              ?.$icon,
-            icon,
-            componentNames.get(node.type)!,
-          );
-          if (!named) writeField(place, { $icon: icon });
-          else if (!place.path.length)
-            commit(
-              setProp(
-                setProp(doc.value, id, place.prop, { $icon: icon }),
-                id,
-                named.key,
-                named.value,
-              ),
-            );
-          else
-            commit(
-              setProp(
-                doc.value,
-                id,
-                place.prop,
-                withValueAt(
-                  withValueAt(current, place.path, { $icon: icon }),
-                  [...parent, named.key],
-                  named.value,
-                ),
-              ),
-            );
-          closeDialog(
-            root.querySelector<HTMLDialogElement>(`#${ICON_DIALOG}`)!,
-          );
-        },
-        [ICON_REMOVE_ACTION]: () => {
-          writeField(iconPicker.value!, undefined);
-          closeDialog(
-            root.querySelector<HTMLDialogElement>(`#${ICON_DIALOG}`)!,
-          );
-        },
-        [FIELD_DONE_ACTION]: () =>
-          closeDialog(
-            root.querySelector<HTMLDialogElement>(`#${FIELD_DIALOG}`)!,
-          ),
-        [FIELD_RESET_ACTION]: (_event, target) => {
-          writeField(
-            JSON.parse(target.dataset.editorStep!) as FieldPlace,
-            undefined,
-          );
-        },
-        [FIELD_EXAMPLE_ACTION]: (_event, target) => {
-          const place = JSON.parse(target.dataset.editorStep!) as FieldPlace;
-          const { definitions, type } = fieldContext(
-            findNode(doc.value, selectedNodeId()!)!.node,
-            place,
-          );
-          // The button shows only for a step that has an example.
-          writeField(
-            place,
-            exampleValue(
-              type,
-              definitions,
-              stepTitle(place),
-              slotNamer(usedSlots(doc.value)),
-            )!,
-          );
-        },
-        [FIELD_JSON_ACTION]: (_event, target) => {
-          const key = placeKey(
-            JSON.parse(target.dataset.editorStep!) as FieldPlace,
-          );
-          const next = new Set(jsonSteps.value);
-          if (!next.delete(key)) next.add(key);
-          jsonSteps.value = next;
-        },
-        [EXAMPLE_ACTION]: (_event, target) => {
-          // The button shows only for the selected node's required prop
-          // that has an example.
-          const id = selectedNodeId()!;
-          const name = target.dataset.editorExample!;
-          const node = findNode(doc.value, id)!.node;
-          const prop = propsEntryOf(node)!.props.find(
-            (item) => item.name === name,
-          )!;
-          commit(
-            setProp(
-              doc.value,
-              id,
-              name,
-              exampleValue(
-                prop.type as never,
-                definitionsOf(node.type),
-                name,
-                slotNamer(usedSlots(doc.value)),
-              )!,
-            ),
-          );
-        },
-        [DATA_ATTRIBUTE_ADD_ACTION]: () => {
-          const node = findNode(doc.value, selectedNodeId()!)!.node;
-          const attributes = dataAttributes(
-            node.props?.[DATA_ATTRIBUTES_PROP] as ViewValue | undefined,
-          )!;
-          const prop = propsByKey
-            .get(node.type)!
-            .props.find((item) => item.name === DATA_ATTRIBUTES_PROP)!;
-          editDataAttribute({
-            kind: 'add',
-            name: newDataAttributeName(
-              attributes,
-              protectedDataAttributes(
-                prop.type as never,
-                definitionsOf(node.type),
-              ),
-            ),
-          });
-        },
-        [DATA_ATTRIBUTE_REMOVE_ACTION]: (_event, target) =>
-          editDataAttribute({
-            kind: 'remove',
-            index: Number(target.dataset.editorAttributeRemove),
-          }),
-        [ADD_SLOT_ACTION]: () => addSlot(),
-        [ADD_ROW_DESIGN_ACTION]: () => addRow(),
-        [ADD_KIND_ACTION]: () => addRowKind(),
-        [REMOVE_ROW_DESIGN_ACTION]: () => removeRow(),
-        // KF-STBQBG: the moved design stays selected.
-        [MOVE_ROW_DESIGN_EARLIER_ACTION]: () =>
-          commit(moveRowDesign(doc.value, selectedNodeId()!, -1)),
-        [MOVE_ROW_DESIGN_LATER_ACTION]: () =>
-          commit(moveRowDesign(doc.value, selectedNodeId()!, 1)),
-        [PROMOTE_ACTION]: () => promote(),
-        [PROMOTE_PROP_ACTION]: (_event, target) =>
-          promote(target.dataset.editorPromoteProp),
-        [PROMOTE_FIELD_ACTION]: (_event, target) =>
-          promoteField(
-            JSON.parse(target.dataset.editorPromoteField!) as FieldPlace,
-          ),
-        [OUTLINE_ACTION]: (_event, target) => {
-          leaveFieldEditor(target);
-          const id = target.dataset.itemId!;
-          const address = slotRowAddress(id);
-          // An item slot row selects the node whose prop holds it (KF-SXDM56).
-          select(
-            address
-              ? { kind: 'slot', address }
-              : { kind: 'node', id: itemSlotRowNode(id) ?? id },
-          );
-        },
-        [OUTLINE_TOGGLE_ACTION]: (_event, target) => {
-          const next = new Set(collapsed.value);
-          const id = target.dataset.itemId!;
-          if (!next.delete(id)) next.add(id);
-          collapsed.value = next;
-        },
-        [PROBLEM_ACTION]: (_event, target) =>
-          select({ kind: 'node', id: target.dataset.itemId! }),
-        [PALETTE_ACTION]: (_event, target) =>
-          select({ kind: 'component', key: target.dataset.itemId! }),
-        [PALETTE_DOCUMENT_ACTION]: (event, target) =>
-          void insertFromLibrary(
-            root,
-            target.dataset.editorPaletteDocument!,
-            (event as MouseEvent).altKey,
-          ),
-        [EXPORT_MODULE_ACTION]: () => exportAs('module'),
-        [EXPORT_DECLARATIONS_ACTION]: () => exportAs('declarations'),
-        // KF-QSSTMX: a new empty document; with storage it is a new draft,
-        // and the previous document stays in its file.
-        [NEW_ACTION]: () => load(emptyDocument()),
-        [DOCUMENT_TAB_ACTION]: (_event, target) => {
-          documentArea.value = target.dataset.tabId!.slice(
-            DOCUMENT_AREAS.length + 1,
-          ) as DocumentArea;
-        },
-        [INSPECTOR_TAB_ACTION]: (_event, target) => {
-          inspectorArea.value = target.dataset.tabId!.slice(
-            'editor-inspector-areas-'.length,
-          ) as InspectorArea;
-        },
-        [EXTRACT_ACTION]: (_event, target) => {
-          const dialog = root.querySelector<HTMLDialogElement>(
-            `#${EXTRACT_DIALOG}`,
-          )!;
-          if (target.dataset.editorExtract === 'confirm') {
-            void extract(dialog);
-            return;
-          }
-          const path = autosave!.path.peek();
-          extractError.value = '';
-          extractPath.value = extractSuggestion(
-            doc.value,
-            isDraft(path) ? undefined : path,
-            selectedNodeId()!,
-          );
-          // A path typed last time is not this node's: start from the
-          // suggestion even when it is the same text as before.
-          dialog.querySelector<HTMLInputElement>(
-            '[data-editor-extract="path"] input',
-          )!.value = extractPath.value;
-          openDialog(dialog);
-        },
-        [SAVE_AS_ACTION]: (_event, target) => {
-          const dialog = root.querySelector<HTMLDialogElement>(
-            `#${SAVE_AS_DIALOG}`,
-          )!;
-          if (target.dataset.editorSaveAs !== 'confirm') {
-            saveAsError.value = '';
-            openDialog(dialog);
-            return;
-          }
-          const path = dialog
-            .querySelector<HTMLInputElement>(
-              '[data-editor-save-as="path"] input',
-            )!
-            .value.trim()
-            .replace(/^\.\//, '');
-          if (!path.endsWith('.kui.json') || isDraft(path)) {
-            saveAsError.value =
-              'Name a .kui.json file outside the drafts folder.';
-            return;
-          }
-          void autosave!.saveAs(path, fileText(doc.value)).then((failure) => {
-            saveAsError.value = failure ?? '';
-            if (!failure) closeDialog(dialog);
-          });
-        },
-        [SAVE_ACTION]: () => {
-          const document = doc.value;
-          (options.save ?? download)(
-            documentFileName(document),
-            fileText(document),
-          );
-        },
-      }),
+      ...wireSearch(root),
+      wireActions(root),
       // KF-JV7XW1: a right-click (or the ContextMenu key) on an Outline row
       // or a canvas element selects its node and opens the node context menu
       // at the pointer. Play mode has none; the canvas is hidden then.
@@ -4571,89 +4647,7 @@ export function createEditor(options: EditorOptions) {
       // KF-XX4Y95: a Form on the canvas (or in play) never navigates the
       // editor away when Enter in a field submits it.
       wireForms(root),
-      wireCanvasDrag(root, {
-        sourceOf: (element) => {
-          const address = element.dataset.editorSlotAddress;
-          if (address) {
-            const { parent, zone, index } = JSON.parse(address) as SlotAddress;
-            return slotRowId(parent, zone, index);
-          }
-          const id = element.dataset.kerfNode!;
-          return isMovable(doc.value, id).placed ? id : undefined;
-        },
-        targetOf: (element) => {
-          // KF-7BB55F: an empty zone's placeholder targets that zone.
-          const empty = element.dataset.editorEmpty;
-          if (empty === ROOT_EMPTY) return ROOT_TARGET;
-          if (empty) return `${EMPTY_ZONE_TARGET}${empty}`;
-          const address = element.dataset.editorSlotAddress;
-          if (!address) return element.dataset.kerfNode!;
-          const { parent, zone, index } = JSON.parse(address) as SlotAddress;
-          return slotRowId(parent, zone, index);
-        },
-        canDrop: (move) => dropFor(move) !== undefined,
-        onMove: (move) => moveOrAsk(root, move),
-        // KF-WKABP2: a container's zones where they render, replacing a
-        // node alone in its zone, and the menu a drop asks with.
-        zonesOf: canvasZones,
-        replaceOf: (element, sourceId) => {
-          const node = canvasNode(element);
-          return node ? replaceMove(sourceId, node.id) : undefined;
-        },
-        choicesOf: (element, sourceId) => {
-          const node = canvasNode(element);
-          return node
-            ? dropChoicesFor(node.id, sourceId)
-            : { choices: [], ambiguous: false };
-        },
-        choose: (choices, point) => askDrop(root, choices, point),
-        // KF-WKABP2: a container's untouched seed placeholder ("Main") is
-        // part of its container's zones; replacing it is the Main region.
-        passesThrough: (element) => {
-          const node = canvasNode(element);
-          return node
-            ? isSeedPlaceholder(doc.value, node.id, (key) =>
-                componentNames.get(key)!,
-              )
-            : false;
-        },
-        // KF-PK3GVY: a rootless document's blank canvas takes its root.
-        rootOf: () => doc.value.root?.id ?? ROOT_TARGET,
-        labelOf: (sourceId) =>
-          sourceId.startsWith(PALETTE_SOURCE)
-            ? componentNames.get(sourceId.slice(PALETTE_SOURCE.length))!
-            : sourceId.startsWith(DOCUMENT_SOURCE)
-              ? documentName(sourceId.slice(DOCUMENT_SOURCE.length))
-              : rowLabel(sourceId),
-        captionOf: dropCaption,
-        refusalOf: dropRefusal,
-        // KF-67K2VP: a drag also drops on the outline's rows, and resting on
-        // a Document tab opens it, so a palette drag can reach the outline.
-        surfaces: [
-          treeListExternalDrop(root, {
-            canDrop: (move) => dropFor(move) !== undefined,
-          }),
-          springTabs(),
-        ],
-        // KF-FXACB5: a Library document drags as a `#view`.
-        external: {
-          selector: '[data-editor-palette], [data-editor-palette-document]',
-          sourceOf: (element) =>
-            element.dataset.editorPalette
-              ? `${PALETTE_SOURCE}${element.dataset.editorPalette}`
-              : `${DOCUMENT_SOURCE}${element.dataset.editorPaletteDocument}`,
-        },
-        onDragStart: (sourceId, altKey) => {
-          if (!fromLibrary(sourceId)) return;
-          // The read answers before most drops; a drop waits for it.
-          const path = documentSource(sourceId);
-          if (path !== undefined) void readLibraryDocument(path);
-          libraryDragStarted(root, altKey);
-        },
-        onDragEnd: ({ sourceId, dropped, altKey }) => {
-          if (fromLibrary(sourceId)) libraryDragEnded(root, dropped, altKey);
-        },
-      }),
+      wireCanvasDragHandlers(root),
       wireFilePickers(root, {
         onFiles: ({ files, id }) => {
           // wireFilePickers reports a choice only when it has files.

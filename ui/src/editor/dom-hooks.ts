@@ -24,6 +24,26 @@ export const HOOK = {
   paletteThumb: 'data-editor-palette-thumb',
   /** Play mode's device iframe. */
   playFrame: 'data-editor-play-frame',
+  add: 'data-editor-add',
+  attribute: 'data-editor-attribute',
+  bind: 'data-editor-bind',
+  embed: 'data-editor-embed',
+  embedSearch: 'data-editor-embed-search',
+  extract: 'data-editor-extract',
+  field: 'data-editor-field',
+  icon: 'data-editor-icon',
+  iconSearch: 'data-editor-icon-search',
+  insertDocument: 'data-editor-insert-document',
+  insertDocumentSearch: 'data-editor-insert-document-search',
+  library: 'data-editor-library',
+  name: 'data-editor-name',
+  open: 'data-editor-open',
+  palette: 'data-editor-palette',
+  paletteDocument: 'data-editor-palette-document',
+  paletteFilter: 'data-editor-palette-filter',
+  param: 'data-editor-param',
+  promote: 'data-editor-promote',
+  prop: 'data-editor-prop',
 } as const;
 
 export type Hook = (typeof HOOK)[keyof typeof HOOK];

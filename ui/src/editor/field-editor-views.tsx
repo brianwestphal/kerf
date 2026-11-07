@@ -194,7 +194,7 @@ export function createFieldEditorViews(
           action={FIELD_OPEN_ACTION}
           itemId={`item-${index}`}
           draggable
-          rootAttributes={{ 'data-editor-open': JSON.stringify(at) }}
+          rootAttributes={{ [HOOK.open]: JSON.stringify(at) }}
           trailingAction={FIELD_REMOVE_ITEM_ACTION}
           trailingActionLabel={`Remove ${label}`}
           trailingActionIcon={<LucideIcon icon={Trash} name="trash" />}
@@ -326,7 +326,7 @@ export function createFieldEditorViews(
               hint={`JSON for ${typeLabel(type!.text!)}.`}
               error={fieldErrors.value[key]}
               rootAttributes={{
-                'data-editor-field': JSON.stringify(place),
+                [HOOK.field]: JSON.stringify(place),
                 [HOOK.kind]: 'list',
               }}
             />
@@ -530,7 +530,7 @@ export function createFieldEditorViews(
               value: item.name,
               label: propLabel(item.name),
             }))}
-            rootAttributes={{ 'data-editor-bind': 'field' }}
+            rootAttributes={{ [HOOK.bind]: 'field' }}
           />
           <Select
             name={`bind-field-source-${placeKey(place)}`}
@@ -545,7 +545,7 @@ export function createFieldEditorViews(
                 : 'No param or item field in scope fits this field.'
             }
             rootAttributes={{
-              'data-editor-bind': 'field-source',
+              [HOOK.bind]: 'field-source',
               'data-editor-bind-place': JSON.stringify(at),
             }}
           />
@@ -555,7 +555,7 @@ export function createFieldEditorViews(
               value={param}
               hint="Renaming the param updates every prop and field that uses it."
               error={fieldErrors.value[`#param:${param}`]}
-              rootAttributes={{ 'data-editor-param': param }}
+              rootAttributes={{ [HOOK.param]: param }}
             />
           )}
           <Row>
@@ -603,7 +603,7 @@ export function createFieldEditorViews(
           label: label.replace(/…$/, ''),
         }))}
         rootAttributes={{
-          'data-editor-field': JSON.stringify(place),
+          [HOOK.field]: JSON.stringify(place),
           [HOOK.kind]: 'choice',
           'data-key': `${controlKey(place)}-${field}`,
         }}
@@ -669,7 +669,7 @@ export function createFieldEditorViews(
         'data-editor-value': next === undefined ? '' : JSON.stringify(next),
       }),
       control: (path, kind) => ({
-        'data-editor-field': JSON.stringify({
+        [HOOK.field]: JSON.stringify({
           prop: place.prop,
           path: [...place.path, ...path],
         }),

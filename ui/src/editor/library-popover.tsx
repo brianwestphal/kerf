@@ -104,7 +104,7 @@ export function createLibraryPopover(
                   frame="framed"
                   // KF-78MHM8: a tile drags onto the canvas to add one.
                   rootAttributes={{
-                    'data-editor-palette': item.key,
+                    [HOOK.palette]: item.key,
                     'data-key': item.key,
                   }}
                 >
@@ -143,7 +143,7 @@ export function createLibraryPopover(
                 itemId={item.key}
                 label={item.name}
                 // KF-78MHM8: a palette row drags onto the canvas to add one.
-                rootAttributes={{ 'data-editor-palette': item.key }}
+                rootAttributes={{ [HOOK.palette]: item.key }}
                 selected={paletteSelected(item.key)}
               />
             ))
@@ -174,7 +174,7 @@ export function createLibraryPopover(
               title={path}
               frame="framed"
               rootAttributes={{
-                'data-editor-palette-document': path,
+                [HOOK.paletteDocument]: path,
                 'data-key': `document:${path}`,
               }}
             >
@@ -195,7 +195,7 @@ export function createLibraryPopover(
             description={documentFolder(path)}
             accessibleLabel={path}
             title={path}
-            rootAttributes={{ 'data-editor-palette-document': path }}
+            rootAttributes={{ [HOOK.paletteDocument]: path }}
           />
         ))
       )}
@@ -240,7 +240,7 @@ export function createLibraryPopover(
             ]}
           />
         }
-        rootAttributes={{ 'data-editor-library': '' }}
+        rootAttributes={{ [HOOK.library]: '' }}
       >
         <List controlInsets="trbl" gap>
           <SearchField
@@ -251,7 +251,7 @@ export function createLibraryPopover(
             revision={paletteFilterRevision.value}
             clearAction={PALETTE_CLEAR_ACTION}
             clearLabel="Clear Filter"
-            editorAttributes={{ 'data-editor-palette-filter': '' }}
+            editorAttributes={{ [HOOK.paletteFilter]: '' }}
           />
           {libraryError.value ? (
             <StateBanner

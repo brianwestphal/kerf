@@ -13,6 +13,7 @@ import { SearchField } from '../components/forms/search-field/search-field.js';
 import { TextField } from '../components/forms/text-field/text-field.js';
 import { DialogSurface } from '../components/surfaces/surface-scaffold/surface-scaffold.js';
 import { Text } from '../components/typography/text/text.js';
+import { HOOK } from './dom-hooks.js';
 import { filterDocuments } from './model/insert-view.js';
 import {
   INSERT_DOCUMENT_ACTION,
@@ -51,42 +52,54 @@ export function insertDocumentDialog({
   const files = filesSignal.value;
   const paths =
     files.state === 'loaded' ? filterDocuments(files.paths, query.value) : [];
-  const picker =
-    files.state === 'loading' ? (
-      <ListInsetText>
-        <Text tone="quiet">Listing the project’s documents…</Text>
-      </ListInsetText>
-    ) : files.state === 'failed' ? (
-      <EmptyState
-        title="The documents could not be listed"
-        detail={files.error}
-      />
-    ) : !files.paths.length ? (
-      <EmptyState
-        title="No other documents"
-        detail="The project has no other .kui.json document to insert."
-      />
-    ) : paths.length ? (
-      <List>
-        {paths.map((path) => (
-          // The file name leads, so a long folder cannot truncate it away;
-          // the whole path names the row and shows on hover.
-          <ListItem
-            label={path.slice(path.lastIndexOf('/') + 1)}
-            description={path.slice(0, path.lastIndexOf('/') + 1) || './'}
-            accessibleLabel={path}
-            title={path}
-            action={INSERT_DOCUMENT_ACTION}
-            rootAttributes={{ 'data-editor-insert-document': path }}
+  const picker = (() => {
+    switch (files.state) {
+      case 'loading':
+        return (
+          <ListInsetText>
+            <Text tone="quiet">Listing the project’s documents…</Text>
+          </ListInsetText>
+        );
+      case 'failed':
+        return (
+          <EmptyState
+            title="The documents could not be listed"
+            detail={files.error}
           />
-        ))}
-      </List>
-    ) : (
-      <EmptyState
-        title="No matching document"
-        detail="No document’s path holds that text."
-      />
-    );
+        );
+      case 'loaded':
+        if (!files.paths.length)
+          return (
+            <EmptyState
+              title="No other documents"
+              detail="The project has no other .kui.json document to insert."
+            />
+          );
+        if (!paths.length)
+          return (
+            <EmptyState
+              title="No matching document"
+              detail="No document’s path holds that text."
+            />
+          );
+        return (
+          <List>
+            {paths.map((path) => (
+              // The file name leads, so a long folder cannot truncate it away;
+              // the whole path names the row and shows on hover.
+              <ListItem
+                label={path.slice(path.lastIndexOf('/') + 1)}
+                description={path.slice(0, path.lastIndexOf('/') + 1) || './'}
+                accessibleLabel={path}
+                title={path}
+                action={INSERT_DOCUMENT_ACTION}
+                rootAttributes={{ [HOOK.insertDocument]: path }}
+              />
+            ))}
+          </List>
+        );
+    }
+  })();
   return (
     <DialogSurface
       id={INSERT_DOCUMENT_DIALOG}
@@ -100,7 +113,7 @@ export function insertDocumentDialog({
             <Button
               tone="brand"
               action={INSERT_DOCUMENT_ACTION}
-              rootAttributes={{ 'data-editor-insert-document': 'confirm' }}
+              rootAttributes={{ [HOOK.insertDocument]: 'confirm' }}
             >
               Insert
             </Button>
@@ -119,7 +132,7 @@ export function insertDocumentDialog({
               revision={queryRevision.value}
               clearAction={INSERT_DOCUMENT_CLEAR_ACTION}
               clearLabel="Clear Filter"
-              editorAttributes={{ 'data-editor-insert-document-search': '' }}
+              editorAttributes={{ [HOOK.insertDocumentSearch]: '' }}
             />
             {error.value ? (
               <StateBanner
@@ -142,7 +155,7 @@ export function insertDocumentDialog({
           spellcheck={false}
           autocapitalize="off"
           autocorrect="off"
-          rootAttributes={{ 'data-editor-insert-document': 'path' }}
+          rootAttributes={{ [HOOK.insertDocument]: 'path' }}
         />
       )}
     </DialogSurface>
