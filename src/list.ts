@@ -352,6 +352,7 @@ export function bindList<T>(
     try {
       assertUniqueListKeys(items, key);
     } catch (error) {
+      virtualization?.reject();
       if (consumePatches !== undefined) {
         consumePatches();
         forceSnapshot = true;

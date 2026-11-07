@@ -4,6 +4,7 @@ import type { ListRowController } from './list-row-controller.js';
 interface ListVirtualizationController<T> {
   readonly contentVisibility: boolean;
   render: (items: readonly T[]) => void;
+  reject: () => void;
   start: () => void;
   setHeight: (key: ListKey, height: number) => void;
   onRender: (callback: () => void) => () => void;
@@ -123,6 +124,9 @@ export function createListVirtualizationController<T>(
   const pendingAnchorBaselines = new Map<ListKey, number>();
   let rafPending = false;
   let disposed = false;
+  // An arraySignal mutates its array in place. After key preflight rejects a
+  // write, `items` may already alias the invalid array; frames must not read it.
+  let frozen = false;
 
   const estimateOf = (estimate: Estimate<T>, index: number): number =>
     typeof estimate === 'function'
@@ -268,7 +272,12 @@ export function createListVirtualizationController<T>(
   const render = (nextItems: readonly T[]): void => {
     items = nextItems;
     heightsDirty = true;
+    frozen = false;
     renderCurrent();
+  };
+
+  const reject = (): void => {
+    frozen = true;
   };
 
   const applyAnchorCorrection = (): void => {
@@ -292,7 +301,7 @@ export function createListVirtualizationController<T>(
     rafPending = true;
     globalThis.requestAnimationFrame(() => {
       rafPending = false;
-      if (disposed) return;
+      if (disposed || frozen) return;
       if (pendingAnchorBaselines.size > 0) applyAnchorCorrection();
       renderCurrent();
     });
@@ -335,5 +344,5 @@ export function createListVirtualizationController<T>(
     renderSubscribers.clear();
   };
 
-  return { contentVisibility, render, start, setHeight, onRender, dispose };
+  return { contentVisibility, render, reject, start, setHeight, onRender, dispose };
 }

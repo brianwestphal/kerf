@@ -1,5 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
+import { arraySignal } from '../../src/array-signal.js';
 import { bindList } from '../../src/list.js';
 import { signal } from '../../src/reactive.js';
 
@@ -47,6 +48,45 @@ function host(): HTMLElement {
 describe('bindList() — virtualization', () => {
   const withHeight = (el: HTMLElement, h: number) =>
     Object.defineProperty(el, 'clientHeight', { configurable: true, value: h });
+
+  it('keeps the accepted window frozen after a rejected duplicate key until a valid source update (KF-7HV0MF)', () => {
+    const parent = host();
+    withHeight(parent, 100);
+    const items = arraySignal<Item>([
+      { id: 1, label: 'a' },
+      { id: 2, label: 'b' },
+      { id: 3, label: 'c' },
+    ]);
+    const dispose = bindList(parent, items, {
+      key: (item) => item.id,
+      render: (item) => item.label,
+      virtualize: { rowHeight: 20, overscan: 0 },
+    });
+    const sizer = parent.firstElementChild as HTMLElement;
+    const originalRows = Array.from(sizer.children);
+
+    expect(() => items.update(2, () => ({ id: 1, label: 'duplicate' }))).toThrow(
+      'bindList: duplicate key 1 at indices 0 and 2',
+    );
+    parent.dispatchEvent(new Event('scroll'));
+    expect(flushAnimationFrame()).toBe(1);
+    expect(Array.from(sizer.children)).toEqual(originalRows);
+    expect(Array.from(sizer.children, (row) => row.textContent)).toEqual([
+      'a',
+      'b',
+      'c',
+    ]);
+
+    items.update(2, () => ({ id: 4, label: 'd' }));
+    expect(Array.from(sizer.children, (row) => row.textContent)).toEqual([
+      'a',
+      'b',
+      'd',
+    ]);
+    expect(sizer.children[0]).toBe(originalRows[0]);
+    expect(sizer.children[1]).toBe(originalRows[1]);
+    dispose();
+  });
 
   it('renders only the viewport window and sets padding to keep scrollHeight honest', () => {
     const parent = host();
