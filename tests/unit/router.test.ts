@@ -492,6 +492,118 @@ describe('createRouter() — dispose', () => {
     globalThis.dispatchEvent(new Event('popstate'));
     expect(router.route.value.path).toBe('/users/1'); // no longer syncing
   });
+
+  it('navigate() after dispose() is a no-op: no history write, no route publish', () => {
+    goto('/');
+    router = createRouter({ routes });
+    router.navigate('/users/1');
+    let publishes = 0;
+    const stop = effect(() => {
+      void router!.route.value;
+      publishes += 1;
+    });
+    router.dispose();
+    const before = history.length;
+    router.navigate('/users/2');
+    router.navigate('/users/3', { replace: true });
+    expect(history.length).toBe(before);
+    expect(location.pathname).toBe('/users/1');
+    expect(router.route.value.path).toBe('/users/1');
+    expect(publishes).toBe(1);
+    stop();
+  });
+
+  it('hash mode: dispose removes the hashchange listener', () => {
+    router = createRouter({ routes, mode: 'hash', interceptLinks: false });
+    router.dispose();
+    history.replaceState(null, '', '#/users/9');
+    globalThis.dispatchEvent(new Event('hashchange'));
+    expect(router.route.value.path).toBe('/');
+  });
+});
+
+describe('createRouter() — hashchange (manual hash edits)', () => {
+  it('mode: "hash" + interceptLinks: false syncs a manual hash edit through hashchange', () => {
+    goto('/');
+    router = createRouter({ routes, mode: 'hash', interceptLinks: false });
+    // What the browser does when the user edits the hash in the address bar:
+    // the URL changes, then `hashchange` fires (no popstate in this test).
+    history.replaceState(null, '', '#/users/9?tab=a');
+    globalThis.dispatchEvent(new Event('hashchange'));
+    expect(router.route.value.path).toBe('/users/9');
+    expect(router.route.value.params).toEqual({ id: '9' });
+    expect(router.route.value.query.get('tab')).toBe('a');
+    // A second edit routes again; a duplicate event is a no-op publish.
+    history.replaceState(null, '', '#/files/x/y');
+    globalThis.dispatchEvent(new Event('hashchange'));
+    const after = router.route.value;
+    globalThis.dispatchEvent(new Event('hashchange'));
+    expect(router.route.value).toBe(after);
+    expect(after.params).toEqual({ rest: 'x/y' });
+  });
+
+  it('history mode installs no hashchange listener', () => {
+    goto('/users/1');
+    router = createRouter({ routes });
+    history.replaceState(null, '', '/users/2');
+    globalThis.dispatchEvent(new Event('hashchange'));
+    expect(router.route.value.path).toBe('/users/1');
+  });
+});
+
+describe('createRouter() — navigating to the current URL', () => {
+  it('replaces instead of pushing a duplicate entry and does not republish route', () => {
+    goto('/');
+    router = createRouter({ routes });
+    router.navigate('/users/1');
+    let publishes = 0;
+    const stop = effect(() => {
+      void router!.route.value;
+      publishes += 1;
+    });
+    const before = history.length;
+    router.navigate('/users/1');
+    router.navigate('/users/1');
+    expect(history.length).toBe(before);
+    expect(publishes).toBe(1);
+    // A different query is a different URL: pushes and republishes.
+    router.navigate('/users/1?tab=x');
+    expect(history.length).toBe(before + 1);
+    expect(publishes).toBe(2);
+    stop();
+  });
+
+  it('hash mode: the same route twice does not stack entries', () => {
+    goto('/');
+    router = createRouter({ routes, mode: 'hash' });
+    router.navigate('/users/4');
+    const before = history.length;
+    router.navigate('/users/4');
+    expect(history.length).toBe(before);
+    expect(router.route.value.params).toEqual({ id: '4' });
+  });
+
+  it('a same-URL navigate still stores the new history state', () => {
+    goto('/');
+    router = createRouter({ routes });
+    router.navigate('/users/1', { state: { a: 1 } });
+    router.navigate('/users/1', { state: { a: 2 } });
+    expect(history.state).toEqual({ a: 2 });
+  });
+
+  it('navigate() inside an effect does not subscribe that effect to route', () => {
+    goto('/');
+    router = createRouter({ routes });
+    let runs = 0;
+    const stop = effect(() => {
+      runs += 1;
+      router!.navigate('/users/5');
+    });
+    router.navigate('/users/6');
+    expect(runs).toBe(1);
+    expect(router.route.value.path).toBe('/users/6');
+    stop();
+  });
 });
 
 describe('createRouter() — transitions (KF-XW1RE9)', () => {

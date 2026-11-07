@@ -278,4 +278,73 @@ describe('debouncedSignal()', () => {
     expect(seen).toEqual(['x', 'y']);
     stop();
   });
+
+  it('dispose() unsubscribes from source and drops a pending trailing write', () => {
+    const s = signal(1);
+    const d = debouncedSignal(s, 100);
+    s.value = 2; // pending write scheduled
+    d.dispose();
+    vi.advanceTimersByTime(100);
+    expect(d.value).toBe(1); // the pending write was dropped
+    s.value = 3; // no longer followed
+    vi.advanceTimersByTime(100);
+    expect(d.value).toBe(1);
+    d.dispose(); // idempotent
+    expect(vi.getTimerCount()).toBe(0);
+  });
+
+  it('dispose() after settling keeps the last value and stays readable in an effect', () => {
+    const s = signal('a');
+    const d = debouncedSignal(s, 50);
+    s.value = 'b';
+    vi.advanceTimersByTime(50);
+    d.dispose();
+    const seen: string[] = [];
+    const stop = effect(() => {
+      seen.push(d.value);
+    });
+    s.value = 'c';
+    vi.advanceTimersByTime(50);
+    expect(seen).toEqual(['b']);
+    stop();
+  });
+});
+
+describe('debounce() — reentrancy and errors', () => {
+  it('a call from inside fn schedules a fresh trailing call', () => {
+    const calls: number[] = [];
+    const d = debounce((x: number) => {
+      calls.push(x);
+      if (x < 3) d(x + 1);
+    }, 100);
+    d(1);
+    vi.advanceTimersByTime(100);
+    expect(calls).toEqual([1]);
+    vi.advanceTimersByTime(100);
+    expect(calls).toEqual([1, 2]);
+    vi.advanceTimersByTime(100);
+    expect(calls).toEqual([1, 2, 3]);
+    vi.advanceTimersByTime(100);
+    expect(calls).toEqual([1, 2, 3]); // settled
+  });
+
+  it('fn throwing leaves the debouncer usable for a later call', () => {
+    const calls: number[] = [];
+    const d = debounce((x: number) => {
+      if (x === 1) throw new Error('boom');
+      calls.push(x);
+    }, 100);
+    d(1);
+    expect(() => vi.advanceTimersByTime(100)).toThrow('boom');
+    d(2);
+    vi.advanceTimersByTime(100);
+    expect(calls).toEqual([2]);
+    // flush() after a throwing flush also recovers.
+    d(1);
+    expect(() => d.flush()).toThrow('boom');
+    d.flush(); // nothing pending
+    d(4);
+    d.flush();
+    expect(calls).toEqual([2, 4]);
+  });
 });

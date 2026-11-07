@@ -83,7 +83,12 @@ state, like `defineStore`):
   `/users/7`, `query` `tab=1`), `route.hash` is always `''`, and the router listens
   to `hashchange` as well as `popstate`.
 - **`navigate(path, { replace?, state? })`** — push (or replace) a history entry
-  and update `route`. `path` may include `?query` and `#hash`.
+  and update `route`. `path` may include `?query` and `#hash`. Navigating to the
+  URL that is already current **replaces** the entry rather than pushing a
+  duplicate (what a browser does for a link to the current page), so repeated
+  clicks on the active link never stack history; `route` is republished only if
+  its path, query, or hash changed. A `navigate()` inside an `effect()` does not
+  subscribe that effect to `route`.
 - **`back()` / `forward()`** — `history.back()` / `history.forward()`.
 - **`match(pattern)`** → `ReadonlySignal<boolean>` — reactive "is this active?":
   a **literal path-prefix** comparison, true when `route.path` equals `pattern` or
@@ -101,7 +106,9 @@ state, like `defineStore`):
   matched component is called as `component(params, route)`; when no route matches
   (no `*` fallback), `outlet()` returns `null` and renders nothing.
 - **`dispose()`** — remove the `popstate` (plus hash-mode `hashchange`) and link
-  listeners. Idempotent.
+  listeners. Idempotent. A disposed router no longer owns the URL: a later
+  `navigate()` is a no-op (no history write, no `route` publish), rather than a
+  half-alive router that writes history it will never hear back from.
 
 ### Route patterns
 

@@ -138,25 +138,40 @@ export function throttle<A extends unknown[]>(
   return throttled;
 }
 
+/** The signal {@link debouncedSignal} returns: a read-only trailing signal plus `dispose()`. */
+export type DebouncedSignal<T> = ReadonlySignal<T> & {
+  /**
+   * Stop following `source`: unsubscribes from it and drops any pending
+   * trailing write. The signal keeps its last value. Idempotent.
+   */
+  dispose(): void;
+};
+
 /**
  * A read-only signal that trails `source` by `ms` (trailing-edge). Writes to
  * `source` reschedule; the derived value updates once writes go quiet, so it
  * composes with `computed()`/`effect()`/`mount()` like any signal.
  *
- * Holds a live subscription to `source` for its lifetime (like a module-scope
- * `effect`) — intended for app-lifetime signals, not throwaway ones. For a
- * disposable variant, drive your own `effect` with {@link debounce}.
+ * Holds a live subscription to `source` until `dispose()` is called. A
+ * module-scope (app-lifetime) signal never needs to dispose; a per-row or
+ * per-component one should, or it keeps `source` subscribed (and any pending
+ * timer alive) after its owner is gone.
  */
 export function debouncedSignal<T>(
   source: ReadonlySignal<T>,
   ms: number,
-): ReadonlySignal<T> {
+): DebouncedSignal<T> {
   const out = signal(source.value);
   const write = debounce((value: T) => {
     out.value = value;
   }, ms);
-  effect(() => {
+  const stop = effect(() => {
     write(source.value); // tracks source; reschedules on every change
   });
-  return out;
+  return Object.assign(out, {
+    dispose(): void {
+      stop();
+      write.cancel();
+    },
+  });
 }

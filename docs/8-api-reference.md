@@ -1332,7 +1332,7 @@ window.addEventListener("scroll", onScroll);
 
 Leading-plus-trailing throttle: `fn` runs immediately on the first call, then **at most once per `ms`**; calls during a cooldown collapse to a single trailing call (with the latest arguments) at the window's end. Returns a [`Throttled<A>`](#timing-types) with `cancel()` (drop a pending trailing call and reset the window) and `flush()`. Unlike `debounce`'s, throttle's `flush()` runs a pending trailing call now but leaves the current cooldown running, so a call made right after a flush is still collapsed into the window's trailing call. The cooldown is active while `fn` runs, including for the trailing invocation, so `fn` may call `cancel()` itself to reset the window immediately; a reentrant call stays throttled unless the callback first cancels.
 
-### `debouncedSignal<T>(source, ms): ReadonlySignal<T>`
+### `debouncedSignal<T>(source, ms): DebouncedSignal<T>`
 
 ```ts
 const query = signal("");
@@ -1340,11 +1340,11 @@ const debouncedQuery = debouncedSignal(query, 250); // trails query by 250ms
 // render / computed / effect off debouncedQuery.value — repaints only after typing settles
 ```
 
-A read-only signal that trails `source` by `ms` (trailing-edge): writes to `source` reschedule, and the derived value settles once writes go quiet, so it composes inside the reactive graph (`computed`/`effect`/`mount`) instead of beside it. It holds a **live subscription** to `source` for its lifetime (like a module-scope `effect`) — intended for app-lifetime signals; for a disposable variant, drive your own `effect` with `debounce`.
+A read-only signal that trails `source` by `ms` (trailing-edge): writes to `source` reschedule, and the derived value settles once writes go quiet, so it composes inside the reactive graph (`computed`/`effect`/`mount`) instead of beside it. It holds a **live subscription** to `source` until you call its `dispose()`, which unsubscribes from `source` and drops any pending trailing write (the signal keeps its last value; idempotent). An app-lifetime, module-scope signal never needs to dispose; a per-row or per-component one should — register `d.dispose` on the owner's scope (`kerfjs/scope`) so it goes away with the view.
 
 ### Timing types
 
-`Debounced<A>` and `Throttled<A>` are exported from `kerfjs/timing` for annotating the returned callables.
+`Debounced<A>` and `Throttled<A>` are exported from `kerfjs/timing` for annotating the returned callables, and `DebouncedSignal<T>` (a `ReadonlySignal<T>` plus `dispose()`) for `debouncedSignal`'s result.
 
 ## 8.13 Keyed subtree replacement — `kerfjs/remount` subpath
 
@@ -1430,12 +1430,12 @@ Creates a router bound to the browser history (reads the current location immedi
 In history mode, `base` is stripped only on an exact match or at a following `/` segment boundary; a base of `/app` therefore owns `/app` and `/app/users`, but not `/apple`.
 
 - **`route`** — `ReadonlySignal<`[`RouteState`](#router-types)`>` = `{ path, params, query, hash }`. `params` is a `Record<string, string>` from the matched pattern (URL-decoded), or `{}` when no route matches; `query` is a `URLSearchParams`. A tracked read. In hash mode the route lives after `#` (`#/users/7?tab=1` → `path` `/users/7`, `query` `tab=1`) and `route.hash` is always `''`.
-- **`navigate(path, { replace?, state? })`** — push (or replace) a history entry and update `route`; `path` may include `?query` / `#hash`.
+- **`navigate(path, { replace?, state? })`** — push (or replace) a history entry and update `route`; `path` may include `?query` / `#hash`. Navigating to the URL that is already current replaces the entry instead of pushing a duplicate (as a browser does for a link to the current page) and republishes `route` only if it changed. After `dispose()`, `navigate()` is a no-op.
 - **`back()` / `forward()`** — `history.back()` / `history.forward()`.
 - **`match(pattern)`** → `ReadonlySignal<boolean>` — reactive active-check: a **literal path-prefix** comparison, true when `route.path` equals `pattern` or continues it at a `/` boundary (`match('/users')` is true on `/users/7`, not on `/users-admin`); `match('/')` is **exact**. The pattern never goes through the route matcher, so `:param` / `*` segments are compared as literal text — `match('/users/:id')` is never true; pass the static prefix (`'/users'`). A navigation notifies only the links whose answer changed, however many links there are.
 - **`activeClass(pattern, className)`** → `ReadonlySignal<string>` — `className` while `match(pattern)` is active, else `''`; spread into a `class` hole.
 - **`outlet()`** → the routed view — call it inside a `mount()` render. It renders the matched component in a **keyed wrapper** (`data-key` = the matched route's _pattern_), so kerf's keyed morph **replaces the page wholesale on a route change** (fresh DOM) and **reconciles in place on a same-route param change** (preserving scroll / focus). No new machinery. The matched component is called as `component(params, route)`; when no route matches (no `*` fallback), `outlet()` returns `null` and renders nothing.
-- **`dispose()`** — remove the `popstate` (plus hash-mode `hashchange`) and link listeners (idempotent).
+- **`dispose()`** — remove the `popstate` (plus hash-mode `hashchange`) and link listeners, and turn later `navigate()` calls into no-ops (idempotent).
 
 **Route patterns** (tried in order, first match wins): static (`/about`), `:param` (`/users/:id` → `params.id`), a trailing `*rest` wildcard (`/files/*rest` → `params.rest`, the remaining segments joined by `/`; a bare `*` segment matches without capturing), and `*` as the catch-all fallback (list it last).
 

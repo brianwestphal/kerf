@@ -96,7 +96,12 @@ export interface RouterOptions {
 export interface RouterHandle {
   /** The reactive current route. Read `.value` (tracked) in a render / `computed` / `effect`. */
   route: ReadonlySignal<RouteState>;
-  /** Navigate to `path` (may include `?query` / `#hash`). Pushes history (or replaces, per options). */
+  /**
+   * Navigate to `path` (may include `?query` / `#hash`). Pushes history (or
+   * replaces, per options). Navigating to the URL that is already current
+   * replaces the entry instead of pushing a duplicate, and republishes `route`
+   * only if it changed. A no-op after {@link RouterHandle.dispose}.
+   */
   navigate: (path: string, options?: NavigateOptions) => void;
   /** History back — `history.back()`. */
   back: () => void;
@@ -121,7 +126,7 @@ export interface RouterHandle {
    * wholesale (fresh DOM) while a param change updates it in place.
    */
   outlet: () => MountResult;
-  /** Tear down the popstate / link listeners. Idempotent. */
+  /** Tear down the popstate / hashchange / link listeners; later `navigate()` calls are no-ops. Idempotent. */
   dispose: () => void;
 }
 
@@ -262,31 +267,45 @@ export function createRouter(options: RouterOptions): RouterHandle {
 
   const route = signal<RouteState>(resolve(readLocation()));
 
-  // Re-read location → re-match → publish. Only writes when the path actually
-  // changed, so a doubled popstate/hashchange is a harmless no-op.
+  // Re-read location → re-match → publish. Only writes when the path, query,
+  // or hash actually changed, so a doubled popstate/hashchange (or a navigate
+  // to the current URL) is a harmless no-op. The comparison reads `peek()`, so
+  // a navigate() called inside an effect never subscribes that effect to
+  // `route`.
   const sync = (): void => {
     const next = resolve(readLocation());
+    const current = route.peek();
     if (
-      next.path !== route.value.path ||
-      next.query.toString() !== route.value.query.toString() ||
-      next.hash !== route.value.hash
+      next.path !== current.path ||
+      next.query.toString() !== current.query.toString() ||
+      next.hash !== current.hash
     ) {
       route.value = next;
     }
   };
 
+  let disposed = false;
+
   const navigate = (path: string, opts: NavigateOptions = {}): void => {
+    // A disposed router no longer owns the URL: navigate() is a no-op (no
+    // history write, no route publish) rather than a half-alive router that
+    // writes history but never hears the matching popstate.
+    if (disposed) return;
     const url =
       mode === 'hash'
         ? '#' + (path.startsWith('/') ? path : '/' + path)
         : normBase + (path.startsWith('/') ? path : '/' + path);
+    // Navigating to the URL that is already current REPLACES the entry, the
+    // way a browser treats a link to the current page, so repeated clicks on
+    // the active link never stack duplicate history entries.
+    const sameUrl = new URL(url, location.href).href === location.href;
     // pushState/replaceState do NOT fire popstate, so publish the new route ourselves.
-    history[opts.replace === true ? 'replaceState' : 'pushState'](
+    history[opts.replace === true || sameUrl ? 'replaceState' : 'pushState'](
       opts.state ?? null,
       '',
       url,
     );
-    route.value = resolve(readLocation());
+    sync();
   };
 
   // `match()` is a literal prefix test, so the patterns active on a path are
@@ -377,7 +396,6 @@ export function createRouter(options: RouterOptions): RouterHandle {
     );
   }
 
-  let disposed = false;
   const dispose = (): void => {
     if (disposed) return;
     disposed = true;
