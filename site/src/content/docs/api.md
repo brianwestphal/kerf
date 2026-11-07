@@ -553,6 +553,16 @@ Wrap a pre-escaped HTML string, bypassing kerf's auto-escaping. Useful for icons
 
 JSX `<>...</>` — concatenates children without a wrapper tag. Available from both `kerfjs/jsx-runtime` (used by the JSX transform) and the main `kerfjs` barrel (when you need to compose `Fragment` manually, e.g. `jsx(Fragment, { children })`).
 
+### Tooling-facing exports
+
+These exports are public and covered by semver, but they exist for build tools, the JSX type checker, and test harnesses rather than for application code. Use them only in the role described here.
+
+- **`jsx`, `jsxs`, `jsxDEV`** (`kerfjs/jsx-runtime`) — the functions the JSX transform emits calls to. `jsxs` (static children) and `jsxDEV` (development transforms) are aliases of `jsx`; kerf renders all three identically. You never call them by hand.
+- **`kerfjs/jsx-dev-runtime`** — the subpath a development-mode transform (`"jsx": "react-jsxdev"`, Vite / vitest dev builds) imports. It is an alias of `kerfjs/jsx-runtime`: same module, same types, no configuration.
+- **`JSX.ElementChildrenAttribute`** — tells TypeScript that a component's children arrive in its `children` prop. Type-checker plumbing only.
+- **`ARRAY_SIGNAL_BRAND`** (`kerfjs/array-signal`) — the brand symbol `each()` checks to recognize a granular collection signal (see `arraySignal` under Reactivity). Only for a custom collection type that wants `each()` to treat it as one.
+- **`DEV_HOOKS`** (`kerfjs/dev`) — the standard diagnostic hook bundle the dev entry installs, exported so a test suite can restore it with `installDevHooks(DEV_HOOKS)` after a production-shaped `clearDevHooks()` test (see the `kerfjs/dev` subpath under Stores).
+
 ### `` html`…` `` — `kerfjs/html` subpath
 
 ```ts
