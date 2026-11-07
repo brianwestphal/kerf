@@ -35,9 +35,11 @@ Each row names a **behavior**, the **code** that implements it, and the
 **test(s)** that would catch its regression. `scripts/check-feature-coverage.mjs`
 (`npm run check:features`, wired into `npm run check`) parses the _Guarding test(s)_
 column and fails if any referenced test file is missing or any referenced test
-title (double-quoted, or a backtick span for titles containing `<…>`) no longer
-appears in that file — so a renamed/deleted guarding test trips the gate instead
-of silently un-covering the feature.
+title (double-quoted, or a backtick span for titles containing `<…>`) is no
+longer part of the title argument of an `it(` / `test(` / `describe(` call in
+that file (parsed with the TypeScript AST, so a match in an import or a comment
+does not count) — so a renamed/deleted guarding test trips the gate instead of
+silently un-covering the feature.
 
 The **stateful** rows (the `FC-R*` reconciler-state and `FC-T*` transition rows)
 are the point: they assert not just each operation but the _transitions between

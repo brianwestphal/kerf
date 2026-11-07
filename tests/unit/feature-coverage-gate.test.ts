@@ -36,6 +36,7 @@ interface GateFixture {
   completeApps?: string[];
   exampleRows?: string[];
   exampleSpec?: string;
+  guardSource?: string;
 }
 
 function runGate({
@@ -45,6 +46,7 @@ function runGate({
     '| FC-EX | fixture complete example | `site/src/examples/complete/fixture-app` | `tests/browser/example-apps.spec.ts` › "example smoke" |',
   ],
   exampleSpec = 'test.describe("fixture-app", () => { test("example smoke", () => {}); });',
+  guardSource = 'it("guard", () => {});',
 }: GateFixture = {}) {
   const root = mkdtempSync(join(tmpdir(), 'kerf-feature-coverage-'));
   fixtureRoots.push(root);
@@ -61,7 +63,7 @@ function runGate({
     `export const COMPLETE_APPS = /** @type {const} */ (${JSON.stringify(completeApps)});`,
   );
   writeFileSync(join(root, 'tests/browser/example-apps.spec.ts'), exampleSpec);
-  writeFileSync(join(root, 'tests.ts'), 'it("guard", () => {});');
+  writeFileSync(join(root, 'tests.ts'), guardSource);
   writeFileSync(
     join(root, 'docs/14-feature-coverage.md'),
     [
@@ -78,6 +80,40 @@ function runGate({
     env: { ...env, KERF_FEATURE_COVERAGE_ROOT: root },
   });
 }
+
+describe(
+  'feature-coverage title matching',
+  { timeout: loadScaledTimeout(30_000) },
+  () => {
+    it('rejects a title found only in an import specifier or a comment', () => {
+      const result = runGate({
+        guardSource: [
+          "import { guard } from './guard.js';",
+          '// "guard" is described below',
+          'it("something else", () => {});',
+        ].join('\n'),
+      });
+
+      expect(result.status).toBe(1);
+      expect(result.stderr).toContain(
+        'title not found in an it/test/describe title in any referenced file: "guard"',
+      );
+    });
+
+    it('accepts a title inside describe, chained, each, and concatenated calls', () => {
+      for (const guardSource of [
+        'describe("the guard block", () => {});',
+        'it.skip("guard", () => {});',
+        'test.describe.only("a guard", () => {});',
+        'it.each([[1]])("guard %s", () => {});',
+        "it('gu' + 'ard', () => {});",
+        'it(`guard ${1}`, () => {});',
+      ]) {
+        expect(runGate({ guardSource }).status, guardSource).toBe(0);
+      }
+    });
+  },
+);
 
 describe(
   'feature-coverage export inventory',

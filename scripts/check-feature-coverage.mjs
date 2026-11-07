@@ -18,9 +18,13 @@
  *    extracts (a) backticked test-file paths (`*.test.ts` / `*.test.tsx`) and
  *    (b) double-quoted test titles.
  *  - Fails if a row has no test file / no title, if a referenced file is
- *    missing, or if a referenced title no longer appears in any of the row's
- *    referenced files (backslash-normalized so escaped quotes/apostrophes in
- *    the source match the plain title in the doc).
+ *    missing, or if a referenced title is not part of the title string of an
+ *    `it(` / `test(` / `describe(` call (including `.only` / `.skip` /
+ *    `.each(…)` chains) in any of the row's referenced files. A match in an
+ *    import specifier or a comment does not count: that is how a `Fragment`
+ *    row once passed by matching only an import. Titles are
+ *    backslash-normalized so escaped quotes/apostrophes in the source match
+ *    the plain title in the doc.
  *  - Fails if any app in `site/scripts/lib/complete-apps.mjs`'s `COMPLETE_APPS`
  *    lacks its own feature row mapped to a title inside that app's Playwright
  *    `test.describe` block.
@@ -39,6 +43,8 @@ import { existsSync, readFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { env } from 'node:process';
 import { fileURLToPath } from 'node:url';
+
+import ts from 'typescript';
 
 // The override lets the gate's unit tests exercise complete, isolated fixture
 // repositories without modifying the real feature index or source tree.
@@ -80,6 +86,68 @@ const EXPORT_EXEMPT = new Set([
 
 /** Normalize so `today\'s` in a source string matches `today's` in the doc. */
 const norm = (s) => s.replace(/\\/g, '');
+
+const TEST_FUNCTIONS = new Set(['it', 'test', 'describe', 'suite']);
+
+/** The identifier a call chain starts from: `test.describe.skip` → `test`, `it.each(t)` → `it`. */
+function chainRoot(expression) {
+  let node = expression;
+  for (;;) {
+    if (ts.isPropertyAccessExpression(node)) node = node.expression;
+    else if (ts.isCallExpression(node)) node = node.expression;
+    else return ts.isIdentifier(node) ? node.text : null;
+  }
+}
+
+/** The static text of a title argument: a string, a template, or `'a' + 'b'`. */
+function titleText(node) {
+  if (ts.isStringLiteralLike(node)) return node.text;
+  if (ts.isTemplateExpression(node))
+    return [
+      node.head.text,
+      ...node.templateSpans.map((span) => `\${…}${span.literal.text}`),
+    ].join('');
+  if (
+    ts.isBinaryExpression(node) &&
+    node.operatorToken.kind === ts.SyntaxKind.PlusToken
+  ) {
+    const left = titleText(node.left);
+    const right = titleText(node.right);
+    return left === null || right === null ? null : left + right;
+  }
+  if (ts.isParenthesizedExpression(node)) return titleText(node.expression);
+  return null;
+}
+
+/**
+ * The title strings of every test-registering call in `source`: the first
+ * argument of an it/test/describe/suite call, including `.only` / `.skip` /
+ * `test.describe` / `it.each(table)(…)` chains. Parsed with the TypeScript
+ * AST, so a title quoted in a comment or an import specifier never counts.
+ */
+function testTitles(source, fileName = 'test.ts') {
+  const file = ts.createSourceFile(
+    fileName,
+    source,
+    ts.ScriptTarget.Latest,
+    false,
+    fileName.endsWith('.tsx') ? ts.ScriptKind.TSX : ts.ScriptKind.TS,
+  );
+  const titles = [];
+  const visit = (node) => {
+    if (
+      ts.isCallExpression(node) &&
+      node.arguments.length > 0 &&
+      TEST_FUNCTIONS.has(chainRoot(node.expression))
+    ) {
+      const title = titleText(node.arguments[0]);
+      if (title !== null) titles.push(norm(title));
+    }
+    ts.forEachChild(node, visit);
+  };
+  visit(file);
+  return titles;
+}
 
 /** Value (non-type) exports from a source file: `export { a, type B }` + `export const/function/class`. */
 function collectValueExports(relPath) {
@@ -194,12 +262,12 @@ function main() {
   }
 
   const fileCache = new Map();
-  const readNorm = (rel) => {
+  const readTitles = (rel) => {
     if (!fileCache.has(rel)) {
       const abs = resolve(REPO_ROOT, rel);
       fileCache.set(
         rel,
-        existsSync(abs) ? norm(readFileSync(abs, 'utf8')) : null,
+        existsSync(abs) ? testTitles(readFileSync(abs, 'utf8'), rel) : null,
       );
     }
     return fileCache.get(rel);
@@ -226,16 +294,20 @@ function main() {
 
     const contents = [];
     for (const f of files) {
-      const txt = readNorm(f);
-      if (txt === null)
+      const fileTitles = readTitles(f);
+      if (fileTitles === null)
         errors.push(`${where}: referenced test file not found: ${f}`);
-      else contents.push({ f, txt });
+      else contents.push({ f, fileTitles });
     }
     for (const title of titles) {
       const needle = norm(title);
-      if (!contents.some(({ txt }) => txt.includes(needle))) {
+      if (
+        !contents.some(({ fileTitles }) =>
+          fileTitles.some((candidate) => candidate.includes(needle)),
+        )
+      ) {
         errors.push(
-          `${where}: title not found in any referenced file: "${title}"`,
+          `${where}: title not found in an it/test/describe title in any referenced file: "${title}"`,
         );
       }
     }
@@ -270,7 +342,9 @@ function main() {
           (row) =>
             row.guarding.includes('tests/browser/example-apps.spec.ts') &&
             guardingTitles(row.guarding).some((title) =>
-              norm(body).includes(norm(title)),
+              testTitles(body).some((candidate) =>
+                candidate.includes(norm(title)),
+              ),
             ),
         )
       ) {
