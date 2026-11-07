@@ -500,6 +500,7 @@ export {
   type PopupSurfaceInset,
   type PopupSurfaceProps,
   type SurfaceInset,
+  type SurfacePresentation,
 } from './components/surfaces/surface-scaffold/surface-scaffold.js';
 export { wireOverlaySheets } from './components/surfaces/surface-scaffold/wiring/wire-overlay-sheets.js';
 export {
