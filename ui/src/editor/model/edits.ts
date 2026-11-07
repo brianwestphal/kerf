@@ -193,9 +193,10 @@ export function replaceRoot(
 
 /** `document` with no root (KF-PK3GVY): its other fields stay, in order. */
 export function withoutRoot(document: ViewDocument): ViewDocument {
-  return Object.fromEntries(
-    Object.entries(document).filter(([key]) => key !== 'root'),
-  ) as unknown as ViewDocument;
+  // Typed rest (KF-Z6T0RS): a new required ViewDocument field stays checked.
+  const { root, ...rest } = document;
+  void root;
+  return rest;
 }
 
 /**
@@ -736,13 +737,14 @@ export function renameParam(
       param,
     ]),
   );
+  // Only the root tree carries `$param` references. Overwriting keys in a
+  // spread keeps their order, and the rebuild stays typed (KF-Z6T0RS).
   return {
-    document: Object.fromEntries(
-      Object.entries(document).map(([key, value]) => [
-        key,
-        key === 'params' ? renamed : follow(value),
-      ]),
-    ) as unknown as ViewDocument,
+    document: {
+      ...document,
+      params: renamed,
+      ...(document.root && { root: follow(document.root) as ViewNode }),
+    },
   };
 }
 

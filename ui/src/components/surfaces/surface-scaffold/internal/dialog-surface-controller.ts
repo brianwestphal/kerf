@@ -1,3 +1,5 @@
+import { watchOwnedStyles } from '../../../../shared/dom/owned-styles.js';
+import { realmOf } from '../../../../shared/dom/realm.js';
 import { syncSheetHandleValues, wireSheetHandle } from './sheet-handle.js';
 
 /** What asked an open DialogSurface to close. */
@@ -52,7 +54,7 @@ interface OpenState {
   /** Panel variables the controller owns while open, restored after a morph. */
   readonly owned: Map<string, string>;
   readonly stop: (() => void)[];
-  motionTimer: ReturnType<typeof globalThis.setTimeout> | undefined;
+  motionTimer: number | undefined;
   closing: boolean;
 }
 
@@ -102,7 +104,8 @@ function runMotion(
   done?: () => void,
 ): void {
   const state = states.get(dialog);
-  if (state) globalThis.clearTimeout(state.motionTimer);
+  const view = realmOf(dialog);
+  if (state) view.clearTimeout(state.motionTimer);
   dialog.setAttribute(DIALOG_MOTION_ATTRIBUTE, motion);
   const finish = () => {
     done?.();
@@ -111,7 +114,7 @@ function runMotion(
   };
   const duration = motionDuration(dialog);
   if (duration === 0 || !state) finish();
-  else state.motionTimer = globalThis.setTimeout(finish, duration);
+  else state.motionTimer = view.setTimeout(finish, duration);
 }
 
 /** Set (or, with `null`, clear) a panel variable the controller owns. */
@@ -138,7 +141,7 @@ function follow(dialog: HTMLDialogElement, state: OpenState): void {
   // runs. A resize observation reports the exact border box; until the first
   // one, `offsetHeight` stands in.
   const blockSizes = new WeakMap<Element, number>();
-  const sizes = new ResizeObserver((entries) => {
+  const sizes = new (realmOf(dialog).ResizeObserver)((entries) => {
     for (const entry of entries) {
       const box = entry.borderBoxSize?.[0];
       if (box) blockSizes.set(entry.target, box.blockSize);
@@ -195,16 +198,9 @@ function follow(dialog: HTMLDialogElement, state: OpenState): void {
   // An application re-render morphs the panel back to its rendered
   // attributes and may replace its chrome: restore the owned variables and
   // follow the new elements.
-  const restore = new MutationObserver(() => {
-    for (const [property, value] of state.owned)
-      if (dialog.style.getPropertyValue(property) !== value)
-        dialog.style.setProperty(property, value);
-    track();
-  });
-  restore.observe(dialog, {
-    attributes: true,
-    attributeFilter: ['style'],
+  const restore = watchOwnedStyles(dialog, state.owned, {
     childList: true,
+    afterRestore: track,
   });
   // A floating header's divider shows while a scroller reaching beneath it
   // is scrolled away from its top. `scroll` does not bubble: capture it.
@@ -259,7 +255,7 @@ function settle(dialog: HTMLDialogElement): void {
   const state = states.get(dialog);
   if (!state) return;
   states.delete(dialog);
-  globalThis.clearTimeout(state.motionTimer);
+  realmOf(dialog).clearTimeout(state.motionTimer);
   for (const stop of state.stop) stop();
   for (const property of state.owned.keys())
     dialog.style.removeProperty(property);
@@ -377,7 +373,9 @@ export function syncDialogStack(root: ParentNode): void {
 
 /** Follow a controlled stack's render updates until the returned stop runs. */
 export function wireDialogStack(root: ParentNode): () => void {
-  const observer = new MutationObserver(() => syncDialogStack(root));
+  const observer = new (realmOf(root as Node).MutationObserver)(() =>
+    syncDialogStack(root),
+  );
   observer.observe(root as Node, {
     childList: true,
     subtree: true,

@@ -1,3 +1,4 @@
+import { realmOf } from '../../../../shared/dom/realm.js';
 import {
   createSheetHandle,
   wireSheetHandle,
@@ -54,7 +55,7 @@ export function wireOverlaySheets(
       wired.delete(wrapper);
     }
   };
-  const observer = new MutationObserver(sync);
+  const observer = new (realmOf(container as Node).MutationObserver)(sync);
   observer.observe(container, { childList: true });
   sync();
   return () => {
@@ -88,7 +89,7 @@ function wireSheet(wrapper: HTMLElement): () => void {
       sheet.insertBefore(handle, sheet.firstChild);
   };
   place();
-  const observer = new MutationObserver(place);
+  const observer = new (realmOf(wrapper).MutationObserver)(place);
   observer.observe(wrapper, { childList: true, subtree: true });
   const unwire = wireSheetHandle(handle, {
     // Input only reaches a connected grabber, which sits in the sheet.

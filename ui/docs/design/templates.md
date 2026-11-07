@@ -36,7 +36,7 @@ interaction-/viewport-driven screens rather than component cards — the live UX
 catalog and the app-layouts docs cover those. `ColorPicker` is templated from stand-ins: its area and its channel and opacity tracks are CSS gradients and range-input pseudo-elements a static capture cannot keep, so the templates draw them as inline SVG gradients and checker squares from the picker's own values (`staticColorPicker`). For the same reason the `Slider` templates draw
 its track, fill, and thumb with template-only stand-in elements built from
 the Slider's own tokens and fill value (`staticRange` in
-`scripts/build-design-templates.mjs`). The `ColorField` templates likewise draw the swatch's checkerboard with plain squares (`staticSwatch`), since the capture would embed its conic gradient as a nested SVG.
+`scripts/design-templates/specs.mjs`). The `ColorField` templates likewise draw the swatch's checkerboard with plain squares (`staticSwatch`), since the capture would embed its conic gradient as a nested SVG.
 
 ## Layout
 
@@ -103,7 +103,8 @@ stylesheets, because its standalone HTML pages live outside `dist/styles`.
 Run `npm run build` before the template build so those entries exist.
 
 **Keep the templates current as components change.** The variants live in the
-`COMPONENTS` manifest in `scripts/build-design-templates.mjs` — when a component
+`COMPONENTS` manifest in `scripts/design-templates/specs.mjs` (the capture
+pipeline, `scripts/build-design-templates.mjs`, re-exports it) — when a component
 gains or changes a presentation combination (e.g. a new `Toolbar` slot), add
 or adjust its variant there and re-run the build. Cover the common cases: if a
 component can render with or without an icon, include both.
@@ -133,8 +134,8 @@ updated SVGs.
 ## Templating your own components
 
 Apps that build on `@kerfjs/ui` can produce the same design templates for their
-own application-level components. Copy `scripts/build-design-templates.mjs` as a
-starting point and:
+own application-level components. Copy `scripts/build-design-templates.mjs` and
+its manifest, `scripts/design-templates/specs.mjs`, as a starting point and:
 
 1. Import your component and render it to a `SafeHtml` string with realistic
    sample data (pass icon/action slots as `SafeHtml`, e.g. `LucideIcon({ … })` or

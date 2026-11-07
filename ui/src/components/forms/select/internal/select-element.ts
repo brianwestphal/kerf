@@ -1,3 +1,4 @@
+import { realmOf } from '../../../../shared/dom/realm.js';
 import { itemLabel } from '../../../../shared/dom/typeahead.js';
 import { summarizeSelection } from '../model/select-summary.js';
 
@@ -156,7 +157,9 @@ export class KuiSelectElement extends HTMLElement {
     // A re-render that changes which options are chosen (the application's
     // controlled value) is the new form value too, as are options the parser
     // adds after the element connects (a page parsed with it already defined).
-    this.#observer ??= new MutationObserver(() => this.syncFormValue());
+    this.#observer ??= new (realmOf(this).MutationObserver)(() =>
+      this.syncFormValue(),
+    );
     this.#observer.observe(this, {
       subtree: true,
       childList: true,

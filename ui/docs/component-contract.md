@@ -1070,6 +1070,19 @@ their own morph-control attributes.
 
 `kerfjs` is a peer dependency and remains external in every build. Importing a toolbar must not bundle a second Kerf runtime, another UI component, Web Awesome registration, the UX catalog, or development tooling.
 
+### Realms
+
+A controller or `wire…` helper builds its observers (`MutationObserver`,
+`ResizeObserver`, `IntersectionObserver`) and schedules its timers
+(`setTimeout`, `requestAnimationFrame`) on the window that owns the node it
+wires — `realmOf(node)` from `src/shared/dom/realm.ts`, or the `view` /
+`win` it already derived from `node.ownerDocument.defaultView` — never on the
+global constructors. A component wired inside an iframe or a second document
+then observes and times against that document's own event loop, and a test
+can stub one window without patching globals. An inline style the controller
+owns and a re-render may morph away is kept with `watchOwnedStyles` from
+`src/shared/dom/owned-styles.ts`, which follows the same rule.
+
 ## Extracted versus application-specific
 
 The package set is intentionally domain-neutral: icon rendering, toolbar primitives, controlled segmented choices, a controlled token-chip search field with DOM read/caret helpers, menu rows/headers, resizable regions and wiring, controlled reorderable tab bars, headers, loading, select, banners, empty states, dialog headers, and typed value-table rows.

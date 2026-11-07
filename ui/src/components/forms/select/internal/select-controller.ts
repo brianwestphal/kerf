@@ -125,7 +125,7 @@ export function installSelects(doc: Document = document): void {
       if (!isOpen(popup) || (active !== trigger && active !== doc.body)) return;
       focusOption(root, chosenOptions(root)[0] ?? optionsOf(root)[0]);
     };
-    const restore = new MutationObserver(() => {
+    const restore = new win.MutationObserver(() => {
       // A Select disabled while open closes, so nothing more can be chosen.
       if (trigger.disabled) {
         close(root, false);

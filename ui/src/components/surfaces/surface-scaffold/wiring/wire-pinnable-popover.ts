@@ -1,3 +1,5 @@
+import { watchOwnedStyles } from '../../../../shared/dom/owned-styles.js';
+
 /**
  * Where a pinned PinnablePopoverSurface sits: its top-left corner in viewport
  * px, and the size the person resized it to (omitted until they do).
@@ -377,7 +379,7 @@ export function wirePinnablePopover(
   // An application re-render morphs the surface back to its template: restore
   // what the controller owns. A person resizing a pinned surface writes its
   // inline width and height: take those as the pinned size.
-  const restore = new MutationObserver(() => {
+  const adoptResize = () => {
     if (pinned) {
       const width = surface.style.width;
       const height = surface.style.height;
@@ -396,22 +398,19 @@ export function wirePinnablePopover(
         report('resize');
       }
     }
-    for (const [property, value] of owned)
-      if (surface.style.getPropertyValue(property) !== value)
-        surface.style.setProperty(property, value);
-    syncAttributes();
-  });
+  };
 
   if (pinned) syncAttributes();
   if (isOpen()) {
     applySize();
     layout();
   }
-  restore.observe(surface, {
-    attributes: true,
-    attributeFilter: ['style', 'data-pinned', 'data-placed', 'aria-pressed'],
+  const restore = watchOwnedStyles(surface, owned, {
+    attributes: ['data-pinned', 'data-placed', 'aria-pressed'],
     childList: true,
     subtree: true,
+    beforeRestore: adoptResize,
+    afterRestore: syncAttributes,
   });
   surface.addEventListener('beforetoggle', onBeforeToggle);
   surface.addEventListener('toggle', onToggle);
