@@ -14,27 +14,11 @@ import { execSync } from 'node:child_process';
 import { cpSync, existsSync, mkdirSync, rmSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { build } from 'vite';
-
-import { copyNoBuildApp, NO_BUILD_APPS } from './lib/copy-no-build-app.mjs';
+import { buildCompleteApp, COMPLETE_APPS } from './lib/complete-apps.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const siteRoot = resolve(__dirname, '..');
 const repoRoot = resolve(siteRoot, '..');
-
-const COMPLETE_APPS = [
-  'todomvc',
-  'markdown-editor',
-  'kanban',
-  'chat',
-  'dashboard',
-  'cart-htmx',
-  'counter-store',
-  'row-selector',
-  'live-poll',
-  'virtual-list',
-  'router',
-];
 
 async function buildCompleteApps() {
   const outDir = resolve(siteRoot, 'public/run');
@@ -42,34 +26,13 @@ async function buildCompleteApps() {
   if (existsSync(outDir)) rmSync(outDir, { recursive: true, force: true });
   mkdirSync(outDir, { recursive: true });
 
-  // Run each app as its own Vite build so the output preserves the per-app
-  // directory shape (public/run/<name>/index.html + assets), and so each
-  // app's resolution starts from the site root (where kerfjs is installed).
+  // Run each app as its own build so the output preserves the per-app
+  // directory shape (public/run/<name>/index.html + assets).
   for (const name of COMPLETE_APPS) {
-    const appRoot = resolve(siteRoot, 'src/examples/complete', name);
-    if (NO_BUILD_APPS.has(name)) {
-      // The no-build app ships its source verbatim + a vendored kerf dist —
-      // no Vite involved (that's its whole story). Relative paths only, so
-      // it serves correctly under /kerf/run/<name>/ without a base rewrite.
-      copyNoBuildApp(appRoot, resolve(outDir, name), repoRoot);
-      continue;
-    }
-    await build({
-      root: appRoot,
+    await buildCompleteApp(name, {
       base: `/kerf/run/${name}/`,
-      publicDir: false,
-      esbuild: { jsx: 'automatic', jsxImportSource: 'kerfjs' },
+      outDir: resolve(outDir, name),
       cacheDir: resolve(siteRoot, `node_modules/.vite-examples/${name}`),
-      resolve: {
-        // Anchor module resolution at the site root so kerfjs (file:../..) and
-        // marked / dompurify resolve from site/node_modules.
-        preserveSymlinks: false,
-      },
-      build: {
-        outDir: resolve(outDir, name),
-        emptyOutDir: true,
-      },
-      logLevel: 'warn',
     });
   }
 

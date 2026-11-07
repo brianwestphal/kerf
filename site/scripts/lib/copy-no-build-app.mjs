@@ -13,9 +13,8 @@
 //
 // Every path inside the app is relative, so the same copied output serves
 // correctly under any base (/kerf/run/<name>/, /<name>/, or ./ for tests).
-// Used by site/scripts/build-examples.mjs, site/scripts/build-demos-for-capture.mjs,
-// and tests/dist/example-apps/build.mjs — keep those three in sync via this one
-// helper.
+// Called by buildCompleteApp() in ./complete-apps.mjs, which every complete-app
+// builder (site build, demo capture, browser-test build) goes through.
 
 import { cpSync, existsSync, mkdirSync, rmSync } from 'node:fs';
 import { resolve } from 'node:path';

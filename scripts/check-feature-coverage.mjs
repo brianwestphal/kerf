@@ -21,7 +21,7 @@
  *    missing, or if a referenced title no longer appears in any of the row's
  *    referenced files (backslash-normalized so escaped quotes/apostrophes in
  *    the source match the plain title in the doc).
- *  - Fails if any app in `site/scripts/build-examples.mjs`'s `COMPLETE_APPS`
+ *  - Fails if any app in `site/scripts/lib/complete-apps.mjs`'s `COMPLETE_APPS`
  *    lacks its own feature row mapped to a title inside that app's Playwright
  *    `test.describe` block.
  *  - **Export-representation completeness (KF-289):** also fails if any
@@ -46,7 +46,7 @@ const REPO_ROOT = env.KERF_FEATURE_COVERAGE_ROOT
   ? resolve(env.KERF_FEATURE_COVERAGE_ROOT)
   : dirname(dirname(fileURLToPath(import.meta.url)));
 const INDEX_DOC = resolve(REPO_ROOT, 'docs/14-feature-coverage.md');
-const EXAMPLE_BUILD = resolve(REPO_ROOT, 'site/scripts/build-examples.mjs');
+const EXAMPLE_LIST = resolve(REPO_ROOT, 'site/scripts/lib/complete-apps.mjs');
 const EXAMPLE_BROWSER_SPEC = resolve(
   REPO_ROOT,
   'tests/browser/example-apps.spec.ts',
@@ -155,8 +155,10 @@ function guardingTitles(guarding) {
 }
 
 function collectCompleteExamples() {
-  const buildSource = readFileSync(EXAMPLE_BUILD, 'utf8');
-  const match = buildSource.match(/const COMPLETE_APPS = \[([\s\S]*?)\];/);
+  // Parsed as text (not imported) so the gate's fixture repositories need
+  // only this one file. The list may carry a JSDoc const cast before `[`.
+  const listSource = readFileSync(EXAMPLE_LIST, 'utf8');
+  const match = listSource.match(/const COMPLETE_APPS =[^[]*\[([\s\S]*?)\]/);
   if (!match) return null;
   return match[1]
     .split(',')
@@ -245,7 +247,7 @@ function main() {
   const completeExamples = collectCompleteExamples();
   if (completeExamples === null) {
     errors.push(
-      'could not find COMPLETE_APPS in site/scripts/build-examples.mjs',
+      'could not find COMPLETE_APPS in site/scripts/lib/complete-apps.mjs',
     );
   } else {
     const exampleBodies = collectExampleTestBodies();

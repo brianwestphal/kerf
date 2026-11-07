@@ -50,15 +50,15 @@ function runGate({
   fixtureRoots.push(root);
   mkdirSync(join(root, 'src'));
   mkdirSync(join(root, 'docs'));
-  mkdirSync(join(root, 'site/scripts'), { recursive: true });
+  mkdirSync(join(root, 'site/scripts/lib'), { recursive: true });
   mkdirSync(join(root, 'tests/browser'), { recursive: true });
 
   for (const source of EXPORT_SOURCES) {
     writeFileSync(join(root, source), sources[source] ?? '');
   }
   writeFileSync(
-    join(root, 'site/scripts/build-examples.mjs'),
-    `const COMPLETE_APPS = ${JSON.stringify(completeApps)};`,
+    join(root, 'site/scripts/lib/complete-apps.mjs'),
+    `export const COMPLETE_APPS = /** @type {const} */ (${JSON.stringify(completeApps)});`,
   );
   writeFileSync(join(root, 'tests/browser/example-apps.spec.ts'), exampleSpec);
   writeFileSync(join(root, 'tests.ts'), 'it("guard", () => {});');

@@ -24,7 +24,13 @@ cd "$REPO_ROOT"
 SERVE_DIR="$(mktemp -d)"
 SERVE_PORT=4188
 CONFIG_DIR="site/scripts/demo-captures"
-APPS=(todomvc counter-store cart-htmx chat dashboard markdown-editor kanban row-selector live-poll virtual-list router)
+# The app list comes from the one shared module the build scripts use.
+read -r -a APPS <<< "$(node --input-type=module -e \
+  "import { COMPLETE_APPS } from './site/scripts/lib/complete-apps.mjs'; console.log(COMPLETE_APPS.join(' '));")"
+if [[ ${#APPS[@]} -eq 0 ]]; then
+  echo "[demos] ERROR: could not read COMPLETE_APPS from site/scripts/lib/complete-apps.mjs" >&2
+  exit 1
+fi
 # Static capture pages under $CONFIG_DIR/pages/<name>/ — not example apps, just
 # hand-authored HTML captured as-is (the animated site diagrams etc.). Each has
 # a matching <name>.json config like the apps.

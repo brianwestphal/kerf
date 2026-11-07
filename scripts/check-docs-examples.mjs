@@ -59,6 +59,8 @@ import {
 import { dirname, relative, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
+import { COMPLETE_APPS } from '../site/scripts/lib/complete-apps.mjs';
+
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const repoRoot = resolve(__dirname, '..');
 const migratingDir = resolve(repoRoot, 'site/src/content/docs/migrating');
@@ -68,7 +70,10 @@ const exampleDocsDir = resolve(
 );
 const exampleSrcDir = resolve(repoRoot, 'site/src/examples/complete');
 const siteContentDir = resolve(repoRoot, 'site/src/content/docs');
-const buildExamplesPath = resolve(repoRoot, 'site/scripts/build-examples.mjs');
+const completeAppsPath = resolve(
+  repoRoot,
+  'site/scripts/lib/complete-apps.mjs',
+);
 const browserSpecPath = resolve(repoRoot, 'tests/browser/example-apps.spec.ts');
 const distTypingTsconfig = resolve(
   repoRoot,
@@ -86,20 +91,7 @@ function ok(msg) {
 
 // --- Discover the known-good sets ---------------------------------------
 
-const buildExamplesSrc = readFileSync(buildExamplesPath, 'utf8');
-const completeAppsMatch = buildExamplesSrc.match(
-  /const COMPLETE_APPS = \[([\s\S]*?)\];/,
-);
-if (!completeAppsMatch) {
-  fail(`could not find COMPLETE_APPS in ${buildExamplesPath}`);
-  process.exit(1);
-}
-const completeApps = new Set(
-  completeAppsMatch[1]
-    .split(',')
-    .map((s) => s.trim().replace(/^['"]|['"]$/g, ''))
-    .filter(Boolean),
-);
+const completeApps = new Set(COMPLETE_APPS);
 
 const browserSpecSrc = readFileSync(browserSpecPath, 'utf8');
 const describedApps = new Set(
@@ -176,7 +168,7 @@ for (const docFile of docFiles) {
     totalLinks++;
     if (!completeApps.has(name)) {
       fail(
-        `${docName}: /kerf/run/${name}/ link references an example NOT in COMPLETE_APPS at ${buildExamplesPath}`,
+        `${docName}: /kerf/run/${name}/ link references an example NOT in COMPLETE_APPS at ${completeAppsPath}`,
       );
     }
     if (!describedApps.has(name)) {

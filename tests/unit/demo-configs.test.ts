@@ -32,6 +32,7 @@ const SVG_DIR = join(cwd(), 'site', 'public', 'demos');
 const COMPLETE_APPS_DIR = join(cwd(), 'site', 'src', 'examples', 'complete');
 const CAPTURE_SCRIPT = join(CONFIG_DIR, 'capture-demos.sh');
 const CAPTURE_README = join(CONFIG_DIR, 'README.md');
+const COMPLETE_APPS_MODULE = 'site/scripts/lib/complete-apps.mjs';
 const EXAMPLE_APP_SPEC = join(
   cwd(),
   'tests',
@@ -52,7 +53,7 @@ function shellArray(name: string): string[] {
 function jsStringArray(file: string, name: string): string[] {
   const source = readFileSync(join(cwd(), file), 'utf8');
   const match = source.match(
-    new RegExp(`const ${name} = \\[([\\s\\S]*?)\\n\\];`),
+    new RegExp(`const ${name} =[^[]*\\[([\\s\\S]*?)\\n\\]`),
   );
   expect(
     match,
@@ -75,7 +76,7 @@ describe('demo-capture configs', () => {
       .filter((entry) => entry.isDirectory() && !entry.name.startsWith('.'))
       .map((entry) => entry.name)
       .sort();
-    const captureApps = shellArray('APPS').sort();
+    const captureScript = readFileSync(CAPTURE_SCRIPT, 'utf8');
     const capturePages = shellArray('PAGES').sort();
     const configNames = configFiles
       .map((file) => file.replace(/\.json$/, ''))
@@ -90,7 +91,12 @@ describe('demo-capture configs', () => {
       .map((file) => readFileSync(join(cwd(), 'site', 'src', file), 'utf8'))
       .join('\n');
 
-    expect(captureApps).toEqual(apps);
+    // One list: the shared module names every app directory, and every
+    // builder plus the capture script reads it instead of keeping a copy.
+    const listedApps = jsStringArray(COMPLETE_APPS_MODULE, 'COMPLETE_APPS');
+    expect([...listedApps].sort()).toEqual(apps);
+    expect(captureScript).toContain(COMPLETE_APPS_MODULE);
+    expect(captureScript).not.toMatch(/^APPS=\(/m);
     expect(configNames).toEqual([...apps, ...capturePages].sort());
 
     for (const app of apps) {
@@ -104,7 +110,9 @@ describe('demo-capture configs', () => {
       'site/scripts/build-demos-for-capture.mjs',
       'tests/dist/example-apps/build.mjs',
     ]) {
-      expect(jsStringArray(file, 'COMPLETE_APPS').sort()).toEqual(apps);
+      const source = readFileSync(join(cwd(), file), 'utf8');
+      expect(source).toContain('lib/complete-apps.mjs');
+      expect(source).not.toMatch(/const COMPLETE_APPS =/);
     }
   });
 

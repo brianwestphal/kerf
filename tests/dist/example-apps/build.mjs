@@ -14,12 +14,13 @@
 // so the CI `browser:` job hits a missing-astro error without this step.
 
 import { execSync } from 'node:child_process';
-import { existsSync, mkdirSync, rmSync } from 'node:fs';
+import { existsSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { build } from 'vite';
 
-import { copyNoBuildApp, NO_BUILD_APPS } from '../../../site/scripts/lib/copy-no-build-app.mjs';
+// The shared list + builder loads Vite lazily, so importing it here is safe
+// before ensureSiteDeps() has installed site/node_modules.
+import { buildCompleteApp, COMPLETE_APPS } from '../../../site/scripts/lib/complete-apps.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const repoRoot = resolve(__dirname, '../../..');
@@ -40,47 +41,15 @@ function ensureSiteDeps() {
   execSync(cmd, { cwd: siteRoot, stdio: 'inherit' });
 }
 
-// Keep this list in sync with `site/scripts/build-examples.mjs` COMPLETE_APPS.
-const COMPLETE_APPS = [
-  'todomvc',
-  'markdown-editor',
-  'kanban',
-  'chat',
-  'dashboard',
-  'cart-htmx',
-  'counter-store',
-  'row-selector',
-  'live-poll',
-  'virtual-list',
-  'router',
-];
-
-async function buildOne(name) {
-  const appRoot = resolve(siteRoot, 'src/examples/complete', name);
-  const outDir = resolve(outRoot, name);
-  if (NO_BUILD_APPS.has(name)) {
-    // The no-build app is copied, not bundled — relative paths only, so the
-    // same output serves at /tests/dist/example-apps/<name>/ unchanged.
-    copyNoBuildApp(appRoot, outDir, repoRoot);
-    return;
-  }
-  if (existsSync(outDir)) rmSync(outDir, { recursive: true, force: true });
-  mkdirSync(outDir, { recursive: true });
-  await build({
-    root: appRoot,
-    base: './',
-    publicDir: false,
-    esbuild: { jsx: 'automatic', jsxImportSource: 'kerfjs' },
-    cacheDir: resolve(siteRoot, `node_modules/.vite-test-examples/${name}`),
-    resolve: { preserveSymlinks: false },
-    build: { outDir, emptyOutDir: true },
-    logLevel: 'warn',
-  });
-}
-
 async function main() {
   ensureSiteDeps();
-  for (const name of COMPLETE_APPS) await buildOne(name);
+  for (const name of COMPLETE_APPS) {
+    await buildCompleteApp(name, {
+      base: './',
+      outDir: resolve(outRoot, name),
+      cacheDir: resolve(siteRoot, `node_modules/.vite-test-examples/${name}`),
+    });
+  }
   console.log(`[example-apps] built ${COMPLETE_APPS.length} apps → tests/dist/example-apps/`);
 }
 

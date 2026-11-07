@@ -1,63 +1,32 @@
 #!/usr/bin/env node
-// One-off build helper for KF-244: build each complete example app with a
-// per-app absolute base into a single shared serve root so a static file
-// server can host them all at `http://host/<name>/` and domotion-svg can
-// capture animated demos from them. Not part of the regular build — invoked
-// manually when regenerating the demo SVGs in site/public/demos/.
+// Build each complete example app with a per-app absolute base into a single
+// shared serve root, so one static file server can host them all at
+// `http://host/<name>/` and domotion-svg can capture the animated demo SVGs
+// in site/public/demos/ from them. Not part of the regular build — invoked by
+// site/scripts/demo-captures/capture-demos.sh when regenerating the demos.
 
-import { rmSync, mkdirSync, existsSync } from 'node:fs';
+import { mkdirSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { build } from 'vite';
 
-import { copyNoBuildApp, NO_BUILD_APPS } from './lib/copy-no-build-app.mjs';
+import { buildCompleteApp, COMPLETE_APPS } from './lib/complete-apps.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const siteRoot = resolve(__dirname, '..');
-const repoRoot = resolve(siteRoot, '..');
-
-const COMPLETE_APPS = [
-  'todomvc',
-  'markdown-editor',
-  'kanban',
-  'chat',
-  'dashboard',
-  'cart-htmx',
-  'counter-store',
-  'row-selector',
-  'live-poll',
-  'virtual-list',
-  'router',
-];
 
 const outRoot = process.argv[2] || '/tmp/claude/kerf-demos';
 
-async function buildOne(name) {
-  const appRoot = resolve(siteRoot, 'src/examples/complete', name);
-  const outDir = resolve(outRoot, name);
-  if (NO_BUILD_APPS.has(name)) {
-    copyNoBuildApp(appRoot, outDir, repoRoot);
-    console.log(`[demos] copied ${name} (no-build) → ${outDir}`);
-    return;
-  }
-  if (existsSync(outDir)) rmSync(outDir, { recursive: true, force: true });
-  mkdirSync(outDir, { recursive: true });
-  await build({
-    root: appRoot,
-    base: `/${name}/`,
-    publicDir: false,
-    esbuild: { jsx: 'automatic', jsxImportSource: 'kerfjs' },
-    cacheDir: resolve(siteRoot, `node_modules/.vite-demos/${name}`),
-    resolve: { preserveSymlinks: false },
-    build: { outDir, emptyOutDir: true },
-    logLevel: 'warn',
-  });
-  console.log(`[demos] built ${name} → ${outDir}`);
-}
-
 async function main() {
   mkdirSync(outRoot, { recursive: true });
-  for (const name of COMPLETE_APPS) await buildOne(name);
+  for (const name of COMPLETE_APPS) {
+    const outDir = resolve(outRoot, name);
+    await buildCompleteApp(name, {
+      base: `/${name}/`,
+      outDir,
+      cacheDir: resolve(siteRoot, `node_modules/.vite-demos/${name}`),
+    });
+    console.log(`[demos] built ${name} → ${outDir}`);
+  }
   console.log(`[demos] built ${COMPLETE_APPS.length} apps → ${outRoot}`);
 }
 
