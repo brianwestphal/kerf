@@ -428,10 +428,13 @@ colocated component source:
 
 The documented exceptions live with their reasons in
 `scripts/lib/css-ownership.mjs`, and an exception that stops matching fails the
-check, so the list only shrinks. The layout regions' inherited edge-inset
-context (`--kui-edge-inset-*` handed to a sole Pane or layout child and cleared
-for any other content, and a Toolbar clearing it for its zones) is the one
-design exception; the others name the open fix ticket. The scroll-clearance
+check, so the list only shrinks; it is currently empty. The layout regions'
+inherited edge-inset context (`--kui-edge-inset-*`) needs no exception: a
+region keeps the context on its own element for a sole Pane or layout child to
+inherit, and otherwise pads by a private copy named after itself
+(`--_kui-split-view-edge-*`, `--_kui-nav-stack-view-edge-*`, …) and clears the
+public context on its own element, so other content inherits zero. A Toolbar
+clears it on its own zones. The scroll-clearance
 context (`--kui-scroll-clearance-block-*`) needs no exception: overlaying
 chrome publishes it on its own element (a `DialogSurface` on its dialog body,
 a `Pane` overlay header, through `wireScrollDividers`, on its own Pane root).

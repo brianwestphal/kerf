@@ -32,6 +32,15 @@
   --kui-edge-inset-block-end: 0px;
   --kui-edge-inset-inline-start: var(--_kui-tab-scaffold-safe-inline-start);
   --kui-edge-inset-inline-end: var(--_kui-tab-scaffold-safe-inline-end);
+  /* The scenes' edge context: the resolved context above (after the overlay
+     bar rule below), captured here so a scene that pads for it can clear the
+     public context on itself. */
+  --_kui-tab-scaffold-scene-edge-block-start: var(--kui-edge-inset-block-start);
+  --_kui-tab-scaffold-scene-edge-block-end: var(--kui-edge-inset-block-end);
+  --_kui-tab-scaffold-scene-edge-inline-start: var(
+    --kui-edge-inset-inline-start
+  );
+  --_kui-tab-scaffold-scene-edge-inline-end: var(--kui-edge-inset-inline-end);
   position: relative;
   flex: 1;
   min-height: 0;
@@ -90,7 +99,9 @@
 
 /* A scene is its region's scroll owner, so its top inset is padding inside
    the scroller. A scene whose only child is a Pane or layout (usually a
-   NavStack) lets that child own the insets instead. */
+   NavStack) lets that child own the insets instead (it inherits the scenes'
+   context); a padded scene clears the context on itself, so its other
+   content inherits zero. */
 .kui-tab-scaffold__scene:not(
   :has(
     > :is(
@@ -102,12 +113,16 @@
       ):only-child
   )
 ) {
-  padding-block: var(--kui-edge-inset-block-start)
-    var(--kui-edge-inset-block-end);
-  padding-inline: var(--kui-edge-inset-inline-start)
-    var(--kui-edge-inset-inline-end);
-  scroll-padding-block: var(--kui-edge-inset-block-start)
-    var(--kui-edge-inset-block-end);
+  padding-block: var(--_kui-tab-scaffold-scene-edge-block-start)
+    var(--_kui-tab-scaffold-scene-edge-block-end);
+  padding-inline: var(--_kui-tab-scaffold-scene-edge-inline-start)
+    var(--_kui-tab-scaffold-scene-edge-inline-end);
+  scroll-padding-block: var(--_kui-tab-scaffold-scene-edge-block-start)
+    var(--_kui-tab-scaffold-scene-edge-block-end);
+  --kui-edge-inset-block-start: 0px;
+  --kui-edge-inset-block-end: 0px;
+  --kui-edge-inset-inline-start: 0px;
+  --kui-edge-inset-inline-end: 0px;
 }
 
 /* A plain scene adds one outer gutter; a sole Pane or layout keeps ownership
@@ -124,33 +139,19 @@
     )
   ) {
   padding-block-start: calc(
-    var(--kui-edge-inset-block-start) + var(--kui-space-xs)
+    var(--_kui-tab-scaffold-scene-edge-block-start) + var(--kui-space-xs)
   );
   padding-block-end: calc(
-    var(--kui-edge-inset-block-end) + var(--kui-space-xs)
+    var(--_kui-tab-scaffold-scene-edge-block-end) + var(--kui-space-xs)
   );
-  padding-inline: calc(var(--kui-edge-inset-inline-start) + var(--kui-space-xs))
-    calc(var(--kui-edge-inset-inline-end) + var(--kui-space-xs));
-  scroll-padding-block: calc(
-      var(--kui-edge-inset-block-start) + var(--kui-space-xs)
+  padding-inline: calc(
+      var(--_kui-tab-scaffold-scene-edge-inline-start) + var(--kui-space-xs)
     )
-    calc(var(--kui-edge-inset-block-end) + var(--kui-space-xs));
-}
-
-.kui-tab-scaffold__scene
-  > :not(
-    :is(
-      [data-component="pane"],
-      [data-component="nav-stack"],
-      [data-component="split-view"],
-      [data-component="workbench"],
-      [data-component="tab-scaffold"]
-    ):only-child
-  ) {
-  --kui-edge-inset-block-start: 0px;
-  --kui-edge-inset-block-end: 0px;
-  --kui-edge-inset-inline-start: 0px;
-  --kui-edge-inset-inline-end: 0px;
+    calc(var(--_kui-tab-scaffold-scene-edge-inline-end) + var(--kui-space-xs));
+  scroll-padding-block: calc(
+      var(--_kui-tab-scaffold-scene-edge-block-start) + var(--kui-space-xs)
+    )
+    calc(var(--_kui-tab-scaffold-scene-edge-block-end) + var(--kui-space-xs));
 }
 
 .kui-tab-scaffold__scene[data-active="false"] {

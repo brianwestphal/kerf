@@ -107,58 +107,15 @@ export const tokenNamespaceAliases = new Map([
   ['segmented-control.css', ['segmented']],
 ]);
 
-const EDGE_INSET_CONTEXT =
-  "Layout regions' inherited edge-inset context: a region hands --kui-edge-inset-* to the one Pane or layout that fills it and clears it for any other content, which cannot know it sits at a region edge. The edge context is the package's shared foundation contract (docs/app-layouts.md), not a restyle of the child.";
-
 /**
  * Documented exceptions. Each names the stylesheet, the rule it is excused
  * from, a substring of the offending selector (whitespace-collapsed) or, for a
  * variable finding, the property, and the reason. An exception that no longer
- * matches a finding fails the check, so the list can only shrink.
- *
- * All five current entries are the layout regions' edge-inset context
- * (`--kui-edge-inset-*` set or cleared on a child the region does not own);
- * KF-48X8J5 (replace it with a child-owned edge contract and delete these
- * exceptions) tracks retiring them.
+ * matches a finding fails the check, so the list can only shrink. The list is
+ * empty: the layout regions' edge-inset context, the last exception, is now
+ * cleared on each region's own element (KF-48X8J5).
  */
-export const ownershipExceptions = [
-  {
-    file: 'components/layout/collapsible-panel/collapsible-panel.css',
-    rule: 'context-on-child',
-    selector: '.kui-collapsible-panel__content > :not(',
-    property: '--kui-edge-inset-',
-    reason: EDGE_INSET_CONTEXT,
-  },
-  {
-    file: 'components/navigation/nav-stack/nav-stack.css',
-    rule: 'context-on-child',
-    selector: '.kui-nav-stack__view > :not(',
-    property: '--kui-edge-inset-',
-    reason: EDGE_INSET_CONTEXT,
-  },
-  {
-    file: 'components/layout/split-view/split-view.css',
-    rule: 'context-on-child',
-    selector: '.kui-split-view__list > :not(',
-    property: '--kui-edge-inset-',
-    reason: EDGE_INSET_CONTEXT,
-  },
-  {
-    file: 'components/navigation/tab-navigator/tab-navigator.css',
-    rule: 'context-on-child',
-    selector: '.kui-tab-scaffold__scene > :not(',
-    property: '--kui-edge-inset-',
-    reason: EDGE_INSET_CONTEXT,
-  },
-  {
-    file: 'components/actions/toolbar/toolbar.css',
-    rule: 'context-on-child',
-    selector: '.kui-toolbar > *',
-    property: '--kui-edge-inset-',
-    reason:
-      'The same edge-inset contract: a Toolbar consumes the edge context for its own padding and clears it for its zones, so a nested group or toolbar does not inset a second time.',
-  },
-];
+export const ownershipExceptions = [];
 
 function componentName(filename) {
   return filename

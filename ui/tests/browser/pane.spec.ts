@@ -184,24 +184,37 @@ test('deepInset adds one outer gutter while nested List items keep 8px spacing',
       );
     });
     expect(sceneInset).toBeCloseTo(16, 0);
+    // The scenes container is the scene's edge-context source; a padded
+    // scene applies it and clears the public context on itself (KF-48X8J5).
     await scene.evaluate((element) => {
-      (element as HTMLElement).style.setProperty(
+      element.parentElement!.style.setProperty(
         '--kui-edge-inset-inline-start',
         '12px',
       );
     });
     await expect(scene).toHaveCSS('padding-left', '20px');
     await scene.evaluate((element) => {
-      (element as HTMLElement).style.setProperty(
+      element.parentElement!.style.setProperty(
         '--kui-edge-inset-block-start',
         '12px',
       );
     });
     await expect(scene).toHaveCSS('padding-top', '20px');
     await expect(scene).toHaveCSS('scroll-padding-top', '20px');
+    expect(
+      await scene.evaluate((element) =>
+        window
+          .getComputedStyle(element)
+          .getPropertyValue('--kui-edge-inset-block-start')
+          .trim(),
+      ),
+    ).toBe('0px');
     await scene.evaluate((element) => {
-      (element as HTMLElement).style.removeProperty(
+      element.parentElement!.style.removeProperty(
         '--kui-edge-inset-inline-start',
+      );
+      element.parentElement!.style.removeProperty(
+        '--kui-edge-inset-block-start',
       );
     });
     if (browserName === 'chromium')

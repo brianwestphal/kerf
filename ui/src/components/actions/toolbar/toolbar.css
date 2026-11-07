@@ -88,7 +88,11 @@
   );
 }
 
-.kui-toolbar > * {
+/* The toolbar applies the context itself, so it clears it on its own zones
+   (its only content children; the visibility probe holds no content). */
+.kui-toolbar > .kui-toolbar__leading,
+.kui-toolbar > .kui-toolbar__center,
+.kui-toolbar > .kui-toolbar__trailing {
   --kui-edge-inset-block-start: 0px;
   --kui-edge-inset-block-end: 0px;
   --kui-edge-inset-inline-start: 0px;
