@@ -430,11 +430,11 @@ const ON_CLICK: Readonly<Record<string, ValueReader>> = {
  * returned `sync` after each render, so a newly rendered controlled node
  * gets its adapter and a removed one is disposed. `dispose` removes it all.
  */
-export function wirePlayState(
+function createPlayContext(
   root: HTMLElement,
   state: Signal<ViewDocument>,
   { rows, params, setParams, device, views, copies }: PlayStateOptions,
-): { sync: () => void; dispose: () => void } {
+) {
   /** A composed document: `#view` `owner`'s play copy, or the one sent. */
   const resolve = (path: string, owner: string) =>
     copies.peek()[owner] ?? views.peek()[path];
@@ -633,7 +633,57 @@ export function wirePlayState(
     found.state.value = selected.document;
   };
 
-  const stateless = [
+  return {
+    root,
+    state,
+    rows,
+    params,
+    setParams,
+    device,
+    views,
+    copies,
+    resolve,
+    locate,
+    reported,
+    recordById,
+    tabItemAt,
+    selectItem,
+    rowsOf,
+    setRowsOf,
+    onChange,
+    onClick,
+    onToggle,
+    touch,
+    adapters,
+  };
+}
+
+type PlayContext = ReturnType<typeof createPlayContext>;
+
+function installStatelessWiring(context: PlayContext) {
+  const {
+    root,
+    state,
+    rows,
+    params,
+    setParams,
+    device,
+    views,
+    copies,
+    resolve,
+    locate,
+    reported,
+    recordById,
+    tabItemAt,
+    selectItem,
+    rowsOf,
+    setRowsOf,
+    onChange,
+    onClick,
+    onToggle,
+    touch,
+  } = context;
+  return [
     wireScrollDividers(root),
     wireTextFields(root),
     wireSearchFields(root),
@@ -804,48 +854,67 @@ export function wirePlayState(
       root.removeEventListener('focusin', touch, true);
     },
   ];
-  const sync = () => {
-    const seen = new Set<HTMLElement>();
-    for (const element of root.querySelectorAll<HTMLElement>(
-      '[data-kerf-node]',
-    )) {
-      const id = element.dataset.kerfNode!;
-      // Each rendered node is one of a play copy's (KF-58917B: the top
-      // document's or a `#view`'s).
-      const found = locate(id);
-      const adapter = found && ADAPTERS[found.node.type];
-      if (!adapter) continue;
-      // The morph may reuse an element for another node, or a SplitView's
-      // element for its other mode.
-      const shape = element.dataset.splitMode;
-      const current = adapters.get(element);
-      if (current?.id === id && current.shape === shape) {
-        seen.add(element);
-        continue;
-      }
-      current?.stop();
-      adapters.delete(element);
-      const stop = adapter({
-        element,
-        id: found!.id,
-        state: found!.state,
-        root,
-      });
-      if (!stop) continue;
-      adapters.set(element, { id, shape, stop });
+}
+
+function syncAdapters(context: PlayContext) {
+  const { root, adapters, locate } = context;
+
+  const seen = new Set<HTMLElement>();
+  for (const element of root.querySelectorAll<HTMLElement>(
+    '[data-kerf-node]',
+  )) {
+    const id = element.dataset.kerfNode!;
+    // Each rendered node is one of a play copy's (KF-58917B: the top
+    // document's or a `#view`'s).
+    const found = locate(id);
+    const adapter = found && ADAPTERS[found.node.type];
+    if (!adapter) continue;
+    // The morph may reuse an element for another node, or a SplitView's
+    // element for its other mode.
+    const shape = element.dataset.splitMode;
+    const current = adapters.get(element);
+    if (current?.id === id && current.shape === shape) {
       seen.add(element);
+      continue;
     }
-    for (const [element, { stop }] of adapters) {
-      if (seen.has(element)) continue;
-      stop();
-      adapters.delete(element);
-    }
-  };
+    current?.stop();
+    adapters.delete(element);
+    const stop = adapter({
+      element,
+      id: found!.id,
+      state: found!.state,
+      root,
+    });
+    if (!stop) continue;
+    adapters.set(element, { id, shape, stop });
+    seen.add(element);
+  }
+  for (const [element, { stop }] of adapters) {
+    if (seen.has(element)) continue;
+    stop();
+    adapters.delete(element);
+  }
+}
+
+export function wirePlayState(
+  root: HTMLElement,
+  state: Signal<ViewDocument>,
+  { rows, params, setParams, device, views, copies }: PlayStateOptions,
+): { sync: () => void; dispose: () => void } {
+  const context = createPlayContext(root, state, {
+    rows,
+    params,
+    setParams,
+    device,
+    views,
+    copies,
+  });
+  const stateless = installStatelessWiring(context);
   return {
-    sync,
+    sync: () => syncAdapters(context),
     dispose: () => {
-      for (const { stop } of adapters.values()) stop();
-      adapters.clear();
+      for (const { stop } of context.adapters.values()) stop();
+      context.adapters.clear();
       for (const stop of stateless) stop();
     },
   };
