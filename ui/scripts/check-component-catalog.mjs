@@ -383,7 +383,8 @@ for (const entry of artifact.entries) {
     // resize wiring behind wireResizableRegions and wireWorkbench); what that
     // module writes is what the wire writes. Another component's public
     // module (an AnchoredSurface the wire opens) writes that component's
-    // state, not this one's, so only its internal/ modules are followed.
+    // state, not this one's, so follow internal/ modules and the one shared
+    // resize-wiring implementation explicitly.
     const componentsDir = resolve(root, 'src/components');
     const ownComponent = relative(componentsDir, implementationPath)
       .split(sep)
@@ -402,7 +403,12 @@ for (const entry of artifact.entries) {
         !ownComponent.startsWith('..') &&
         !targetComponent.startsWith('..') &&
         targetComponent !== ownComponent &&
-        !target.split(sep).includes('internal')
+        !target.split(sep).includes('internal') &&
+        target !==
+          resolve(
+            root,
+            'src/components/layout/resizable-region/wiring/resize-wiring',
+          )
       )
         continue;
       source += await readFile(`${target}.ts`, 'utf8').catch(() =>
