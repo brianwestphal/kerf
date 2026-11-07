@@ -611,7 +611,7 @@ panel after a task (a drop from a library) checks `isPopoverPinned()` first.
 flow for a catalog or a design canvas, with its border and no drop shadow;
 `wirePinnablePopover` leaves an embedded surface alone.
 
-Wrap one `PopupMenu` (or another single `wa-dropdown`) with `PopupSurface`. `inset="list-zero"` removes menu
+Wrap one `PopupMenu` (or another single `wa-dropdown`) with `PopupSurface`. `inset="none"` removes menu
 padding for a child that already owns row insets, `compact` uses 4px, and
 `standard` uses the shared 8px surface inset. Keep the menu trigger named. A raw
 `wa-dropdown` should keep `data-morph-skip-children` when its upgraded light-DOM

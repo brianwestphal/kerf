@@ -38,8 +38,8 @@ export interface TreeListProps {
    * arrow or the keyboard (Right and Left). Flip the id in `expanded`.
    */
   toggleAction: string;
-  /** Row density: `standard` (44px rows, default) or `compact` (36px). */
-  density?: 'standard' | 'compact';
+  /** Row density: `default` (44px rows) or `compact` (36px). */
+  density?: 'default' | 'compact' | /** @deprecated Use default. */ 'standard';
   className?: string;
   /** Safe `data-*` metadata for the tree element. */
   rootAttributes?: RootDataAttributes;
@@ -62,7 +62,7 @@ export function TreeList({
   selected,
   action,
   toggleAction,
-  density = 'standard',
+  density = 'default',
   className = '',
   rootAttributes = {},
   slot,

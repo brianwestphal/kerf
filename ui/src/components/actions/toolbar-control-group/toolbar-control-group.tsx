@@ -21,7 +21,11 @@ export type ToolbarControlGroupTileTone =
 export type ToolbarControlGroupButtonAppearance = 'plain' | 'push';
 export type ToolbarControlGroupShape = 'pill' | 'rounded';
 export type ToolbarControlGroupSize = 'default' | 'compact';
-export type ToolbarControlGroupDensity = 'comfortable' | 'tight';
+export type ToolbarControlGroupDensity =
+  | 'default'
+  | 'compact'
+  | /** @deprecated Use default. */ 'comfortable'
+  | /** @deprecated Use compact. */ 'tight';
 export type ToolbarControlGroupContent =
   'icon' | 'text' | 'mixed' | 'avatar' | 'search';
 export type ToolbarControlGroupFocusRing = 'control' | 'outline' | 'halo';
@@ -30,7 +34,12 @@ export type ToolbarControlGroupSelectedChrome =
 export type ToolbarControlGroupSelectedTone = 'brand' | 'neutral' | 'pop';
 export type ToolbarControlGroupOverflow = 'visible' | 'scroll' | 'wrap';
 export type ToolbarControlGroupExpandedOverflow = 'clip' | 'visible';
-export type ToolbarControlGroupMenuInset = 'standard' | 'compact' | 'list-zero';
+export type ToolbarControlGroupMenuInset =
+  | 'none'
+  | 'compact'
+  | 'default'
+  | /** @deprecated Use default. */ 'standard'
+  | /** @deprecated Use none. */ 'list-zero';
 export type ToolbarControlGroupVisibility =
   | 'always'
   | 'compact-only'
@@ -383,13 +392,13 @@ export function ToolbarControlGroup({
   buttonAppearance = 'plain',
   shape = 'pill',
   size = 'default',
-  density = 'comfortable',
+  density = 'default',
   content = 'icon',
   focusRing = 'control',
   selectedChrome = 'raised',
   selectedTone = 'brand',
   nestedDropdown = false,
-  menuInset = 'standard',
+  menuInset = 'default',
   overflow = 'visible',
   expandedOverflow = 'clip',
   visibility = 'always',
@@ -428,13 +437,25 @@ export function ToolbarControlGroup({
       data-single={String(single)}
       data-shape={shape}
       data-size={size}
-      data-density={density}
+      data-density={
+        density === 'comfortable'
+          ? 'default'
+          : density === 'tight'
+            ? 'compact'
+            : density
+      }
       data-content={content}
       data-focus-ring={focusRing}
       data-selected-chrome={selectedChrome}
       data-selected-tone={selectedTone}
       data-nested-dropdown={String(nestedDropdown)}
-      data-menu-inset={menuInset}
+      data-menu-inset={
+        menuInset === 'standard'
+          ? 'default'
+          : menuInset === 'list-zero'
+            ? 'none'
+            : menuInset
+      }
       data-overflow={overflow}
       data-expanded-overflow={
         expandedOverflow === 'visible' ? 'visible' : undefined

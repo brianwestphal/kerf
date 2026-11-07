@@ -270,7 +270,7 @@ export function PopupMenuDemo() {
         label="Standalone in a Popup Surface"
         align="inline-control"
       >
-        <PopupSurface inset="list-zero">
+        <PopupSurface inset="none">
           <PopupMenu
             text="Choose View"
             items={[

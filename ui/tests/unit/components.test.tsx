@@ -738,7 +738,7 @@ describe('production UI primitives', () => {
       }),
     );
     expect(dialog).toContain(
-      'class="kui-dialog-surface editor" aria-label="Edit" tabindex="-1" data-component="dialog-surface" data-size="large" data-presentation="side-sheet" data-body-inset="none" data-footer-inset="compact"',
+      'class="kui-dialog-surface editor" aria-label="Edit" tabindex="-1" data-component="dialog-surface" data-size="large" data-presentation="side-sheet" data-body-inset="none" data-footer-inset="default"',
     );
     expect(dialog).toContain(
       '<div class="kui-dialog-surface__body">Body</div>',
@@ -797,9 +797,7 @@ describe('production UI primitives', () => {
         children: <wa-dropdown aria-label="Views" />,
       }),
     );
-    expect(popup).toContain(
-      'data-component="popup-surface" data-inset="list-zero"',
-    );
+    expect(popup).toContain('data-component="popup-surface" data-inset="none"');
     expect(popup).toContain('<wa-dropdown aria-label="Views"></wa-dropdown>');
   });
   it('renders decorative and meaningfully labeled Lucide-compatible icons', () => {
@@ -969,7 +967,7 @@ describe('production UI primitives', () => {
       'role="group" aria-label="View" data-appearance="borderless" data-tone="dark" data-button-appearance="push" data-expanded="true" data-single="true"',
     );
     expect(asHtml(group)).toContain(
-      'data-size="compact" data-density="tight" data-content="mixed" data-focus-ring="outline" data-selected-chrome="outline" data-selected-tone="pop" data-nested-dropdown="true" data-menu-inset="compact" data-overflow="scroll" data-visibility="compact-only" data-sizing="content" data-placement="start" data-scrim="true"',
+      'data-size="compact" data-density="compact" data-content="mixed" data-focus-ring="outline" data-selected-chrome="outline" data-selected-tone="pop" data-nested-dropdown="true" data-menu-inset="compact" data-overflow="scroll" data-visibility="compact-only" data-sizing="content" data-placement="start" data-scrim="true"',
     );
     expect(
       asHtml(ToolbarControlGroup({ children: icon, overflow: 'wrap' })),
@@ -3751,7 +3749,7 @@ describe('production UI primitives', () => {
     );
     expect(control).toContain('class="kui-segmented-control scoped-palette"');
     expect(control).toContain(
-      'data-segmented-control-id="inspector-section" data-value="activity" data-appearance="outlined" data-shape="pill" data-size="small" data-layout="equal" role="group" aria-label="Inspector Section"',
+      'data-segmented-control-id="inspector-section" data-value="activity" data-appearance="outlined" data-shape="pill" data-size="compact" data-layout="equal" role="group" aria-label="Inspector Section"',
     );
     expect(control).toContain(
       'data-action="choose-section" data-segment-value="summary" data-selected="false" aria-label="Summary" aria-pressed="false"',

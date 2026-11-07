@@ -139,7 +139,7 @@ export const createRecipe: RecipeFactory = (announce) => {
             value="details"
             appearance="toolbar"
             shape="pill"
-            size="small"
+            size="compact"
             placeholder={p}
             choices={[
               {

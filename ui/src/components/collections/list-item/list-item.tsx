@@ -68,7 +68,11 @@ export interface ListItemProps {
   status?: string | SafeHtml;
   /** Show a progress indicator and expose the row as busy without replacing its content; a placeholder keeps the indicator. */
   busy?: boolean;
-  density?: 'standard' | 'compact' | 'spacious';
+  density?:
+    | 'default'
+    | 'compact'
+    | 'spacious'
+    | /** @deprecated Use default. */ 'standard';
   divider?: 'none' | 'before' | 'after' | 'both';
   selected?: boolean;
   action: string;
@@ -116,7 +120,7 @@ export function ListItem({
   trailing,
   status,
   busy = false,
-  density = 'standard',
+  density = 'default',
   divider = 'none',
   selected = false,
   action,
@@ -159,7 +163,7 @@ export function ListItem({
       data-icon-align={multiline ? multilineIconAlign : undefined}
       data-icon-tile={tile?.tile}
       data-icon-tile-tone={tile?.tone}
-      data-density={density}
+      data-density={density === 'standard' ? 'default' : density}
       data-divider={divider}
       data-busy={busy ? 'true' : undefined}
       data-state={state}
@@ -200,7 +204,7 @@ export function ListItemLink({
   trailing,
   status,
   busy = false,
-  density = 'standard',
+  density = 'default',
   divider = 'none',
   selected = false,
   itemId,
@@ -247,7 +251,7 @@ export function ListItemLink({
       data-icon-align={multiline ? multilineIconAlign : undefined}
       data-icon-tile={tile?.tile}
       data-icon-tile-tone={tile?.tone}
-      data-density={density}
+      data-density={density === 'standard' ? 'default' : density}
       data-divider={divider}
       data-busy={busy ? 'true' : undefined}
       data-state={state}

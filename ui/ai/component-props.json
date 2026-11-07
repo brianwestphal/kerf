@@ -2652,13 +2652,12 @@
           "name": "density",
           "type": {
             "kind": "enum",
-            "values": ["standard", "compact"],
-            "text": "\"compact\" | \"standard\" | undefined",
+            "values": ["default", "compact", "standard"],
+            "text": "\"compact\" | \"default\" | \"standard\" | undefined",
             "nullable": true
           },
           "required": false,
-          "default": "standard",
-          "description": "Row density: `standard` (default) or `compact`."
+          "description": "Row density: `default` or `compact`."
         },
         {
           "name": "className",
@@ -3932,7 +3931,7 @@
           "name": "inset",
           "type": {
             "kind": "enum",
-            "values": ["padded", "flush"],
+            "values": ["none", "comfortable", "padded", "flush"],
             "text": "EditorFrameInset | undefined",
             "nullable": true
           },
@@ -5669,8 +5668,8 @@
           "name": "density",
           "type": {
             "kind": "enum",
-            "values": ["standard", "compact"],
-            "text": "\"compact\" | \"standard\" | undefined",
+            "values": ["default", "compact", "standard"],
+            "text": "\"compact\" | \"default\" | \"standard\" | undefined",
             "nullable": true
           },
           "required": false,
@@ -6408,8 +6407,8 @@
           "name": "density",
           "type": {
             "kind": "enum",
-            "values": ["standard", "compact"],
-            "text": "\"compact\" | \"standard\" | undefined",
+            "values": ["default", "compact", "standard"],
+            "text": "\"compact\" | \"default\" | \"standard\" | undefined",
             "nullable": true
           },
           "required": false,
@@ -7167,8 +7166,8 @@
           "name": "density",
           "type": {
             "kind": "enum",
-            "values": ["standard", "compact", "spacious"],
-            "text": "\"compact\" | \"standard\" | \"spacious\" | undefined",
+            "values": ["default", "compact", "spacious", "standard"],
+            "text": "\"compact\" | \"default\" | \"standard\" | \"spacious\" | undefined",
             "nullable": true
           },
           "required": false,
@@ -7551,8 +7550,8 @@
           "name": "density",
           "type": {
             "kind": "enum",
-            "values": ["standard", "compact", "spacious"],
-            "text": "\"compact\" | \"standard\" | \"spacious\" | undefined",
+            "values": ["default", "compact", "spacious", "standard"],
+            "text": "\"compact\" | \"default\" | \"standard\" | \"spacious\" | undefined",
             "nullable": true
           },
           "required": false
@@ -9372,7 +9371,7 @@
           "name": "size",
           "type": {
             "kind": "enum",
-            "values": ["standard", "compact"],
+            "values": ["default", "compact", "standard"],
             "text": "PopupMenuSize | undefined",
             "nullable": true
           },
@@ -10836,7 +10835,7 @@
           "name": "size",
           "type": {
             "kind": "enum",
-            "values": ["small", "default"],
+            "values": ["default", "compact", "small"],
             "text": "SegmentedControlSize | undefined",
             "nullable": true
           },
@@ -13072,7 +13071,7 @@
           "name": "bodyInset",
           "type": {
             "kind": "enum",
-            "values": ["none", "compact", "comfortable"],
+            "values": ["none", "default", "comfortable", "compact"],
             "text": "SurfaceInset | undefined",
             "nullable": true
           },
@@ -13082,7 +13081,7 @@
           "name": "footerInset",
           "type": {
             "kind": "enum",
-            "values": ["none", "compact", "comfortable"],
+            "values": ["none", "default", "comfortable", "compact"],
             "text": "SurfaceInset | undefined",
             "nullable": true
           },
@@ -13368,7 +13367,7 @@
           "type": {
             "kind": "enum",
             "values": ["overlay", "embedded"],
-            "text": "PinnablePopoverSurfacePresentation | undefined",
+            "text": "SurfacePresentation | undefined",
             "nullable": true
           },
           "required": false,
@@ -13560,7 +13559,7 @@
           "type": {
             "kind": "enum",
             "values": ["overlay", "embedded"],
-            "text": "PopoverDialogSurfacePresentation | undefined",
+            "text": "SurfacePresentation | undefined",
             "nullable": true
           },
           "required": false,
@@ -13723,7 +13722,7 @@
           "name": "inset",
           "type": {
             "kind": "enum",
-            "values": ["standard", "compact", "list-zero"],
+            "values": ["none", "compact", "default", "standard", "list-zero"],
             "text": "PopupSurfaceInset | undefined",
             "nullable": true
           },
@@ -15865,7 +15864,7 @@
           "name": "density",
           "type": {
             "kind": "enum",
-            "values": ["comfortable", "tight"],
+            "values": ["default", "compact", "comfortable", "tight"],
             "text": "ToolbarControlGroupDensity | undefined",
             "nullable": true
           },
@@ -15932,7 +15931,7 @@
           "name": "menuInset",
           "type": {
             "kind": "enum",
-            "values": ["standard", "compact", "list-zero"],
+            "values": ["none", "compact", "default", "standard", "list-zero"],
             "text": "ToolbarControlGroupMenuInset | undefined",
             "nullable": true
           },
@@ -16678,12 +16677,12 @@
           "name": "density",
           "type": {
             "kind": "enum",
-            "values": ["standard", "compact"],
-            "text": "\"compact\" | \"standard\" | undefined",
+            "values": ["default", "compact", "standard"],
+            "text": "\"compact\" | \"default\" | \"standard\" | undefined",
             "nullable": true
           },
           "required": false,
-          "description": "Row density: `standard` (44px rows, default) or `compact` (36px)."
+          "description": "Row density: `default` (44px rows) or `compact` (36px)."
         },
         {
           "name": "className",

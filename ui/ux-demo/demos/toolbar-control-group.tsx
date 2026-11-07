@@ -119,7 +119,7 @@ export function ToolbarControlGroupDemo() {
                 action="select-segment-demo"
                 appearance="toolbar"
                 shape="pill"
-                size="small"
+                size="compact"
                 choices={[
                   { value: 'pill', label: 'Pill' },
                   { value: 'rounded', label: 'Rounded' },
@@ -202,7 +202,7 @@ export function ToolbarControlGroupDemo() {
                 action="select-segment-demo"
                 appearance="toolbar"
                 shape="pill"
-                size="small"
+                size="compact"
                 choices={[
                   {
                     value: 'list',

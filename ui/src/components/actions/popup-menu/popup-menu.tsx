@@ -105,8 +105,9 @@ type PopupMenuTriggerName =
 /** How loudly a PopupMenu's button trigger asks: borderless or outlined. */
 export type PopupMenuEmphasis = 'plain' | 'secondary';
 
-/** A PopupMenu button trigger's height: the standard control or compact. */
-export type PopupMenuSize = 'standard' | 'compact';
+/** A PopupMenu button trigger's height: the default control or compact. */
+export type PopupMenuSize =
+  'default' | 'compact' | /** @deprecated Use default. */ 'standard';
 
 /** A context PopupMenu's viewport anchor point. */
 export interface PopupMenuAnchor {
@@ -525,7 +526,7 @@ export function PopupMenu({
   caret = triggerContent === undefined,
   disabled = false,
   emphasis = 'plain',
-  size = 'standard',
+  size = 'default',
   rootAttributes = {},
   slot,
   context = false,

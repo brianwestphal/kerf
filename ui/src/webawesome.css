@@ -825,14 +825,13 @@
    8px surface inset, while a PopupMenu keeps the Select listbox inset it
    shares (popup-menu.css). The explicit compact and list-zero choices apply to
    every nested menu; a PopupMenu applies them to itself (popup-menu.css). */
-.kui-toolbar-control-group[data-menu-inset="standard"] wa-dropdown::part(menu) {
+.kui-toolbar-control-group[data-menu-inset="default"] wa-dropdown::part(menu) {
   padding: var(--kui-wa-surface-inset, remify(8px));
 }
 .kui-toolbar-control-group[data-menu-inset="compact"] wa-dropdown::part(menu) {
   padding: remify(4px);
 }
-.kui-toolbar-control-group[data-menu-inset="list-zero"]
-  wa-dropdown::part(menu) {
+.kui-toolbar-control-group[data-menu-inset="none"] wa-dropdown::part(menu) {
   padding: 0;
 }
 .kui-toolbar-control-group[data-size="compact"][data-content="mixed"]
@@ -1021,13 +1020,13 @@
 
 /* The surface insets the menu of a raw wa-dropdown it wraps. A PopupMenu
    applies the surface's inset to itself (popup-menu.css). */
-.kui-popup-surface[data-inset="standard"] > wa-dropdown::part(menu) {
+.kui-popup-surface[data-inset="default"] > wa-dropdown::part(menu) {
   padding: var(--kui-wa-surface-inset, remify(8px));
 }
 .kui-popup-surface[data-inset="compact"] > wa-dropdown::part(menu) {
   padding: remify(4px);
 }
-.kui-popup-surface[data-inset="list-zero"] > wa-dropdown::part(menu) {
+.kui-popup-surface[data-inset="none"] > wa-dropdown::part(menu) {
   padding: 0;
 }
 

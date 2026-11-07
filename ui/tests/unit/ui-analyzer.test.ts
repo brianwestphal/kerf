@@ -71,6 +71,41 @@ describe('Kerf UI static analyzer', () => {
     '../../ai/application-ui-profile.defaults.json',
   );
 
+  it('reports deprecated vocabulary literals on imported JSX and component calls', async () => {
+    const root = await fixture();
+    await writeFile(
+      join(root, 'src/app.tsx'),
+      `import { SegmentedControl } from '@kerfjs/ui/segmented-control';
+import { PopupMenu } from '@kerfjs/ui/popup-menu';
+import { ToolbarControlGroup } from '@kerfjs/ui/toolbar-control-group';
+import { PopupSurface, DialogSurface } from '@kerfjs/ui/surface-scaffold';
+import { EditorFrame } from '@kerfjs/ui/editor-frame';
+const dynamic = 'small';
+export const app = [
+  <SegmentedControl size="small" />,
+  <SegmentedControl size={dynamic} />,
+  <ToolbarControlGroup density={'tight'} menuInset="list-zero" />,
+  <PopupSurface inset="standard" />,
+  <DialogSurface bodyInset="compact" />,
+  <EditorFrame inset="flush" />,
+  PopupMenu({ size: 'standard' }),
+];
+`,
+    );
+    const report = await analyzeUiProject({ root, profile: packageProfile });
+    const warnings = report.diagnostics.filter(
+      ({ ruleId }) => ruleId === 'KUI-L026',
+    );
+    expect(warnings.map(({ message }) => message)).toEqual(
+      expect.arrayContaining([
+        expect.stringContaining('use "compact"'),
+        expect.stringContaining('use "none"'),
+        expect.stringContaining('use "default"'),
+      ]),
+    );
+    expect(warnings).toHaveLength(7);
+  });
+
   it('loads workspace and package profiles while analyzing only the selected package', async () => {
     const workspace = await mkdtemp(
       join(tmpdir(), 'kerf-ui-analyzer-workspace-'),

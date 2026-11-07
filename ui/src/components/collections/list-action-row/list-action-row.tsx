@@ -126,7 +126,7 @@ interface ListActionRowCommonProps {
   status?: string | SafeHtml;
   busy?: boolean;
   /** Row height: `standard` is 44px; `compact` is 36px (42px with `iconTile`), the height of a compact `ListItem`. */
-  density?: 'standard' | 'compact';
+  density?: 'default' | 'compact' | /** @deprecated Use default. */ 'standard';
   divider?: 'none' | 'before' | 'after' | 'both';
   /** Decorative dormant content for the primary button. Must not contain interactive descendants. */
   icon?: SafeHtml;
@@ -166,7 +166,7 @@ export function ListActionRow({
   description,
   status,
   busy = false,
-  density = 'standard',
+  density = 'default',
   divider = 'none',
   icon,
   iconTile,
@@ -219,7 +219,7 @@ export function ListActionRow({
       data-icon-tile={tile?.tile}
       data-icon-tile-tone={tile?.tone}
       data-multiline={multiline ? 'true' : undefined}
-      data-density={density}
+      data-density={density === 'standard' ? 'default' : density}
       data-divider={divider}
       data-busy={busy ? 'true' : undefined}
       data-trailing-visibility={trailingActionVisibility}

@@ -202,7 +202,7 @@
   );
   gap: 4px; /* Compensating for -2px margins */
 }
-.kui-toolbar-control-group[data-density="tight"] {
+.kui-toolbar-control-group[data-density="compact"] {
   --kui-layout-item-padding: remify(5px);
 }
 .kui-toolbar-control-group[data-overflow="scroll"] {

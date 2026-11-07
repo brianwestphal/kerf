@@ -12,6 +12,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Added
 
+- **Kerf UI size, density, and inset prop vocabulary (KF-XQJECP).** Control sizes and row densities use `default` / `compact`; surface inset props use `none`, `compact`, `default`, or `comfortable` where applicable. Legacy literals remain accepted for this major version, with `KUI-L026` analyzer review findings and canonical DOM attributes. The component catalog records aliases and semantic exceptions, and its check rejects new divergent literals. `DialogSurface`'s legacy `compact` inset keeps its 8px geometry; new callers use `default` for 8px.
+
 - **`debouncedSignal()` can be disposed (KF-EE8EPV).** It returns a `DebouncedSignal<T>`: the same read-only signal plus an idempotent `dispose()` that unsubscribes from the source and drops any pending write.
 - **`@kerfjs/ui/view` exports one child-kind dispatch (KF-TZKGBZ).** `childKind()` / `classifyChild()` and the `ViewEachChild` / `ViewIfChild` / `ViewSlotChild` types replace hand-written `'$each' in child` chains.
 - **`@kerfjs/ui` exports a shared `SurfacePresentation` type (KF-0MY6JQ).** The popover and pinnable presentation types are now aliases of it.

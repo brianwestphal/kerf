@@ -123,6 +123,7 @@ if (report.summary.errors) process.exitCode = 1;
 | `KUI-L023` | error  | A source module renders another component's public class as its own markup.              |
 | `KUI-L024` | review | A selector names a Web Awesome appearance scope (`.wa-light`, `.wa-dark`, `.wa-invert`). |
 | `KUI-L025` | review | CSS writes a `--wa-*` token nothing reads, in a package without Web Awesome.             |
+| `KUI-L026` | review | A literal size, density, or inset prop uses a deprecated Kerf UI alias.                  |
 
 For `KUI-L004` and `KUI-L007`, scroll and inset declarations belong to the
 subject of each CSS selector. An ancestor class used only to qualify a

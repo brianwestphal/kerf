@@ -30,7 +30,7 @@ describe('EditorFrame', () => {
     expect(frame.getAttribute('aria-label')).toBe('Markdown Editor');
     expect(frame.dataset.mode).toBe('source');
     expect(frame.dataset.appearance).toBe('framed');
-    expect(frame.dataset.inset).toBe('padded');
+    expect(frame.dataset.inset).toBe('comfortable');
     expect(frame.dataset.expanded).toBe('false');
     expect(frame.firstElementChild?.className).toBe(
       'kui-editor-frame__toolbar',
@@ -54,7 +54,7 @@ describe('EditorFrame', () => {
     const frame = host.querySelector<HTMLElement>('.kui-editor-frame')!;
     expect(frame.querySelector('.kui-editor-frame__toolbar')).toBeNull();
     expect(frame.dataset.appearance).toBe('embedded');
-    expect(frame.dataset.inset).toBe('flush');
+    expect(frame.dataset.inset).toBe('none');
     expect(frame.dataset.sourceAutosize).toBe('true');
     expect(frame.getAttribute('style')).toBe(
       '--_kui-editor-frame-source-height:12rem',

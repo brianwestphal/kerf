@@ -32,7 +32,11 @@ export type DialogSurfacePresentation =
  * scale-and-fade. Both honor `prefers-reduced-motion`.
  */
 export type DialogSurfaceSheetMotion = 'slide' | 'standard';
-export type SurfaceInset = 'none' | 'compact' | 'comfortable';
+export type SurfaceInset =
+  | 'none'
+  | 'default'
+  | 'comfortable'
+  | /** @deprecated Use default; this legacy compact value retains its 8px inset. */ 'compact';
 export type DialogSurfaceMaxHeight = CssLength | 'viewport';
 /** A definite modal height: a length or the full viewport, minus both gutters. */
 export type DialogSurfaceHeight = CssLength | 'viewport';
@@ -270,7 +274,7 @@ export function DialogSurface({
   size = 'medium',
   presentation = 'modal',
   preferredWidth,
-  bodyInset = 'compact',
+  bodyInset = 'default',
   footerInset = 'comfortable',
   viewportGutter,
   maxHeight,
@@ -351,8 +355,8 @@ export function DialogSurface({
       data-size={size}
       data-presentation={presentation}
       data-preferred-width={preferredWidth === undefined ? undefined : ''}
-      data-body-inset={bodyInset}
-      data-footer-inset={footerInset}
+      data-body-inset={bodyInset === 'compact' ? 'default' : bodyInset}
+      data-footer-inset={footerInset === 'compact' ? 'default' : footerInset}
       data-viewport-gutter={
         viewportGutter === undefined && !stack ? undefined : ''
       }

@@ -3,6 +3,47 @@
   "schemaVersion": 1,
   "package": "@kerfjs/ui",
   "description": "Machine-readable selection, composition, delivery, ownership, and accessibility metadata for Kerf UI, plus the optional Web Awesome integration set.",
+  "propVocabulary": {
+    "canonical": {
+      "size": ["default", "compact"],
+      "density": ["default", "compact"],
+      "inset": ["none", "compact", "default", "comfortable"]
+    },
+    "exceptions": [
+      { "component": "ListDetailDialog", "prop": "size", "values": ["small", "medium", "large"], "reason": "Modal width tiers, not control size." },
+      { "component": "ListHeader", "prop": "size", "values": ["xs", "sm", "m", "l", "xl"], "reason": "Heading typography scale." },
+      { "component": "ProgressRing", "prop": "size", "values": ["small", "medium", "large"], "reason": "Indicator diameter tiers." },
+      { "component": "DialogSurface", "prop": "size", "values": ["small", "medium", "large"], "reason": "Modal width tiers." },
+      { "component": "PinnablePopoverSurface", "prop": "size", "values": ["small", "medium", "large"], "reason": "Popover width tiers." },
+      { "component": "PopoverDialogSurface", "prop": "size", "values": ["small", "medium", "large"], "reason": "Popover width tiers." },
+      { "component": "Text", "prop": "size", "values": ["compact", "default", "medium", "large", "xlarge"], "reason": "Typography scale." },
+      { "component": "ToolbarText", "prop": "size", "values": ["xlarge", "xlarge-fixed", "large", "default", "small", "xsmall"], "reason": "Toolbar typography scale." },
+      { "component": "WorkbenchDialog", "prop": "size", "values": ["small", "medium", "large"], "reason": "Modal width tiers." },
+      { "component": "ListItem", "prop": "density", "values": ["spacious"], "reason": "Additional spacious row density." },
+      { "component": "ListItemLink", "prop": "density", "values": ["spacious"], "reason": "Additional spacious row density." },
+      { "component": "EdgeActivityIndicator", "prop": "inset", "values": ["safe-area", "none"], "reason": "Safe-area placement, not surface padding." }
+    ],
+    "aliases": [
+      { "component": "SegmentedControl", "prop": "size", "value": "small", "replacement": "compact" },
+      { "component": "PopupMenu", "prop": "size", "value": "standard", "replacement": "default" },
+      { "component": "ToolbarControlGroup", "prop": "density", "value": "comfortable", "replacement": "default" },
+      { "component": "ToolbarControlGroup", "prop": "density", "value": "tight", "replacement": "compact" },
+      { "component": "ColumnExplorer", "prop": "density", "value": "standard", "replacement": "default" },
+      { "component": "ListActionRow", "prop": "density", "value": "standard", "replacement": "default" },
+      { "component": "ListHeader", "prop": "density", "value": "standard", "replacement": "default" },
+      { "component": "ListItem", "prop": "density", "value": "standard", "replacement": "default" },
+      { "component": "ListItemLink", "prop": "density", "value": "standard", "replacement": "default" },
+      { "component": "TreeList", "prop": "density", "value": "standard", "replacement": "default" },
+      { "component": "DialogSurface", "prop": "bodyInset", "value": "compact", "replacement": "default" },
+      { "component": "DialogSurface", "prop": "footerInset", "value": "compact", "replacement": "default" },
+      { "component": "PopupSurface", "prop": "inset", "value": "standard", "replacement": "default" },
+      { "component": "PopupSurface", "prop": "inset", "value": "list-zero", "replacement": "none" },
+      { "component": "ToolbarControlGroup", "prop": "menuInset", "value": "standard", "replacement": "default" },
+      { "component": "ToolbarControlGroup", "prop": "menuInset", "value": "list-zero", "replacement": "none" },
+      { "component": "EditorFrame", "prop": "inset", "value": "padded", "replacement": "comfortable" },
+      { "component": "EditorFrame", "prop": "inset", "value": "flush", "replacement": "none" }
+    ]
+  },
   "wiringProviders": [
     {
       "export": "wireCatalog",

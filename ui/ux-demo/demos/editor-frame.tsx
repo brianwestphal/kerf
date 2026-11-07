@@ -53,7 +53,7 @@ export function EditorFrameDemo() {
         <EditorFrame
           mode="source"
           appearance="embedded"
-          inset="flush"
+          inset="none"
           sourceAutosize
           label="Embedded Markdown Editor"
         >

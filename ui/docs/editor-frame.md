@@ -32,7 +32,7 @@ Set `appearance="embedded"` when a host already owns the frame. The border,
 radius, fill, and fixed height then drop away. The embedded source can use
 `sourceHeight` for a restored native textarea height or `sourceAutosize` to
 grow with its content; the application still owns persistence and value updates.
-Set `inset="flush"` when the host already provides the text inset. These modes
+Set `inset="none"` when the host already provides the text inset. These modes
 preserve the native textarea's selection, input events, and form behavior.
 
 Set `expanded` to place the same editor in a fixed viewport overlay with a

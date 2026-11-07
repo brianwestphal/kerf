@@ -6,7 +6,12 @@ import {
   type RootDataAttributes,
 } from '../../../../shared/dom/extension-attributes.js';
 
-export type PopupSurfaceInset = 'standard' | 'compact' | 'list-zero';
+export type PopupSurfaceInset =
+  | 'none'
+  | 'compact'
+  | 'default'
+  | /** @deprecated Use default. */ 'standard'
+  | /** @deprecated Use none. */ 'list-zero';
 
 export interface PopupSurfaceProps {
   children: KerfUiContent;
@@ -49,7 +54,7 @@ const POPUP_SURFACE_PROTECTED = new Set([
 /** Configure recurring Web Awesome dropdown-menu geometry without consumer ::part() CSS. */
 export function PopupSurface({
   children,
-  inset = 'standard',
+  inset = 'default',
   className = '',
   slot,
   rootAttributes = {},
@@ -59,7 +64,13 @@ export function PopupSurface({
       {...filterDataAttributes(rootAttributes, POPUP_SURFACE_PROTECTED)}
       class={`kui-popup-surface ${className}`.trim()}
       data-component="popup-surface"
-      data-inset={inset}
+      data-inset={
+        inset === 'standard'
+          ? 'default'
+          : inset === 'list-zero'
+            ? 'none'
+            : inset
+      }
       slot={slot}
     >
       {children}

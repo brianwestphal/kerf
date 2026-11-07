@@ -26,7 +26,7 @@ export interface ListTreeItemProps {
   readonly disabled?: boolean;
   /** A native drag source for TreeList drag-and-drop. */
   readonly draggable?: boolean;
-  readonly density: 'standard' | 'compact';
+  readonly density: 'default' | 'compact' | 'standard';
   /** Delegated action for choosing the row. */
   readonly action: string;
   /** Delegated action for its disclosure arrow. */
@@ -69,7 +69,7 @@ export function ListTreeItem({
       data-item-id={itemId}
       data-has-icon={String(Boolean(icon))}
       data-has-description={String(Boolean(description))}
-      data-density={density}
+      data-density={density === 'standard' ? 'default' : density}
       data-divider="none"
       data-kui-disabled={disabled ? 'true' : undefined}
       draggable={draggable && !disabled ? 'true' : undefined}

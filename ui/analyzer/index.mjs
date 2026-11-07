@@ -94,6 +94,10 @@ export const UI_ANALYSIS_RULES = Object.freeze({
     severity: 'review',
     title: 'Web Awesome token written without Web Awesome',
   },
+  'KUI-L026': {
+    severity: 'review',
+    title: 'Deprecated Kerf UI prop literal',
+  },
 });
 
 /** Web Awesome appearance-scope classes, which need its theme to do anything. */
@@ -349,6 +353,13 @@ async function loadCatalogs(profileResult, ownership) {
                 componentSource,
                 styleSources: entry.styleSources ?? selected.styleSources,
                 catalogDirectory: dirname(owner),
+                deprecatedProps: selection.vocabularyAliases?.filter((alias) =>
+                  (
+                    entry.publicExports ??
+                    selected.publicExports ??
+                    []
+                  ).includes(alias.component),
+                ),
               }
             : { ...entry, componentSource, catalogDirectory: dirname(owner) },
         );
@@ -400,6 +411,7 @@ async function loadSelectionFacts(owner, catalog) {
     return facts;
   }
   const packageName = artifact.package ?? catalog.package;
+  facts.vocabularyAliases = artifact.propVocabulary?.aliases ?? [];
   for (const entry of artifact.entries ?? []) {
     const delivery = entry.delivery ?? {};
     facts.set(`${packageName}:${entry.id}`, {
@@ -1689,6 +1701,25 @@ function inspectTsx(
   const borrowedValues = (values, node, via) => {
     for (const className of new Set(values)) borrowed(className, node, via);
   };
+  const deprecatedProp = (entry, component, prop, value, node) => {
+    const alias = entry?.deprecatedProps?.find(
+      (item) =>
+        item.component === component &&
+        item.prop === prop &&
+        item.value === value,
+    );
+    if (!alias) return;
+    diagnostics.push(
+      diagnostic(
+        'KUI-L026',
+        location(file, node, source),
+        `${component}.${prop}="${value}" is deprecated; use "${alias.replacement}". The alias remains supported for this major version.`,
+        { component, prop, value, replacement: alias.replacement },
+        undefined,
+        adoption,
+      ),
+    );
+  };
   const templateGap = '\uE000';
   const rawHtmlClasses = (value) => {
     const classes = [];
@@ -1722,6 +1753,30 @@ function inspectTsx(
             )
           : undefined;
       const entry = imports.get(tag) ?? namespaceEntry;
+      if (entry) {
+        const component =
+          helperImports.get(tag)?.imported ?? tag.split('.').at(-1);
+        for (const attribute of opening.attributes.properties) {
+          if (!ts.isJsxAttribute(attribute)) continue;
+          const value =
+            attribute.initializer && ts.isStringLiteral(attribute.initializer)
+              ? attribute.initializer.text
+              : attribute.initializer &&
+                  ts.isJsxExpression(attribute.initializer) &&
+                  attribute.initializer.expression &&
+                  ts.isStringLiteralLike(attribute.initializer.expression)
+                ? attribute.initializer.expression.text
+                : undefined;
+          if (value !== undefined)
+            deprecatedProp(
+              entry,
+              component,
+              attribute.name.getText(source),
+              value,
+              attribute,
+            );
+        }
+      }
       const classAttribute = opening.attributes.properties.find(
         (item) =>
           ts.isJsxAttribute(item) &&
@@ -1889,6 +1944,29 @@ function inspectTsx(
               aliasSource(namespaces.get(node.expression.expression.text)),
             )
           : undefined;
+      if (
+        entry &&
+        node.arguments[0] &&
+        ts.isObjectLiteralExpression(node.arguments[0])
+      ) {
+        const component = ts.isIdentifier(node.expression)
+          ? (helperImports.get(node.expression.text)?.imported ??
+            node.expression.text)
+          : node.expression.name.text;
+        for (const property of node.arguments[0].properties) {
+          if (
+            ts.isPropertyAssignment(property) &&
+            ts.isStringLiteralLike(property.initializer)
+          )
+            deprecatedProp(
+              entry,
+              component,
+              property.name.getText(source),
+              property.initializer.text,
+              property,
+            );
+        }
+      }
       if (entry)
         inspectCssValues(
           file,

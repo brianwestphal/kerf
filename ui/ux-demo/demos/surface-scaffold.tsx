@@ -900,7 +900,7 @@ export function SurfaceScaffoldDemo() {
         </PopoverDialogSurface>
       </CatalogExample>
       <CatalogExample label="Zero-Inset List Popup" align="inline-control">
-        <PopupSurface inset="list-zero">
+        <PopupSurface inset="none">
           <PopupMenu
             text="Choose View"
             items={[{ label: 'Inbox' }, { label: 'Archive' }]}

@@ -138,7 +138,7 @@
   transition-property: background, border, box-shadow;
 }
 
-.kui-segmented-control[data-size="small"] .kui-segmented-control__item {
+.kui-segmented-control[data-size="compact"] .kui-segmented-control__item {
   padding-inline: remify(7px);
   font-size: var(--kui-font-2xs);
 }

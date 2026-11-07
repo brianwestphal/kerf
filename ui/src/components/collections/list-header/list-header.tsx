@@ -63,7 +63,7 @@ interface ListHeaderBaseProps {
   label: string;
   /** Visual label size, independent of the native heading level. Default `sm`. */
   size?: 'xs' | 'sm' | 'm' | 'l' | 'xl';
-  density?: 'standard' | 'compact';
+  density?: 'default' | 'compact' | /** @deprecated Use default. */ 'standard';
   divider?: 'none' | 'before' | 'after' | 'both';
   /** Shrink-wrap the header without its default outer margin, border, or padding. */
   inline?: boolean;
@@ -156,7 +156,7 @@ export function ListHeader({
   countLabel,
   badge,
   status,
-  density = 'standard',
+  density = 'default',
   divider = 'none',
   inline = false,
   width = 'fill',
@@ -236,7 +236,7 @@ export function ListHeader({
         data-component="list-header"
         data-has-badge={String(hasBadge)}
         data-has-count={String(normalizedCount !== undefined)}
-        data-density={density}
+        data-density={density === 'standard' ? 'default' : density}
         data-size={size}
         data-divider={divider}
         data-inline={String(inline)}
@@ -277,7 +277,7 @@ export function ListHeader({
       data-component="list-header"
       data-has-badge={String(hasBadge)}
       data-has-count={String(normalizedCount !== undefined)}
-      data-density={density}
+      data-density={density === 'standard' ? 'default' : density}
       data-size={size}
       data-divider={divider}
       data-inline={String(inline)}

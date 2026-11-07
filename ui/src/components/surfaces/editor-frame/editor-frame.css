@@ -52,7 +52,7 @@
   resize: none;
 }
 
-.kui-editor-frame[data-inset="flush"] > .kui-editor-frame__surface {
+.kui-editor-frame[data-inset="none"] > .kui-editor-frame__surface {
   padding: 0;
 }
 
@@ -74,7 +74,7 @@
 
 .kui-editor-frame[data-appearance="embedded"]:not(
     [data-expanded="true"]
-  )[data-inset="flush"]
+  )[data-inset="none"]
   > .kui-editor-frame__surface {
   padding: 0;
 }

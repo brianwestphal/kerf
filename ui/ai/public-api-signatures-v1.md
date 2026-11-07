@@ -371,14 +371,14 @@ type ToolbarControlGroupTileTone = 'neutral' | 'brand' | 'success' | 'warning' |
 type ToolbarControlGroupButtonAppearance = 'plain' | 'push';
 type ToolbarControlGroupShape = 'pill' | 'rounded';
 type ToolbarControlGroupSize = 'default' | 'compact';
-type ToolbarControlGroupDensity = 'comfortable' | 'tight';
+type ToolbarControlGroupDensity = 'default' | 'compact' | /** @deprecated Use default. */ 'comfortable' | /** @deprecated Use compact. */ 'tight';
 type ToolbarControlGroupContent = 'icon' | 'text' | 'mixed' | 'avatar' | 'search';
 type ToolbarControlGroupFocusRing = 'control' | 'outline' | 'halo';
 type ToolbarControlGroupSelectedChrome = 'raised' | 'filled' | 'outline' | 'none';
 type ToolbarControlGroupSelectedTone = 'brand' | 'neutral' | 'pop';
 type ToolbarControlGroupOverflow = 'visible' | 'scroll' | 'wrap';
 type ToolbarControlGroupExpandedOverflow = 'clip' | 'visible';
-type ToolbarControlGroupMenuInset = 'standard' | 'compact' | 'list-zero';
+type ToolbarControlGroupMenuInset = 'none' | 'compact' | 'default' | /** @deprecated Use default. */ 'standard' | /** @deprecated Use none. */ 'list-zero';
 type ToolbarControlGroupVisibility = 'always' | 'compact-only' | 'hide-collapsed-tiny' | 'yield-to-expanded-sibling' | 'yield-to-priority-row';
 type ToolbarControlGroupSizing = 'content' | 'grow' | 'fill';
 type ToolbarControlGroupPlacement = 'start' | 'end';
@@ -695,8 +695,8 @@ type PopupMenuTriggerName = {
 };
 /** How loudly a PopupMenu's button trigger asks: borderless or outlined. */
 type PopupMenuEmphasis = 'plain' | 'secondary';
-/** A PopupMenu button trigger's height: the standard control or compact. */
-type PopupMenuSize = 'standard' | 'compact';
+/** A PopupMenu button trigger's height: the default control or compact. */
+type PopupMenuSize = 'default' | 'compact' | /** @deprecated Use default. */ 'standard';
 /** A context PopupMenu's viewport anchor point. */
 interface PopupMenuAnchor {
     x: number;
@@ -849,7 +849,7 @@ interface ListHeaderBaseProps {
     label: string;
     /** Visual label size, independent of the native heading level. Default `sm`. */
     size?: 'xs' | 'sm' | 'm' | 'l' | 'xl';
-    density?: 'standard' | 'compact';
+    density?: 'default' | 'compact' | /** @deprecated Use default. */ 'standard';
     divider?: 'none' | 'before' | 'after' | 'both';
     /** Shrink-wrap the header without its default outer margin, border, or padding. */
     inline?: boolean;
@@ -1283,7 +1283,7 @@ interface ListActionRowCommonProps {
     status?: string | SafeHtml;
     busy?: boolean;
     /** Row height: `standard` is 44px; `compact` is 36px (42px with `iconTile`), the height of a compact `ListItem`. */
-    density?: 'standard' | 'compact';
+    density?: 'default' | 'compact' | /** @deprecated Use default. */ 'standard';
     divider?: 'none' | 'before' | 'after' | 'both';
     /** Decorative dormant content for the primary button. Must not contain interactive descendants. */
     icon?: SafeHtml;
@@ -1360,7 +1360,7 @@ interface ListItemProps {
     status?: string | SafeHtml;
     /** Show a progress indicator and expose the row as busy without replacing its content; a placeholder keeps the indicator. */
     busy?: boolean;
-    density?: 'standard' | 'compact' | 'spacious';
+    density?: 'default' | 'compact' | 'spacious' | /** @deprecated Use default. */ 'standard';
     divider?: 'none' | 'before' | 'after' | 'both';
     selected?: boolean;
     action: string;
@@ -2148,18 +2148,18 @@ export { wireSummaryRows };
 ## `@kerfjs/ui/nav-stack`
 
 ```ts
-export { c as NavStack, d as NavStackBottomToolbarPresentation, e as NavStackChromePresentation, N as NavStackProps, f as NavStackToolbarConfig, a as NavStackView, g as NavStackViewBottomToolbar, h as NavStackViewToolbar } from './nav-stack-DwxpXxqJ.js';
+export { c as NavStack, d as NavStackBottomToolbarPresentation, e as NavStackChromePresentation, N as NavStackProps, f as NavStackToolbarConfig, a as NavStackView, g as NavStackViewBottomToolbar, h as NavStackViewToolbar } from './nav-stack-vQ3ieerq.js';
 import 'kerfjs';
+import './list.js';
 import './semantic-content-BbzjvSu9.js';
 import './extension-attributes-IJ4decoa.js';
-import './pane.js';
-import './scroll-clearance-BikHljTc.js';
-import './anchor-name-BZ1rpxaw.js';
-import './css-values.js';
-import './surface-tint-DQgYCaP9.js';
-import './list.js';
 import './flex-alignment-4ms8ZbV8.js';
+import './scroll-clearance-BikHljTc.js';
 import './sides-BPSWde0A.js';
+import './css-values.js';
+import './pane.js';
+import './anchor-name-BZ1rpxaw.js';
+import './surface-tint-DQgYCaP9.js';
 import './panel-toolbar-vg6Ir5Dy.js';
 import './toolbar.js';
 import './lucide-icon.js';
@@ -2196,16 +2196,16 @@ export { type WireNavStackOptions, wireNavStack };
 import * as kerfjs from 'kerfjs';
 import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
 import { R as RootDataAttributes } from './extension-attributes-IJ4decoa.js';
-import { N as NavStackProps, a as NavStackView } from './nav-stack-DwxpXxqJ.js';
+import { N as NavStackProps, a as NavStackView } from './nav-stack-vQ3ieerq.js';
 import { ResizableRegionProps } from './resizable-region.js';
-import './pane.js';
-import './scroll-clearance-BikHljTc.js';
-import './anchor-name-BZ1rpxaw.js';
-import './css-values.js';
-import './surface-tint-DQgYCaP9.js';
 import './list.js';
 import './flex-alignment-4ms8ZbV8.js';
+import './scroll-clearance-BikHljTc.js';
 import './sides-BPSWde0A.js';
+import './css-values.js';
+import './pane.js';
+import './anchor-name-BZ1rpxaw.js';
+import './surface-tint-DQgYCaP9.js';
 import './panel-toolbar-vg6Ir5Dy.js';
 import './toolbar.js';
 import './lucide-icon.js';
@@ -2586,9 +2586,9 @@ export { Pane, type PaneAppearance, type PaneChromeDividers, type PaneChromePlac
 
 ```ts
 import { SafeHtml } from 'kerfjs';
+import { b as NavPane, N as NavStackProps } from './nav-stack-vQ3ieerq.js';
 import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
 import { R as RootDataAttributes } from './extension-attributes-IJ4decoa.js';
-import { b as NavPane, N as NavStackProps } from './nav-stack-DwxpXxqJ.js';
 import { ListConfig } from './list.js';
 import { PaneConfig } from './pane.js';
 import { ResizableRegionSeparator, ResizableRegionCollapseMotion, ResizableRegionContentOverflow, ResizableRegionPresentation, ResizableRegionRestorePosition } from './resizable-region.js';
@@ -2998,10 +2998,10 @@ export { type WireWorkbenchOptions, type WireWorkbenchPanel, type WorkbenchPanel
 
 ```ts
 import { SafeHtml } from 'kerfjs';
-import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
-import { R as RootDataAttributes } from './extension-attributes-IJ4decoa.js';
 import { P as PanelSide, a as PanelToolbar, b as PanelChromePlacement, c as PanelBottomToolbar, d as PanelToggle } from './panel-toolbar-vg6Ir5Dy.js';
 export { e as collapsiblePanelToggleIcon } from './panel-toolbar-vg6Ir5Dy.js';
+import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
+import { R as RootDataAttributes } from './extension-attributes-IJ4decoa.js';
 import { ToolbarConfig } from './toolbar.js';
 import { ListConfig } from './list.js';
 import { PaneConfig } from './pane.js';
@@ -3586,7 +3586,7 @@ import './anchor-name-BZ1rpxaw.js';
 import './css-values.js';
 import './surface-tint-DQgYCaP9.js';
 import './workbench.js';
-import './nav-stack-DwxpXxqJ.js';
+import './nav-stack-vQ3ieerq.js';
 import './list.js';
 import './flex-alignment-4ms8ZbV8.js';
 import './panel-toolbar-vg6Ir5Dy.js';
@@ -3743,7 +3743,7 @@ import './anchor-name-BZ1rpxaw.js';
 import './css-values.js';
 import './surface-tint-DQgYCaP9.js';
 import './workbench.js';
-import './nav-stack-DwxpXxqJ.js';
+import './nav-stack-vQ3ieerq.js';
 import './list.js';
 import './flex-alignment-4ms8ZbV8.js';
 import './panel-toolbar-vg6Ir5Dy.js';
@@ -3800,7 +3800,7 @@ import './anchor-name-BZ1rpxaw.js';
 import './css-values.js';
 import './surface-tint-DQgYCaP9.js';
 import './workbench.js';
-import './nav-stack-DwxpXxqJ.js';
+import './nav-stack-vQ3ieerq.js';
 import './list.js';
 import './flex-alignment-4ms8ZbV8.js';
 import './panel-toolbar-vg6Ir5Dy.js';
@@ -3943,7 +3943,7 @@ type BadgeValue = number | string | true;
 
 type SegmentedControlAppearance = 'filled' | 'outlined' | 'toolbar';
 type SegmentedControlShape = 'rounded' | 'pill';
-type SegmentedControlSize = 'small' | 'default';
+type SegmentedControlSize = 'default' | 'compact' | /** @deprecated Use compact. */ 'small';
 type SegmentedControlLayout = 'content' | 'equal';
 interface SegmentedControlChoice<Value extends string = string> {
     value: Value;
@@ -5355,12 +5355,187 @@ export { wireToolbarVisibility };
 ## `@kerfjs/ui/surface-scaffold`
 
 ```ts
-export { D as DialogCloseSource, a as DialogRequestCloseDetail, b as DialogSurface, c as DialogSurfaceBodyLayout, z as DialogSurfaceCloseEmphasis, d as DialogSurfaceFooterPresentation, e as DialogSurfaceHeaderPresentation, f as DialogSurfaceHeight, g as DialogSurfaceMaxHeight, h as DialogSurfaceName, i as DialogSurfaceOptions, j as DialogSurfacePresentation, k as DialogSurfaceProps, l as DialogSurfaceRootAttributes, m as DialogSurfaceSheetMotion, n as DialogSurfaceSize, A as DialogSurfaceStack, P as PinnablePopoverSurface, o as PinnablePopoverSurfacePresentation, p as PinnablePopoverSurfaceProps, q as PopoverDialogSurface, r as PopoverDialogSurfaceDataAttributes, B as PopoverDialogSurfaceDismiss, s as PopoverDialogSurfacePresentation, t as PopoverDialogSurfaceProps, u as PopupSurface, v as PopupSurfaceInset, w as PopupSurfaceProps, S as SurfaceInset, x as closeDialog, y as openDialog, C as syncDialogStack, E as wireDialogStack } from './surface-scaffold-DNc6q8NV.js';
-import 'kerfjs';
-import './semantic-content-BbzjvSu9.js';
-import './extension-attributes-IJ4decoa.js';
-import './anchor-name-BZ1rpxaw.js';
-import './css-values.js';
+import { n as DialogSurfaceSize, f as DialogSurfaceHeight, g as DialogSurfaceMaxHeight, c as DialogSurfaceBodyLayout } from './dialog-surface-controller-BeKZ3e8Z.js';
+export { D as DialogCloseSource, a as DialogRequestCloseDetail, b as DialogSurface, q as DialogSurfaceCloseEmphasis, d as DialogSurfaceFooterPresentation, e as DialogSurfaceHeaderPresentation, h as DialogSurfaceName, i as DialogSurfaceOptions, j as DialogSurfacePresentation, k as DialogSurfaceProps, l as DialogSurfaceRootAttributes, m as DialogSurfaceSheetMotion, r as DialogSurfaceStack, S as SurfaceInset, o as closeDialog, p as openDialog, s as syncDialogStack, w as wireDialogStack } from './dialog-surface-controller-BeKZ3e8Z.js';
+import * as kerfjs from 'kerfjs';
+import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
+import { CssLength } from './css-values.js';
+import { A as AnchorName } from './anchor-name-BZ1rpxaw.js';
+import { R as RootDataAttributes } from './extension-attributes-IJ4decoa.js';
+
+/**
+ * Where a popover surface appears: `overlay` in the top layer, or `embedded`
+ * in document flow (a static preview). Shared by PopoverDialogSurface and
+ * PinnablePopoverSurface.
+ */
+type SurfacePresentation = 'overlay' | 'embedded';
+
+/**
+ * Where a PopoverDialogSurface appears: the top layer, or in flow. An alias
+ * of the shared {@link SurfacePresentation}.
+ */
+type PopoverDialogSurfacePresentation = SurfacePresentation;
+/** How an overlay PopoverDialogSurface closes: light dismiss, or its own controls. */
+type PopoverDialogSurfaceDismiss = 'light' | 'manual';
+/** Application `data-*` metadata on the surface root. */
+type PopoverDialogSurfaceDataAttributes = Readonly<Record<`data-${string}`, string>>;
+type PopoverDialogSurfaceName = {
+    label: string;
+    labelledBy?: never;
+} | {
+    label?: never;
+    labelledBy: string;
+};
+type PopoverDialogSurfaceProps = PopoverDialogSurfaceName & {
+    /** The root id: what an opening control's `popovertarget` names. */
+    id?: string;
+    /**
+     * Id of the element whose text is the dialog's accessible description,
+     * such as a title `ToolbarText`'s `descriptionId`; rendered as
+     * `aria-describedby` on the `role="dialog"` root.
+     */
+    describedBy?: string;
+    children: KerfUiContent;
+    /**
+     * `overlay` (default) is a native `popover="auto"` in the top layer:
+     * non-modal, light dismiss (Escape or a press outside), nothing inert.
+     * `embedded` renders the same surface in flow for a catalog or inline use.
+     */
+    presentation?: PopoverDialogSurfacePresentation;
+    /**
+     * How an overlay closes. `light` (default) is `popover="auto"`: Escape or a
+     * press outside closes it. `manual` is `popover="manual"`: only its own
+     * controls (`popovertargetaction="hide"`) or `hidePopover()` close it, for a
+     * request the person must answer. Ignored when `embedded`.
+     */
+    dismiss?: PopoverDialogSurfaceDismiss;
+    /**
+     * KF-T1V86Q: a CSS anchor name (a dashed ident such as `--app-main`) the
+     * open overlay docks to: centered on the bottom edge of the element whose
+     * `anchor-name` it is, inset by `viewportGutter`. The application names
+     * that element (its shell's main column). Engines without CSS anchor
+     * positioning keep the centered top-layer placement. Ignored when
+     * `embedded`.
+     */
+    anchorName?: AnchorName;
+    /** Preferred width preset: 400px, 560px (default), or 800px. */
+    size?: DialogSurfaceSize;
+    /** Preferred width; takes precedence over `size`, within the viewport cap. */
+    preferredWidth?: CssLength;
+    /** Definite height, bounded by the dynamic viewport minus both gutters. */
+    height?: DialogSurfaceHeight;
+    /** Height cap, bounded the same way, for a surface that sizes to content. */
+    maxHeight?: DialogSurfaceMaxHeight;
+    /** Edge clearance on each side of the viewport (default 16px). */
+    viewportGutter?: CssLength;
+    /**
+     * Body layout (default `flow`); `fill` lets one child own the surface and
+     * `fill-last` stacks fixed rows above one filling last child.
+     */
+    bodyLayout?: DialogSurfaceBodyLayout;
+    rootAttributes?: PopoverDialogSurfaceDataAttributes;
+    className?: string;
+    /** Native named-slot assignment when composed inside a web component. */
+    slot?: string;
+};
+/**
+ * A non-modal dialog surface on the native Popover API: Kerf's dialog chrome,
+ * viewport-bounded size, and single-child fill without application CSS.
+ * Open it with a `popovertarget` control or `showPopover()`; it light
+ * dismisses and leaves the page interactive. Use `DialogSurface` when the
+ * task must block the page.
+ */
+declare function PopoverDialogSurface({ id, children, label, labelledBy, describedBy, presentation, dismiss, anchorName, size, preferredWidth, height, maxHeight, viewportGutter, bodyLayout, rootAttributes, className, slot, }: PopoverDialogSurfaceProps): kerfjs.SafeHtml;
+
+/**
+ * Where a PinnablePopoverSurface appears: the top layer, or in flow. An alias
+ * of the shared {@link SurfacePresentation}.
+ */
+type PinnablePopoverSurfacePresentation = SurfacePresentation;
+interface PinnablePopoverSurfaceProps {
+    /**
+     * The root id: what an opening control's `popoverTarget` names. The title
+     * and the move description derive their ids from it.
+     */
+    id: string;
+    /** The title text: the surface's accessible name and its move handle's. */
+    label: string;
+    /**
+     * Id of the element whose text describes the surface, rendered as
+     * `aria-describedby` on the `role="dialog"` root.
+     */
+    describedBy?: string;
+    /** The body content, below the header. */
+    children: KerfUiContent;
+    /** Controls before the Pin and Close buttons in the header. */
+    headerActions?: KerfUiContent;
+    /**
+     * `overlay` (default) is a native `popover="manual"` in the top layer that
+     * `wirePinnablePopover` places, dismisses, and moves; `embedded` renders
+     * the same surface in flow for a catalog or a design canvas.
+     */
+    presentation?: PinnablePopoverSurfacePresentation;
+    /**
+     * Render it pinned: an `embedded` preview of the pinned state. An
+     * overlay's pinned state belongs to `wirePinnablePopover`; pass `pinned`
+     * there to restore it.
+     */
+    pinned?: boolean;
+    /** Preferred width preset: 400px, 560px (default), or 800px. */
+    size?: DialogSurfaceSize;
+    /** Preferred width; takes precedence over `size`, within the viewport cap. */
+    preferredWidth?: CssLength;
+    /** Definite height, bounded by the dynamic viewport minus both gutters. */
+    height?: DialogSurfaceHeight;
+    /** Height cap, bounded the same way, for a surface that sizes to content. */
+    maxHeight?: DialogSurfaceMaxHeight;
+    /**
+     * Edge clearance on each side of the viewport (default 16px): the surface
+     * is placed, dragged, and moved inside it.
+     */
+    viewportGutter?: CssLength;
+    /**
+     * Body layout (default `flow`); `fill` lets one child own the body and
+     * `fill-last` stacks fixed rows above one filling last child.
+     */
+    bodyLayout?: DialogSurfaceBodyLayout;
+    /** The Pin toggle's accessible name (default `Pin`). */
+    pinLabel?: string;
+    /** The close button's accessible name (default `Close`). */
+    closeLabel?: string;
+    /** The move handle's accessible description of the pointer and keyboard move. */
+    moveDescription?: string;
+    rootAttributes?: PopoverDialogSurfaceDataAttributes;
+    className?: string;
+    /** Native named-slot assignment when composed inside a web component. */
+    slot?: string;
+}
+/**
+ * A non-modal surface a person can pin and move. Transient by default: it
+ * opens below the control that opened it and closes on Escape or a press
+ * outside. Pinned (by its header Pin toggle or `pinPopover()`), it stays
+ * open while the page is used, drags by its title, moves with the arrow
+ * keys, resizes, and stays inside the viewport gutter. Open it with a
+ * `popoverTarget` control or `showPopover()`, and call `wirePinnablePopover()`
+ * once for its placement, dismissal, and movement; the application stores
+ * what `onChange` reports. Use `PopoverDialogSurface` for a dialog that only
+ * ever light-dismisses.
+ */
+declare function PinnablePopoverSurface({ id, label, describedBy, children, headerActions, presentation, pinned, size, preferredWidth, height, maxHeight, viewportGutter, bodyLayout, pinLabel, closeLabel, moveDescription, rootAttributes, className, slot, }: PinnablePopoverSurfaceProps): kerfjs.SafeHtml;
+
+type PopupSurfaceInset = 'none' | 'compact' | 'default' | /** @deprecated Use default. */ 'standard' | /** @deprecated Use none. */ 'list-zero';
+interface PopupSurfaceProps {
+    children: KerfUiContent;
+    inset?: PopupSurfaceInset;
+    className?: string;
+    /** Native named-slot assignment when composed inside a web component. */
+    slot?: string;
+    /** Application `data-*` metadata on the root, such as a row key or an
+     * editor node marker; the component's own markers stay protected. */
+    rootAttributes?: RootDataAttributes;
+}
+/** Configure recurring Web Awesome dropdown-menu geometry without consumer ::part() CSS. */
+declare function PopupSurface({ children, inset, className, slot, rootAttributes, }: PopupSurfaceProps): kerfjs.SafeHtml;
 
 /**
  * Where a pinned PinnablePopoverSurface sits: its top-left corner in viewport
@@ -5425,7 +5600,7 @@ declare function pinPopover(surface: HTMLElement, pinned?: boolean): void;
  */
 declare function wirePinnablePopover(surface: HTMLElement, options?: PinnablePopoverOptions): () => void;
 
-export { type PinnablePopoverChange, type PinnablePopoverChangeReason, type PinnablePopoverOptions, type PinnablePopoverPlacement, isPopoverPinned, pinPopover, wirePinnablePopover };
+export { DialogSurfaceBodyLayout, DialogSurfaceHeight, DialogSurfaceMaxHeight, DialogSurfaceSize, type PinnablePopoverChange, type PinnablePopoverChangeReason, type PinnablePopoverOptions, type PinnablePopoverPlacement, PinnablePopoverSurface, type PinnablePopoverSurfacePresentation, type PinnablePopoverSurfaceProps, PopoverDialogSurface, type PopoverDialogSurfaceDataAttributes, type PopoverDialogSurfaceDismiss, type PopoverDialogSurfacePresentation, type PopoverDialogSurfaceProps, PopupSurface, type PopupSurfaceInset, type PopupSurfaceProps, type SurfacePresentation, isPopoverPinned, pinPopover, wirePinnablePopover };
 ```
 
 ## `@kerfjs/ui/list-detail-dialog`
@@ -5435,17 +5610,17 @@ import * as kerfjs from 'kerfjs';
 import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
 import { CssLength } from './css-values.js';
 import { SplitViewListWidth } from './split-view.js';
-import { n as DialogSurfaceSize, f as DialogSurfaceHeight, g as DialogSurfaceMaxHeight, l as DialogSurfaceRootAttributes } from './surface-scaffold-DNc6q8NV.js';
-export { D as DialogCloseSource, a as DialogRequestCloseDetail, x as closeDialog, y as openDialog } from './surface-scaffold-DNc6q8NV.js';
+import { n as DialogSurfaceSize, f as DialogSurfaceHeight, g as DialogSurfaceMaxHeight, l as DialogSurfaceRootAttributes } from './dialog-surface-controller-BeKZ3e8Z.js';
+export { D as DialogCloseSource, a as DialogRequestCloseDetail, o as closeDialog, p as openDialog } from './dialog-surface-controller-BeKZ3e8Z.js';
 import './extension-attributes-IJ4decoa.js';
-import './nav-stack-DwxpXxqJ.js';
-import './pane.js';
-import './scroll-clearance-BikHljTc.js';
-import './anchor-name-BZ1rpxaw.js';
-import './surface-tint-DQgYCaP9.js';
+import './nav-stack-vQ3ieerq.js';
 import './list.js';
 import './flex-alignment-4ms8ZbV8.js';
+import './scroll-clearance-BikHljTc.js';
 import './sides-BPSWde0A.js';
+import './pane.js';
+import './anchor-name-BZ1rpxaw.js';
+import './surface-tint-DQgYCaP9.js';
 import './panel-toolbar-vg6Ir5Dy.js';
 import './toolbar.js';
 import './lucide-icon.js';
@@ -5571,17 +5746,17 @@ import * as kerfjs from 'kerfjs';
 import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
 import { CssLength } from './css-values.js';
 import { WorkbenchMainBottomToolbar, WorkbenchPanel } from './workbench.js';
-import { n as DialogSurfaceSize, f as DialogSurfaceHeight, g as DialogSurfaceMaxHeight, l as DialogSurfaceRootAttributes } from './surface-scaffold-DNc6q8NV.js';
-export { D as DialogCloseSource, a as DialogRequestCloseDetail, x as closeDialog, y as openDialog } from './surface-scaffold-DNc6q8NV.js';
+import { n as DialogSurfaceSize, f as DialogSurfaceHeight, g as DialogSurfaceMaxHeight, l as DialogSurfaceRootAttributes } from './dialog-surface-controller-BeKZ3e8Z.js';
+export { D as DialogCloseSource, a as DialogRequestCloseDetail, o as closeDialog, p as openDialog } from './dialog-surface-controller-BeKZ3e8Z.js';
+import './nav-stack-vQ3ieerq.js';
+import './list.js';
 import './extension-attributes-IJ4decoa.js';
-import './nav-stack-DwxpXxqJ.js';
-import './pane.js';
+import './flex-alignment-4ms8ZbV8.js';
 import './scroll-clearance-BikHljTc.js';
+import './sides-BPSWde0A.js';
+import './pane.js';
 import './anchor-name-BZ1rpxaw.js';
 import './surface-tint-DQgYCaP9.js';
-import './list.js';
-import './flex-alignment-4ms8ZbV8.js';
-import './sides-BPSWde0A.js';
 import './panel-toolbar-vg6Ir5Dy.js';
 import './toolbar.js';
 import './lucide-icon.js';
@@ -5832,7 +6007,7 @@ import { CssLength } from './css-values.js';
 
 type EditorFrameMode = 'source' | 'preview';
 type EditorFrameAppearance = 'framed' | 'embedded';
-type EditorFrameInset = 'padded' | 'flush';
+type EditorFrameInset = 'none' | 'comfortable' | /** @deprecated Use comfortable. */ 'padded' | /** @deprecated Use none. */ 'flush';
 interface EditorFrameProps {
     /** A Toolbar or other fixed controls above the writing surface. */
     toolbar?: KerfUiContent;
@@ -5978,8 +6153,8 @@ interface TreeListProps {
      * arrow or the keyboard (Right and Left). Flip the id in `expanded`.
      */
     toggleAction: string;
-    /** Row density: `standard` (44px rows, default) or `compact` (36px). */
-    density?: 'standard' | 'compact';
+    /** Row density: `default` (44px rows) or `compact` (36px). */
+    density?: 'default' | 'compact' | /** @deprecated Use default. */ 'standard';
     className?: string;
     /** Safe `data-*` metadata for the tree element. */
     rootAttributes?: RootDataAttributes;
@@ -6051,8 +6226,8 @@ interface ColumnExplorerProps {
     minColumnWidth?: CssLength;
     /** How much of the next column a paged layout shows. */
     peek?: CssLength;
-    /** Row density: `standard` (default) or `compact`. */
-    density?: 'standard' | 'compact';
+    /** Row density: `default` or `compact`. */
+    density?: 'default' | 'compact' | /** @deprecated Use default. */ 'standard';
     className?: string;
     /** Safe `data-*` metadata for the explorer element. */
     rootAttributes?: RootDataAttributes;

@@ -12,7 +12,11 @@ function styleValue(value: CssLength, prop: string): string {
 
 export type EditorFrameMode = 'source' | 'preview';
 export type EditorFrameAppearance = 'framed' | 'embedded';
-export type EditorFrameInset = 'padded' | 'flush';
+export type EditorFrameInset =
+  | 'none'
+  | 'comfortable'
+  | /** @deprecated Use comfortable. */ 'padded'
+  | /** @deprecated Use none. */ 'flush';
 
 export interface EditorFrameProps {
   /** A Toolbar or other fixed controls above the writing surface. */
@@ -51,7 +55,7 @@ export function EditorFrame({
   children,
   mode,
   appearance = 'framed',
-  inset = 'padded',
+  inset = 'comfortable',
   expanded = false,
   height,
   maxWidth,
@@ -81,7 +85,9 @@ export function EditorFrame({
       data-component="editor-frame"
       data-mode={mode}
       data-appearance={appearance}
-      data-inset={inset}
+      data-inset={
+        inset === 'padded' ? 'comfortable' : inset === 'flush' ? 'none' : inset
+      }
       data-expanded={String(expanded)}
       data-source-autosize={String(sourceAutosize)}
       role={label ? 'region' : undefined}

@@ -60,7 +60,7 @@ export const createRecipe: RecipeFactory = (announce) => {
                 action="recipe-action"
                 appearance="toolbar"
                 shape="pill"
-                size="small"
+                size="compact"
                 choices={[
                   { value: 'list', label: 'List' },
                   { value: 'board', label: 'Board' },

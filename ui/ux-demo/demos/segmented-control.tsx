@@ -72,7 +72,7 @@ export function SegmentedControlDemo() {
                 action="select-segment-demo"
                 appearance="toolbar"
                 shape="pill"
-                size="small"
+                size="compact"
                 choices={[
                   {
                     value: 'list',
@@ -111,7 +111,7 @@ export function SegmentedControlDemo() {
                 action="select-segment-demo"
                 appearance="toolbar"
                 shape="pill"
-                size="small"
+                size="compact"
                 choices={cornerCountChoices()}
               />
             </ToolbarControlGroup>
@@ -184,7 +184,7 @@ export function SegmentedControlDemo() {
           action="select-segment-demo"
           appearance="outlined"
           shape="pill"
-          size="small"
+          size="compact"
           choices={[
             { value: 'compact', label: 'Compact' },
             { value: 'comfortable', label: 'Comfortable' },

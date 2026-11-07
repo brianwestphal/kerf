@@ -12,7 +12,8 @@ import { Badge } from '../../feedback/badge/badge.js';
 
 export type SegmentedControlAppearance = 'filled' | 'outlined' | 'toolbar';
 export type SegmentedControlShape = 'rounded' | 'pill';
-export type SegmentedControlSize = 'small' | 'default';
+export type SegmentedControlSize =
+  'default' | 'compact' | /** @deprecated Use compact. */ 'small';
 export type SegmentedControlLayout = 'content' | 'equal';
 
 export interface SegmentedControlChoice<Value extends string = string> {
@@ -103,7 +104,7 @@ export function SegmentedControl<Value extends string>({
       data-value={value}
       data-appearance={appearance}
       data-shape={shape}
-      data-size={size}
+      data-size={size === 'small' ? 'compact' : size}
       data-layout={layout}
       data-placeholder={placeholder ? 'true' : undefined}
       data-disabled={disabled ? 'true' : undefined}

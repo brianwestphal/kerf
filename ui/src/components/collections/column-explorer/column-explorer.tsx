@@ -52,8 +52,8 @@ export interface ColumnExplorerProps {
   minColumnWidth?: CssLength;
   /** How much of the next column a paged layout shows. */
   peek?: CssLength;
-  /** Row density: `standard` (default) or `compact`. */
-  density?: 'standard' | 'compact';
+  /** Row density: `default` or `compact`. */
+  density?: 'default' | 'compact' | /** @deprecated Use default. */ 'standard';
   className?: string;
   /** Safe `data-*` metadata for the explorer element. */
   rootAttributes?: RootDataAttributes;
@@ -79,7 +79,7 @@ export function ColumnExplorer({
   layout,
   minColumnWidth,
   peek,
-  density = 'standard',
+  density = 'default',
   className = '',
   rootAttributes = {},
   slot,

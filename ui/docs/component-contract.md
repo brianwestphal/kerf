@@ -14,6 +14,23 @@ Migrate Badge/Chip `tone="brand"` to `tone="info"`; `BadgeTone` and
 
 ## Selection boundary
 
+### Size, density, and inset words
+
+For control size and row density, use `default` or `compact`. For surface
+padding, use `none`, `compact`, `default`, or `comfortable` where the component
+offers those steps. The machine-readable `propVocabulary` in
+`ai/component-catalog.json` lists exceptions with their distinct meanings:
+modal widths, text scales, indicator diameters, and safe-area placement.
+`ListItem` also offers `spacious` density.
+
+Prior words remain accepted for this major version and produce `KUI-L026`
+review findings when written as literal JSX or component-call props. The
+catalog lists each alias and replacement. In particular, legacy
+`DialogSurface` `bodyInset="compact"` and `footerInset="compact"` retain their
+8px geometry; write `default` for that geometry in new code. `PopupSurface`
+and `ToolbarControlGroup` menu `compact` remains 4px, while `list-zero` maps to
+`none`. Runtime components normalize aliases to canonical DOM attributes.
+
 Begin with the [need-first component matrix](./component-selection.md). Reuse a
 primitive only when purpose, anatomy, state, and interaction match. Compose
 public primitives for recurring layout; add a thin application adapter for

@@ -3,12 +3,23 @@
   "$id": "https://raw.githubusercontent.com/brianwestphal/kerf/main/ui/ai/component-catalog.schema.json",
   "title": "Kerf UI component catalog",
   "type": "object",
-  "required": ["schemaVersion", "package", "description", "entries"],
+  "required": ["schemaVersion", "package", "description", "propVocabulary", "entries"],
   "properties": {
     "$schema": { "type": "string" },
     "schemaVersion": { "const": 1 },
     "package": { "const": "@kerfjs/ui" },
     "description": { "type": "string", "minLength": 1 },
+    "propVocabulary": {
+      "description": "Canonical size, density, and inset words, reviewed semantic exceptions, and one-major deprecated aliases.",
+      "type": "object",
+      "required": ["canonical", "exceptions", "aliases"],
+      "properties": {
+        "canonical": { "type": "object", "required": ["size", "density", "inset"], "properties": { "size": { "$ref": "#/$defs/stringList" }, "density": { "$ref": "#/$defs/stringList" }, "inset": { "$ref": "#/$defs/stringList" } }, "additionalProperties": false },
+        "exceptions": { "type": "array", "items": { "$ref": "#/$defs/propVocabularyException" } },
+        "aliases": { "type": "array", "items": { "$ref": "#/$defs/propVocabularyAlias" } }
+      },
+      "additionalProperties": false
+    },
     "wiringProviders": {
       "description": "Public helpers whose call installs other cataloged wiring helpers.",
       "type": "array",
@@ -30,6 +41,8 @@
   },
   "additionalProperties": false,
   "$defs": {
+    "propVocabularyException": { "type": "object", "required": ["component", "prop", "values", "reason"], "properties": { "component": { "type": "string" }, "prop": { "type": "string" }, "values": { "$ref": "#/$defs/stringList" }, "reason": { "type": "string", "minLength": 1 } }, "additionalProperties": false },
+    "propVocabularyAlias": { "type": "object", "required": ["component", "prop", "value", "replacement"], "properties": { "component": { "type": "string" }, "prop": { "type": "string" }, "value": { "type": "string" }, "replacement": { "type": "string" } }, "additionalProperties": false },
     "entry": {
       "type": "object",
       "required": ["id", "name", "category", "kind", "source", "purpose", "useWhen", "avoidWhen", "delivery", "links"],

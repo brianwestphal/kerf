@@ -224,6 +224,66 @@ function validateSchema(value, rule, path = '$', activeSchema = schema) {
 }
 
 validateSchema(artifact, schema);
+// The generated public prop schema is the catalog's executable vocabulary
+// source. A new size, density, or inset literal must be canonical, a reviewed
+// semantic exception, or a time-bounded deprecated alias.
+const propSchema = JSON.parse(
+  await readFile(resolve(root, 'ai/component-props.json'), 'utf8'),
+);
+const vocabulary = artifact.propVocabulary;
+const vocabularyProps = new Map([
+  ['size', 'size'],
+  ['density', 'density'],
+  ['inset', 'inset'],
+  ['bodyInset', 'inset'],
+  ['footerInset', 'inset'],
+  ['menuInset', 'inset'],
+]);
+const vocabularyKey = (component, prop) => `${component}.${prop}`;
+const exceptions = new Map(
+  vocabulary.exceptions.map((item) => [
+    vocabularyKey(item.component, item.prop),
+    item,
+  ]),
+);
+const aliases = new Map();
+for (const item of vocabulary.aliases) {
+  const key = vocabularyKey(item.component, item.prop);
+  const values = aliases.get(key) ?? new Map();
+  if (values.has(item.value))
+    fail(`duplicate vocabulary alias ${key}=${item.value}`);
+  values.set(item.value, item.replacement);
+  aliases.set(key, values);
+}
+const checkedVocabulary = new Set();
+for (const component of propSchema.components) {
+  if (component.source !== 'kerf') continue;
+  for (const prop of component.props) {
+    const concept = vocabularyProps.get(prop.name);
+    if (!concept || prop.type.kind !== 'enum') continue;
+    const key = vocabularyKey(component.export, prop.name);
+    checkedVocabulary.add(key);
+    const exception = exceptions.get(key);
+    const canonical = new Set(vocabulary.canonical[concept]);
+    const allowed =
+      (exception && concept === 'size') ||
+      exception?.component === 'EdgeActivityIndicator'
+        ? new Set(exception.values)
+        : new Set([...canonical, ...(exception?.values ?? [])]);
+    const deprecated = aliases.get(key) ?? new Map();
+    for (const value of prop.type.values)
+      if (!allowed.has(value) && !deprecated.has(value))
+        fail(`${key} has uncataloged ${concept} literal ${value}`);
+    for (const [value, replacement] of deprecated) {
+      if (!prop.type.values.includes(value))
+        fail(`${key} alias ${value} is no longer public`);
+      if (!allowed.has(replacement))
+        fail(`${key} alias ${value} has invalid replacement ${replacement}`);
+    }
+  }
+}
+for (const key of [...exceptions.keys(), ...aliases.keys()])
+  if (!checkedVocabulary.has(key)) fail(`stale vocabulary entry ${key}`);
 const catalogWiring = new Set(
   artifact.entries.flatMap((entry) =>
     (entry.wiring ?? []).map((item) => item.export),

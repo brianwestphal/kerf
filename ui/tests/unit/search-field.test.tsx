@@ -346,7 +346,7 @@ describe('SearchField', () => {
       }),
     );
     expect(grouped).toContain(
-      'data-expanded="true" data-single="false" data-shape="pill" data-size="default" data-density="comfortable" data-content="search" data-focus-ring="halo"',
+      'data-expanded="true" data-single="false" data-shape="pill" data-size="default" data-density="default" data-content="search" data-focus-ring="halo"',
     );
 
     const populated = asHtml(
