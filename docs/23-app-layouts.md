@@ -1451,6 +1451,36 @@ A whole-screen layout inside a component that sizes to its content (`List`,
 hint for it is KF-KQ72TW (view hints: flag a layout nothing gives a height).
 Verified in Chromium, Firefox, and WebKit by `ui/tests/browser/sized-region.spec.ts`.
 
+### 3.10 Dialog layouts — `ListDetailDialog` and `WorkbenchDialog` (`@kerfjs/ui/list-detail-dialog`, `@kerfjs/ui/workbench-dialog`)
+
+**Shipped.** Two of the layouts above have a packaged modal form, so a dialog
+that needs one does not assemble it from a `DialogSurface` plus a layout body.
+Together with `DialogSurface` (one pane: a title, a body, and footer buttons)
+they are the three dialog types:
+
+- **`ListDetailDialog`** — the modal form of `SplitView`: pick a record from a
+  list and show its detail beside it. Both columns are `Pane`s that run the
+  dialog's full height (the surface draws no header). The detail column owns
+  the dialog's identity: its header carries the primary xl title, the
+  `actions`, and the close control last, and record actions pin in its
+  `footer`. The list column's header carries a default-size `list.title` and
+  the list's own controls. With `compact` (from `deviceClass().value.compact`)
+  it becomes a full-screen `NavStack` drill-down; the app owns the selection
+  and whether the detail is pushed. See
+  [`ui/docs/list-detail-dialog.md`](../ui/docs/list-detail-dialog.md).
+- **`WorkbenchDialog`** — the modal form of `Workbench`: an editing task with
+  side rails. The dialog draws no header and no body inset; the work area's
+  toolbar carries the primary xl title, an optional `description`, the
+  `actions`, and the close control (outermost), and the rails keep their own
+  toolbars at full height. With `compact` the dialog fills the screen and each
+  rail presents as an overlay over the work area (`wireWorkbench` traps focus
+  in an open rail; Escape closes the rail before the dialog). See
+  [`ui/docs/workbench-dialog.md`](../ui/docs/workbench-dialog.md).
+
+Both re-export `openDialog` / `closeDialog` from the surface scaffold and keep
+`DialogSurface`'s modal contract. Their rows in the matrix below are the
+`SplitView` and `Workbench` rows.
+
 ## 4. Responsive presentation matrix
 
 The rule each layout encodes, summarized (`compact` = handset or portrait
