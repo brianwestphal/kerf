@@ -136,6 +136,7 @@ import {
 } from './control-flow-section.js';
 import { dataAttributesSection } from './data-attributes-section.js';
 import { HOOK, hook } from './dom-hooks.js';
+import { createDropViews } from './drop-menu.js';
 import type { EditorContext, Selection } from './editor-context.js';
 import {
   embedDialog,
@@ -417,7 +418,6 @@ import {
   REPLACE_CONFIRM_ACTION,
   REPLACE_DIALOG,
   REPLACE_ROOT_ACTION,
-  replaceTarget,
   RING_REACH,
   ROOT_EMPTY,
   ROOT_TARGET,
@@ -1671,47 +1671,11 @@ export function createEditor(options: EditorOptions) {
     sourceProblem,
     zonesOf: (...args) => zonesOf(...args),
   });
-  /** The drop menu (KF-WKABP2): where an asking drop goes. */
-  const dropMenu = () => (
-    <PopupMenu
-      context
-      label="Drop into"
-      rootAttributes={{ [DROP_MENU]: '' }}
-      items={dropChoices.value.map((choice, index) => ({
-        label: choice.label,
-        action: DROP_CHOICE_ACTION,
-        attributes: { 'data-editor-drop-choice': String(index) },
-      }))}
-    />
-  );
-  /** Asks before a drop replaces authored content (KF-WKABP2). */
-  const replaceDialog = () => {
-    const move = pendingReplace.value;
-    const target = move ? replaceTarget(move.target.id)! : undefined;
-    const name = target ? rowLabel(target) : '';
-    return (
-      <DialogSurface
-        id={REPLACE_DIALOG}
-        label={`Replace ${name}?`}
-        size="small"
-        rootAttributes={{ 'data-key': REPLACE_DIALOG }}
-        footer={
-          <>
-            <Button rootAttributes={{ 'data-dialog-close': '' }}>Cancel</Button>
-            <Button tone="danger" action={REPLACE_CONFIRM_ACTION}>
-              Replace
-            </Button>
-          </>
-        }
-      >
-        <List textInsets="trbl">
-          <Text>
-            {`${name} and everything inside it will be removed. Undo restores it.`}
-          </Text>
-        </List>
-      </DialogSurface>
-    );
-  };
+  const { dropMenu, replaceDialog } = createDropViews({
+    dropChoices,
+    pendingReplace,
+    rowLabel,
+  });
 
   /** Moves a node into another zone: the keyboard alternative to dragging. */
   const moveSection = (node: ViewNode) => {
