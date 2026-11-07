@@ -39,6 +39,13 @@ const docs = [
   'docs/13-component-packages.md',
   'site/src/content/docs/docs/component-packages.md',
 ];
+// The krausest entry pins an exact kerfjs version (upstream copies this file
+// as frameworks/keyed/kerfjs/package.json). It names the root version: the
+// last release, or the release in progress once npm version has bumped it.
+// The local harness (bench/setup.sh) builds against a packed tarball instead,
+// so kerfjs-impl may use APIs from the release in progress; sync it upstream
+// only after the release that this pin names has published.
+const benchEntry = 'bench/kerfjs-impl/package.json';
 const linkedRootLocks = [
   ['examples/reactivity-demo/package-lock.json', '../..'],
   ['site/package-lock.json', '..'],
@@ -61,6 +68,13 @@ if (write) {
   writeFileSync(
     new URL(templatePath, root),
     `${JSON.stringify(template, null, 2)}\n`,
+  );
+
+  const bench = readJson(benchEntry);
+  bench.dependencies.kerfjs = version;
+  writeFileSync(
+    new URL(benchEntry, root),
+    `${JSON.stringify(bench, null, 2)}\n`,
   );
 
   for (const relative of docs) {
@@ -176,6 +190,13 @@ if (template.devDependencies?.kerfjs !== devRange) {
 if (template.devDependencies?.['@kerfjs/ui'] !== devRange) {
   errors.push(
     `component template @kerfjs/ui dev range is ${template.devDependencies?.['@kerfjs/ui']}; expected ${devRange}`,
+  );
+}
+
+const benchPin = readJson(benchEntry).dependencies?.kerfjs;
+if (benchPin !== version) {
+  errors.push(
+    `${benchEntry} pins kerfjs ${benchPin}; expected the root version ${version}`,
   );
 }
 

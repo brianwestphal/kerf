@@ -389,6 +389,7 @@ step_git_commit() {
     ui/package.json ui/package-lock.json \
     docs/13-component-packages.md site/src/content/docs/docs/component-packages.md \
     examples/reactivity-demo/package-lock.json site/package-lock.json \
+    bench/kerfjs-impl/package.json \
     ai/manifest.json
   # Idempotent: if a previous run already absorbed these files into a manual
   # commit (e.g. recovery after an interrupted release commit), there's nothing

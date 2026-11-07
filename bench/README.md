@@ -14,6 +14,14 @@ numbers into the git-tracked `bench/results.{json,md}` that the site publishes
 Keep `kerfjs-impl/` in sync with the upstream entry, and open a follow-up
 upstream PR to bump the pinned kerfjs version on each release.
 
+**The pin follows the root version.** `kerfjs-impl/package.json` pins kerfjs
+to the root `package.json` version exactly: `npm run sync:lockstep-versions`
+writes it during `npm run release`, and the check in `npm run check` fails if
+they disagree. Between releases the entry may already use APIs that only the
+next release ships (the local harness builds against a packed tarball, so it
+measures current source). Sync it upstream only after the release its pin
+names is on npm.
+
 Everything else here is the **local dev-only harness** — for "did my change
 move the needle?" profiling on your own machine. `bench/setup.sh` shallow-clones
 the upstream suite into a gitignored cache (`bench/.bench-cache/`) and copies our
@@ -27,7 +35,7 @@ only — **never publish them.**
 bench/
   kerfjs-impl/         tracked — the kerfjs framework entry
     src/main.tsx       implementation of the standard 1k-rows table app
-    package.json       references kerfjs by published version (PR-ready)
+    package.json       pins kerfjs to the root version (PR-ready after release)
     vite.config.ts
     tsconfig.json
     index.html
@@ -267,8 +275,8 @@ When the API is stable enough to publish numbers:
 
 1. Fork [krausest/js-framework-benchmark][upstream].
 2. Copy `bench/kerfjs-impl/` to `frameworks/keyed/kerfjs/` in the fork.
-3. The `package.json` already references `kerfjs` by published version, so it
-   works as-is once that version is on npm.
+3. The `package.json` pins `kerfjs` to the root version, so it works as-is
+   once that release is on npm.
 4. Open a PR. The maintainer re-runs the full suite on his reference hardware
    before merging.
 
