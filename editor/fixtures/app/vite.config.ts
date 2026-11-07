@@ -5,6 +5,7 @@ import { fileURLToPath } from 'node:url';
 import { defineConfig } from 'vite';
 
 import { kerfUiEditor } from '../../../ui/vite-editor.mjs';
+import { FIXTURE_APP_PORT, HOST } from '../../ports.js';
 import { kerfAliases, kerfUi, repo } from '../../vite.workspace.js';
 
 export default defineConfig({
@@ -20,8 +21,8 @@ export default defineConfig({
   resolve: { alias: kerfAliases },
   esbuild: { jsx: 'automatic', jsxImportSource: 'kerfjs' },
   server: {
-    host: '127.0.0.1',
-    port: 42918,
+    host: HOST,
+    port: FIXTURE_APP_PORT,
     strictPort: true,
     fs: { allow: [repo] },
   },

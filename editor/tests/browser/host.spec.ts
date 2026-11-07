@@ -1,11 +1,12 @@
 import { expect, type Page, test } from '@playwright/test';
 
+import { FIXTURE_EDITOR_URL } from '../../ports.js';
 import { area, openLibrary } from './areas.js';
 
 // KF-6GT5QY: an application's own dev server hosts the editor through
 // `@kerfjs/ui/vite-editor`, and its own component (OrderCard, which lives in
 // app source) is placed, previewed with its real function, and inspected.
-const EDITOR = 'http://127.0.0.1:42918/__kerf-ui-editor/';
+const EDITOR = FIXTURE_EDITOR_URL;
 
 /**
  * Opens the hosted editor on its first draft, which has no root

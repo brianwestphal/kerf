@@ -37,6 +37,7 @@
     "tests/**/*",
     "vite.config.ts",
     "vite.workspace.ts",
+    "ports.ts",
     "fixtures/app/**/*",
     "playwright.config.ts"
   ]

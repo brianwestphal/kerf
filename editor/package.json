@@ -7,8 +7,8 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview --host 127.0.0.1 --port 42917 --strictPort",
-    "lint": "eslint src tests fixtures vite.config.ts vite.workspace.ts playwright.config.ts --max-warnings 0",
+    "preview": "vite preview",
+    "lint": "eslint src tests fixtures vite.config.ts vite.workspace.ts ports.ts playwright.config.ts --max-warnings 0",
     "typecheck": "node node_modules/typescript7/bin/tsc --noEmit",
     "test": "vitest run",
     "test:e2e": "playwright test",

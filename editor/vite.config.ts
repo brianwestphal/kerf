@@ -3,6 +3,7 @@ import { fileURLToPath } from 'node:url';
 import { defineConfig } from 'vitest/config';
 
 import { editorFileMiddleware } from '../ui/vite-editor.mjs';
+import { EDITOR_PORT, HOST } from './ports.js';
 import { kerfAliases, kerfUi, repo } from './vite.workspace.js';
 
 export default defineConfig({
@@ -23,14 +24,13 @@ export default defineConfig({
   ],
   resolve: { alias: kerfAliases },
   esbuild: { jsx: 'automatic', jsxImportSource: 'kerfjs' },
-  // Bind IPv4 explicitly: on Linux CI `localhost` can resolve to ::1 only,
-  // which Playwright's 127.0.0.1 readiness probe never reaches.
   server: {
-    host: '127.0.0.1',
-    port: 42917,
+    host: HOST,
+    port: EDITOR_PORT,
     strictPort: true,
     fs: { allow: [repo] },
   },
+  preview: { host: HOST, port: EDITOR_PORT, strictPort: true },
   // The editor bundles every Lucide icon so documents can name any of them.
   build: { outDir: 'dist', emptyOutDir: true, chunkSizeWarningLimit: 4096 },
   test: {
