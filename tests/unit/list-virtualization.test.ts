@@ -88,6 +88,36 @@ describe('bindList() — virtualization', () => {
     dispose();
   });
 
+  it('uses the accepted height baseline for a report while duplicate keys are rejected', () => {
+    const parent = host();
+    withHeight(parent, 20);
+    const items = arraySignal<Item>(
+      [1, 2, 3, 4, 5, 6].map((id) => ({ id, label: String(id) })),
+    );
+    const dispose = bindList(parent, items, {
+      key: (item) => item.id,
+      render: (item) => item.label,
+      virtualize: {
+        rowHeight: { estimate: (item) => item.id * 10 },
+        overscan: 0,
+      },
+    });
+    parent.scrollTop = 80;
+    parent.dispatchEvent(new Event('scroll'));
+    flushAnimationFrame();
+
+    expect(() => items.update(2, () => ({ id: 1, label: 'duplicate' }))).toThrow(
+      'bindList: duplicate key 1 at indices 0 and 2',
+    );
+    dispose.setHeight(3, 35);
+    expect(flushAnimationFrame()).toBe(1);
+    expect(parent.scrollTop).toBe(80);
+
+    items.update(2, () => ({ id: 3, label: '3' }));
+    expect(parent.scrollTop).toBe(85);
+    dispose();
+  });
+
   it('renders only the viewport window and sets padding to keep scrollHeight honest', () => {
     const parent = host();
     withHeight(parent, 100); // viewport shows 5 rows at rowHeight 20

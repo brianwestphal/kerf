@@ -270,9 +270,13 @@ export function createListVirtualizationController<T>(
   };
 
   const render = (nextItems: readonly T[]): void => {
+    const wasFrozen = frozen;
     items = nextItems;
     heightsDirty = true;
     frozen = false;
+    // A frame dropped during a rejected update cannot apply measured-height
+    // anchoring. Resolve those reports against this accepted source now.
+    if (wasFrozen && pendingAnchorBaselines.size > 0) applyAnchorCorrection();
     renderCurrent();
   };
 
@@ -323,7 +327,10 @@ export function createListVirtualizationController<T>(
     if (model.kind !== MEASURED || contentVisibility) return;
     const index = indexByKey.get(rowKey);
     if (index === undefined) return;
-    const oldHeight = measured.get(rowKey) ?? estimateOf(model.estimate, index);
+    // `items` may alias a rejected in-place arraySignal update while frozen.
+    // The accepted offsets still hold this key's last rendered estimate.
+    const oldHeight =
+      measured.get(rowKey) ?? offsets[index + 1] - offsets[index];
     if (height === oldHeight) return;
     measured.set(rowKey, height);
     if (!pendingAnchorBaselines.has(rowKey))
