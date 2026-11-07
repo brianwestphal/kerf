@@ -15,6 +15,7 @@ import { join } from 'node:path';
 import process from 'node:process';
 
 import { ciStatusWarning, selectPackageGates } from './lib/package-gates.mjs';
+import { fail, ok } from './lib/report.mjs';
 
 const root = process.cwd();
 
@@ -174,39 +175,45 @@ function reportCiStatus() {
   }
 }
 
-reportCiStatus();
+function main() {
+  reportCiStatus();
 
-if (process.env.KERF_SKIP_PACKAGE_GATES === '1') {
-  console.log('[package-gates] skipped (KERF_SKIP_PACKAGE_GATES=1)');
-  process.exit(0);
-}
-
-const changed = changedPaths();
-const gates = selectPackageGates(changed);
-if (gates.length === 0) {
-  console.log('[package-gates] no sibling-package changes — nothing to run');
-  process.exit(0);
-}
-console.log(
-  `[package-gates] running ${gates.map((gate) => gate.name).join(', ')}${
-    changed === null ? ' (no upstream to diff against — running all)' : ''
-  }`,
-);
-
-for (const gate of gates) {
-  if (!existsSync(join(root, gate.dir, 'node_modules'))) {
-    console.error(
-      `[package-gates] ${gate.name}: ${gate.dir}/node_modules is missing — run \`npm --prefix ${gate.dir} ci\` (or set KERF_SKIP_PACKAGE_GATES=1 and rely on CI).`,
-    );
-    process.exit(1);
+  if (process.env.KERF_SKIP_PACKAGE_GATES === '1') {
+    ok('package-gates', 'skipped (KERF_SKIP_PACKAGE_GATES=1)');
+    return;
   }
-  console.log(`\n[package-gates] ${gate.name}`);
-  const result = spawnSync('npm', gate.args, {
-    cwd: join(root, gate.dir),
-    stdio: 'inherit',
-  });
-  if (result.status !== 0) {
-    console.error(`[package-gates] ${gate.name} failed`);
-    process.exit(result.status ?? 1);
+
+  const changed = changedPaths();
+  const gates = selectPackageGates(changed);
+  if (gates.length === 0) {
+    ok('package-gates', 'no sibling-package changes — nothing to run');
+    return;
   }
+  console.log(
+    `[package-gates] running ${gates.map((gate) => gate.name).join(', ')}${
+      changed === null ? ' (no upstream to diff against — running all)' : ''
+    }`,
+  );
+
+  for (const gate of gates) {
+    if (!existsSync(join(root, gate.dir, 'node_modules'))) {
+      console.error(
+        `[package-gates] ${gate.name}: ${gate.dir}/node_modules is missing — run \`npm --prefix ${gate.dir} ci\` (or set KERF_SKIP_PACKAGE_GATES=1 and rely on CI).`,
+      );
+      fail('package-gates', `${gate.name}: missing dependencies`);
+      return;
+    }
+    console.log(`\n[package-gates] ${gate.name}`);
+    const result = spawnSync('npm', gate.args, {
+      cwd: join(root, gate.dir),
+      stdio: 'inherit',
+    });
+    if (result.status !== 0) {
+      fail('package-gates', `${gate.name} failed`, result.status ?? 1);
+      return;
+    }
+  }
+  ok('package-gates', 'all selected sibling-package gates passed');
 }
+
+main();

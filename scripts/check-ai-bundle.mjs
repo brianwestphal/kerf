@@ -18,42 +18,48 @@ import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
 import { computeBundle, REPO_ROOT } from './lib/ai-bundle.mjs';
+import { fail, ok } from './lib/report.mjs';
 
-let outputs;
-try {
-  outputs = computeBundle();
-} catch (err) {
-  console.error(`\nai-bundle source error: ${err.message}\n`);
-  process.exit(1);
-}
-
-const drifted = [];
-for (const { path, content: expected } of outputs) {
-  const abs = join(REPO_ROOT, path);
-  let actual;
+function main() {
+  let outputs;
   try {
-    actual = readFileSync(abs, 'utf8');
-  } catch {
-    drifted.push({ path, reason: 'missing' });
-    continue;
+    outputs = computeBundle();
+  } catch (err) {
+    fail('check-ai-bundle', `ai-bundle source error: ${err.message}`);
+    return;
   }
-  if (actual !== expected) {
-    drifted.push({ path, reason: 'content drift' });
+
+  const drifted = [];
+  for (const { path, content: expected } of outputs) {
+    const abs = join(REPO_ROOT, path);
+    let actual;
+    try {
+      actual = readFileSync(abs, 'utf8');
+    } catch {
+      drifted.push({ path, reason: 'missing' });
+      continue;
+    }
+    if (actual !== expected) {
+      drifted.push({ path, reason: 'content drift' });
+    }
   }
+
+  if (drifted.length === 0) {
+    ok('check-ai-bundle', 'OK — ai/ bundle matches source.');
+    return;
+  }
+
+  console.error(
+    '\nai/ bundle is out of sync with the source-of-truth root files:\n',
+  );
+  for (const { path, reason } of drifted) {
+    console.error(`  - ${path} (${reason})`);
+  }
+  console.error(
+    '\nRun `node scripts/sync-ai-bundle.mjs` to regenerate, then commit the result.\n' +
+      'See docs/12-ai-assistant-configs.md for the bundle contract.\n',
+  );
+  fail('check-ai-bundle', `${drifted.length} bundled file(s) drifted.`);
 }
 
-if (drifted.length === 0) {
-  process.exit(0);
-}
-
-console.error(
-  '\nai/ bundle is out of sync with the source-of-truth root files:\n',
-);
-for (const { path, reason } of drifted) {
-  console.error(`  - ${path} (${reason})`);
-}
-console.error(
-  '\nRun `node scripts/sync-ai-bundle.mjs` to regenerate, then commit the result.\n' +
-    'See docs/12-ai-assistant-configs.md for the bundle contract.\n',
-);
-process.exit(1);
+main();

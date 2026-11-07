@@ -24,6 +24,8 @@ import { readdirSync, readFileSync, statSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
+import { fail, ok } from './lib/report.mjs';
+
 const REPO_ROOT = dirname(dirname(fileURLToPath(import.meta.url)));
 const TEST_DIRS = [
   'tests/unit',
@@ -69,7 +71,11 @@ function main() {
   }
 
   if (missing.length === 0) {
-    process.exit(0);
+    ok(
+      'check-doc-test-inventory',
+      `OK — ${tests.length} test file(s) documented.`,
+    );
+    return;
   }
 
   console.error(
@@ -83,7 +89,10 @@ function main() {
       '(or to the surrounding prose, with a one-line description of what it covers).\n' +
       'See KF-109 for context.\n',
   );
-  process.exit(1);
+  fail(
+    'check-doc-test-inventory',
+    `${missing.length} test file(s) missing from ${DOC_PATH}.`,
+  );
 }
 
 main();

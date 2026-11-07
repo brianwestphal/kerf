@@ -60,6 +60,7 @@ import { dirname, relative, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import { COMPLETE_APPS } from '../site/scripts/lib/complete-apps.mjs';
+import { fail as reportFail, ok as reportOk } from './lib/report.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const repoRoot = resolve(__dirname, '..');
@@ -81,373 +82,378 @@ const distTypingTsconfig = resolve(
 );
 
 function fail(msg) {
-  console.error(`[check-docs-examples] ${msg}`);
-  process.exitCode = 1;
+  reportFail('check-docs-examples', msg);
 }
 
 function ok(msg) {
-  console.log(`[check-docs-examples] ${msg}`);
+  reportOk('check-docs-examples', msg);
 }
 
-// --- Discover the known-good sets ---------------------------------------
+function main() {
+  // --- Discover the known-good sets ---------------------------------------
 
-const completeApps = new Set(COMPLETE_APPS);
+  const completeApps = new Set(COMPLETE_APPS);
 
-const browserSpecSrc = readFileSync(browserSpecPath, 'utf8');
-const describedApps = new Set(
-  [...browserSpecSrc.matchAll(/test\.describe\(\s*['"]([^'"]+)['"]/g)].map(
-    (m) => m[1],
-  ),
-);
-
-// --- Walk migration pages -----------------------------------------------
-
-const docFiles = readdirSync(migratingDir)
-  .filter((f) => f.endsWith('.md') || f.endsWith('.mdx'))
-  .map((f) => resolve(migratingDir, f));
-
-const linkRe = /\/kerf\/run\/([a-z0-9-]+)\/?/g;
-const codeBlockRe = /```(tsx|ts)\n([\s\S]*?)```/g;
-const publishedDocLinkRe =
-  /\]\((\/kerf\/(?:api|docs\/[^)#?]+)\/?(?:#[^)]+)?)\)/g;
-
-function githubHeadingSlug(heading) {
-  return heading
-    .replace(/<[^>]*>/g, '')
-    .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
-    .replace(/[`*_~]/g, '')
-    .toLowerCase()
-    .replace(/[^\p{Letter}\p{Number}\p{Mark}\-_ ]/gu, '')
-    .replace(/ /g, '-');
-}
-
-function publishedHeadings(src) {
-  const slugs = new Set();
-  const occurrences = new Map();
-  for (const match of src.matchAll(/^#{1,6}\s+(.+)$/gm)) {
-    const base = githubHeadingSlug(match[1]);
-    const occurrence = occurrences.get(base) ?? 0;
-    occurrences.set(base, occurrence + 1);
-    slugs.add(occurrence === 0 ? base : `${base}-${occurrence}`);
-  }
-  return slugs;
-}
-
-function sourceForPublishedRoute(target) {
-  const url = new URL(target, 'https://kerf.invalid');
-  const route = decodeURIComponent(url.pathname)
-    .replace(/^\/kerf\//, '')
-    .replace(/^\/+|\/+$/g, '');
-  const candidates = [
-    resolve(siteContentDir, `${route}.md`),
-    resolve(siteContentDir, `${route}.mdx`),
-    resolve(siteContentDir, route, 'index.md'),
-    resolve(siteContentDir, route, 'index.mdx'),
-  ];
-  return { url, sourcePath: candidates.find(existsSync) };
-}
-
-const scratchDir = resolve(repoRoot, 'tests/.docs-examples-scratch');
-if (existsSync(scratchDir))
-  rmSync(scratchDir, { recursive: true, force: true });
-mkdirSync(scratchDir, { recursive: true });
-
-let totalLinks = 0;
-let totalCompiledBlocks = 0;
-let totalSkippedBlocks = 0;
-
-const blocksToCompile = []; // { srcFile, idx, body, lang }
-
-for (const docFile of docFiles) {
-  const src = readFileSync(docFile, 'utf8');
-  const docName = docFile.split('/').pop();
-
-  // Check 1: every /kerf/run/<name>/ link resolves to a built+tested example.
-  for (const match of src.matchAll(linkRe)) {
-    const name = match[1];
-    totalLinks++;
-    if (!completeApps.has(name)) {
-      fail(
-        `${docName}: /kerf/run/${name}/ link references an example NOT in COMPLETE_APPS at ${completeAppsPath}`,
-      );
-    }
-    if (!describedApps.has(name)) {
-      fail(
-        `${docName}: /kerf/run/${name}/ link references an example with NO test.describe('${name}') block in ${browserSpecPath}`,
-      );
-    }
-  }
-
-  // Check 2: extract self-contained kerf code blocks.
-  let m;
-  let blockIdx = 0;
-  while ((m = codeBlockRe.exec(src)) !== null) {
-    const lang = m[1];
-    const body = m[2];
-    blockIdx++;
-
-    const importsKerf = /from\s+['"]kerfjs(?:\/[a-z-]+)?['"]/.test(body);
-    if (!importsKerf) {
-      totalSkippedBlocks++;
-      continue;
-    }
-    // Self-contained = imports ONLY from kerfjs. A block that also pulls in
-    // react / react-dom / relative modules (e.g. the framework-interop examples
-    // on the incremental-adoption page) can't compile in the kerfjs-only scratch
-    // sandbox — it's a multi-runtime fragment, not a runnable unit. Skip it.
-    const importsOutsideKerf = [...body.matchAll(/from\s+['"]([^'"]+)['"]/g)]
-      .map((mm) => mm[1])
-      .some((s) => !/^kerfjs(?:\/[a-z-]+)?$/.test(s));
-    if (importsOutsideKerf) {
-      totalSkippedBlocks++;
-      continue;
-    }
-    if (/\/\*\s*\.\.\.\s*\*\/|\/\/\s*\.\.\./.test(body)) {
-      // Block has explicit "rest of code omitted" placeholders — pedagogical
-      // fragment, not a runnable unit. Skip.
-      totalSkippedBlocks++;
-      continue;
-    }
-
-    blocksToCompile.push({
-      srcFile: docName,
-      idx: blockIdx,
-      body,
-      lang,
-    });
-  }
-}
-
-if (process.exitCode === 1) {
-  ok(`${totalLinks} /kerf/run/ links — see errors above`);
-  process.exit(1);
-}
-ok(`${totalLinks} /kerf/run/ links resolve to built+tested examples`);
-
-// --- Check 3: example doc excerpts mirror their source's kerfjs imports ----
-
-/** Pull every named import (including `type` imports) from any
- *  `import { ... } from 'kerfjs[/subpath]'` statement in `src`. */
-function extractKerfImports(src) {
-  const out = new Set();
-  const re =
-    /import\s*(?:type\s+)?\{\s*([^}]+)\s*\}\s*from\s*['"]kerfjs(?:\/[a-z-]+)?['"]/g;
-  for (const m of src.matchAll(re)) {
-    for (const raw of m[1].split(',')) {
-      const name = raw
-        .trim()
-        .replace(/^type\s+/, '')
-        .split(/\s+as\s+/)[0]
-        .trim();
-      if (name) out.add(name);
-    }
-  }
-  return out;
-}
-
-let totalExamplePairs = 0;
-const exampleDocFiles = existsSync(exampleDocsDir)
-  ? readdirSync(exampleDocsDir).filter(
-      (f) => f.endsWith('.md') && f !== 'index.md',
-    )
-  : [];
-
-for (const docFile of exampleDocFiles) {
-  const baseName = docFile.replace(/\.md$/, '');
-  const srcPath = resolve(exampleSrcDir, baseName, 'main.tsx');
-  if (!existsSync(srcPath)) continue; // doc has no paired source — skip
-  totalExamplePairs++;
-
-  const srcImports = extractKerfImports(readFileSync(srcPath, 'utf8'));
-  const docImports = extractKerfImports(
-    readFileSync(resolve(exampleDocsDir, docFile), 'utf8'),
+  const browserSpecSrc = readFileSync(browserSpecPath, 'utf8');
+  const describedApps = new Set(
+    [...browserSpecSrc.matchAll(/test\.describe\(\s*['"]([^'"]+)['"]/g)].map(
+      (m) => m[1],
+    ),
   );
 
-  const missing = [...srcImports].filter((i) => !docImports.has(i));
-  if (missing.length > 0) {
-    fail(
-      `${docFile}: paired source examples/complete/${baseName}/main.tsx imports ` +
-        `[${missing.join(', ')}] from kerfjs, but the doc excerpt never mentions ` +
-        `${missing.length === 1 ? 'it' : 'them'}. Update the doc to reflect the canonical pattern.`,
-    );
+  // --- Walk migration pages -----------------------------------------------
+
+  const docFiles = readdirSync(migratingDir)
+    .filter((f) => f.endsWith('.md') || f.endsWith('.mdx'))
+    .map((f) => resolve(migratingDir, f));
+
+  const linkRe = /\/kerf\/run\/([a-z0-9-]+)\/?/g;
+  const codeBlockRe = /```(tsx|ts)\n([\s\S]*?)```/g;
+  const publishedDocLinkRe =
+    /\]\((\/kerf\/(?:api|docs\/[^)#?]+)\/?(?:#[^)]+)?)\)/g;
+
+  function githubHeadingSlug(heading) {
+    return heading
+      .replace(/<[^>]*>/g, '')
+      .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
+      .replace(/[`*_~]/g, '')
+      .toLowerCase()
+      .replace(/[^\p{Letter}\p{Number}\p{Mark}\-_ ]/gu, '')
+      .replace(/ /g, '-');
   }
-}
-if (process.exitCode === 1) {
-  ok(
-    `${totalExamplePairs} example doc/source pairs — drift detected, see errors above`,
-  );
-  process.exit(1);
-}
-ok(
-  `${totalExamplePairs} example doc/source pairs have matching kerfjs imports`,
-);
 
-// --- Check 4: complete-example links target published docs ----------------
-
-let totalPublishedDocLinks = 0;
-for (const docFile of exampleDocFiles) {
-  const docPath = resolve(exampleDocsDir, docFile);
-  const src = readFileSync(docPath, 'utf8');
-  for (const match of src.matchAll(publishedDocLinkRe)) {
-    const target = match[1];
-    const { url, sourcePath } = sourceForPublishedRoute(target);
-    totalPublishedDocLinks++;
-    if (!sourcePath) {
-      fail(
-        `${docFile}: ${target} does not map to a published site content route`,
-      );
-      continue;
+  function publishedHeadings(src) {
+    const slugs = new Set();
+    const occurrences = new Map();
+    for (const match of src.matchAll(/^#{1,6}\s+(.+)$/gm)) {
+      const base = githubHeadingSlug(match[1]);
+      const occurrence = occurrences.get(base) ?? 0;
+      occurrences.set(base, occurrence + 1);
+      slugs.add(occurrence === 0 ? base : `${base}-${occurrence}`);
     }
-    if (url.hash) {
-      const anchor = decodeURIComponent(url.hash.slice(1));
-      const headings = publishedHeadings(readFileSync(sourcePath, 'utf8'));
-      if (!headings.has(anchor)) {
+    return slugs;
+  }
+
+  function sourceForPublishedRoute(target) {
+    const url = new URL(target, 'https://kerf.invalid');
+    const route = decodeURIComponent(url.pathname)
+      .replace(/^\/kerf\//, '')
+      .replace(/^\/+|\/+$/g, '');
+    const candidates = [
+      resolve(siteContentDir, `${route}.md`),
+      resolve(siteContentDir, `${route}.mdx`),
+      resolve(siteContentDir, route, 'index.md'),
+      resolve(siteContentDir, route, 'index.mdx'),
+    ];
+    return { url, sourcePath: candidates.find(existsSync) };
+  }
+
+  const scratchDir = resolve(repoRoot, 'tests/.docs-examples-scratch');
+  if (existsSync(scratchDir))
+    rmSync(scratchDir, { recursive: true, force: true });
+  mkdirSync(scratchDir, { recursive: true });
+
+  let totalLinks = 0;
+  let totalCompiledBlocks = 0;
+  let totalSkippedBlocks = 0;
+
+  const blocksToCompile = []; // { srcFile, idx, body, lang }
+
+  for (const docFile of docFiles) {
+    const src = readFileSync(docFile, 'utf8');
+    const docName = docFile.split('/').pop();
+
+    // Check 1: every /kerf/run/<name>/ link resolves to a built+tested example.
+    for (const match of src.matchAll(linkRe)) {
+      const name = match[1];
+      totalLinks++;
+      if (!completeApps.has(name)) {
         fail(
-          `${docFile}: ${target} names no published heading in ${relative(repoRoot, sourcePath)}`,
+          `${docName}: /kerf/run/${name}/ link references an example NOT in COMPLETE_APPS at ${completeAppsPath}`,
+        );
+      }
+      if (!describedApps.has(name)) {
+        fail(
+          `${docName}: /kerf/run/${name}/ link references an example with NO test.describe('${name}') block in ${browserSpecPath}`,
         );
       }
     }
-  }
-}
-if (process.exitCode === 1) {
-  ok(
-    `${totalPublishedDocLinks} published documentation links — see errors above`,
-  );
-  process.exit(1);
-}
-ok(
-  `${totalPublishedDocLinks} published documentation links resolve to source routes and headings`,
-);
 
-// --- Check 5: multi-file API recipes --------------------------------------
+    // Check 2: extract self-contained kerf code blocks.
+    let m;
+    let blockIdx = 0;
+    while ((m = codeBlockRe.exec(src)) !== null) {
+      const lang = m[1];
+      const body = m[2];
+      blockIdx++;
 
-const recipeDocs = [
-  resolve(repoRoot, 'docs/8-api-reference.md'),
-  resolve(siteContentDir, 'api.md'),
-];
-const fileHeaderRe = /^\/\/ ([A-Za-z0-9_.-]+\.(?:ts|tsx))\b/;
-
-/** Every recipe in `src`: `{ heading, files: [{ name, body }] }`. */
-function extractRecipes(src) {
-  const recipes = [];
-  for (const section of src.split(/^(?=### )/m)) {
-    const heading = section.slice(0, section.indexOf('\n'));
-    const blocks = [...section.matchAll(/```(tsx|ts)\n([\s\S]*?)```/g)];
-    if (!blocks.some(([, , body]) => fileHeaderRe.test(body))) continue;
-    const files = blocks.map(([, lang, body], index) => ({
-      name: fileHeaderRe.exec(body)?.[1] ?? `block-${index + 1}.${lang}`,
-      body,
-    }));
-    recipes.push({ heading, files });
-  }
-  return recipes;
-}
-
-const recipesByDoc = recipeDocs.map((doc) => ({
-  doc,
-  recipes: extractRecipes(readFileSync(doc, 'utf8')),
-}));
-let totalRecipeFiles = 0;
-for (const { doc, recipes } of recipesByDoc) {
-  const docName = relative(repoRoot, doc);
-  for (const [index, { heading, files }] of recipes.entries()) {
-    const names = new Set(files.map((file) => file.name));
-    const dir = resolve(
-      scratchDir,
-      'recipes',
-      `${docName.replace(/[^A-Za-z0-9]+/g, '-')}-${index + 1}`,
-    );
-    mkdirSync(dir, { recursive: true });
-    for (const { name, body } of files) {
-      for (const [, specifier] of body.matchAll(/from\s+['"](\.[^'"]+)['"]/g)) {
-        const target = specifier.replace(/^\.\//, '').replace(/\.js$/, '');
-        if (![...names].some((n) => n.replace(/\.tsx?$/, '') === target))
-          fail(
-            `${docName} ${heading}: ${name} imports ${specifier}, which names no file in the recipe (${[...names].join(', ')})`,
-          );
+      const importsKerf = /from\s+['"]kerfjs(?:\/[a-z-]+)?['"]/.test(body);
+      if (!importsKerf) {
+        totalSkippedBlocks++;
+        continue;
       }
-      writeFileSync(resolve(dir, name), body);
-      totalRecipeFiles++;
-      totalCompiledBlocks++;
+      // Self-contained = imports ONLY from kerfjs. A block that also pulls in
+      // react / react-dom / relative modules (e.g. the framework-interop examples
+      // on the incremental-adoption page) can't compile in the kerfjs-only scratch
+      // sandbox — it's a multi-runtime fragment, not a runnable unit. Skip it.
+      const importsOutsideKerf = [...body.matchAll(/from\s+['"]([^'"]+)['"]/g)]
+        .map((mm) => mm[1])
+        .some((s) => !/^kerfjs(?:\/[a-z-]+)?$/.test(s));
+      if (importsOutsideKerf) {
+        totalSkippedBlocks++;
+        continue;
+      }
+      if (/\/\*\s*\.\.\.\s*\*\/|\/\/\s*\.\.\./.test(body)) {
+        // Block has explicit "rest of code omitted" placeholders — pedagogical
+        // fragment, not a runnable unit. Skip.
+        totalSkippedBlocks++;
+        continue;
+      }
+
+      blocksToCompile.push({
+        srcFile: docName,
+        idx: blockIdx,
+        body,
+        lang,
+      });
     }
   }
-}
-const [internal, site] = recipesByDoc;
-for (const recipe of internal.recipes) {
-  const twin = site.recipes.find((r) => r.heading === recipe.heading);
-  if (twin === undefined)
-    fail(
-      `${recipe.heading}: in docs/8-api-reference.md but not in the site's api.md`,
+
+  if (process.exitCode === 1) {
+    ok(`${totalLinks} /kerf/run/ links — see errors above`);
+    return;
+  }
+  ok(`${totalLinks} /kerf/run/ links resolve to built+tested examples`);
+
+  // --- Check 3: example doc excerpts mirror their source's kerfjs imports ----
+
+  /** Pull every named import (including `type` imports) from any
+   *  `import { ... } from 'kerfjs[/subpath]'` statement in `src`. */
+  function extractKerfImports(src) {
+    const out = new Set();
+    const re =
+      /import\s*(?:type\s+)?\{\s*([^}]+)\s*\}\s*from\s*['"]kerfjs(?:\/[a-z-]+)?['"]/g;
+    for (const m of src.matchAll(re)) {
+      for (const raw of m[1].split(',')) {
+        const name = raw
+          .trim()
+          .replace(/^type\s+/, '')
+          .split(/\s+as\s+/)[0]
+          .trim();
+        if (name) out.add(name);
+      }
+    }
+    return out;
+  }
+
+  let totalExamplePairs = 0;
+  const exampleDocFiles = existsSync(exampleDocsDir)
+    ? readdirSync(exampleDocsDir).filter(
+        (f) => f.endsWith('.md') && f !== 'index.md',
+      )
+    : [];
+
+  for (const docFile of exampleDocFiles) {
+    const baseName = docFile.replace(/\.md$/, '');
+    const srcPath = resolve(exampleSrcDir, baseName, 'main.tsx');
+    if (!existsSync(srcPath)) continue; // doc has no paired source — skip
+    totalExamplePairs++;
+
+    const srcImports = extractKerfImports(readFileSync(srcPath, 'utf8'));
+    const docImports = extractKerfImports(
+      readFileSync(resolve(exampleDocsDir, docFile), 'utf8'),
     );
-  else if (JSON.stringify(twin.files) !== JSON.stringify(recipe.files))
-    fail(
-      `${recipe.heading}: the site's api.md copy differs from docs/8-api-reference.md`,
+
+    const missing = [...srcImports].filter((i) => !docImports.has(i));
+    if (missing.length > 0) {
+      fail(
+        `${docFile}: paired source examples/complete/${baseName}/main.tsx imports ` +
+          `[${missing.join(', ')}] from kerfjs, but the doc excerpt never mentions ` +
+          `${missing.length === 1 ? 'it' : 'them'}. Update the doc to reflect the canonical pattern.`,
+      );
+    }
+  }
+  if (process.exitCode === 1) {
+    ok(
+      `${totalExamplePairs} example doc/source pairs — drift detected, see errors above`,
     );
-}
-for (const recipe of site.recipes)
-  if (!internal.recipes.some((r) => r.heading === recipe.heading))
-    fail(
-      `${recipe.heading}: in the site's api.md but not in docs/8-api-reference.md`,
-    );
-if (process.exitCode === 1) process.exit(1);
-ok(
-  `${internal.recipes.length + site.recipes.length} multi-file API recipes (${totalRecipeFiles} files) queued to compile; site and internal copies match`,
-);
-
-// --- Compile self-contained blocks via tsc ------------------------------
-
-// Use the existing tests/dist/jsx-typing tsconfig as the template — it
-// already points at the built dist/ types and sets jsxImportSource: kerfjs.
-const baseTsconfig = JSON.parse(readFileSync(distTypingTsconfig, 'utf8'));
-const tsconfig = {
-  compilerOptions: {
-    ...baseTsconfig.compilerOptions,
-    // A recipe's worker file has no imports; every block is still its own module.
-    moduleDetection: 'force',
-    paths: Object.fromEntries(
-      Object.entries(baseTsconfig.compilerOptions.paths).map(([k, v]) => [
-        k,
-        v.map((p) => p.replace(/\.\.\/\.\.\/\.\.\//g, '../../')),
-      ]),
-    ),
-  },
-  include: ['./**/*.ts', './**/*.tsx'],
-  exclude: ['node_modules'],
-};
-writeFileSync(
-  resolve(scratchDir, 'tsconfig.json'),
-  JSON.stringify(tsconfig, null, 2),
-);
-
-for (const { srcFile, idx, body, lang } of blocksToCompile) {
-  const name = `${srcFile.replace(/\.[^.]+$/, '')}-block-${idx}.${lang}`;
-  writeFileSync(resolve(scratchDir, name), body);
-  totalCompiledBlocks++;
-}
-
-if (totalCompiledBlocks === 0) {
+    return;
+  }
   ok(
-    `no self-contained kerf code blocks to compile (${totalSkippedBlocks} blocks skipped as fragments)`,
+    `${totalExamplePairs} example doc/source pairs have matching kerfjs imports`,
   );
-  rmSync(scratchDir, { recursive: true, force: true });
-  process.exit(0);
+
+  // --- Check 4: complete-example links target published docs ----------------
+
+  let totalPublishedDocLinks = 0;
+  for (const docFile of exampleDocFiles) {
+    const docPath = resolve(exampleDocsDir, docFile);
+    const src = readFileSync(docPath, 'utf8');
+    for (const match of src.matchAll(publishedDocLinkRe)) {
+      const target = match[1];
+      const { url, sourcePath } = sourceForPublishedRoute(target);
+      totalPublishedDocLinks++;
+      if (!sourcePath) {
+        fail(
+          `${docFile}: ${target} does not map to a published site content route`,
+        );
+        continue;
+      }
+      if (url.hash) {
+        const anchor = decodeURIComponent(url.hash.slice(1));
+        const headings = publishedHeadings(readFileSync(sourcePath, 'utf8'));
+        if (!headings.has(anchor)) {
+          fail(
+            `${docFile}: ${target} names no published heading in ${relative(repoRoot, sourcePath)}`,
+          );
+        }
+      }
+    }
+  }
+  if (process.exitCode === 1) {
+    ok(
+      `${totalPublishedDocLinks} published documentation links — see errors above`,
+    );
+    return;
+  }
+  ok(
+    `${totalPublishedDocLinks} published documentation links resolve to source routes and headings`,
+  );
+
+  // --- Check 5: multi-file API recipes --------------------------------------
+
+  const recipeDocs = [
+    resolve(repoRoot, 'docs/8-api-reference.md'),
+    resolve(siteContentDir, 'api.md'),
+  ];
+  const fileHeaderRe = /^\/\/ ([A-Za-z0-9_.-]+\.(?:ts|tsx))\b/;
+
+  /** Every recipe in `src`: `{ heading, files: [{ name, body }] }`. */
+  function extractRecipes(src) {
+    const recipes = [];
+    for (const section of src.split(/^(?=### )/m)) {
+      const heading = section.slice(0, section.indexOf('\n'));
+      const blocks = [...section.matchAll(/```(tsx|ts)\n([\s\S]*?)```/g)];
+      if (!blocks.some(([, , body]) => fileHeaderRe.test(body))) continue;
+      const files = blocks.map(([, lang, body], index) => ({
+        name: fileHeaderRe.exec(body)?.[1] ?? `block-${index + 1}.${lang}`,
+        body,
+      }));
+      recipes.push({ heading, files });
+    }
+    return recipes;
+  }
+
+  const recipesByDoc = recipeDocs.map((doc) => ({
+    doc,
+    recipes: extractRecipes(readFileSync(doc, 'utf8')),
+  }));
+  let totalRecipeFiles = 0;
+  for (const { doc, recipes } of recipesByDoc) {
+    const docName = relative(repoRoot, doc);
+    for (const [index, { heading, files }] of recipes.entries()) {
+      const names = new Set(files.map((file) => file.name));
+      const dir = resolve(
+        scratchDir,
+        'recipes',
+        `${docName.replace(/[^A-Za-z0-9]+/g, '-')}-${index + 1}`,
+      );
+      mkdirSync(dir, { recursive: true });
+      for (const { name, body } of files) {
+        for (const [, specifier] of body.matchAll(
+          /from\s+['"](\.[^'"]+)['"]/g,
+        )) {
+          const target = specifier.replace(/^\.\//, '').replace(/\.js$/, '');
+          if (![...names].some((n) => n.replace(/\.tsx?$/, '') === target))
+            fail(
+              `${docName} ${heading}: ${name} imports ${specifier}, which names no file in the recipe (${[...names].join(', ')})`,
+            );
+        }
+        writeFileSync(resolve(dir, name), body);
+        totalRecipeFiles++;
+        totalCompiledBlocks++;
+      }
+    }
+  }
+  const [internal, site] = recipesByDoc;
+  for (const recipe of internal.recipes) {
+    const twin = site.recipes.find((r) => r.heading === recipe.heading);
+    if (twin === undefined)
+      fail(
+        `${recipe.heading}: in docs/8-api-reference.md but not in the site's api.md`,
+      );
+    else if (JSON.stringify(twin.files) !== JSON.stringify(recipe.files))
+      fail(
+        `${recipe.heading}: the site's api.md copy differs from docs/8-api-reference.md`,
+      );
+  }
+  for (const recipe of site.recipes)
+    if (!internal.recipes.some((r) => r.heading === recipe.heading))
+      fail(
+        `${recipe.heading}: in the site's api.md but not in docs/8-api-reference.md`,
+      );
+  if (process.exitCode === 1) return;
+  ok(
+    `${internal.recipes.length + site.recipes.length} multi-file API recipes (${totalRecipeFiles} files) queued to compile; site and internal copies match`,
+  );
+
+  // --- Compile self-contained blocks via tsc ------------------------------
+
+  // Use the existing tests/dist/jsx-typing tsconfig as the template — it
+  // already points at the built dist/ types and sets jsxImportSource: kerfjs.
+  const baseTsconfig = JSON.parse(readFileSync(distTypingTsconfig, 'utf8'));
+  const tsconfig = {
+    compilerOptions: {
+      ...baseTsconfig.compilerOptions,
+      // A recipe's worker file has no imports; every block is still its own module.
+      moduleDetection: 'force',
+      paths: Object.fromEntries(
+        Object.entries(baseTsconfig.compilerOptions.paths).map(([k, v]) => [
+          k,
+          v.map((p) => p.replace(/\.\.\/\.\.\/\.\.\//g, '../../')),
+        ]),
+      ),
+    },
+    include: ['./**/*.ts', './**/*.tsx'],
+    exclude: ['node_modules'],
+  };
+  writeFileSync(
+    resolve(scratchDir, 'tsconfig.json'),
+    JSON.stringify(tsconfig, null, 2),
+  );
+
+  for (const { srcFile, idx, body, lang } of blocksToCompile) {
+    const name = `${srcFile.replace(/\.[^.]+$/, '')}-block-${idx}.${lang}`;
+    writeFileSync(resolve(scratchDir, name), body);
+    totalCompiledBlocks++;
+  }
+
+  if (totalCompiledBlocks === 0) {
+    ok(
+      `no self-contained kerf code blocks to compile (${totalSkippedBlocks} blocks skipped as fragments)`,
+    );
+    rmSync(scratchDir, { recursive: true, force: true });
+    return;
+  }
+
+  try {
+    // argv form, not a shell string: the scratch path is absolute and a
+    // checkout path containing spaces would split under a shell.
+    execFileSync(
+      process.execPath,
+      [resolve(repoRoot, 'node_modules/typescript7/bin/tsc'), '-p', scratchDir],
+      { stdio: 'inherit', cwd: repoRoot },
+    );
+    ok(
+      `${totalCompiledBlocks} self-contained kerf code blocks compile clean (${totalSkippedBlocks} fragments skipped)`,
+    );
+    rmSync(scratchDir, { recursive: true, force: true });
+  } catch {
+    fail(
+      `${totalCompiledBlocks} self-contained kerf code blocks attempted; tsc failed above. Scratch dir kept at ${scratchDir} for inspection.`,
+    );
+    return;
+  }
 }
 
-try {
-  // argv form, not a shell string: the scratch path is absolute and a
-  // checkout path containing spaces would split under a shell.
-  execFileSync(
-    process.execPath,
-    [resolve(repoRoot, 'node_modules/typescript7/bin/tsc'), '-p', scratchDir],
-    { stdio: 'inherit', cwd: repoRoot },
-  );
-  ok(
-    `${totalCompiledBlocks} self-contained kerf code blocks compile clean (${totalSkippedBlocks} fragments skipped)`,
-  );
-  rmSync(scratchDir, { recursive: true, force: true });
-} catch {
-  fail(
-    `${totalCompiledBlocks} self-contained kerf code blocks attempted; tsc failed above. Scratch dir kept at ${scratchDir} for inspection.`,
-  );
-  process.exit(1);
-}
+main();

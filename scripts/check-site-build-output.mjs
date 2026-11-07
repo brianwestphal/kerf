@@ -1,5 +1,7 @@
 import { pathToFileURL } from 'node:url';
 
+import { fail, ok } from './lib/report.mjs';
+
 const BLOCKING_WARNINGS = [
   /A static route cannot be defined more than once\./i,
   /A dynamic SSR route cannot be defined more than once\./i,
@@ -18,9 +20,7 @@ async function main() {
   for await (const chunk of process.stdin) output += chunk;
   const warnings = findBlockingSiteBuildWarnings(output);
   if (warnings.length === 0) {
-    console.log(
-      'Site build warning gate: no route collisions or future hard errors',
-    );
+    ok('check-site-build-output', 'no route collisions or future hard errors');
     return;
   }
 
@@ -28,7 +28,7 @@ async function main() {
     'Site build warning gate rejected warnings that represent route collisions or future hard errors:',
   );
   for (const warning of warnings) console.error(warning);
-  process.exitCode = 1;
+  fail('check-site-build-output', `${warnings.length} blocking warning(s).`);
 }
 
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href)

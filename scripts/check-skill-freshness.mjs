@@ -25,6 +25,8 @@ import { readdirSync, readFileSync, statSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
+import { fail, ok } from './lib/report.mjs';
+
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const SKILLS_DIR = join(ROOT, '.claude', 'skills');
 
@@ -177,10 +179,11 @@ if (problems.length > 0) {
       'then reports findings that are not real. Prefer referencing the source of truth\n' +
       'over quoting it.\n',
   );
-  process.exit(1);
+  fail('check-skill-freshness', `${problems.length} stale skill claim(s).`);
+} else {
+  ok(
+    'check-skill-freshness',
+    `OK — ${skillFiles().length} skill file(s); ` +
+      'no contradicting thresholds, dist entries, or source paths.',
+  );
 }
-
-console.log(
-  `[check-skill-freshness] OK — ${skillFiles().length} skill file(s); ` +
-    'no contradicting thresholds, dist entries, or source paths.',
-);

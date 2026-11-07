@@ -28,6 +28,8 @@ import { readFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
+import { fail, ok } from './lib/report.mjs';
+
 const REPO_ROOT = dirname(dirname(fileURLToPath(import.meta.url)));
 const API_DOC = resolve(REPO_ROOT, 'docs/8-api-reference.md');
 
@@ -135,8 +137,9 @@ function main() {
   }
 
   if (missing.length === 0) {
-    console.log(
-      `[check-doc-api-coverage] OK — docs/8-api-reference.md mentions every public export.`,
+    ok(
+      'check-doc-api-coverage',
+      'OK — docs/8-api-reference.md mentions every public export.',
     );
     return;
   }
@@ -151,7 +154,10 @@ function main() {
   console.error(
     '\nAdd a heading or at least a prose mention in docs/8-api-reference.md, then re-run.',
   );
-  process.exit(1);
+  fail(
+    'check-doc-api-coverage',
+    `${missing.length} public export(s) missing from the API reference.`,
+  );
 }
 
 main();

@@ -52,6 +52,8 @@ import { gzipSync } from 'node:zlib';
 
 import { build } from 'esbuild';
 
+import { fail, ok } from './lib/report.mjs';
+
 const HERE = dirname(fileURLToPath(import.meta.url));
 const ROOT = resolve(HERE, '..');
 const DIST = resolve(ROOT, 'dist');
@@ -736,10 +738,8 @@ async function main() {
   const whyIndex = args.indexOf('--why');
 
   if (!existsSync(resolve(DIST, 'index.js'))) {
-    console.error(
-      '[check-bundle-size] dist/ not found — run `npm run build` first.',
-    );
-    process.exit(1);
+    fail('check-bundle-size', 'dist/ not found — run `npm run build` first.');
+    return;
   }
 
   if (whyIndex !== -1) {
@@ -749,7 +749,8 @@ async function main() {
       console.error(
         `[check-bundle-size] unknown entry "${name}". Known: ${BUDGETS.map((b) => b.name).join(', ')}`,
       );
-      process.exit(1);
+      fail('check-bundle-size', `unknown entry "${name}"`);
+      return;
     }
     const { metafile } = await measure(spec, { metafile: true });
     const inputs = Object.entries(metafile.outputs)[0][1].inputs;
@@ -828,7 +829,11 @@ async function main() {
         'llms.txt docs/ site/src/content/docs/`. The migration pages also carry a Delta row\n' +
         "computed against kerf's size, which needs recalculating by hand.\n",
     );
-    process.exit(1);
+    fail(
+      'check-bundle-size',
+      `${claimProblems.length} advertised size claim(s) differ from the bundle.`,
+    );
+    return;
   }
 
   if (wins.length > 0) {
@@ -843,14 +848,22 @@ async function main() {
         'and say why in the message. Otherwise run `node scripts/check-bundle-size.mjs --why <entry>` to see ' +
         'which modules got pulled in.',
     );
-    process.exit(1);
+    fail(
+      'check-bundle-size',
+      `${failures.length} bundle budget or content failure(s).`,
+    );
+    return;
   }
-  if (wins.length > 0) process.exit(1);
+  if (wins.length > 0) {
+    fail('check-bundle-size', `${wins.length} budget(s) should be lowered.`);
+    return;
+  }
 
-  console.log(
-    `\n[check-bundle-size] OK — every entry within budget, and ${DOC_CLAIMS.length} advertised ` +
+  ok(
+    'check-bundle-size',
+    `OK — every entry within budget, and ${DOC_CLAIMS.length} advertised ` +
       `size claims match what the bundle weighs, and ${DELTA_PAGES.length} migration deltas add up.`,
   );
 }
 
-await main();
+await main().catch((error) => fail('check-bundle-size', error.message));

@@ -41,6 +41,8 @@ import { fileURLToPath } from 'node:url';
 
 import ts from 'typescript';
 
+import { fail, ok } from './lib/report.mjs';
+
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const SRC = join(ROOT, 'src');
 
@@ -55,7 +57,8 @@ function ruleText() {
       'check-design-rule-5: could not find Design rule 5 in AGENTS.md.\n' +
         'If the rule was renumbered or reworded, update the anchor in this script.',
     );
-    process.exit(1);
+    fail('check-design-rule-5', 'Design rule 5 was not found.');
+    return null;
   }
   // The rule runs to the next numbered design rule, or to the end of the list.
   const rest = agentsMd.slice(start + 1);
@@ -174,35 +177,49 @@ function moduleState(path) {
   ];
 }
 
-const rule = ruleText();
-const unaccounted = [];
+function main() {
+  const rule = ruleText();
+  if (rule === null) return;
+  const unaccounted = [];
 
-for (const file of sourceFiles()) {
-  const rel = relative(ROOT, file);
-  // Categorically covered: dev-only bookkeeping in the dev-* modules.
-  if (/(^|\/)dev-[\w-]+\.ts$/.test(rel)) continue;
-  const key = relative(SRC, file);
-  for (const { name, line, kind } of moduleState(file)) {
-    if (rule.includes(`${key}:${name}`)) continue;
-    unaccounted.push({ where: `${rel}:${line}`, name: `${key}:${name}`, kind });
+  for (const file of sourceFiles()) {
+    const rel = relative(ROOT, file);
+    // Categorically covered: dev-only bookkeeping in the dev-* modules.
+    if (/(^|\/)dev-[\w-]+\.ts$/.test(rel)) continue;
+    const key = relative(SRC, file);
+    for (const { name, line, kind } of moduleState(file)) {
+      if (rule.includes(`${key}:${name}`)) continue;
+      unaccounted.push({
+        where: `${rel}:${line}`,
+        name: `${key}:${name}`,
+        kind,
+      });
+    }
   }
+
+  if (unaccounted.length > 0) {
+    console.error(
+      '\nModule-level mutable state not accounted for by AGENTS.md Design rule 5:\n',
+    );
+    for (const hit of unaccounted)
+      console.error(`  ${hit.where}  —  ${hit.name} (${hit.kind})`);
+    console.error(
+      '\nThe rule enumerates where module-level mutable state may live, and it is only\n' +
+        'useful for judging a new one while that list is complete. Either fold this into\n' +
+        'an existing clause, add a clause for it, or move the state into an argument.\n' +
+        'Being correct code is not sufficient — the rule has to say so.\n',
+    );
+    fail(
+      'check-design-rule-5',
+      `${unaccounted.length} mutable state location(s) are undocumented.`,
+    );
+    return;
+  }
+
+  ok(
+    'check-design-rule-5',
+    'OK — every top-level `let` and function-mutated `const` container in src/ maps to a documented `file:name` clause.',
+  );
 }
 
-if (unaccounted.length > 0) {
-  console.error(
-    '\nModule-level mutable state not accounted for by AGENTS.md Design rule 5:\n',
-  );
-  for (const hit of unaccounted)
-    console.error(`  ${hit.where}  —  ${hit.name} (${hit.kind})`);
-  console.error(
-    '\nThe rule enumerates where module-level mutable state may live, and it is only\n' +
-      'useful for judging a new one while that list is complete. Either fold this into\n' +
-      'an existing clause, add a clause for it, or move the state into an argument.\n' +
-      'Being correct code is not sufficient — the rule has to say so.\n',
-  );
-  process.exit(1);
-}
-
-console.log(
-  '[check-design-rule-5] OK — every top-level `let` and function-mutated `const` container in src/ maps to a documented `file:name` clause.',
-);
+main();

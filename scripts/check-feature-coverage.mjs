@@ -46,6 +46,8 @@ import { fileURLToPath } from 'node:url';
 
 import ts from 'typescript';
 
+import { fail, ok } from './lib/report.mjs';
+
 // The override lets the gate's unit tests exercise complete, isolated fixture
 // repositories without modifying the real feature index or source tree.
 const REPO_ROOT = env.KERF_FEATURE_COVERAGE_ROOT
@@ -250,7 +252,8 @@ function main() {
     console.error(
       `[check-feature-coverage] missing index doc: docs/14-feature-coverage.md`,
     );
-    process.exit(1);
+    fail('check-feature-coverage', 'feature index is missing.');
+    return;
   }
   const rows = collectRows(readFileSync(INDEX_DOC, 'utf8'));
   const errors = [];
@@ -376,8 +379,9 @@ function main() {
   }
 
   if (errors.length === 0 && missingExports.length === 0) {
-    console.log(
-      `[check-feature-coverage] OK — ${rows.length} feature-index rows all map to live guarding tests; every public value export is represented.`,
+    ok(
+      'check-feature-coverage',
+      `OK — ${rows.length} feature-index rows all map to live guarding tests; every public value export is represented.`,
     );
     return;
   }
@@ -399,7 +403,10 @@ function main() {
       'Add a behavior row for each to docs/14-feature-coverage.md (or EXPORT_EXEMPT it if genuinely internal).',
     );
   }
-  process.exit(1);
+  fail(
+    'check-feature-coverage',
+    `${errors.length + missingExports.length} coverage mapping(s) failed.`,
+  );
 }
 
 main();

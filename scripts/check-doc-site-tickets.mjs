@@ -27,6 +27,7 @@ import { dirname, join, relative } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import { PUBLISHED_SOURCE_DOCS } from '../site/scripts/lib/published-docs.mjs';
+import { fail, ok } from './lib/report.mjs';
 
 const REPO_ROOT = dirname(dirname(fileURLToPath(import.meta.url)));
 const SITE_DOCS_DIR = join(REPO_ROOT, 'site/src/content/docs');
@@ -86,7 +87,11 @@ function main() {
   }
 
   if (offenders.length === 0) {
-    process.exit(0);
+    ok(
+      'check-doc-site-tickets',
+      `OK — ${files.length} published document(s) have no ticket markers.`,
+    );
+    return;
   }
 
   const total = offenders.reduce((n, o) => n + o.hits.length, 0);
@@ -105,7 +110,7 @@ function main() {
       'Replace each marker with the self-contained summary it stands for (usually\n' +
       'the surrounding prose already says it, so the marker is a straight deletion).\n',
   );
-  process.exit(1);
+  fail('check-doc-site-tickets', `${total} published ticket marker(s) found.`);
 }
 
 main();

@@ -71,6 +71,8 @@ import { existsSync, readFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
+import { fail, ok } from './lib/report.mjs';
+
 const REPO_ROOT = dirname(dirname(fileURLToPath(import.meta.url)));
 const DIST = resolve(REPO_ROOT, 'dist');
 const API_DOC = resolve(REPO_ROOT, 'docs/8-api-reference.md');
@@ -83,8 +85,6 @@ const ENTRY_DTS = [
     /'src\/([\w-]+)\.ts'/g,
   ),
 ].map((m) => `${m[1]}.d.ts`);
-if (ENTRY_DTS.length === 0)
-  throw new Error('could not read the entry list from tsup.config.ts');
 
 // Internal function exports the JSX transform consumes but users never call by
 // hand, plus JSX sugar with no user-facing parameter signature. Presence of
@@ -405,12 +405,20 @@ function overloadMismatchReason(dtsDecl, docSig) {
 }
 
 function main() {
+  if (ENTRY_DTS.length === 0) {
+    fail(
+      'check-doc-api-signatures',
+      'could not read the entry list from tsup.config.ts',
+    );
+    return;
+  }
   if (!existsSync(resolve(DIST, 'index.d.ts'))) {
     console.error(
       '[check-doc-api-signatures] dist/*.d.ts not found — run `npm run build` first ' +
         '(or use `npm run check:docs:api-signatures`, which builds).',
     );
-    process.exit(1);
+    fail('check-doc-api-signatures', 'dist declarations are missing.');
+    return;
   }
 
   const doc = readFileSync(API_DOC, 'utf8');
@@ -466,9 +474,9 @@ function main() {
   }
 
   if (problems.length === 0) {
-    console.log(
-      `[check-doc-api-signatures] OK — ${targets.size} public function exports match their ` +
-        'documented signatures.',
+    ok(
+      'check-doc-api-signatures',
+      `OK — ${targets.size} public function exports match their documented signatures.`,
     );
     return;
   }
@@ -484,7 +492,10 @@ function main() {
       'site/src/content/docs/api.md), or fix the export. See the matching rule ' +
       'documented at the top of scripts/check-doc-api-signatures.mjs.',
   );
-  process.exit(1);
+  fail(
+    'check-doc-api-signatures',
+    `${problems.length} public signature(s) drifted.`,
+  );
 }
 
 main();

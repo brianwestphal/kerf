@@ -31,6 +31,8 @@ import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
+import { fail, ok } from './lib/report.mjs';
+
 const REPO_ROOT = dirname(dirname(fileURLToPath(import.meta.url)));
 
 // Source docs that carry pinned CDN URLs. The site pages under
@@ -66,7 +68,8 @@ function main() {
       `[check-cdn-versions] could not read a major from package.json ` +
         `(version=${pkg.version}, @preact/signals-core=${pkg.dependencies?.['@preact/signals-core']}).`,
     );
-    process.exit(1);
+    fail('check-cdn-versions', 'could not read package major versions.');
+    return;
   }
 
   const offenders = [];
@@ -109,15 +112,17 @@ function main() {
       `[check-cdn-versions] found no \`kerfjs@<version>\` CDN pins in [${SCANNED.join(', ')}]. ` +
         `A file moved or the URL shape changed — update SCANNED in this script.`,
     );
-    process.exit(1);
+    fail('check-cdn-versions', 'no kerfjs CDN pins were found.');
+    return;
   }
 
   if (offenders.length === 0) {
-    console.log(
-      `[check-cdn-versions] OK — ${kerfHits} kerfjs@ CDN pin(s) on major ${kerfMajor}; ` +
+    ok(
+      'check-cdn-versions',
+      `OK — ${kerfHits} kerfjs@ CDN pin(s) on major ${kerfMajor}; ` +
         `signals-core pins on major ${signalsMajor}.`,
     );
-    process.exit(0);
+    return;
   }
 
   console.error(
@@ -132,7 +137,7 @@ function main() {
   console.error(
     `\nBump the pins to the current major. See docs/6-jsx-runtime.md §6.11.1.\n`,
   );
-  process.exit(1);
+  fail('check-cdn-versions', `${offenders.length} stale CDN version pin(s).`);
 }
 
 main();

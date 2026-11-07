@@ -10,6 +10,8 @@ import {
 import { basename, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
+import { fail, ok } from './lib/report.mjs';
+
 const root = fileURLToPath(new URL('..', import.meta.url));
 const temporary = mkdtempSync(resolve(root, '.packed-jsx-typing-'));
 
@@ -75,9 +77,12 @@ try {
   const manifest = JSON.parse(
     readFileSync(join(packageRoot, 'package.json'), 'utf8'),
   );
-  console.log(
-    `[check-packed-jsx-typing] OK — ${manifest.name}@${manifest.version} exports recursive JSXChildren declarations.`,
+  ok(
+    'check-packed-jsx-typing',
+    `OK — ${manifest.name}@${manifest.version} exports recursive JSXChildren declarations.`,
   );
+} catch (error) {
+  fail('check-packed-jsx-typing', error.message);
 } finally {
   rmSync(temporary, { recursive: true, force: true });
 }
