@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 
+import { realpathSync } from 'node:fs';
 import { readFile, writeFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -87,7 +88,8 @@ export async function runCatalogProjection(argv) {
 
 if (
   process.argv[1] &&
-  resolve(process.argv[1]) === fileURLToPath(import.meta.url)
+  // npm runs bins through symlinks (node_modules/.bin), so compare real paths.
+  realpathSync(resolve(process.argv[1])) === fileURLToPath(import.meta.url)
 ) {
   runCatalogProjection(process.argv.slice(2)).catch((error) => {
     process.stderr.write(`kerf-catalog-demo: ${error.message}\n`);
