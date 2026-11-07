@@ -28,6 +28,10 @@ by type name (`createEditor({ fieldEditors })`, or the Vite plugin's
 `src/kerf-ui-field-editors.ts`) and compose `context.form()` with `set` and
 `control` attributes rather than rebuilding the type-driven form
 (`../docs/editor-host.md`).
+A view document (`*.kui.json`) is the source of truth for its generated
+`*.view.ts`: change the document and run `kerf-ui-view generate`, never edit
+the module, and validate documents with `validateView` from
+`@kerfjs/ui/view` (`../docs/view.md`).
 Treat each `KUI-T###` contract as an exact declaration guarantee, including its
 documented dynamic-data widening. Do not extend those diagnostics to child
 markup, live DOM relationships, disposer invocation, or other conditions that

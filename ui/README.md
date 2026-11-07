@@ -927,6 +927,11 @@ so your components preview and edit beside Kerf UI's. `@kerfjs/ui/editor` is
 the editor module for a host that builds its own page. See the
 [editor host guide](./docs/editor-host.md).
 
+The editor writes view documents (`*.kui.json`). `@kerfjs/ui/view` validates
+them (`validateView`) and renders them at runtime (`interpretView`), and the
+`kerf-ui-view` CLI generates each one's read-only, typed `*.view.ts` module
+(`generate`, `check`, `diff`). See the [view documents guide](./docs/view.md).
+
 ## Design and tool guidance
 
 - [Component selection and composition](./docs/component-selection.md)
