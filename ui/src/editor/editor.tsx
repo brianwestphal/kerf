@@ -160,6 +160,12 @@ import {
   fieldEditorFor,
   type FieldEditors,
 } from './field-editors.js';
+import {
+  controlKey,
+  type FieldPlace,
+  type OpenField,
+  placeKey,
+} from './field-place.js';
 import { contentOf, nodesToText, textToNodes } from './model/content.js';
 import {
   controlOf,
@@ -278,10 +284,8 @@ import {
   appParamFor,
   containerFor,
   documentInDeclaredOrder,
-  type FieldContainer,
   type FieldEditorKind,
   fieldEditorKind,
-  type FieldPath,
   fieldSummary,
   fieldZoneKeys,
   isAppSupplied,
@@ -1050,28 +1054,6 @@ function controlValue(field: HTMLElement): string | boolean {
     ? input.checked
     : input.value;
 }
-
-/** Where an inspector control writes: a prop, or a field inside one. */
-interface FieldPlace {
-  readonly prop: string;
-  readonly path: FieldPath;
-}
-
-/** An open field editor (KF-Z9S029): a place in the selected node's prop. */
-interface OpenField extends FieldPlace {
-  readonly node: string;
-  readonly container: FieldContainer;
-}
-
-/** A place's key for its error and Custom size state: `gap`, `mainPane.gap`. */
-const placeKey = (place: FieldPlace) => [place.prop, ...place.path].join('.');
-
-/**
- * A control's morph key (KF-QCBJ4F): rows come and go above the controls
- * (a node's problems), and an unkeyed morph then turned one prop's input
- * into another's, which in WebKit swallowed the next edit's change event.
- */
-const controlKey = (place: FieldPlace) => `editor-control:${placeKey(place)}`;
 
 /** Identifies what the Inspector shows, so a change of subject is detectable. */
 function selectionKey(selection: Selection): string {
