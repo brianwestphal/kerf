@@ -1,26 +1,24 @@
-import { createHash, randomUUID } from 'node:crypto';
-import { execFile } from 'node:child_process';
-import {
-  access,
-  mkdir,
-  readFile,
-  realpath,
-  readdir,
-  rename,
-  rm,
-  rmdir,
-  lstat,
-  writeFile,
-} from 'node:fs/promises';
+import { readFile, realpath } from 'node:fs/promises';
 import { createRequire } from 'node:module';
-import { dirname, isAbsolute, relative, resolve } from 'node:path';
+import { dirname, relative, resolve } from 'node:path';
 import process from 'node:process';
 import { fileURLToPath } from 'node:url';
-import { promisify } from 'node:util';
 
-import { braceExpand, minimatch } from 'minimatch';
-import { parse as parseYaml } from 'yaml';
-
+import {
+  contained,
+  dependencies,
+  describeValue,
+  exists,
+  parseJsonFile,
+  portable,
+  readJson,
+  readText,
+  redactText,
+  sha256,
+  shellArg,
+  stableJson,
+} from './common.mjs';
+import { detectMode, packageManagerInfo, selectPackage } from './detect.mjs';
 import {
   applyJsoncEdits,
   jsoncInsertProperties,
@@ -34,74 +32,10 @@ import {
   uiPrettierConfig,
 } from './ui-baseline.mjs';
 
-const execFileAsync = promisify(execFile);
+export { applyKerfSetup } from './apply.mjs';
+
 const packageRoot = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const marker = '<!-- KERF-APP-CANONICAL-END · your customizations below -->';
-
-const exists = async (path) => {
-  try {
-    await access(path);
-    return true;
-  } catch {
-    return false;
-  }
-};
-
-const portable = (root, path) =>
-  relative(root, path).replaceAll('\\', '/') || '.';
-const shellArg = (value) => `'${value.replaceAll("'", "'\\''")}'`;
-const contained = (root, path) => {
-  const offset = relative(root, path);
-  return (
-    offset === '' ||
-    (!offset.startsWith(`..${process.platform === 'win32' ? '\\' : '/'}`) &&
-      offset !== '..' &&
-      !isAbsolute(offset))
-  );
-};
-const stableJson = (value) => `${JSON.stringify(value, null, 2)}\n`;
-const sha256 = (value) =>
-  createHash('sha256').update(value, 'utf8').digest('hex');
-const redactText = (value) =>
-  String(value).replace(
-    /([a-z][a-z0-9+.-]*:\/\/)[^\s/@:]+(?::[^\s/@]*)?@/gi,
-    '$1<redacted>@',
-  );
-const describeValue = (key, value) =>
-  /token|secret|password|credential/i.test(key)
-    ? '<redacted>'
-    : redactText(JSON.stringify(value));
-
-/** A file's text, or null when it does not exist; other read errors propagate. */
-async function readText(path) {
-  try {
-    return await readFile(path, 'utf8');
-  } catch (error) {
-    if (error?.code === 'ENOENT') return null;
-    throw error;
-  }
-}
-
-/**
- * Parses a file's JSON text (null stays null). Malformed JSON names the file,
- * relative to `root` when given: `<path> is invalid JSON: …`.
- */
-function parseJsonFile(source, path, root) {
-  if (source === null) return null;
-  try {
-    return JSON.parse(source);
-  } catch (error) {
-    throw new Error(
-      `${root ? portable(root, path) : path} is invalid JSON: ${error.message}`,
-      { cause: error },
-    );
-  }
-}
-
-/** A file's parsed JSON, or null when it does not exist. */
-async function readJson(path, root) {
-  return parseJsonFile(await readText(path), path, root);
-}
 
 function validateSetupState(state) {
   if (!state || typeof state !== 'object' || Array.isArray(state))
@@ -149,14 +83,6 @@ function validateSetupState(state) {
   }
 }
 
-function dependencies(manifest) {
-  return {
-    ...(manifest.dependencies ?? {}),
-    ...(manifest.devDependencies ?? {}),
-    ...(manifest.peerDependencies ?? {}),
-  };
-}
-
 function allowsVersion(range, version) {
   if (typeof range !== 'string') return false;
   if (range === version || range === '*' || range === 'latest') return true;
@@ -174,227 +100,6 @@ function allowsVersion(range, version) {
   if (declared[1] === '~')
     return requested[0] === base[0] && requested[1] === base[1];
   return true;
-}
-
-function validatedWorkspacePattern(pattern) {
-  if (typeof pattern !== 'string' || pattern !== pattern.trim() || !pattern)
-    throw new Error(`Unsafe workspace pattern ${String(pattern)}.`);
-  const negated = pattern.startsWith('!');
-  const body = negated ? pattern.slice(1) : pattern;
-  if (
-    !body ||
-    body.startsWith('!') ||
-    isAbsolute(body) ||
-    /^[A-Za-z]:/.test(body) ||
-    body.startsWith('//') ||
-    body.includes('\\') ||
-    body.includes('\0')
-  )
-    throw new Error(`Unsafe workspace pattern ${pattern}.`);
-  let expansions;
-  try {
-    expansions = braceExpand(body);
-    // Compile as well as expand so malformed extglobs/classes fail here.
-    minimatch('', body, { nonegate: true });
-  } catch {
-    throw new Error(`Invalid workspace pattern ${pattern}.`);
-  }
-  if (
-    !expansions.length ||
-    expansions.some(
-      (expanded) =>
-        isAbsolute(expanded) ||
-        expanded.split('/').some((segment) => segment === '..'),
-    )
-  )
-    throw new Error(`Unsafe workspace pattern ${pattern}.`);
-  return { body, negated };
-}
-
-async function pnpmWorkspacePatterns(root) {
-  const source = await readText(resolve(root, 'pnpm-workspace.yaml'));
-  if (source === null) return [];
-  let document;
-  try {
-    document = parseYaml(source);
-  } catch (error) {
-    throw new Error(`pnpm-workspace.yaml is invalid: ${error.message}`, {
-      cause: error,
-    });
-  }
-  if (
-    !document ||
-    typeof document !== 'object' ||
-    !Array.isArray(document.packages) ||
-    document.packages.some((pattern) => typeof pattern !== 'string')
-  )
-    throw new Error(
-      'pnpm-workspace.yaml packages must be an array of strings.',
-    );
-  return [...document.packages];
-}
-
-async function workspacePackages(root) {
-  const rootManifest = await readJson(resolve(root, 'package.json'), root);
-  if (!rootManifest) throw new Error(`${root} has no package.json.`);
-  let manifestPatterns = [];
-  if (rootManifest.workspaces !== undefined) {
-    const declaredPatterns = Array.isArray(rootManifest.workspaces)
-      ? rootManifest.workspaces
-      : rootManifest.workspaces?.packages;
-    if (!Array.isArray(declaredPatterns))
-      throw new Error(
-        'package.json workspaces must be an array or an object with a packages array.',
-      );
-    manifestPatterns = [...declaredPatterns];
-  }
-  const patterns = [
-    ...manifestPatterns,
-    ...(await pnpmWorkspacePatterns(root)),
-  ].map(validatedWorkspacePattern);
-  const positivePatterns = patterns.filter(({ negated }) => !negated);
-  const rootReal = await realpath(root);
-  const candidates = new Map();
-  const ignored = new Set([
-    '.git',
-    '.hg',
-    '.pnpm-store',
-    '.svn',
-    '.yarn',
-    'node_modules',
-  ]);
-  const visit = async (directory, relativeDirectory = '') => {
-    const entries = (await readdir(directory, { withFileTypes: true })).sort(
-      (left, right) => left.name.localeCompare(right.name),
-    );
-    for (const entry of entries) {
-      if (ignored.has(entry.name)) continue;
-      const childRelative = relativeDirectory
-        ? `${relativeDirectory}/${entry.name}`
-        : entry.name;
-      if (
-        !positivePatterns.some(({ body }) =>
-          minimatch(childRelative, body, { nonegate: true, partial: true }),
-        )
-      )
-        continue;
-      const child = resolve(directory, entry.name);
-      if (entry.isSymbolicLink()) {
-        const actual = await realpath(child);
-        if (!contained(rootReal, actual))
-          throw new Error(
-            `Workspace package symlink escapes the workspace: ${childRelative}.`,
-          );
-        const manifest = await readJson(resolve(child, 'package.json'), root);
-        if (manifest)
-          candidates.set(childRelative, { directory: child, manifest });
-        continue;
-      }
-      if (!entry.isDirectory()) continue;
-      const manifest = await readJson(resolve(child, 'package.json'), root);
-      if (manifest)
-        candidates.set(childRelative, { directory: child, manifest });
-      await visit(child, childRelative);
-    }
-  };
-  if (positivePatterns.length) await visit(root);
-  const selected = new Map();
-  for (const { body, negated } of patterns)
-    for (const [path, candidate] of [...candidates].sort(([left], [right]) =>
-      left.localeCompare(right),
-    ))
-      if (minimatch(path, body, { nonegate: true })) {
-        if (negated) selected.delete(path);
-        else selected.set(path, candidate);
-      }
-  const packages = [
-    { directory: root, manifest: rootManifest },
-    ...[...selected]
-      .sort(([left], [right]) => left.localeCompare(right))
-      .map(([, candidate]) => candidate),
-  ];
-  const actualDirectories = new Map([[rootReal, '.']]);
-  for (const { directory } of packages) {
-    if (directory === root) continue;
-    const actual = await realpath(directory);
-    const previous = actualDirectories.get(actual);
-    if (previous)
-      throw new Error(
-        `Workspace package aliases ${previous} and ${portable(root, directory)} resolve to the same directory.`,
-      );
-    actualDirectories.set(actual, portable(root, directory));
-  }
-  return packages;
-}
-
-function declaredMode(manifest) {
-  const deps = dependencies(manifest);
-  if (deps['@kerfjs/ui']) return 'ui';
-  if (deps.kerfjs) return 'core';
-  return null;
-}
-
-async function sourceMode(directory) {
-  const queue = [resolve(directory, 'src')];
-  let inspected = 0;
-  let core = false;
-  while (queue.length && inspected < 200) {
-    const current = queue.shift();
-    let entries;
-    try {
-      entries = await readdir(current, { withFileTypes: true });
-    } catch {
-      continue;
-    }
-    for (const entry of entries) {
-      const path = resolve(current, entry.name);
-      if (entry.isDirectory()) queue.push(path);
-      else if (/\.(?:[cm]?[jt]sx?)$/.test(entry.name)) {
-        inspected += 1;
-        const source = await readText(path);
-        if (/['"]@kerfjs\/ui(?:\/[^'"]*)?['"]/.test(source)) return 'ui';
-        if (/['"]kerfjs(?:\/[^'"]*)?['"]/.test(source)) core = true;
-      }
-    }
-  }
-  return core ? 'core' : null;
-}
-
-async function detectMode(candidate) {
-  return declaredMode(candidate.manifest) ?? sourceMode(candidate.directory);
-}
-
-async function selectPackage(root, selector, requestedMode) {
-  const packages = await workspacePackages(root);
-  if (selector) {
-    const direct = resolve(root, selector);
-    const pathMatch = packages.find(({ directory }) => directory === direct);
-    const nameMatches = packages.filter(
-      ({ manifest }) => manifest.name === selector,
-    );
-    if (!pathMatch && nameMatches.length > 1)
-      throw new Error(
-        `Workspace package name ${selector} is ambiguous (${nameMatches
-          .map(({ directory }) => portable(root, directory))
-          .join(', ')}); select a relative package path.`,
-      );
-    const selected = pathMatch ?? nameMatches[0];
-    if (!selected)
-      throw new Error(`Workspace package ${selector} was not found.`);
-    return selected;
-  }
-  const candidates = [];
-  for (const candidate of packages)
-    if ((await detectMode(candidate)) || requestedMode)
-      candidates.push(candidate);
-  if (candidates.length === 1) return candidates[0];
-  if (!candidates.length)
-    throw new Error('No Kerf package detected; pass --core or --ui.');
-  throw new Error(
-    `Multiple Kerf packages detected (${candidates
-      .map(({ manifest }) => manifest.name ?? '<unnamed>')
-      .join(', ')}); pass --package <name|path>.`,
-  );
 }
 
 function splitCanonical(source) {
@@ -529,45 +234,6 @@ function metadataTemplate() {
     componentCatalog: 'not-applicable',
     components: [],
   };
-}
-
-async function packageManagerInfo(root) {
-  const manifest = await readJson(resolve(root, 'package.json'), root);
-  const declared = manifest?.packageManager?.match(/^(npm|pnpm|yarn)@(.+)$/);
-  if (manifest?.packageManager && !declared)
-    throw new Error(
-      `Unsupported packageManager ${manifest.packageManager}; expected npm@<version>, pnpm@<version>, or yarn@<numeric-version>.`,
-    );
-  if (declared) {
-    if (declared[1] !== 'yarn')
-      return { name: declared[1], version: declared[2] };
-    const major = Number(declared[2].match(/^\d+/)?.[0]);
-    if (!Number.isInteger(major))
-      throw new Error(
-        'Cannot distinguish Yarn Classic from Berry; declare a numeric yarn packageManager version.',
-      );
-    return {
-      name: 'yarn',
-      version: declared[2],
-      variant: major === 1 ? 'classic' : 'berry',
-    };
-  }
-  if (await exists(resolve(root, 'pnpm-lock.yaml'))) return { name: 'pnpm' };
-  const yarnLock = await readText(resolve(root, 'yarn.lock'));
-  const berryConfig = await exists(resolve(root, '.yarnrc.yml'));
-  const classicConfig = await exists(resolve(root, '.yarnrc'));
-  if (yarnLock !== null || berryConfig || classicConfig) {
-    const berryLock = /^__metadata:\s*$/m.test(yarnLock ?? '');
-    const classicLock = /^# yarn lockfile v1\s*$/m.test(yarnLock ?? '');
-    if ((berryConfig || berryLock) && !(classicConfig || classicLock))
-      return { name: 'yarn', variant: 'berry' };
-    if ((classicConfig || classicLock) && !(berryConfig || berryLock))
-      return { name: 'yarn', variant: 'classic' };
-    throw new Error(
-      'Cannot distinguish Yarn Classic from Berry; declare packageManager as yarn@<version>.',
-    );
-  }
-  return { name: 'npm' };
 }
 
 async function installedVersion(directory, name) {
@@ -1528,188 +1194,4 @@ export function formatSetupPlan(plan) {
     );
   }
   return lines.join('\n');
-}
-
-export async function applyKerfSetup(
-  plan,
-  { install = true, offline = false, runner = execFileAsync } = {},
-) {
-  if (plan.conflicts.length)
-    throw new Error('Resolve setup conflicts before applying changes.');
-  const written = [];
-  const temporaryPaths = [];
-  const createdDirectories = [];
-  const lockPath = resolve(plan.root, '.kerf-ai-setup.lock');
-  try {
-    await mkdir(lockPath);
-  } catch {
-    throw new Error(
-      'Another Kerf setup is already applying in this workspace.',
-    );
-  }
-  const lockfiles = [
-    ...new Set(
-      [plan.root, plan.packageRoot].flatMap((directory) => [
-        resolve(directory, 'package-lock.json'),
-        resolve(directory, 'pnpm-lock.yaml'),
-        resolve(directory, 'yarn.lock'),
-      ]),
-    ),
-  ];
-  const lockfileSnapshots = new Map();
-  const generatedSnapshots = new Map();
-  let actualPackageRoot;
-  const isSymlink = async (path) => {
-    try {
-      return (await lstat(path)).isSymbolicLink();
-    } catch {
-      return false;
-    }
-  };
-  const validateGeneratedPath = async (
-    path,
-    { allowLeafSymlink = false } = {},
-  ) => {
-    if (!contained(plan.packageRoot, path))
-      throw new Error('A generated catalog path escapes the selected package.');
-    let ancestor = dirname(path);
-    while (!(await exists(ancestor))) ancestor = dirname(ancestor);
-    if (!contained(actualPackageRoot, await realpath(ancestor)))
-      throw new Error(
-        'A generated catalog path traverses a symlink outside the selected package.',
-      );
-    if (!allowLeafSymlink && (await isSymlink(path)))
-      throw new Error('Setup refuses a symlinked generated catalog output.');
-  };
-  try {
-    const actualRoot = await realpath(plan.root);
-    if (
-      !contained(plan.root, plan.packageRoot) ||
-      !contained(actualRoot, await realpath(plan.packageRoot))
-    )
-      throw new Error('Selected package escapes the setup workspace.');
-    actualPackageRoot = await realpath(plan.packageRoot);
-    for (const path of lockfiles) {
-      if (!contained(plan.root, path))
-        throw new Error('A lockfile path escapes the setup workspace.');
-      lockfileSnapshots.set(path, await readText(path));
-    }
-    for (const path of plan.generatedPaths ?? []) {
-      await validateGeneratedPath(path);
-      generatedSnapshots.set(path, await readText(path));
-    }
-    for (const action of plan.actions) {
-      const expectedPath = resolve(plan.root, action.path);
-      if (
-        action.absolutePath !== expectedPath ||
-        !contained(plan.root, action.absolutePath)
-      )
-        throw new Error(`Setup action escapes the workspace: ${action.path}.`);
-      let ancestor = dirname(action.absolutePath);
-      while (!(await exists(ancestor))) ancestor = dirname(ancestor);
-      if (!contained(actualRoot, await realpath(ancestor)))
-        throw new Error(
-          `Setup action traverses a symlink outside the workspace: ${action.path}.`,
-        );
-      if (
-        (await exists(action.absolutePath)) &&
-        (await lstat(action.absolutePath)).isSymbolicLink()
-      )
-        throw new Error(`Setup refuses to replace symlink ${action.path}.`);
-      if ((await readText(action.absolutePath)) !== action.before)
-        throw new Error(
-          `Setup plan is stale for ${action.path}; rerun the dry-run.`,
-        );
-    }
-    for (const action of plan.actions) {
-      let directory = dirname(action.absolutePath);
-      const missing = [];
-      while (!(await exists(directory))) {
-        missing.push(directory);
-        directory = dirname(directory);
-      }
-      await mkdir(dirname(action.absolutePath), { recursive: true });
-      createdDirectories.push(...missing);
-      if (!contained(actualRoot, await realpath(dirname(action.absolutePath))))
-        throw new Error(
-          `Setup action traverses a symlink outside the workspace: ${action.path}.`,
-        );
-      const temporary = `${action.absolutePath}.kerf-setup-${process.pid}-${randomUUID()}.tmp`;
-      temporaryPaths.push(temporary);
-      await writeFile(temporary, action.after);
-      if ((await readText(action.absolutePath)) !== action.before)
-        throw new Error(
-          `Setup plan became stale for ${action.path}; rerun the dry-run.`,
-        );
-      await rename(temporary, action.absolutePath);
-      written.push(action);
-    }
-    if (install) {
-      if (plan.packageManager === 'yarn' && !plan.packageManagerVariant)
-        throw new Error(
-          'Cannot install with Yarn until Classic or Berry is identified.',
-        );
-      const berry = plan.packageManagerVariant === 'berry';
-      const offlineArgs = offline
-        ? berry
-          ? ['--immutable-cache']
-          : ['--offline']
-        : [];
-      const workspace = plan.packageRoot !== plan.root;
-      let args;
-      let installCwd = plan.root;
-      if (!workspace || berry) args = ['install', ...offlineArgs];
-      else if (plan.packageManager === 'npm')
-        args = ['install', '--workspace', plan.packageName, ...offlineArgs];
-      else if (plan.packageManager === 'pnpm')
-        args = ['--filter', plan.packageName, 'install', ...offlineArgs];
-      else {
-        args = ['install', '--focus', ...offlineArgs];
-        installCwd = plan.packageRoot;
-      }
-      await runner(plan.packageManager, args, {
-        cwd: installCwd,
-        ...(offline && berry
-          ? { env: { ...process.env, YARN_ENABLE_NETWORK: '0' } }
-          : {}),
-      });
-      if (plan.mode === 'ui' && plan.generatedPaths?.length) {
-        for (const path of plan.generatedPaths ?? [])
-          await validateGeneratedPath(path);
-        await runner(plan.packageManager, ['run', 'catalog:generate'], {
-          cwd: plan.packageRoot,
-        });
-      }
-    }
-  } catch (error) {
-    for (const action of written.reverse()) {
-      if (action.before === null)
-        await rm(action.absolutePath, { force: true });
-      else await writeFile(action.absolutePath, action.before);
-    }
-    for (const [path, source] of lockfileSnapshots) {
-      if (source === null) await rm(path, { force: true });
-      else await writeFile(path, source);
-    }
-    for (const [path, source] of generatedSnapshots) {
-      await validateGeneratedPath(path, { allowLeafSymlink: true });
-      if (await isSymlink(path)) await rm(path, { force: true });
-      if (source === null) await rm(path, { force: true });
-      else await writeFile(path, source);
-    }
-    throw error;
-  } finally {
-    for (const path of temporaryPaths) await rm(path, { force: true });
-    for (const path of [...new Set(createdDirectories)].sort(
-      (left, right) => right.length - left.length,
-    )) {
-      try {
-        await rmdir(path);
-      } catch {
-        // Preserve non-empty directories, including directories used by other tools.
-      }
-    }
-    await rm(lockPath, { recursive: true, force: true });
-  }
-  return { changed: plan.actions.map(({ path }) => path) };
 }
