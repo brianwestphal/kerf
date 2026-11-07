@@ -394,6 +394,45 @@ describe('bindList() — arraySignal granular patch path (KF-478)', () => {
     dispose();
   });
 
+  it('snapshot-recovers after a replace() whose row render throws, then resumes granular patches (KF-1267Y6)', () => {
+    // Found by the bindList fuzz harness. `replace()` forces the SNAPSHOT path;
+    // a row that throws mid-sync left the row order half rebuilt with no latch,
+    // so the next `update` patch indexed past the partial order (TypeError) or
+    // into the wrong row.
+    const parent = host();
+    const items = arraySignal<Item>([{ id: 1, label: 'a' }]);
+    const dispose = bindList(parent, items, {
+      key: (i) => i.id,
+      render: (i) => {
+        if (i.label === 'bad') throw new Error('bad row');
+        return i.label;
+      },
+    });
+
+    expect(() =>
+      items.replace([
+        { id: 2, label: 'x' },
+        { id: 3, label: 'bad' },
+        { id: 4, label: 'z' },
+      ]),
+    ).toThrow('bad row');
+    // `sync` inserts its new rows only after the whole render succeeds, so
+    // the rejected snapshot can leave the parent empty.
+    expect(texts(parent)).toEqual([]);
+
+    // The cure arrives as a granular patch: it must re-sync, not index the
+    // partial order.
+    expect(() => items.update(1, () => ({ id: 3, label: 'y' }))).not.toThrow();
+    expect(texts(parent)).toEqual(['x', 'y', 'z']);
+    const survivor = parent.children[0];
+
+    // Patches resume afterwards.
+    items.push({ id: 5, label: 'w' });
+    expect(texts(parent)).toEqual(['x', 'y', 'z', 'w']);
+    expect(parent.children[0]).toBe(survivor);
+    dispose();
+  });
+
   it('two bindLists sharing one arraySignal both stay correct (one goes granular, the other snapshots)', () => {
     const p1 = host();
     const p2 = host();

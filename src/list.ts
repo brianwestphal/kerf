@@ -330,7 +330,19 @@ export function bindList<T>(
         return;
       }
     }
-    rows.sync(items);
+    // KF-1267Y6: the snapshot path needs the same latch as the patch path. A
+    // row render that throws mid-`sync` leaves the row order half rebuilt; the
+    // next granular patch would index into that partial order (a `TypeError`
+    // for an index past its end, the wrong row for one inside it). Latching
+    // makes the next valid notification re-sync, which is idempotent over the
+    // row map. Reachable through a `replace()` holding a rejected item, or as
+    // the second consumer of a shared arraySignal (an empty patch queue).
+    try {
+      rows.sync(items);
+    } catch (error) {
+      forceSnapshot = true;
+      throw error;
+    }
     firstRender = false;
     forceSnapshot = false;
   };
