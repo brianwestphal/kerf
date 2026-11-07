@@ -150,6 +150,12 @@ import {
 } from './control-flow-section.js';
 import { HOOK, hook } from './dom-hooks.js';
 import {
+  embedDialog,
+  embedSection,
+  extractDialog,
+  extractSection,
+} from './embed-extract-views.js';
+import {
   type FieldEditorContext,
   fieldEditorFor,
   type FieldEditors,
@@ -1731,63 +1737,6 @@ export function createEditor(options: EditorOptions) {
   );
 
   /**
-   * Embed in › Other… (KF-6MGYSG): every container that can hold the node,
-   * narrowed by a filter over component names; choosing one embeds it.
-   */
-  const embedDialog = () => {
-    const id = embedTarget.value;
-    const query = embedQuery.value.trim().toLocaleLowerCase();
-    const choices = id
-      ? catalog
-          .paletteGroups()
-          .flatMap((group) => group.items)
-          .filter((item) => item.name.toLocaleLowerCase().includes(query))
-          .filter((item) => embedded(id, item.key) !== undefined)
-      : [];
-    return (
-      <DialogSurface
-        id={EMBED_DIALOG}
-        label="Embed In"
-        size="medium"
-        rootAttributes={{ 'data-key': EMBED_DIALOG }}
-        footer={
-          <Button rootAttributes={{ 'data-dialog-close': '' }}>Cancel</Button>
-        }
-      >
-        <List controlInsets="trbl" gap>
-          <SearchField
-            id="editor-embed-search"
-            label="Filter Containers"
-            placeholder="Filter containers"
-            query={embedQuery.value}
-            revision={embedQueryRevision.value}
-            clearAction={EMBED_CLEAR_ACTION}
-            clearLabel="Clear Filter"
-            editorAttributes={{ 'data-editor-embed-search': '' }}
-          />
-        </List>
-        {choices.length ? (
-          <List>
-            {choices.map((item) => (
-              <ListItem
-                label={item.name}
-                action={EMBED_ACTION}
-                itemId={item.key}
-                rootAttributes={{ 'data-editor-embed': item.key }}
-              />
-            ))}
-          </List>
-        ) : (
-          <EmptyState
-            title="No matching container"
-            detail="No container that can hold this node has that name."
-          />
-        )}
-      </DialogSurface>
-    );
-  };
-
-  /**
    * The icon picker: a search over the Lucide names and the matching icons
    * themselves; choosing one writes `{ $icon: name }`.
    */
@@ -2683,37 +2632,6 @@ export function createEditor(options: EditorOptions) {
   };
 
   /**
-   * Embed in (KF-6MGYSG), in the Flow area beside the other commands that
-   * restructure the node: its first containers, each offered only where it
-   * can hold the node, then Other… for any container. Every node has it,
-   * the root included (KF-84CCD1).
-   */
-  const embedSection = () => (
-    <List rootAttributes={{ 'data-editor-embed-section': '' }}>
-      <ListHeader label="Embed in" size="xs" />
-      {EMBED_FIRST.filter((key) => propsByKey.has(key)).map((key) => {
-        const legal = embedFirstLegal.value.has(key);
-        return (
-          <ListItem
-            label={componentNames.get(key)!}
-            action={EMBED_ACTION}
-            itemId={key}
-            disabled={!legal}
-            description={legal ? undefined : 'It cannot hold this node here.'}
-            rootAttributes={{ 'data-editor-embed': key }}
-          />
-        );
-      })}
-      <ListItem
-        label="Other…"
-        action={EMBED_OTHER_ACTION}
-        itemId="other"
-        trailing={<LucideIcon icon={ChevronRight} name="chevron-right" />}
-      />
-    </List>
-  );
-
-  /**
    * KF-D9P3NP: why node `id` cannot be extracted to a document of its own:
    * the editor has no storage to save it in, or the node cannot leave.
    */
@@ -2721,25 +2639,6 @@ export function createEditor(options: EditorOptions) {
     autosave
       ? extractProblem(doc.value, id)
       : 'Extracting saves a new document, which needs the editor’s storage.';
-
-  /** Extract to › New document…, in the Flow area after Embed in. */
-  const extractSection = (node: ViewNode) => {
-    const blocked = extractBlocked(node.id);
-    return (
-      <List rootAttributes={{ 'data-editor-extract-section': '' }}>
-        <ListHeader label="Extract to" size="xs" />
-        <ListItem
-          label="New document…"
-          action={EXTRACT_ACTION}
-          itemId="extract"
-          disabled={!!blocked}
-          description={blocked}
-          trailing={<LucideIcon icon={ChevronRight} name="chevron-right" />}
-          rootAttributes={{ 'data-editor-extract': 'open' }}
-        />
-      </List>
-    );
-  };
 
   /**
    * The node context menu (KF-JV7XW1), opened at the pointer on an Outline
@@ -4226,8 +4125,8 @@ export function createEditor(options: EditorOptions) {
           fieldErrors.value['#new-kind'],
         )}
         {viewsSection(node)}
-        {embedSection()}
-        {extractSection(node)}
+        {embedSection({ catalog, legal: embedFirstLegal })}
+        {extractSection(node, extractBlocked)}
         {moveSection(node)}
       </List>
     );
@@ -4587,42 +4486,6 @@ export function createEditor(options: EditorOptions) {
   };
 
   /**
-   * KF-D9P3NP: Extract to document always asks where the new document goes,
-   * as Save As does, starting from a name beside this one.
-   */
-  const extractDialog = () => (
-    <DialogSurface
-      id={EXTRACT_DIALOG}
-      label="Extract to Document"
-      size="small"
-      footer={
-        <>
-          <Button rootAttributes={{ 'data-dialog-close': '' }}>Cancel</Button>
-          <Button
-            tone="brand"
-            action={EXTRACT_ACTION}
-            rootAttributes={{ 'data-editor-extract': 'confirm' }}
-          >
-            Extract
-          </Button>
-        </>
-      }
-    >
-      <TextField
-        label="Path"
-        name="path"
-        value={extractPath.value}
-        hint="A new .kui.json file inside the project. The node moves there, and this document shows it through a #view."
-        error={extractError.value || undefined}
-        spellcheck={false}
-        autocapitalize="off"
-        autocorrect="off"
-        rootAttributes={{ 'data-editor-extract': 'path' }}
-      />
-    </DialogSurface>
-  );
-
-  /**
    * KF-D9P3NP: writes the selected node's subtree to a new document at the
    * dialog's path and puts a `#view` of it in its place, one undoable edit.
    * The file stays on Undo, as a Save As file does.
@@ -4932,10 +4795,18 @@ export function createEditor(options: EditorOptions) {
             ]}
           />
           {autosave ? saveAsDialog(document) : undefined}
-          {autosave ? extractDialog() : undefined}
+          {autosave
+            ? extractDialog({ path: extractPath, error: extractError })
+            : undefined}
           {fieldDialog()}
           {iconDialog()}
-          {embedDialog()}
+          {embedDialog({
+            catalog,
+            target: embedTarget,
+            query: embedQuery,
+            queryRevision: embedQueryRevision,
+            canEmbed: (id, key) => embedded(id, key) !== undefined,
+          })}
           {autosave ? insertDialog() : undefined}
           {replaceDialog()}
           <List flex>
