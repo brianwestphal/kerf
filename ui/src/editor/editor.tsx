@@ -39,7 +39,6 @@ import {
   FileText,
   FolderOpen,
   GitCompare,
-  Group,
   icons as lucideIcons,
   LayoutGrid,
   List as ListIcon,
@@ -350,7 +349,6 @@ import {
 } from './model/play-device.js';
 import {
   placementReason,
-  type Problem,
   problemCounts,
   problemsOf,
   type PropsVariant,
@@ -386,6 +384,7 @@ import {
   PLAY_ENVIRONMENT,
   PLAY_READY,
 } from './player.js';
+import { hintRows, problemRows } from './problem-rows.js';
 import {
   ADD_ACTION,
   CONTENT_ADD_ACTION,
@@ -1018,49 +1017,6 @@ export function createEditor(options: EditorOptions) {
         toggleAction={OUTLINE_TOGGLE_ACTION}
         density="compact"
       />
-    );
-  };
-
-  /** One row per diagnostic; a row about a node selects it. */
-  const problemRows = (problems: readonly Problem[]) =>
-    problems.map(({ diagnostic, nodeId }, index) => (
-      <ListItem
-        action={PROBLEM_ACTION}
-        itemId={nodeId ?? `document-${index}`}
-        label={diagnostic.message}
-        description={`${diagnostic.code} · ${diagnostic.path}`}
-        multiline
-        disabled={!nodeId}
-      />
-    ));
-
-  /**
-   * One row per hint; a nested layout's hint (`KUI-H001`) carries its fix,
-   * Embed in SizedRegion (KF-6MGYSG).
-   */
-  const hintRows = (hints: readonly Problem[]) => {
-    const plain = problemRows(hints);
-    return hints.map(({ diagnostic, nodeId }, index) =>
-      // KUI-H001 is about a Kerf UI layout node, so it has a node id and
-      // SizedRegion is cataloged.
-      diagnostic.code === 'KUI-H001' ? (
-        <ListActionRow
-          action={PROBLEM_ACTION}
-          itemId={nodeId!}
-          label={diagnostic.message}
-          description={`${diagnostic.code} · ${diagnostic.path}`}
-          multiline
-          trailingAction={EMBED_ACTION}
-          trailingActionLabel="Embed in SizedRegion"
-          trailingActionIcon={<LucideIcon icon={Group} name="group" />}
-          trailingActionAttributes={{
-            'data-editor-embed': EMBED_FIRST[0]!,
-            'data-editor-embed-node': nodeId!,
-          }}
-        />
-      ) : (
-        plain[index]!
-      ),
     );
   };
 
