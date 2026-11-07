@@ -54,6 +54,11 @@ Here's the whole development loop — write a component, run the dev server, cli
 npm install kerfjs
 ```
 
+Kerf runs in modern browsers (ES2022). The published package, including the
+`kerfjs setup` CLI and server-side `toString()` rendering, needs Node.js 18 or
+newer (`engines.node`); contributing to this repository (building, testing,
+the documentation site) needs Node.js 22.12+.
+
 For an existing project, install the AI guidance, strict TypeScript/ESLint
 feedback, and package scripts with a reviewed dry run:
 
