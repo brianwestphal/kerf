@@ -117,6 +117,7 @@ import { HOOK, hook } from './dom-hooks.js';
 import { createDropViews } from './drop-menu.js';
 import type { EditorContext, Selection } from './editor-context.js';
 import { embedDialog, extractDialog } from './embed-extract-views.js';
+import { createExtractOperation } from './extract-operation.js';
 import { createFieldEditorShell } from './field-editor-shell.js';
 import { createFieldEditorViews } from './field-editor-views.js';
 import type { FieldEditors } from './field-editors.js';
@@ -223,11 +224,7 @@ import {
   exportModule,
   type ExportReport,
 } from './model/export.js';
-import {
-  extractProblem,
-  extractSuggestion,
-  extractToDocument,
-} from './model/extract.js';
+import { extractProblem, extractSuggestion } from './model/extract.js';
 import {
   appParamFor,
   containerFor,
@@ -1880,57 +1877,12 @@ export function createEditor(options: EditorOptions) {
     );
   };
 
-  /**
-   * KF-D9P3NP: writes the selected node's subtree to a new document at the
-   * dialog's path and puts a `#view` of it in its place, one undoable edit.
-   * The file stays on Undo, as a Save As file does.
-   */
-  const extract = async (dialog: HTMLDialogElement) => {
-    const saver = autosave!;
-    const storage = options.storage!;
-    const id = selectedNodeId()!;
-    const from = saver.path.peek();
-    const given = dialog
-      .querySelector<HTMLInputElement>(`${hook(HOOK.extract, 'path')} input`)!
-      .value.trim();
-    const path = viewPath('', given);
-    const fail = (message: string) => {
-      extractError.value = message;
-    };
-    if (!path?.endsWith('.kui.json') || isDraft(path))
-      return fail(
-        'Name a .kui.json file inside the project, outside the drafts folder.',
-      );
-    if (path === from) return fail('That is this document’s own file.');
-    const before = doc.peek();
-    const result = extractToDocument(before, id, {
-      documentPath: from,
-      path,
-      view: newNodeId(),
-      catalog: viewCatalog,
-      resolveView,
-    });
-    if ('error' in result) return fail(result.error);
-    try {
-      if ((await storage.read(path)) !== undefined)
-        return fail(`There is already a file at ${path}.`);
-      await saver.flush();
-      await storage.write(path, fileText(result.extracted));
-    } catch (error) {
-      return fail(error instanceof Error ? error.message : String(error));
-    }
-    if (doc.peek() !== before)
-      return fail('The document changed meanwhile; extract it again.');
-    batch(() => {
-      viewLoads.value = new Map(viewLoads.peek()).set(path, {
-        state: 'loaded',
-        document: result.extracted,
-      });
-      commit(result.document);
-      select({ kind: 'node', id: result.view });
-    });
-    closeDialog(dialog);
-  };
+  const extract = createExtractOperation(ctx, {
+    storage: options.storage!,
+    error: extractError,
+    viewLoads,
+    fileText,
+  });
 
   /**
    * KF-PX5EVZ: Insert Document. With a storage that lists the project's
