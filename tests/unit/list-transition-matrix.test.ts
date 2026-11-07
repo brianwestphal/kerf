@@ -93,9 +93,16 @@ describe('bindList() — adversarial transition matrix', () => {
         },
       },
       [
-        { k: 'height', at: 0, px: 50 },
-        { k: 'replace', ids: ['a', 'b', 'c'] },
-        { k: 'scroll', top: 25 },
+        // The runner flushes rAF after each top-level mutation. Keep all
+        // three changes in one batch so the scheduled frame sees them together.
+        {
+          k: 'batch',
+          ms: [
+            { k: 'height', at: 0, px: 50 },
+            { k: 'replace', ids: ['a', 'b', 'c'] },
+            { k: 'scroll', top: 25 },
+          ],
+        },
       ],
     );
   });
