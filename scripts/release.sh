@@ -11,7 +11,14 @@ set -euo pipefail
 #                                       version files, does NOT update
 #                                       changelog, does NOT commit; just
 #                                       tags v{ver}-beta.{N} off HEAD; CI
-#                                       publishes with --tag beta).
+#                                       publishes with --tag beta). The
+#                                       version and N come from the same
+#                                       plan release-beta-auto.sh uses:
+#                                       continue the highest beta series,
+#                                       N = highest + 1.
+#
+# Editor guidance lines start with `%%`, which Markdown never uses, so the
+# notes' own `##` headings survive. Shared helpers: scripts/lib/release-common.sh.
 
 # --- Config ---
 STATE_FILE=".release-state.json"
@@ -83,15 +90,17 @@ ask_multiline() {
   trap "rm -f '$tmpfile'" RETURN
 
   if [[ -n "$initial" ]]; then
-    echo -e "$initial" > "$tmpfile"
+    printf '%s\n' "$initial" > "$tmpfile"
   fi
 
   while true; do
     info "${prompt} ${DIM}(opening ${editor##*/})${RESET}"
     $editor "$tmpfile"
 
-    # Strip lines starting with '#' (guidance), then trailing blanks.
-    REPLY=$(grep -v '^#' "$tmpfile" | sed -e :a -e '/^\n*$/{$d;N;ba' -e '}')
+    # Strip guidance lines (`%%` prefix; Markdown `#` headings are notes
+    # content and must survive), then trailing blanks. grep exits 1 when every
+    # line was guidance, which must read as "empty", not abort under pipefail.
+    REPLY=$({ grep -v '^%%' "$tmpfile" || true; } | sed -e :a -e '/^\n*$/{$d;N;ba' -e '}')
 
     if [[ -z "$REPLY" ]]; then
       warn "Release notes are empty."
@@ -104,13 +113,13 @@ ask_multiline() {
 
     echo ""
     echo -e "    ${DIM}Release notes:${RESET}"
-    echo "$REPLY" | sed 's/^/    /'
+    printf '%s\n' "$REPLY" | sed 's/^/    /'
     echo ""
 
     if confirm "Use this text?"; then
       break
     fi
-    echo "$REPLY" > "$tmpfile"
+    printf '%s\n' "$REPLY" > "$tmpfile"
   done
 
   set_state "$key" "$REPLY"
@@ -165,6 +174,17 @@ preflight() {
 }
 
 # --- Steps ---
+step_beta_version() {
+  release_plan_beta ""
+  case "$RELEASE_BETA_SOURCE" in
+    active-beta-series) info "Continuing prerelease series ${RELEASE_BETA_PREVIOUS}: ${BOLD}${RELEASE_BETA_VERSION}${RESET}" ;;
+    next-minor) info "package.json is already a stable tag — targeting next minor: ${BOLD}${RELEASE_BETA_VERSION}${RESET}" ;;
+    *) info "package.json is not yet a stable tag — targeting it directly: ${BOLD}${RELEASE_BETA_VERSION}${RESET}" ;;
+  esac
+  info "Next beta tag (re-planned at tag time): ${BOLD}${RELEASE_BETA_TAG}${RESET}"
+  set_state "version" "$RELEASE_BETA_VERSION"
+}
+
 step_version() {
   local current_version
   current_version=$(node -p "require('./package.json').version")
@@ -233,29 +253,25 @@ step_release_notes() {
   local log_range="${last_tag:+${last_tag}..HEAD}"
 
   # gitgist (https://github.com/brianwestphal/gitgist) turns the commit range
-  # into themed release notes. It reads git itself and drives the signed-in
-  # `claude` CLI by default, so we gate on `claude` being available and fall
-  # back to manual entry otherwise. No range arg = latest tag → HEAD, which is
-  # exactly what we want; we pass the explicit range when a tag exists so the
-  # boundary is unambiguous.
-  local generated=""
-  if command -v claude &> /dev/null; then
-    info "Drafting release notes with gitgist (commits since ${last_tag:-the start})..."
-    generated=$(gitgist ${log_range:+"$log_range"} 2> /dev/null || true)
-    generated=$(echo "$generated" | sed -e '/^```/d' -e :a -e '/^[[:space:]]*$/{$d;N;ba' -e '}')
-  fi
+  # into themed release notes: the shared chain tries its AI draft (the
+  # signed-in `claude` CLI by default), then its deterministic `--no-ai`
+  # grouping, preferring the local devDependency binary. We pass the explicit
+  # range when a tag exists so the boundary is unambiguous.
+  info "Drafting release notes with gitgist (commits since ${last_tag:-the start})..."
+  local generated
+  generated=$(release_gitgist_draft "$log_range")
 
   local initial
   if [[ -n "$generated" ]]; then
     success "Draft ready — review and edit in the editor."
-    initial="# Release notes — gitgist draft below. Edit freely.
-# Lines starting with '#' are removed on save.
+    initial="%% Release notes — gitgist draft below. Edit freely.
+%% Lines starting with '%%' are removed on save; Markdown headings are kept.
 
 ${generated}"
   else
-    initial="# Release notes — keep it SHORT and USER-FACING.
-# Skip ticket IDs, refactors, tests, docs, internals.
-# Lines starting with '#' are removed on save.
+    initial="%% Release notes — keep it SHORT and USER-FACING.
+%% Skip ticket IDs, refactors, tests, docs, internals.
+%% Lines starting with '%%' are removed on save; Markdown headings are kept.
 
 - "
   fi
@@ -275,7 +291,7 @@ ${generated}"
   if [[ -n "$carried" ]]; then
     initial="${initial}
 
-# Carried over from [Unreleased] — dedupe against the draft above:
+%% Carried over from [Unreleased] — dedupe against the draft above:
 ${carried}"
   fi
 
@@ -306,7 +322,7 @@ step_review() {
   echo ""
   echo -e "  ${DIM}Version:${RESET}  ${BOLD}${version}${RESET}"
   echo -e "  ${DIM}Notes:${RESET}"
-  echo -e "$notes" | sed 's/^/    /'
+  printf '%s\n' "$notes" | sed 's/^/    /'
   echo ""
   echo -e "${BOLD}━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
   echo ""
@@ -399,7 +415,7 @@ step_stable_tag_and_push() {
   local tag="v${version}"
 
   info "Creating annotated tag ${BOLD}${tag}${RESET}..."
-  echo -e "$notes" | git tag -a "$tag" -F -
+  release_tag_with_notes "$tag" "$notes"
 
   info "Pushing commit and tag to origin..."
   git push
@@ -422,14 +438,14 @@ step_beta_tag_and_push() {
   local notes
   notes=$(get_state "release_notes")
 
-  local beta_num=1
-  while git rev-parse "v${version}-beta.${beta_num}" > /dev/null 2>&1; do
-    beta_num=$((beta_num + 1))
-  done
-  local beta_tag="v${version}-beta.${beta_num}"
+  # Highest existing beta of this version + 1 (never fills a gap), planned
+  # now so tags fetched since the version step count.
+  release_plan_beta "$version"
+  local beta_tag="$RELEASE_BETA_TAG"
+  release_refuse_existing_tag "$beta_tag"
 
   info "Creating beta tag ${BOLD}${beta_tag}${RESET}..."
-  echo -e "$notes" | git tag -a "$beta_tag" -F -
+  release_tag_with_notes "$beta_tag" "$notes"
 
   info "Pushing beta tag to origin..."
   git push origin "$beta_tag"
@@ -443,7 +459,7 @@ step_beta_tag_and_push() {
   echo -e "    3. Publish to npm with --tag beta --provenance"
   echo ""
   echo -e "  ${DIM}This is a beta — there is no auto-promote.${RESET}"
-  echo -e "  ${DIM}Users get it via:${RESET}  npm install kerf@beta"
+  echo -e "  ${DIM}Users get it via:${RESET}  npm install kerfjs@beta"
   echo ""
   echo -e "  ${DIM}Monitor:${RESET} https://github.com/brianwestphal/kerf/actions"
 }
@@ -495,7 +511,11 @@ main() {
   fi
   if ! past_step 3; then
     echo ""
-    step_version
+    if [[ "$BETA_MODE" == "true" ]]; then
+      step_beta_version
+    else
+      step_version
+    fi
     set_step 3
   fi
   if ! past_step 4; then

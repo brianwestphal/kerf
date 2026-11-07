@@ -6,10 +6,20 @@
  *
  * KF-RV39NE: pre-flight refuses a dirty tree, a non-main branch, and an
  * existing tag instead of asking to continue.
+ *
+ * KF-12QS9G: notes reach the tag verbatim (Markdown headings and literal
+ * backslashes survive), the beta plan continues the highest series with
+ * highest + 1, and gitgist resolution falls back to its --no-ai grouping.
  */
 
 import { execFileSync, spawnSync } from 'node:child_process';
-import { mkdtempSync, rmSync, writeFileSync } from 'node:fs';
+import {
+  chmodSync,
+  mkdirSync,
+  mkdtempSync,
+  rmSync,
+  writeFileSync,
+} from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 import process from 'node:process';
@@ -121,6 +131,73 @@ describe(
       const fresh = runLib('release_refuse_existing_tag v1.2.4; echo PASSED');
       expect(fresh.status).toBe(0);
       expect(fresh.stdout).toContain('PASSED');
+    });
+  },
+);
+
+describe(
+  'release-common.sh notes, tags, and beta planning (KF-12QS9G)',
+  { timeout: loadScaledTimeout(30_000) },
+  () => {
+    it('keeps Markdown headings and literal backslashes in the tag message', () => {
+      const notes = [
+        '## Features',
+        '',
+        '- Adds `a\\nb` and `c\\td` escapes',
+        '',
+        '### Fixes',
+        '# Top heading',
+      ].join('\n');
+      const result = runLib('release_tag_with_notes v9.9.9 "$(cat)"', notes);
+      expect(result.status, result.stderr).toBe(0);
+      const message = git('tag', '-l', '--format=%(contents)', 'v9.9.9');
+      expect(message.trimEnd()).toBe(notes);
+    });
+
+    it('plans the highest beta + 1 without filling gaps', () => {
+      git('tag', 'v1.2.3');
+      for (const n of [1, 3, 7]) git('tag', `v1.3.0-beta.${n}`);
+      const auto = runLib(
+        'release_plan_beta ""; printf "%s|%s|%s|%s" "$RELEASE_BETA_VERSION" "$RELEASE_BETA_TAG" "$RELEASE_BETA_SOURCE" "$RELEASE_BETA_PREVIOUS"',
+      );
+      expect(auto.stdout).toBe(
+        '1.3.0|v1.3.0-beta.8|active-beta-series|v1.3.0-beta.7',
+      );
+      const pinned = runLib(
+        'release_plan_beta 1.3.0; printf "%s" "$RELEASE_BETA_TAG"',
+      );
+      expect(pinned.stdout).toBe('v1.3.0-beta.8');
+    });
+
+    it('falls back to gitgist --no-ai and keeps diagnostics out of the notes', () => {
+      const bin = join(repo, 'node_modules', '.bin');
+      mkdirSync(bin, { recursive: true });
+      const fake = join(bin, 'gitgist');
+      writeFileSync(
+        fake,
+        [
+          '#!/usr/bin/env bash',
+          'for arg in "$@"; do',
+          '  if [[ "$arg" == "--no-ai" ]]; then printf "## Changes\\n\\n- grouped\\n"; exit 0; fi',
+          'done',
+          'echo "no provider" >&2; exit 1',
+        ].join('\n'),
+      );
+      chmodSync(fake, 0o755);
+      const result = runLib(
+        'notes=$(release_gitgist_draft "v1..HEAD"); printf "%s" "$notes"',
+      );
+      expect(result.status, result.stderr).toBe(0);
+      expect(result.stdout).toBe('## Changes\n\n- grouped');
+      expect(result.stderr).toContain('--no-ai');
+    });
+
+    it('prints nothing when gitgist is unavailable', () => {
+      const result = runLib(
+        'PATH=/usr/bin:/bin; notes=$(release_gitgist_draft ""); printf "[%s]" "$notes"',
+      );
+      expect(result.stdout).toBe('[]');
+      expect(result.stderr).toContain("'gitgist' not found");
     });
   },
 );

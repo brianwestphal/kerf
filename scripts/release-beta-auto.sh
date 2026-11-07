@@ -33,8 +33,8 @@
 #      both dist suites + the jsx-typing/examples/scaffold typing gates). This
 #      is the same gate the pre-push hook runs. Skip with --skip-checks.
 #   5. Auto-increment the beta number: find the highest existing
-#      `v<version>-beta.N` tag and pick N+1. Same logic as the interactive
-#      `step_beta_tag_and_push`.
+#      `v<version>-beta.N` tag and pick N+1 (release_plan_beta in
+#      scripts/lib/release-common.sh, shared with `release.sh --beta`).
 #   6. Annotated git tag with the release notes as the message; push the tag
 #      (NOT a commit — beta mode skips version-file bumps + the release commit).
 #
@@ -103,16 +103,11 @@ preflight() {
 
 # --- Steps ---
 read_version() {
-  local current
-  current=$(node -p "require('./package.json').version")
-  local current_is_stable="false"
-  if git rev-parse "v${current}" > /dev/null 2>&1; then
-    current_is_stable="true"
-  fi
-
-  local plan source previous_beta_tag
-  plan=$(git tag --list 'v*-beta.*' | node scripts/lib/release-beta-plan.mjs "$current" "$current_is_stable" "${OVERRIDE_VERSION:-}")
-  IFS=$'\t' read -r VERSION BETA_TAG source previous_beta_tag <<< "$plan"
+  # Shared with `release.sh --beta` (scripts/lib/release-common.sh).
+  release_plan_beta "${OVERRIDE_VERSION:-}"
+  VERSION="$RELEASE_BETA_VERSION"
+  BETA_TAG="$RELEASE_BETA_TAG"
+  local source="$RELEASE_BETA_SOURCE" previous_beta_tag="$RELEASE_BETA_PREVIOUS"
 
   if [[ "$source" == "override" ]]; then
     info "Target version (from --version): ${BOLD}${VERSION}${RESET}"
@@ -125,16 +120,6 @@ read_version() {
   fi
 
   info "Next beta tag will be ${BOLD}${BETA_TAG}${RESET}"
-}
-
-# Prefer the locally-installed binary (devDependency), then a PATH gitgist.
-# Echoes the resolved command, or nothing if gitgist isn't available.
-resolve_gitgist() {
-  if [[ -x "node_modules/.bin/gitgist" ]]; then
-    echo "node_modules/.bin/gitgist"
-  elif command -v gitgist > /dev/null; then
-    echo "gitgist"
-  fi
 }
 
 draft_release_notes() {
@@ -164,31 +149,9 @@ draft_release_notes() {
   range="${last_tag:+${last_tag}..HEAD}"
   local pointer="- See \`git log ${range:-HEAD}\` for details."
 
-  local gitgist
-  gitgist=$(resolve_gitgist)
-  if [[ -z "$gitgist" ]]; then
-    warn "'gitgist' not found (run 'npm install' — it's a devDependency). Using a git-log pointer."
-    NOTES="$pointer"
-    return
-  fi
-
   info "Drafting release notes with gitgist (${range:-since last tag})..."
-  # gitgist exits non-zero on failure and prints nothing to stdout. We still
-  # guard against its "_No commits…_" sentinel becoming the tag body.
-  local errfile generated
-  errfile=$(mktemp "${TMPDIR:-/tmp}/gitgist-beta-auto.XXXXXX")
-  generated=$("$gitgist" ${range:+"$range"} 2> "$errfile" || true)
-  [[ "$generated" == _No\ * ]] && generated=""
-
-  # Fall back to gitgist's deterministic (no-AI) grouping if the AI draft failed
-  # or no provider was available — better than a bare log pointer.
-  if [[ -z "$generated" ]]; then
-    warn "gitgist AI draft empty/failed — trying deterministic (--no-ai) grouping."
-    [[ -s "$errfile" ]] && warn "  $(tail -1 "$errfile" 2> /dev/null)"
-    generated=$("$gitgist" ${range:+"$range"} --no-ai 2> /dev/null || true)
-    [[ "$generated" == _No\ * ]] && generated=""
-  fi
-  rm -f "$errfile"
+  local generated
+  generated=$(release_gitgist_draft "$range")
 
   NOTES="${generated:-$pointer}"
 
@@ -224,12 +187,9 @@ tag_and_push() {
   fi
 
   info "Creating tag ${BOLD}${BETA_TAG}${RESET} with the drafted release notes..."
-  # Annotated tag, notes as the message. `--cleanup=verbatim` is REQUIRED: git
-  # tag defaults to `--cleanup=strip`, which drops every line beginning with `#`
-  # as a comment — silently deleting the `##`/`###` markdown headings gitgist
-  # emits. The GitHub Release body is built from the tag message, so a stripped
-  # heading is a lost section label in the published notes.
-  echo -e "$NOTES" | git tag -a "$BETA_TAG" --cleanup=verbatim -F - || {
+  # Annotated tag, notes as the message, kept verbatim (Markdown headings and
+  # backslashes survive); see release_tag_with_notes.
+  release_tag_with_notes "$BETA_TAG" "$NOTES" || {
     error "git tag -a failed."
     exit 3
   }
