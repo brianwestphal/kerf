@@ -47,6 +47,7 @@ Exact prop names and types: [`@kerfjs/ui/tab-bar`](../public-api-signatures-v1.m
 - far-edge end action
 - standalone Kerf Button or Web Awesome action in trailing or end
 - overflow dividers on each side with tabs scrolled out of view (wired by wireScrollDividers)
+- adaptive end action: wireTabBars onFitChange reports overflow and zone widths so the app swaps zone content
 
 ## Composition
 
@@ -86,6 +87,7 @@ Margin: none · border: self · padding: self (layout role: navigation). `self` 
 
 - TabBar owns inline flex allocation: tabs shrink and scroll, an adjacent trailing action follows the tab strip, and the end action stays pinned at the far edge; leading, trailing, and end actions do not shrink.
 - In intrinsic allocation, tabs give up width by ellipsizing their names down to a minimum before the strip scrolls; do not cap or clip tab names in app CSS.
+- To adapt zone content to the room, read wireTabBars onFitChange (overflowing, free, tabsWidth, stripWidth, trailingWidth, endWidth); never measure .kui-tab-bar__\* parts in app code.
 
 ## Accessibility
 

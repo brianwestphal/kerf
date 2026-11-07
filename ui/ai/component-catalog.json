@@ -6144,7 +6144,8 @@
         "separate or adjacent trailing action",
         "far-edge end action",
         "standalone Kerf Button or Web Awesome action in trailing or end",
-        "overflow dividers on each side with tabs scrolled out of view (wired by wireScrollDividers)"
+        "overflow dividers on each side with tabs scrolled out of view (wired by wireScrollDividers)",
+        "adaptive end action: wireTabBars onFitChange reports overflow and zone widths so the app swaps zone content"
       ],
       "accessibility": [
         "Keep exactly one selected tab at tabindex 0 and preserve the wiring keyboard model.",
@@ -6163,7 +6164,8 @@
         "padding": "self",
         "notes": [
           "TabBar owns inline flex allocation: tabs shrink and scroll, an adjacent trailing action follows the tab strip, and the end action stays pinned at the far edge; leading, trailing, and end actions do not shrink.",
-          "In intrinsic allocation, tabs give up width by ellipsizing their names down to a minimum before the strip scrolls; do not cap or clip tab names in app CSS."
+          "In intrinsic allocation, tabs give up width by ellipsizing their names down to a minimum before the strip scrolls; do not cap or clip tab names in app CSS.",
+          "To adapt zone content to the room, read wireTabBars onFitChange (overflowing, free, tabsWidth, stripWidth, trailingWidth, endWidth); never measure .kui-tab-bar__* parts in app code."
         ]
       },
       "delivery": {

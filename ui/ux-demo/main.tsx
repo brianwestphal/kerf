@@ -284,6 +284,7 @@ import {
   sendSurfaceScaffoldChatMessage,
   wireDialogStackDemo,
 } from './demos/surface-scaffold.js';
+import { adaptTabBarDemoEnd, resetTabBarDemo } from './demos/tab-bar.js';
 import {
   popNestedTabNavigatorDemo,
   pushNestedTabNavigatorDemo,
@@ -1826,6 +1827,11 @@ const routeWires: Partial<Record<string, RouteWire>> = {
     wire: () => () => {},
   },
   gauge: { reset: resetGaugeDemo, target: 'canvas', wire: () => () => {} },
+  'tab-bar': {
+    reset: resetTabBarDemo,
+    target: 'canvas',
+    wire: () => () => {},
+  },
   slider: { reset: resetSliderDemo, target: 'canvas', wire: () => () => {} },
   pane: {
     reset: resetPaneDemo,
@@ -2568,6 +2574,7 @@ const stopResizeObserver = delegate(
 const stopContentItems = wireContentItems(app);
 const stopSummaryRows = wireSummaryRows(app);
 const stopTabBars = wireTabBars(app, {
+  onFitChange: adaptTabBarDemoEnd,
   onReorder: ({ barId, sourceId, targetId, position, source }) => {
     tabBarTabs.value = reorderTabs(
       tabBarTabs.value,

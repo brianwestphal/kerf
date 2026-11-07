@@ -451,7 +451,9 @@ The package keeps app policy outside components: wire emitted `data-action`
 hooks at the mount root, retain every disposer, and let the app own menu/tab
 state, routing, and persistence. `wireResizableRegions(root, { onCommit })` and
 `wireTabBars(root, { onReorder })` add the reusable interaction behavior and
-return disposers. For a reorderable list, set `draggable` + `itemId` on
+return disposers. `wireTabBars`' optional `onFitChange(fit)` reports whether a
+bar's tabs overflow and how wide its `trailing` and `end` zones are, so an app
+can swap zone content without measuring TabBar's private parts. For a reorderable list, set `draggable` + `itemId` on
 `ListItem` / `ListActionRow` rows and call `wireListReorder(root, { onReorder })`
 (`@kerfjs/ui/wire-list-reorder`); apply the reported
 `{ sourceIds, target: { id, position } }` with `reorderListItems`. For keyboard

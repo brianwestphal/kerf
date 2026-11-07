@@ -408,7 +408,16 @@ slot without mixing authoring rules into the per-entry component catalog.
   `wireTabBars` provides arrows/Home/End, close activation, pointer reorder,
   proximity-based horizontal edge autoscroll, `Alt+Shift+Arrow` reorder, focus
   restoration after reorder or automatic activation replaces the strip, and a
-  disposer. The app applies changes and owns order,
+  disposer. Its optional `onFitChange(fit)` (KF-XFG3FZ: a public fit signal so
+  apps stop measuring private TabBar parts) reports each bar's `TabBarFit`:
+  `overflowing`, `stripWidth`, `tabsWidth`, `free = stripWidth − tabsWidth`
+  (negative by the overflow), `trailingWidth`, and `endWidth`. It fires once per
+  bar element the wiring first sees, then on the next animation frame after a
+  rounded value changes. The frame delay keeps a callback that re-renders the
+  end zone out of ResizeObserver delivery. Intrinsic tabs ellipsize before the
+  strip scrolls, so `free` reaches 0 before `overflowing`; under
+  `allocation="fill"` it stays near 0. The UX catalog's Adaptive End Action
+  example demonstrates the hysteresis recipe. The app applies changes and owns order,
   selection, panels, routing, close policy, and persistence.
 - **Pane height.** A `Pane` takes its content's height by default. The
   opt-in `fill` prop (KF-RMEME0: give a root Pane its parent's height) makes it

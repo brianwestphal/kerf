@@ -694,8 +694,10 @@ headingLevel`, `SearchField clearIcon`, `ContentItem frame="framed"` for a
   them to render. The `wire…` helpers own the _ephemeral_ parts: `wireNavStack` the
   content-slide, per-view top/bottom chrome cross-fade, and focus move/restore
   (mark a preferred new-view target with `data-nav-focus`), `wireTabBars` the
-  overflow autoscroll, drag preview, and
-  replacement focus after controlled automatic tab activation,
+  overflow autoscroll, drag preview,
+  replacement focus after controlled automatic tab activation, and the
+  `onFitChange` tab-fit report (overflow and zone widths) an app reads instead of
+  measuring TabBar's parts,
   `wireResizableRegions` the live drag preview, `wireScrollDividers` the
   scroll-state attributes from which a `Pane` draws its chrome dividers and a
   `TabBar` its overflow dividers; they report committed changes via

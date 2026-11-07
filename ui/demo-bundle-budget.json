@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 164600,
-  "totalJavaScriptGzip": 461700,
-  "measuredLargestJavaScriptGzip": 164546,
-  "measuredTotalJavaScriptGzip": 461672,
+  "totalJavaScriptGzip": 462700,
+  "measuredLargestJavaScriptGzip": 164544,
+  "measuredTotalJavaScriptGzip": 462615,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -7043,6 +7043,22 @@
         "measuredTotalJavaScriptGzip": 461672,
         "largestJavaScriptGzip": 164600,
         "totalJavaScriptGzip": 461700
+      }
+    },
+    {
+      "at": "2026-11-07T08:54:50.160Z",
+      "reason": "KF-XFG3FZ: wireTabBars onFitChange fit tracking plus the catalog's adaptive end-action example",
+      "old": {
+        "measuredLargestJavaScriptGzip": 164546,
+        "measuredTotalJavaScriptGzip": 461672,
+        "largestJavaScriptGzip": 164600,
+        "totalJavaScriptGzip": 461700
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 164544,
+        "measuredTotalJavaScriptGzip": 462615,
+        "largestJavaScriptGzip": 164600,
+        "totalJavaScriptGzip": 462700
       }
     }
   ]

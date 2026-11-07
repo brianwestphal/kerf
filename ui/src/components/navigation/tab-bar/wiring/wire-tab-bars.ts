@@ -1,4 +1,5 @@
 import type { TabActivation } from '../tab-bar.js';
+import { type TabBarFit, trackTabBarFit } from './tab-bar-fit.js';
 
 export type TabReorderSource = 'pointer' | 'keyboard';
 export type TabDropPosition = 'before' | 'after';
@@ -12,6 +13,7 @@ export interface TabReorder {
 }
 
 export type { TabActivation } from '../tab-bar.js';
+export type { TabBarFit } from './tab-bar-fit.js';
 
 export interface WireTabBarsOptions {
   onReorder: (change: TabReorder) => void;
@@ -27,6 +29,15 @@ export interface WireTabBarsOptions {
    * `activation` prop) overrides this option for that strip.
    */
   activation?: TabActivation;
+  /**
+   * Report how each bar's tabs fit their strip and how wide its `trailing` and
+   * `end` zones are: once per bar after wiring (and for each bar rendered
+   * later), then on the next frame after any rounded value changes (a resize, an added or removed tab, a swapped
+   * action). Use it to adapt app-owned zone content, such as swapping a wide
+   * `end` action for a compact one while the tabs overflow, instead of
+   * measuring the bar's parts yourself.
+   */
+  onFitChange?: (fit: TabBarFit) => void;
 }
 
 type TabRoot = HTMLElement;
@@ -204,7 +215,7 @@ function touchedBars(records: readonly MutationRecord[]) {
 /** Wire reordering and keyboard navigation while leaving controlled state in the application. */
 export function wireTabBars(
   root: HTMLElement | Document,
-  { onReorder, activation = 'automatic' }: WireTabBarsOptions,
+  { onReorder, activation = 'automatic', onFitChange }: WireTabBarsOptions,
 ): () => void {
   const ownerDocument = (
     root.nodeType === 9 ? (root as Document) : root.ownerDocument
@@ -629,6 +640,8 @@ export function wireTabBars(
   root.addEventListener('focusin', onFocusIn);
   root.addEventListener('scrollend', onStripScrollEnd, true);
   syncSnapInRoot();
+  const fit = onFitChange && trackTabBarFit(view, root, onFitChange);
+  fit?.update(root.querySelectorAll<HTMLElement>(TAB_BAR));
   root
     .querySelectorAll<HTMLElement>(
       '[data-kui-tab-list] [role="tab"][aria-selected="true"]',
@@ -660,9 +673,13 @@ export function wireTabBars(
     if (disposed) return;
     // A removal anywhere may have taken a strip with it; releasing walks only
     // the few strips and tabs this wiring tracks.
-    if (records.some((record) => record.removedNodes.length)) releaseDetached();
+    if (records.some((record) => record.removedNodes.length)) {
+      releaseDetached();
+      fit?.release();
+    }
     const bars = touchedBars(records);
     if (!bars.size) return;
+    fit?.update(bars);
     const strips = [...bars].flatMap((bar) =>
       selfAndBelow<HTMLElement>(bar, TAB_LIST),
     );
@@ -682,6 +699,7 @@ export function wireTabBars(
     if (snapFrame !== undefined) view.cancelAnimationFrame(snapFrame);
     selectionObserver.disconnect();
     resizeObserver?.disconnect();
+    fit?.dispose();
     for (const strip of snapStrips) {
       strip.style.removeProperty('--kui-tab-bar-snap-end-extra');
     }

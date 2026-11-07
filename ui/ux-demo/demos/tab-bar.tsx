@@ -7,7 +7,37 @@ import {
   ToolbarButton,
   ToolbarControlGroup,
 } from '@kerfjs/ui/toolbar-control-group';
+import type { TabBarFit } from '@kerfjs/ui/wire-tab-bars';
+import { signal } from 'kerfjs';
 import { LayoutGrid, PanelLeft, Plus, SquarePlus } from 'lucide';
+
+/** The adaptive example's bar id, whose fit `adaptTabBarDemoEnd` follows. */
+export const ADAPTIVE_END_TAB_BAR_ID = 'adaptive-end-tab-bar';
+/** App-owned: the adaptive example shows its compact end action. */
+export const adaptiveEndCompact = signal(false);
+let wideEndWidth = 0;
+
+/**
+ * The `wireTabBars` `onFitChange` handler for the adaptive example. While the
+ * wide end action is shown, remember its width and swap to the compact one as
+ * soon as the tabs overflow; swap back only once the free room covers the
+ * difference, so the bar never oscillates between the two.
+ */
+export function adaptTabBarDemoEnd(fit: TabBarFit): void {
+  if (fit.barId !== ADAPTIVE_END_TAB_BAR_ID) return;
+  if (!adaptiveEndCompact.value) {
+    wideEndWidth = fit.endWidth;
+    if (fit.overflowing) adaptiveEndCompact.value = true;
+  } else if (fit.free >= wideEndWidth - fit.endWidth) {
+    adaptiveEndCompact.value = false;
+  }
+}
+
+/** Start each visit with the wide end action. */
+export function resetTabBarDemo(): void {
+  adaptiveEndCompact.value = false;
+  wideEndWidth = 0;
+}
 
 const tabs = (presentation: 'pill' | 'segmented' = 'pill') => [
   <TabBarItem
@@ -206,6 +236,39 @@ export function TabBarDemo() {
             name="Terminal feedback"
             selected
           />
+        </TabBar>
+      </CatalogExample>
+      <CatalogExample
+        label="Adaptive End Action"
+        note="wireTabBars reports each bar's fit through onFitChange. While the tabs overflow, the app swaps the wide New Ticket… action for an icon button, and restores it once the free room covers the difference. Narrow the viewport to watch it swap."
+        align="none"
+      >
+        <TabBar
+          id={ADAPTIVE_END_TAB_BAR_ID}
+          label="Adaptive Project Tabs"
+          end={
+            adaptiveEndCompact.value ? (
+              <ToolbarControlGroup appearance="borderless" single>
+                <ToolbarButton
+                  ariaLabel="New Ticket…"
+                  action="log-add"
+                  icon={<LucideIcon icon={SquarePlus} name="square-plus" />}
+                />
+              </ToolbarControlGroup>
+            ) : (
+              <Button tone="brand" action="log-add">
+                New Ticket…
+              </Button>
+            )
+          }
+        >
+          <TabBarItem
+            id="adaptive-terminal-feedback"
+            name="Terminal feedback"
+            selected
+            attention
+          />
+          <TabBarItem id="adaptive-release-notes" name="Release notes" />
         </TabBar>
       </CatalogExample>
       <CatalogExample

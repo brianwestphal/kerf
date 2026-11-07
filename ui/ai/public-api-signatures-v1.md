@@ -1867,6 +1867,36 @@ import 'kerfjs';
 import './semantic-content-BbzjvSu9.js';
 import './extension-attributes-IJ4decoa.js';
 
+/**
+ * How a TabBar's tabs fit their strip, and how wide its fixed action zones
+ * are, as `wireTabBars` reports it through `onFitChange`. Widths are CSS
+ * pixels rounded to whole pixels.
+ */
+interface TabBarFit {
+    /** The bar's `TabBar` `id` (`data-tab-bar-id`). */
+    barId: string;
+    /**
+     * The tabs need more room than the strip has, so the strip scrolls and some
+     * tab is at least partly out of view.
+     */
+    overflowing: boolean;
+    /** Inline room the strip gives its tabs (its content box). */
+    stripWidth: number;
+    /** Inline extent the tabs occupy, from the first tab's start edge to the last tab's end edge. */
+    tabsWidth: number;
+    /**
+     * `stripWidth - tabsWidth`: room the tabs leave unused, negative by the
+     * amount they overflow. Intrinsic tabs ellipsize their names before the
+     * strip scrolls, so `free` reaches 0 before `overflowing` turns true; under
+     * `allocation="fill"` the tabs absorb the strip and `free` stays near 0.
+     */
+    free: number;
+    /** Width of the `trailing` zone, 0 without one. */
+    trailingWidth: number;
+    /** Width of the `end` zone, 0 without one. */
+    endWidth: number;
+}
+
 type TabReorderSource = 'pointer' | 'keyboard';
 type TabDropPosition = 'before' | 'after';
 interface TabReorder {
@@ -1891,12 +1921,21 @@ interface WireTabBarsOptions {
      * `activation` prop) overrides this option for that strip.
      */
     activation?: TabActivation;
+    /**
+     * Report how each bar's tabs fit their strip and how wide its `trailing` and
+     * `end` zones are: once per bar after wiring (and for each bar rendered
+     * later), then on the next frame after any rounded value changes (a resize, an added or removed tab, a swapped
+     * action). Use it to adapt app-owned zone content, such as swapping a wide
+     * `end` action for a compact one while the tabs overflow, instead of
+     * measuring the bar's parts yourself.
+     */
+    onFitChange?: (fit: TabBarFit) => void;
 }
 declare function reorderTabs<T>(items: readonly T[], getId: (item: T) => string, sourceId: string, targetId: string, position: TabDropPosition): T[];
 /** Wire reordering and keyboard navigation while leaving controlled state in the application. */
-declare function wireTabBars(root: HTMLElement | Document, { onReorder, activation }: WireTabBarsOptions): () => void;
+declare function wireTabBars(root: HTMLElement | Document, { onReorder, activation, onFitChange }: WireTabBarsOptions): () => void;
 
-export { TabActivation, type TabDropPosition, type TabReorder, type TabReorderSource, type WireTabBarsOptions, reorderTabs, wireTabBars };
+export { TabActivation, type TabBarFit, type TabDropPosition, type TabReorder, type TabReorderSource, type WireTabBarsOptions, reorderTabs, wireTabBars };
 ```
 
 ## `@kerfjs/ui/wire-scroll-dividers`
