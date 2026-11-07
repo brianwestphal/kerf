@@ -236,7 +236,7 @@ function typescriptApi() {
     return typescript;
   } catch {
     throw new Error(
-      'TypeScript is required for syntax-aware export verification; run npm install before catalog generation.',
+      'TypeScript is required for syntax-aware export verification; install it in this project (npm install --save-dev typescript) before catalog generation.',
     );
   }
 }

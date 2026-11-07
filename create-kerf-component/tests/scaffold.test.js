@@ -9,6 +9,7 @@ import {
   readFileSync,
   rmSync,
   symlinkSync,
+  writeFileSync,
 } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
@@ -265,12 +266,12 @@ test('scaffolded local catalog script verifies generated metadata end to end', (
         ),
       (error) =>
         error.stderr.includes(
-          'TypeScript is required for syntax-aware export verification; run npm install',
+          'TypeScript is required for syntax-aware export verification; install it in this project',
         ),
     );
     assert.ok(
       existsSync(join(PACKAGE_NODE_MODULES, 'typescript', 'package.json')),
-      'the initializer package must install its declared TypeScript dependency',
+      'the initializer package must install its TypeScript devDependency for its tests',
     );
     // Model the generated package after `npm install` using only the
     // initializer package's own dependency tree. Pointing at the repository
@@ -332,6 +333,105 @@ test('rejects an existing non-empty target directory', () => {
       () => execFileSync('node', [CLI, join(dir, 'a')], { stdio: 'pipe' }),
       /Command failed/,
       'second scaffold into non-empty dir must fail',
+    );
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
+});
+
+test('TypeScript is an optional peer, so npm create installs nothing else', () => {
+  const manifest = JSON.parse(
+    readFileSync(join(dirname(CLI), 'package.json'), 'utf8'),
+  );
+  assert.equal(manifest.dependencies, undefined);
+  assert.equal(manifest.peerDependenciesMeta?.typescript?.optional, true);
+  assert.ok(manifest.peerDependencies?.typescript);
+});
+
+// Run the CLI expecting failure; returns its stderr.
+function failingRun(args, options = {}) {
+  try {
+    execFileSync('node', [CLI, ...args], { stdio: 'pipe', ...options });
+  } catch (error) {
+    assert.equal(error.status, 1);
+    return String(error.stderr);
+  }
+  return assert.fail('should have exited non-zero');
+}
+
+test('rejects an unknown flag instead of scaffolding a directory named after it', () => {
+  const dir = mkdtempSync(join(tmpdir(), 'ckc-'));
+  try {
+    assert.match(failingRun(['--foo'], { cwd: dir }), /unknown option "--foo"/);
+    assert.match(
+      failingRun(['widgets', '-x'], { cwd: dir }),
+      /unknown option "-x"/,
+    );
+    assert.equal(existsSync(join(dir, '--foo')), false);
+    assert.equal(existsSync(join(dir, 'widgets')), false);
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
+});
+
+test('rejects a second target directory', () => {
+  const dir = mkdtempSync(join(tmpdir(), 'ckc-'));
+  try {
+    assert.match(
+      failingRun(['one', 'two'], { cwd: dir }),
+      /expected one target directory/,
+    );
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
+});
+
+test('--name sets a scoped package name', () => {
+  for (const args of [['--name', '@acme/widgets'], ['--name=@acme/widgets']]) {
+    const dir = mkdtempSync(join(tmpdir(), 'ckc-'));
+    try {
+      const target = join(dir, 'widgets');
+      const stdout = execFileSync('node', [CLI, ...args, target], {
+        encoding: 'utf8',
+      });
+      assert.match(
+        stdout,
+        /Scaffolded kerf component package "@acme\/widgets"/,
+      );
+      const read = (file) => readFileSync(join(target, file), 'utf8');
+      assert.equal(JSON.parse(read('package.json')).name, '@acme/widgets');
+      assert.doesNotMatch(read('README.md'), /__PKG_NAME__/);
+    } finally {
+      rmSync(dir, { recursive: true, force: true });
+    }
+  }
+});
+
+test('rejects an invalid or missing --name', () => {
+  const dir = mkdtempSync(join(tmpdir(), 'ckc-'));
+  try {
+    assert.match(
+      failingRun([join(dir, 'a'), '--name', 'Bad Name']),
+      /"Bad Name" is not a valid npm package name/,
+    );
+    assert.match(failingRun([join(dir, 'a'), '--name']), /--name needs/);
+    assert.equal(existsSync(join(dir, 'a')), false);
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
+});
+
+test('reports a target that is an existing file clearly', () => {
+  const dir = mkdtempSync(join(tmpdir(), 'ckc-'));
+  try {
+    writeFileSync(join(dir, 'widgets'), 'not a directory');
+    assert.match(
+      failingRun([join(dir, 'widgets')]),
+      /already exists and is a file, not a directory/,
+    );
+    assert.match(
+      failingRun([join(dir, 'widgets', 'nested')]),
+      /part of that path is an existing file/,
     );
   } finally {
     rmSync(dir, { recursive: true, force: true });

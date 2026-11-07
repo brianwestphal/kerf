@@ -42,7 +42,15 @@
   "scripts": {
     "test": "node --test tests/*.test.js"
   },
-  "dependencies": {
+  "peerDependencies": {
+    "typescript": "^5.0.0 || ^6.0.0"
+  },
+  "peerDependenciesMeta": {
+    "typescript": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
     "typescript": "^5.0.0 || ^6.0.0"
   }
 }

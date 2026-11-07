@@ -7,15 +7,18 @@
 // delegation disposer.
 //
 // Usage:
-//   npm create kerf-component@latest <dir>
+//   npm create kerf-component@latest <dir> [--name <package-name>]
 //   npm init kerf-component <dir>
 //   npx create-kerf-component <dir>
 //
 // <dir> is the target directory; its basename is the default package name (pass
-// `.` to scaffold into the current directory). Run with NO argument and it
-// prompts for the directory (or reads it from piped stdin) — `npm create
-// kerf-component` alone just works. No third-party dependencies — the
-// initializer is plain Node so `npm create` runs it with zero install latency.
+// `.` to scaffold into the current directory). `--name` sets the package name
+// instead, which is how to scaffold a scoped package (`--name @acme/widgets`).
+// Run with NO argument and it prompts for the directory (or reads it from piped
+// stdin) — `npm create kerf-component` alone just works. The initializer itself
+// is plain Node; TypeScript is only an optional peer of the
+// `kerf-component-catalog` bin, which runs inside a TypeScript project, so
+// `npm create` installs nothing beyond this package.
 
 import {
   copyFileSync,
@@ -25,6 +28,7 @@ import {
   readdirSync,
   readFileSync,
   renameSync,
+  statSync,
   writeFileSync,
 } from 'node:fs';
 import { basename, dirname, join, resolve } from 'node:path';
@@ -42,9 +46,40 @@ function fail(msg) {
 }
 
 const USAGE =
-  'Usage: npm create kerf-component@latest <dir>\n' +
-  '       (or: npx create-kerf-component <dir>)\n\n' +
-  'Scaffolds a kerf component package into <dir>. Pass `.` for the current directory.\n';
+  'Usage: npm create kerf-component@latest <dir> [--name <package-name>]\n' +
+  '       (or: npx create-kerf-component <dir> [--name <package-name>])\n\n' +
+  'Scaffolds a kerf component package into <dir>. Pass `.` for the current directory.\n' +
+  'The package name defaults to the directory name; use --name for a scoped name\n' +
+  '(for example --name @acme/widgets).\n';
+
+// Split the command line into the target directory and options. Anything that
+// starts with `-` is an option: an unknown one is an error rather than a
+// directory named `--foo`.
+function parseArgs(args) {
+  const parsed = { target: undefined, name: undefined, help: false };
+  for (let index = 0; index < args.length; index++) {
+    const arg = args[index];
+    if (arg === '--help' || arg === '-h') parsed.help = true;
+    else if (arg === '--name') {
+      const value = args[++index];
+      if (value === undefined || value.startsWith('-'))
+        throw new Error(
+          '--name needs a package name, e.g. --name @acme/widgets.',
+        );
+      parsed.name = value;
+    } else if (arg.startsWith('--name=')) parsed.name = arg.slice(7);
+    else if (arg.startsWith('-'))
+      throw new Error(
+        `unknown option "${arg}". Run with --help for usage. (To use a directory whose name starts with "-", pass it as ./${arg}.)`,
+      );
+    else if (parsed.target === undefined) parsed.target = arg;
+    else
+      throw new Error(
+        `expected one target directory, received "${parsed.target}" and "${arg}".`,
+      );
+  }
+  return parsed;
+}
 
 // Ask for the target directory when none was passed. `npm create kerf-component`
 // (no arg) is the most natural invocation, so prompt rather than error.
@@ -91,12 +126,17 @@ function walk(dir) {
 }
 
 async function main(argv) {
-  let target = argv[2];
-
-  if (target === '--help' || target === '-h') {
+  let options;
+  try {
+    options = parseArgs(argv.slice(2));
+  } catch (error) {
+    fail(error.message);
+  }
+  if (options.help) {
     process.stdout.write(USAGE);
     process.exit(0);
   }
+  let target = options.target;
 
   if (target == null || target === '') {
     // No directory given. Prompt interactively when attached to a terminal (the
@@ -114,20 +154,38 @@ async function main(argv) {
   }
 
   const targetDir = resolve(process.cwd(), target);
-  const pkgName = target === '.' ? basename(targetDir) : basename(target);
+  const pkgName =
+    options.name ?? (target === '.' ? basename(targetDir) : basename(target));
 
   if (!isValidPackageName(pkgName)) {
-    fail(`"${pkgName}" is not a valid npm package name.`);
+    fail(
+      options.name === undefined
+        ? `"${pkgName}" (from the directory name) is not a valid npm package name; pass --name <package-name> or choose another directory.`
+        : `"${pkgName}" is not a valid npm package name.`,
+    );
   }
 
-  if (existsSync(targetDir) && readdirSync(targetDir).length > 0) {
-    fail(`target directory "${target}" already exists and is not empty.`);
+  if (existsSync(targetDir)) {
+    if (!statSync(targetDir).isDirectory())
+      fail(
+        `target "${target}" already exists and is a file, not a directory; choose a new directory name.`,
+      );
+    if (readdirSync(targetDir).length > 0)
+      fail(`target directory "${target}" already exists and is not empty.`);
   }
 
   // Copy the whole template tree, then post-process each file in place: replace
   // the package-name token and rename the dotfile placeholders npm can't ship
   // verbatim (`_gitignore` → `.gitignore`).
-  mkdirSync(targetDir, { recursive: true });
+  try {
+    mkdirSync(targetDir, { recursive: true });
+  } catch (error) {
+    if (error?.code === 'ENOTDIR' || error?.code === 'EEXIST')
+      fail(
+        `cannot create "${target}": part of that path is an existing file, not a directory.`,
+      );
+    throw error;
+  }
   cpSync(TEMPLATE_DIR, targetDir, { recursive: true });
   mkdirSync(join(targetDir, 'scripts'), { recursive: true });
   copyFileSync(

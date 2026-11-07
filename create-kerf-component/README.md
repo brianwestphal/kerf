@@ -17,7 +17,17 @@ npm run check:styles
 
 Run it with **no argument** (`npm create kerf-component`) and it prompts for the
 directory. Pass `.` to scaffold into the current directory. The target
-directory's basename is used as the package name.
+directory's basename is used as the package name; pass `--name` to choose
+another, such as a scoped name:
+
+```bash
+npm create kerf-component@latest widgets -- --name @acme/widgets
+```
+
+Any other argument that starts with `-` is rejected as an unknown option.
+The initializer installs nothing beyond itself: TypeScript is only an optional
+peer of the `kerf-component-catalog` command, which runs inside your
+TypeScript project.
 
 ## What you get
 
