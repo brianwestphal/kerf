@@ -1113,20 +1113,23 @@ async function stage(name, runner, signal) {
   }
 }
 
-export async function runUiDoctor({
-  root: requestedRoot = process.cwd(),
-  package: packageSelector,
-  mode,
-  paths,
-  config: suppliedConfig,
+// The config file a diagnostic should name: the supplied-options marker, or the
+// read config's path relative to the workspace root.
+function configSourceLabel(root, configResult) {
+  return configResult.path === '<options>'
+    ? '<options>'
+    : portablePath(root, configResult.path);
+}
+
+// Target phase: resolve the workspace root, the doctor config, and the package
+// under examination; a package the selector cannot resolve becomes a
+// configuration diagnostic rather than a thrown error.
+async function resolveDoctorTarget({
+  requestedRoot,
+  packageSelector,
+  suppliedConfig,
   configPath,
-  cache,
-  failOn,
-  signal,
-  browser,
-  runners = {},
-  eslintConfig = 'recommended-ui',
-} = {}) {
+}) {
   const root = resolve(requestedRoot);
   const configResult = suppliedConfig
     ? {
@@ -1154,6 +1157,24 @@ export async function runUiDoctor({
       }),
     );
   }
+  return { root, configResult, config, packageRoot, initialDiagnostics };
+}
+
+// Selection phase: pick the mode, the fail-on level, the stage set, the
+// changed-mode paths, and the cache switch from the options and the config,
+// recording any option the run cannot honor as a configuration diagnostic.
+function selectDoctorRun({
+  root,
+  packageRoot,
+  config,
+  configResult,
+  mode,
+  failOn,
+  browser,
+  paths,
+  cache,
+  initialDiagnostics,
+}) {
   const selectedMode = mode ?? config.mode ?? 'full';
   const selectedFailOn = failOn ?? config.failOn ?? 'error';
   if (failOn !== undefined && !['error', 'review', 'warning'].includes(failOn))
@@ -1174,19 +1195,25 @@ export async function runUiDoctor({
       configDiagnostic(
         'Changed mode requires at least one explicit --path. This prevents a false-clean report.',
         {
-          file:
-            configResult.path === '<options>'
-              ? '<options>'
-              : portablePath(root, configResult.path),
+          file: configSourceLabel(root, configResult),
           path: '$.mode',
         },
       ),
     );
   const cacheEnabled = cache ?? config.cache ?? true;
-  const [eslintRuleIds, registeredRuleIds] = await Promise.all([
-    installedEslintRuleIds(packageRoot),
-    sharedDiagnosticRuleIds(),
-  ]);
+  return { selectedMode, selectedFailOn, stages, selectedPaths, cacheEnabled };
+}
+
+// Cache phase: the cache file and the key that identifies this run's inputs
+// (the browser URL is redacted so the key never stores it).
+async function doctorCacheIdentity({
+  root,
+  packageRoot,
+  selectedMode,
+  selectedPaths,
+  config,
+  selectedFailOn,
+}) {
   const cachePath = resolve(root, '.kerf-cache/ui-doctor-v1.json');
   const key = await cacheKey(root, packageRoot, selectedMode, selectedPaths, {
     ...config,
@@ -1195,17 +1222,140 @@ export async function runUiDoctor({
       ? { ...config.browser, url: '<redacted-url>' }
       : undefined,
   });
-  if (cacheEnabled && !initialDiagnostics.length && !stages.browser) {
-    const cached = await readCache(cachePath, key);
-    if (cached)
-      return {
-        ...cached,
-        stages: cached.stages.map((item) =>
-          item.status === 'ran' ? { ...item, status: 'cached' } : item,
-        ),
-        cache: { hit: true, key },
-      };
-  }
+  return { cachePath, key };
+}
+
+// Cache phase: a previous report for the same key, with its stages that ran
+// marked `cached`; `undefined` on a miss.
+async function cachedDoctorReport(cachePath, key) {
+  const cached = await readCache(cachePath, key);
+  if (!cached) return undefined;
+  return {
+    ...cached,
+    stages: cached.stages.map((item) =>
+      item.status === 'ran' ? { ...item, status: 'cached' } : item,
+    ),
+    cache: { hit: true, key },
+  };
+}
+
+// The analyzer options the doctor config supplies, shared by the injected and
+// the default analyzer runners.
+function analyzerOwnershipOptions(config) {
+  return {
+    ownership: config.ownership ?? 'package',
+    ownershipContext: config.ownershipContext ?? 'subject',
+    implicitComponentOwnership: config.implicitComponentOwnership ?? false,
+    ownershipGroups: config.ownershipGroups ?? [],
+  };
+}
+
+// Default catalog stage: the application UI profile, the local catalogs, and
+// the project guidance files.
+async function catalogStage({
+  root,
+  packageRoot,
+  registeredRuleIds,
+  eslintRuleIds,
+}) {
+  const knownRules = [...registeredRuleIds, ...eslintRuleIds];
+  const result = await loadApplicationUiProfile({
+    workspaceRoot: root,
+    startDirectory: packageRoot,
+    knownRules,
+  });
+  const local = await validateLocalCatalogs(packageRoot);
+  return {
+    diagnostics: [
+      ...result.diagnostics.map((item) => normalizeProfile(item, root)),
+      ...local.diagnostics,
+      ...(await checkProjectGuidance(root, packageRoot)),
+    ],
+    detail: local.detail,
+  };
+}
+
+// Default analyzer stage: the UI analyzer plus the component-style and
+// copy-capitalization checks over the package's inputs.
+async function analyzerStage({
+  root,
+  packageRoot,
+  config,
+  selectedPaths,
+  registeredRuleIds,
+  eslintRuleIds,
+}) {
+  return {
+    diagnostics: [
+      ...normalizeAnalyzer(
+        await analyzeUiProject({
+          root: packageRoot,
+          workspaceRoot: root,
+          paths: selectedPaths,
+          ...analyzerOwnershipOptions(config),
+          knownRules: [...registeredRuleIds, ...eslintRuleIds],
+        }),
+      ),
+      ...(await checkComponentStyles(
+        packageRoot,
+        await collectInputs(packageRoot),
+        config.ownershipGroups ?? [],
+        selectedPaths,
+        root,
+      )),
+      ...(await checkCopyCapitalization(
+        packageRoot,
+        await collectInputs(packageRoot),
+        selectedPaths,
+      )),
+    ],
+  };
+}
+
+// Default browser stage: evaluate the configured URL with the UI evaluator.
+async function browserStage({ root, packageRoot, options, signal }) {
+  if (!options.url)
+    throw new Error('The browser stage requires an explicit URL.');
+  const report = await evaluateUi({
+    url: options.url,
+    workspaceRoot: root,
+    startDirectory: packageRoot,
+    browsers: options.browsers,
+    retention: options.retention ?? 'on-failure',
+    outputDirectory: resolve(
+      root,
+      options.outputDirectory ?? 'kerf-ui-evidence',
+    ),
+    reportPath: resolve(
+      root,
+      options.reportPath ?? 'kerf-ui-evidence/report.json',
+    ),
+    signal,
+  });
+  return { diagnostics: normalizeEvaluator(report) };
+}
+
+// Stage phase: run every enabled stage in the fixed order (catalog,
+// typescript, eslint, analyzer, browser), preferring an injected runner over
+// the default, then record each disabled stage as skipped.
+async function runDoctorStages(context) {
+  const {
+    root,
+    packageRoot,
+    config,
+    stages,
+    selectedPaths,
+    signal,
+    browser,
+    runners,
+    eslintConfig,
+  } = context;
+  const runnerInputs = () => ({
+    root,
+    packageRoot,
+    paths: selectedPaths,
+    signal,
+  });
   const results = [];
   if (stages.catalog)
     results.push(
@@ -1213,31 +1363,8 @@ export async function runUiDoctor({
         'catalog',
         async () =>
           runners.catalog
-            ? runners.catalog({
-                root,
-                packageRoot,
-                paths: selectedPaths,
-                signal,
-              })
-            : (async () => {
-                const knownRules = [...registeredRuleIds, ...eslintRuleIds];
-                const result = await loadApplicationUiProfile({
-                  workspaceRoot: root,
-                  startDirectory: packageRoot,
-                  knownRules,
-                });
-                const local = await validateLocalCatalogs(packageRoot);
-                return {
-                  diagnostics: [
-                    ...result.diagnostics.map((item) =>
-                      normalizeProfile(item, root),
-                    ),
-                    ...local.diagnostics,
-                    ...(await checkProjectGuidance(root, packageRoot)),
-                  ],
-                  detail: local.detail,
-                };
-              })(),
+            ? runners.catalog(runnerInputs())
+            : catalogStage(context),
         signal,
       ),
     );
@@ -1245,13 +1372,7 @@ export async function runUiDoctor({
     results.push(
       await stage(
         'typescript',
-        () =>
-          (runners.typescript ?? runTypeScript)({
-            root,
-            packageRoot,
-            paths: selectedPaths,
-            signal,
-          }),
+        () => (runners.typescript ?? runTypeScript)(runnerInputs()),
         signal,
       ),
     );
@@ -1260,13 +1381,7 @@ export async function runUiDoctor({
       await stage(
         'eslint',
         () =>
-          (runners.eslint ?? runEslint)({
-            root,
-            packageRoot,
-            paths: selectedPaths,
-            signal,
-            eslintConfig,
-          }),
+          (runners.eslint ?? runEslint)({ ...runnerInputs(), eslintConfig }),
         signal,
       ),
     );
@@ -1277,45 +1392,10 @@ export async function runUiDoctor({
         () =>
           runners.analyzer
             ? runners.analyzer({
-                root,
-                packageRoot,
-                paths: selectedPaths,
-                ownership: config.ownership ?? 'package',
-                ownershipContext: config.ownershipContext ?? 'subject',
-                implicitComponentOwnership:
-                  config.implicitComponentOwnership ?? false,
-                ownershipGroups: config.ownershipGroups ?? [],
-                signal,
+                ...runnerInputs(),
+                ...analyzerOwnershipOptions(config),
               })
-            : (async () => ({
-                diagnostics: [
-                  ...normalizeAnalyzer(
-                    await analyzeUiProject({
-                      root: packageRoot,
-                      workspaceRoot: root,
-                      paths: selectedPaths,
-                      ownership: config.ownership ?? 'package',
-                      ownershipContext: config.ownershipContext ?? 'subject',
-                      implicitComponentOwnership:
-                        config.implicitComponentOwnership ?? false,
-                      ownershipGroups: config.ownershipGroups ?? [],
-                      knownRules: [...registeredRuleIds, ...eslintRuleIds],
-                    }),
-                  ),
-                  ...(await checkComponentStyles(
-                    packageRoot,
-                    await collectInputs(packageRoot),
-                    config.ownershipGroups ?? [],
-                    selectedPaths,
-                    root,
-                  )),
-                  ...(await checkCopyCapitalization(
-                    packageRoot,
-                    await collectInputs(packageRoot),
-                    selectedPaths,
-                  )),
-                ],
-              }))(),
+            : analyzerStage(context),
         signal,
       ),
     );
@@ -1323,39 +1403,12 @@ export async function runUiDoctor({
     results.push(
       await stage(
         'browser',
-        async () =>
-          runners.browser
-            ? runners.browser({
-                root,
-                packageRoot,
-                paths: selectedPaths,
-                signal,
-                browser: { ...config.browser, ...browser },
-              })
-            : (async () => {
-                const options = { ...config.browser, ...browser };
-                if (!options.url)
-                  throw new Error(
-                    'The browser stage requires an explicit URL.',
-                  );
-                const report = await evaluateUi({
-                  url: options.url,
-                  workspaceRoot: root,
-                  startDirectory: packageRoot,
-                  browsers: options.browsers,
-                  retention: options.retention ?? 'on-failure',
-                  outputDirectory: resolve(
-                    root,
-                    options.outputDirectory ?? 'kerf-ui-evidence',
-                  ),
-                  reportPath: resolve(
-                    root,
-                    options.reportPath ?? 'kerf-ui-evidence/report.json',
-                  ),
-                  signal,
-                });
-                return { diagnostics: normalizeEvaluator(report) };
-              })(),
+        async () => {
+          const options = { ...config.browser, ...browser };
+          return runners.browser
+            ? runners.browser({ ...runnerInputs(), browser: options })
+            : browserStage({ root, packageRoot, options, signal });
+        },
         signal,
       ),
     );
@@ -1367,10 +1420,21 @@ export async function runUiDoctor({
         detail: 'Disabled by configuration.',
         diagnostics: [],
       });
-  const cancelled =
-    signal?.aborted || results.some((item) => item.status === 'cancelled');
+  return results;
+}
+
+// Suppression phase: copy the configured suppressions and flag any rule id
+// that no stage emitted, no plugin registers, and no TS/ESLint pattern covers.
+function validateSuppressions({
+  root,
+  configResult,
+  config,
+  emitted,
+  registeredRuleIds,
+  eslintRuleIds,
+  initialDiagnostics,
+}) {
   const suppressionSource = [...(config.suppressions ?? [])];
-  const emitted = results.flatMap((item) => item.diagnostics);
   const knownSuppressionRules = new Set([
     ...registeredRuleIds,
     ...eslintRuleIds,
@@ -1385,37 +1449,66 @@ export async function runUiDoctor({
       )
         initialDiagnostics.push(
           configDiagnostic(`Unknown or stale suppression rule id ${rule}.`, {
-            file:
-              configResult.path === '<options>'
-                ? '<options>'
-                : portablePath(root, configResult.path),
+            file: configSourceLabel(root, configResult),
             path: `$.suppressions[${index}].rules`,
           }),
         );
   });
+  return suppressionSource;
+}
+
+// Exit phase: cancellation first, then infrastructure failure, then findings
+// at or above the selected fail-on level.
+function doctorExitCode({
+  cancelled,
+  infrastructureFailure,
+  summary,
+  selectedFailOn,
+}) {
+  if (cancelled) return UI_DOCTOR_EXIT.cancelled;
+  if (infrastructureFailure) return UI_DOCTOR_EXIT.configuration;
+  if (
+    summary.errors ||
+    (selectedFailOn !== 'error' && summary.review) ||
+    (selectedFailOn === 'warning' && summary.warnings)
+  )
+    return UI_DOCTOR_EXIT.findings;
+  return UI_DOCTOR_EXIT.clean;
+}
+
+// Report phase: merge and redact every diagnostic, apply the suppressions,
+// summarize the active set, and assemble the redacted report.
+function buildDoctorReport({
+  root,
+  packageRoot,
+  selectedMode,
+  selectedPaths,
+  selectedFailOn,
+  initialDiagnostics,
+  emitted,
+  suppressionSource,
+  results,
+  cancelled,
+  infrastructureFailure,
+  key,
+}) {
   const merged = mergeDiagnostics(
     redact(root, [...initialDiagnostics, ...emitted]),
   );
   const { active, suppressed } = applySuppressions(merged, suppressionSource);
-  const infrastructureFailure =
-    initialDiagnostics.length ||
-    results.some((item) => ['failed', 'unavailable'].includes(item.status));
   const summary = {
     errors: active.filter((item) => item.severity === 'error').length,
     warnings: active.filter((item) => item.severity === 'warning').length,
     review: active.filter((item) => item.severity === 'review').length,
     suppressed: suppressed.length,
   };
-  const exitCode = cancelled
-    ? UI_DOCTOR_EXIT.cancelled
-    : infrastructureFailure
-      ? UI_DOCTOR_EXIT.configuration
-      : summary.errors ||
-          (selectedFailOn !== 'error' && summary.review) ||
-          (selectedFailOn === 'warning' && summary.warnings)
-        ? UI_DOCTOR_EXIT.findings
-        : UI_DOCTOR_EXIT.clean;
-  const report = redact(root, {
+  const exitCode = doctorExitCode({
+    cancelled,
+    infrastructureFailure,
+    summary,
+    selectedFailOn,
+  });
+  return redact(root, {
     schemaVersion: UI_DOCTOR_SCHEMA_VERSION,
     tool: { name: '@kerfjs/ui/doctor', reportVersion: 1 },
     mode: selectedMode,
@@ -1434,6 +1527,100 @@ export async function runUiDoctor({
     summary,
     exitCode,
     cache: { hit: false, key },
+  });
+}
+
+export async function runUiDoctor({
+  root: requestedRoot = process.cwd(),
+  package: packageSelector,
+  mode,
+  paths,
+  config: suppliedConfig,
+  configPath,
+  cache,
+  failOn,
+  signal,
+  browser,
+  runners = {},
+  eslintConfig = 'recommended-ui',
+} = {}) {
+  const { root, configResult, config, packageRoot, initialDiagnostics } =
+    await resolveDoctorTarget({
+      requestedRoot,
+      packageSelector,
+      suppliedConfig,
+      configPath,
+    });
+  const { selectedMode, selectedFailOn, stages, selectedPaths, cacheEnabled } =
+    selectDoctorRun({
+      root,
+      packageRoot,
+      config,
+      configResult,
+      mode,
+      failOn,
+      browser,
+      paths,
+      cache,
+      initialDiagnostics,
+    });
+  const [eslintRuleIds, registeredRuleIds] = await Promise.all([
+    installedEslintRuleIds(packageRoot),
+    sharedDiagnosticRuleIds(),
+  ]);
+  const { cachePath, key } = await doctorCacheIdentity({
+    root,
+    packageRoot,
+    selectedMode,
+    selectedPaths,
+    config,
+    selectedFailOn,
+  });
+  if (cacheEnabled && !initialDiagnostics.length && !stages.browser) {
+    const cached = await cachedDoctorReport(cachePath, key);
+    if (cached) return cached;
+  }
+  const results = await runDoctorStages({
+    root,
+    packageRoot,
+    config,
+    stages,
+    selectedPaths,
+    signal,
+    browser,
+    runners,
+    eslintConfig,
+    registeredRuleIds,
+    eslintRuleIds,
+  });
+  const cancelled =
+    signal?.aborted || results.some((item) => item.status === 'cancelled');
+  const emitted = results.flatMap((item) => item.diagnostics);
+  const suppressionSource = validateSuppressions({
+    root,
+    configResult,
+    config,
+    emitted,
+    registeredRuleIds,
+    eslintRuleIds,
+    initialDiagnostics,
+  });
+  const infrastructureFailure =
+    initialDiagnostics.length ||
+    results.some((item) => ['failed', 'unavailable'].includes(item.status));
+  const report = buildDoctorReport({
+    root,
+    packageRoot,
+    selectedMode,
+    selectedPaths,
+    selectedFailOn,
+    initialDiagnostics,
+    emitted,
+    suppressionSource,
+    results,
+    cancelled,
+    infrastructureFailure,
+    key,
   });
   if (cacheEnabled && !cancelled && !infrastructureFailure && !stages.browser)
     await writeCache(cachePath, key, report);
