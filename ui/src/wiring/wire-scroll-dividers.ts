@@ -331,6 +331,332 @@ const hasStructuralClass = (value: string | null) =>
     .split(/\s+/)
     .some((token) => (STRUCTURAL_CLASSES as readonly string[]).includes(token));
 
+const byId = (root: Root, id: string | undefined) => {
+  if (!id) return undefined;
+  const [match] = within<HTMLElement>(root, `[id=${quoted(id)}]`);
+  return match;
+};
+
+/** Collect the scroller/chrome relationships from the current registrations. */
+function collectPairings(registrations: ReadonlySet<Registration>): Pairing[] {
+  const found: Pairing[] = [];
+  for (const { root, targets } of registrations) {
+    for (const pane of within<HTMLElement>(root, '.kui-pane')) {
+      const scroller = directChild(pane, '.kui-pane__content');
+      const header = directChild(pane, PANE_CHROME.t);
+      const footer = directChild(pane, PANE_CHROME.b);
+      if (scroller && (header || footer))
+        found.push({ scroller, chrome: { t: header, b: footer } });
+    }
+    const pairRegion = (
+      region: HTMLElement | undefined,
+      edge: 't' | 'b',
+      chrome: HTMLElement | undefined,
+    ) => {
+      if (!region || !chrome) return;
+      for (const scroller of regionScrollers(region, edge))
+        found.push({ scroller, chrome: { [edge]: chrome } });
+    };
+    for (const stack of within<HTMLElement>(root, '.kui-nav-stack')) {
+      const view = activeView(stack);
+      for (const edge of ['t', 'b'] as const)
+        pairRegion(view, edge, directChild(stack, NAV_STACK_CHROME[edge]));
+    }
+    for (const scaffold of within<HTMLElement>(root, '.kui-tab-scaffold'))
+      pairRegion(
+        activeScene(scaffold),
+        'b',
+        directChild(scaffold, '.kui-tab-scaffold__bar'),
+      );
+    for (const strip of within<HTMLElement>(root, SCROLL_STRIP))
+      found.push({ scroller: strip, chrome: {} });
+    for (const target of targets) {
+      const scroller = byId(root, target.scroller);
+      if (!scroller) continue;
+      const chrome: Pairing['chrome'] = {};
+      for (const edge of EDGES)
+        chrome[edge] = byId(root, target[TARGET_EDGES[edge]]);
+      found.push({ scroller, chrome });
+    }
+  }
+  return found;
+}
+
+function collectOverlays(registrations: ReadonlySet<Registration>) {
+  const found = new Map<HTMLElement, HTMLElement>();
+  for (const { root } of registrations)
+    for (const pane of within<HTMLElement>(root, OVERLAY_PANE)) {
+      const header = directChild(pane, PANE_CHROME.t);
+      if (header) found.set(header, pane);
+    }
+  return found;
+}
+
+/** Every target id any registration resolves. */
+function collectTargetIds(registrations: ReadonlySet<Registration>) {
+  const ids = new Set<string>();
+  for (const { targets } of registrations)
+    for (const target of targets) {
+      ids.add(target.scroller);
+      for (const edge of EDGES) {
+        const id = target[TARGET_EDGES[edge]];
+        if (id) ids.add(id);
+      }
+    }
+  return ids;
+}
+
+/** Whether `node` is or contains an element matching `selector`. */
+const holds = (node: Node, selector: string) =>
+  node.nodeType === 1 &&
+  ((node as Element).matches(selector) ||
+    !!(node as Element).querySelector(selector));
+
+/** Whether a mutation can change a structural scroller/chrome pairing. */
+function changesPairings(
+  {
+    type,
+    target,
+    attributeName,
+    oldValue,
+    addedNodes,
+    removedNodes,
+  }: MutationRecord,
+  ids: ReadonlySet<string>,
+  selector: string,
+) {
+  if (
+    type === 'attributes' &&
+    (attributeName === SCROLL_OVERFLOW || attributeName === SCROLL_DIVIDER)
+  )
+    return false;
+  if (target.nodeType === 1 && (target as Element).matches(selector))
+    return true;
+  if (type === 'attributes')
+    return attributeName === 'class'
+      ? hasStructuralClass(oldValue)
+      : attributeName === 'id' && oldValue !== null && ids.has(oldValue);
+  for (const node of [...addedNodes, ...removedNodes])
+    if (holds(node, selector)) return true;
+  return false;
+}
+
+function measureScrollbars(
+  overlays: ReadonlyMap<HTMLElement, HTMLElement>,
+  scrollbarSizes: Map<HTMLElement, number>,
+) {
+  let changed = false;
+  for (const [header, pane] of overlays) {
+    const scroller = directChild(pane, '.kui-pane__content');
+    let size = 0;
+    if (scroller) {
+      const style =
+        scroller.ownerDocument.defaultView!.getComputedStyle(scroller);
+      size = Math.max(
+        0,
+        scroller.offsetWidth -
+          scroller.clientWidth -
+          (Number.parseFloat(style.borderLeftWidth) || 0) -
+          (Number.parseFloat(style.borderRightWidth) || 0),
+      );
+    }
+    if (scrollbarSizes.get(header) === size) continue;
+    scrollbarSizes.set(header, size);
+    changed = true;
+  }
+  return changed;
+}
+
+function publishClearance(
+  overlays: ReadonlyMap<HTMLElement, HTMLElement>,
+  headerSizes: ReadonlyMap<HTMLElement, number>,
+  scrollbarSizes: ReadonlyMap<HTMLElement, number>,
+  published: Set<HTMLElement>,
+  overlayObserver: MutationObserver | undefined,
+) {
+  const current = new Map<HTMLElement, [string, string]>();
+  for (const [header, pane] of overlays) {
+    const size = headerSizes.get(header);
+    const scrollbar = scrollbarSizes.get(header);
+    if (size !== undefined)
+      current.set(pane, [`${size}px`, scrollbar ? `${scrollbar}px` : '']);
+  }
+  // Disconnect first, so this wiring's own writes are not reported back.
+  overlayObserver?.disconnect();
+  for (const pane of published)
+    if (!current.has(pane)) {
+      pane.style.removeProperty(CLEARANCE_BLOCK_START);
+      pane.style.removeProperty(SCROLLBAR_INLINE_SIZE);
+      if (!pane.getAttribute('style')) pane.removeAttribute('style');
+      pane.removeAttribute(HEADER_OVERLAY);
+    }
+  published.clear();
+  for (const [pane, [value, scrollbar]] of current) {
+    if (pane.style.getPropertyValue(CLEARANCE_BLOCK_START) !== value)
+      pane.style.setProperty(CLEARANCE_BLOCK_START, value);
+    if (pane.style.getPropertyValue(SCROLLBAR_INLINE_SIZE) !== scrollbar) {
+      if (scrollbar) pane.style.setProperty(SCROLLBAR_INLINE_SIZE, scrollbar);
+      else pane.style.removeProperty(SCROLLBAR_INLINE_SIZE);
+    }
+    if (pane.getAttribute(HEADER_OVERLAY) !== 'measured')
+      pane.setAttribute(HEADER_OVERLAY, 'measured');
+    published.add(pane);
+    overlayObserver?.observe(pane, {
+      attributes: true,
+      attributeFilter: ['style', HEADER_OVERLAY],
+    });
+  }
+}
+
+function fadeEdges(
+  pairings: readonly Pairing[],
+  faded: Set<HTMLElement>,
+  only?: HTMLElement,
+) {
+  const current = new Set<HTMLElement>();
+  for (const { scroller, chrome } of pairings)
+    for (const edge of ['t', 'b'] as const) {
+      const element = chrome[edge];
+      const owner = element?.parentElement;
+      if (!element || !owner?.hasAttribute('data-scroll-edge')) continue;
+      current.add(element);
+      if (only && scroller !== only) continue;
+      const distance =
+        Number(owner.getAttribute(SCROLL_EDGE_DISTANCE)) ||
+        DEFAULT_SCROLL_EDGE_DISTANCE;
+      const travelled =
+        edge === 't'
+          ? scroller.scrollTop
+          : scroller.scrollHeight - scroller.clientHeight - scroller.scrollTop;
+      const value = String(
+        Math.round(Math.min(1, Math.max(0, travelled / distance)) * 1000) /
+          1000,
+      );
+      if (element.style.getPropertyValue(SCROLL_EDGE_PROGRESS) !== value)
+        element.style.setProperty(SCROLL_EDGE_PROGRESS, value);
+    }
+  if (only) return;
+  for (const element of faded)
+    if (!current.has(element)) {
+      element.style.removeProperty(SCROLL_EDGE_PROGRESS);
+      if (!element.getAttribute('style')) element.removeAttribute('style');
+    }
+  faded.clear();
+  for (const element of current) faded.add(element);
+}
+
+function applyOverflow(
+  pairings: readonly Pairing[],
+  overflow: ReadonlyMap<HTMLElement, string>,
+  written: Map<Element, Map<StateAttribute, string>>,
+  faded: Set<HTMLElement>,
+) {
+  const current = new Map<Element, Map<StateAttribute, string>>();
+  const dividers = new Map<HTMLElement, Set<Edge>>();
+  for (const { scroller, chrome } of pairings) {
+    const edges = overflow.get(scroller)!;
+    (
+      current.get(scroller) ?? current.set(scroller, new Map()).get(scroller)!
+    ).set(SCROLL_OVERFLOW, edges);
+    for (const edge of EDGES) {
+      const element = chrome[edge];
+      if (!element) continue;
+      const shown = dividers.get(element) ?? new Set<Edge>();
+      dividers.set(element, shown);
+      if (edges.includes(edge)) shown.add(FACING[edge]);
+    }
+  }
+  for (const [element, shown] of dividers)
+    (current.get(element) ?? current.set(element, new Map()).get(element)!).set(
+      SCROLL_DIVIDER,
+      sides(shown),
+    );
+  // Anything written before that is no longer paired gets its attributes back.
+  for (const [element, values] of written)
+    for (const name of values.keys())
+      if (!current.get(element)?.has(name)) write(element, name, '');
+  written.clear();
+  for (const [element, values] of current) {
+    written.set(element, values);
+    for (const [name, value] of values) write(element, name, value);
+  }
+  fadeEdges(pairings, faded);
+}
+
+function observeSizes(
+  resizeObserver: ResizeObserver | undefined,
+  pairings: readonly Pairing[],
+  overlays: ReadonlyMap<HTMLElement, HTMLElement>,
+  observed: Map<Element, boolean>,
+) {
+  if (!resizeObserver) return;
+  const wanted = new Map<Element, boolean>();
+  for (const { scroller } of pairings) {
+    wanted.set(scroller, false);
+    for (const child of scroller.children) wanted.set(child, false);
+  }
+  // An overlay header's clearance is its border box, so a border alone (the
+  // forced-colors edge) must report a resize too.
+  for (const header of overlays.keys()) wanted.set(header, true);
+  for (const element of observed.keys())
+    if (!wanted.has(element)) {
+      resizeObserver.unobserve(element);
+      observed.delete(element);
+    }
+  for (const [element, borderBox] of wanted)
+    if (observed.get(element) !== borderBox) {
+      resizeObserver.observe(
+        element,
+        borderBox ? { box: 'border-box' } : undefined,
+      );
+      observed.set(element, borderBox);
+    }
+}
+
+function syncRootListeners(
+  registrations: ReadonlySet<Registration>,
+  listenedRoots: Set<Root>,
+  onScroll: (event: Event) => void,
+  mutationObserver: MutationObserver | undefined,
+) {
+  const roots = new Set([...registrations].map(({ root }) => root));
+  for (const root of listenedRoots)
+    if (!roots.has(root)) {
+      root.removeEventListener('scroll', onScroll, { capture: true });
+      listenedRoots.delete(root);
+    }
+  for (const root of roots)
+    if (!listenedRoots.has(root)) {
+      root.addEventListener('scroll', onScroll, {
+        capture: true,
+        passive: true,
+      });
+      listenedRoots.add(root);
+    }
+  mutationObserver?.disconnect();
+  for (const root of roots)
+    mutationObserver?.observe(root, {
+      subtree: true,
+      childList: true,
+      attributes: true,
+      // Old values tell a class or id that stopped being structural.
+      attributeOldValue: true,
+      // The shown NavStack view and TabNavigator scene change by attribute,
+      // and a Pane's header presentation by its attributes.
+      attributeFilter: [
+        'data-header-presentation',
+        'data-chrome-placement',
+        SCROLL_OVERFLOW,
+        SCROLL_DIVIDER,
+        'id',
+        'class',
+        'data-nav-active',
+        'data-nav-exiting',
+        'data-active',
+      ],
+    });
+}
+
 function createController(
   ownerDocument: Document,
 ): (registration: Registration) => () => void {
@@ -353,93 +679,11 @@ function createController(
   /** Each Pane this wiring has published a header clearance on. */
   const published = new Set<HTMLElement>();
 
-  const byId = (root: Root, id: string | undefined) => {
-    if (!id) return undefined;
-    const [match] = within<HTMLElement>(root, `[id=${quoted(id)}]`);
-    return match;
-  };
-
-  const collect = (): Pairing[] => {
-    const found: Pairing[] = [];
-    for (const { root, targets } of registrations) {
-      for (const pane of within<HTMLElement>(root, '.kui-pane')) {
-        const scroller = directChild(pane, '.kui-pane__content');
-        const header = directChild(pane, PANE_CHROME.t);
-        const footer = directChild(pane, PANE_CHROME.b);
-        if (scroller && (header || footer))
-          found.push({ scroller, chrome: { t: header, b: footer } });
-      }
-      const pairRegion = (
-        region: HTMLElement | undefined,
-        edge: 't' | 'b',
-        chrome: HTMLElement | undefined,
-      ) => {
-        if (!region || !chrome) return;
-        for (const scroller of regionScrollers(region, edge))
-          found.push({ scroller, chrome: { [edge]: chrome } });
-      };
-      for (const stack of within<HTMLElement>(root, '.kui-nav-stack')) {
-        const view = activeView(stack);
-        for (const edge of ['t', 'b'] as const)
-          pairRegion(view, edge, directChild(stack, NAV_STACK_CHROME[edge]));
-      }
-      for (const scaffold of within<HTMLElement>(root, '.kui-tab-scaffold'))
-        pairRegion(
-          activeScene(scaffold),
-          'b',
-          directChild(scaffold, '.kui-tab-scaffold__bar'),
-        );
-      for (const strip of within<HTMLElement>(root, SCROLL_STRIP))
-        found.push({ scroller: strip, chrome: {} });
-      for (const target of targets) {
-        const scroller = byId(root, target.scroller);
-        if (!scroller) continue;
-        const chrome: Pairing['chrome'] = {};
-        for (const edge of EDGES)
-          chrome[edge] = byId(root, target[TARGET_EDGES[edge]]);
-        found.push({ scroller, chrome });
-      }
-    }
-    return found;
-  };
-
-  const collectOverlays = () => {
-    const found = new Map<HTMLElement, HTMLElement>();
-    for (const { root } of registrations)
-      for (const pane of within<HTMLElement>(root, OVERLAY_PANE)) {
-        const header = directChild(pane, PANE_CHROME.t);
-        if (header) found.set(header, pane);
-      }
-    return found;
-  };
-
   /**
    * Re-read the classic vertical scrollbar of each overlay Pane's content (its
    * `offsetWidth` beyond `clientWidth` and the borders; 0 for an overlay
    * scrollbar). Returns whether any changed.
    */
-  const measureScrollbars = () => {
-    let changed = false;
-    for (const [header, pane] of overlays) {
-      const scroller = directChild(pane, '.kui-pane__content');
-      let size = 0;
-      if (scroller) {
-        const style =
-          scroller.ownerDocument.defaultView!.getComputedStyle(scroller);
-        size = Math.max(
-          0,
-          scroller.offsetWidth -
-            scroller.clientWidth -
-            (Number.parseFloat(style.borderLeftWidth) || 0) -
-            (Number.parseFloat(style.borderRightWidth) || 0),
-        );
-      }
-      if (scrollbarSizes.get(header) === size) continue;
-      scrollbarSizes.set(header, size);
-      changed = true;
-    }
-    return changed;
-  };
 
   /**
    * Watches only the Panes this wiring published on, so a re-render that
@@ -447,7 +691,14 @@ function createController(
    */
   const overlayObserver = view?.MutationObserver
     ? new view.MutationObserver(() => {
-        if (!disposed) publish();
+        if (!disposed)
+          publishClearance(
+            overlays,
+            headerSizes,
+            scrollbarSizes,
+            published,
+            overlayObserver,
+          );
       })
     : undefined;
 
@@ -455,40 +706,6 @@ function createController(
    * Publish each measured overlay header's clearance on its Pane, with the
    * inline size of a classic scrollbar the header must leave uncovered.
    */
-  const publish = () => {
-    const current = new Map<HTMLElement, [string, string]>();
-    for (const [header, pane] of overlays) {
-      const size = headerSizes.get(header);
-      const scrollbar = scrollbarSizes.get(header);
-      if (size !== undefined)
-        current.set(pane, [`${size}px`, scrollbar ? `${scrollbar}px` : '']);
-    }
-    // Disconnect first, so this wiring's own writes are not reported back.
-    overlayObserver?.disconnect();
-    for (const pane of published)
-      if (!current.has(pane)) {
-        pane.style.removeProperty(CLEARANCE_BLOCK_START);
-        pane.style.removeProperty(SCROLLBAR_INLINE_SIZE);
-        if (!pane.getAttribute('style')) pane.removeAttribute('style');
-        pane.removeAttribute(HEADER_OVERLAY);
-      }
-    published.clear();
-    for (const [pane, [value, scrollbar]] of current) {
-      if (pane.style.getPropertyValue(CLEARANCE_BLOCK_START) !== value)
-        pane.style.setProperty(CLEARANCE_BLOCK_START, value);
-      if (pane.style.getPropertyValue(SCROLLBAR_INLINE_SIZE) !== scrollbar) {
-        if (scrollbar) pane.style.setProperty(SCROLLBAR_INLINE_SIZE, scrollbar);
-        else pane.style.removeProperty(SCROLLBAR_INLINE_SIZE);
-      }
-      if (pane.getAttribute(HEADER_OVERLAY) !== 'measured')
-        pane.setAttribute(HEADER_OVERLAY, 'measured');
-      published.add(pane);
-      overlayObserver?.observe(pane, {
-        attributes: true,
-        attributeFilter: ['style', HEADER_OVERLAY],
-      });
-    }
-  };
 
   /**
    * Publish each clear bar's scroll-edge progress: how far content has
@@ -498,73 +715,8 @@ function createController(
    * component root opts in (`data-scroll-edge`) gets one; `only` limits the
    * pass to the bars of one scrolled scroller.
    */
-  const fadeEdges = (only?: HTMLElement) => {
-    const current = new Set<HTMLElement>();
-    for (const { scroller, chrome } of pairings)
-      for (const edge of ['t', 'b'] as const) {
-        const element = chrome[edge];
-        const owner = element?.parentElement;
-        if (!element || !owner?.hasAttribute('data-scroll-edge')) continue;
-        current.add(element);
-        if (only && scroller !== only) continue;
-        const distance =
-          Number(owner.getAttribute(SCROLL_EDGE_DISTANCE)) ||
-          DEFAULT_SCROLL_EDGE_DISTANCE;
-        const travelled =
-          edge === 't'
-            ? scroller.scrollTop
-            : scroller.scrollHeight -
-              scroller.clientHeight -
-              scroller.scrollTop;
-        const value = String(
-          Math.round(Math.min(1, Math.max(0, travelled / distance)) * 1000) /
-            1000,
-        );
-        if (element.style.getPropertyValue(SCROLL_EDGE_PROGRESS) !== value)
-          element.style.setProperty(SCROLL_EDGE_PROGRESS, value);
-      }
-    if (only) return;
-    for (const element of faded)
-      if (!current.has(element)) {
-        element.style.removeProperty(SCROLL_EDGE_PROGRESS);
-        if (!element.getAttribute('style')) element.removeAttribute('style');
-      }
-    faded.clear();
-    for (const element of current) faded.add(element);
-  };
 
   /** Write every paired element's attributes from the measured overflow. */
-  const apply = () => {
-    const current = new Map<Element, Map<StateAttribute, string>>();
-    const dividers = new Map<HTMLElement, Set<Edge>>();
-    for (const { scroller, chrome } of pairings) {
-      const edges = overflow.get(scroller)!;
-      (
-        current.get(scroller) ?? current.set(scroller, new Map()).get(scroller)!
-      ).set(SCROLL_OVERFLOW, edges);
-      for (const edge of EDGES) {
-        const element = chrome[edge];
-        if (!element) continue;
-        const shown = dividers.get(element) ?? new Set<Edge>();
-        dividers.set(element, shown);
-        if (edges.includes(edge)) shown.add(FACING[edge]);
-      }
-    }
-    for (const [element, shown] of dividers)
-      (
-        current.get(element) ?? current.set(element, new Map()).get(element)!
-      ).set(SCROLL_DIVIDER, sides(shown));
-    // Anything written before that is no longer paired gets its attributes back.
-    for (const [element, values] of written)
-      for (const name of values.keys())
-        if (!current.get(element)?.has(name)) write(element, name, '');
-    written.clear();
-    for (const [element, values] of current) {
-      written.set(element, values);
-      for (const [name, value] of values) write(element, name, value);
-    }
-    fadeEdges();
-  };
 
   /** Each observed element, keyed to whether it is observed by border box. */
   const observed = new Map<Element, boolean>();
@@ -610,36 +762,19 @@ function createController(
           if (scroller && scrollers.has(scroller))
             overflow.set(scroller, measure(scroller));
         }
-        if (scrollersResized && measureScrollbars()) headerResized = true;
-        apply();
-        if (headerResized) publish();
+        if (scrollersResized && measureScrollbars(overlays, scrollbarSizes))
+          headerResized = true;
+        applyOverflow(pairings, overflow, written, faded);
+        if (headerResized)
+          publishClearance(
+            overlays,
+            headerSizes,
+            scrollbarSizes,
+            published,
+            overlayObserver,
+          );
       })
     : undefined;
-
-  const observeSizes = () => {
-    if (!resizeObserver) return;
-    const wanted = new Map<Element, boolean>();
-    for (const { scroller } of pairings) {
-      wanted.set(scroller, false);
-      for (const child of scroller.children) wanted.set(child, false);
-    }
-    // An overlay header's clearance is its border box, so a border alone (the
-    // forced-colors edge) must report a resize too.
-    for (const header of overlays.keys()) wanted.set(header, true);
-    for (const element of observed.keys())
-      if (!wanted.has(element)) {
-        resizeObserver.unobserve(element);
-        observed.delete(element);
-      }
-    for (const [element, borderBox] of wanted)
-      if (observed.get(element) !== borderBox) {
-        resizeObserver.observe(
-          element,
-          borderBox ? { box: 'border-box' } : undefined,
-        );
-        observed.set(element, borderBox);
-      }
-  };
 
   /**
    * Re-read every pairing. A registration measures at once; a mutation
@@ -650,14 +785,14 @@ function createController(
   const refresh = (afterLayout = false) => {
     const deferred = afterLayout && resizeObserver !== undefined;
     const previous = deferred ? new Map(overflow) : undefined;
-    pairings = collect();
+    pairings = collectPairings(registrations);
     overflow.clear();
     for (const { scroller } of pairings)
       overflow.set(
         scroller,
         previous ? (previous.get(scroller) ?? '') : measure(scroller),
       );
-    overlays = collectOverlays();
+    overlays = collectOverlays(registrations);
     for (const sizes of [headerSizes, scrollbarSizes])
       for (const header of sizes.keys())
         if (!overlays.has(header)) sizes.delete(header);
@@ -667,10 +802,16 @@ function createController(
       for (const header of overlays.keys())
         if (!headerSizes.has(header))
           headerSizes.set(header, header.getBoundingClientRect().height);
-    if (!deferred) measureScrollbars();
-    observeSizes();
-    apply();
-    publish();
+    if (!deferred) measureScrollbars(overlays, scrollbarSizes);
+    observeSizes(resizeObserver, pairings, overlays, observed);
+    applyOverflow(pairings, overflow, written, faded);
+    publishClearance(
+      overlays,
+      headerSizes,
+      scrollbarSizes,
+      published,
+      overlayObserver,
+    );
     if (deferred) scheduleRemeasure();
   };
 
@@ -683,8 +824,15 @@ function createController(
       overflow.set(scroller, edges);
       changed = true;
     }
-    if (changed) apply();
-    if (measureScrollbars()) publish();
+    if (changed) applyOverflow(pairings, overflow, written, faded);
+    if (measureScrollbars(overlays, scrollbarSizes))
+      publishClearance(
+        overlays,
+        headerSizes,
+        scrollbarSizes,
+        published,
+        overlayObserver,
+      );
   };
 
   let remeasureFrame: number | undefined;
@@ -718,11 +866,11 @@ function createController(
   const onScroll = (event: Event) => {
     const scroller = event.target as HTMLElement;
     if (!overflow.has(scroller)) return;
-    fadeEdges(scroller);
+    fadeEdges(pairings, faded, scroller);
     const edges = measure(scroller);
     if (edges === overflow.get(scroller)) return;
     overflow.set(scroller, edges);
-    apply();
+    applyOverflow(pairings, overflow, written, faded);
   };
 
   const mutationObserver = view?.MutationObserver
@@ -738,7 +886,7 @@ function createController(
         // an extent change that resizes no direct child (an absolutely
         // positioned popup, a `display: contents` child), without forcing a
         // layout of the freshly rendered tree.
-        const ids = targetIds();
+        const ids = collectTargetIds(registrations);
         const selector = [
           STRUCTURAL_SELECTOR,
           ...[...ids].map((id) => `[id=${quoted(id)}]`),
@@ -753,7 +901,7 @@ function createController(
                 attributeName === SCROLL_DIVIDER,
             )
           )
-            apply();
+            applyOverflow(pairings, overflow, written, faded);
           if (
             records.some(
               ({ attributeName }) =>
@@ -766,108 +914,18 @@ function createController(
       })
     : undefined;
 
-  /** Every target id any registration resolves. */
-  const targetIds = () => {
-    const ids = new Set<string>();
-    for (const { targets } of registrations)
-      for (const target of targets) {
-        ids.add(target.scroller);
-        for (const edge of EDGES) {
-          const id = target[TARGET_EDGES[edge]];
-          if (id) ids.add(id);
-        }
-      }
-    return ids;
-  };
-
-  /** Whether `node` is or contains an element matching `selector`. */
-  const holds = (node: Node, selector: string) =>
-    node.nodeType === 1 &&
-    ((node as Element).matches(selector) ||
-      !!(node as Element).querySelector(selector));
-
-  /**
-   * Whether a mutation record can change what `collect()` finds: a structural
-   * element or target-id element (or, through its old class or id, a former
-   * one) changed, or one was added or removed. Every scroller is itself
-   * structural or a target id, so a child-list change of a scroller (whose
-   * child count `regionScrollers` reads, and whose children the
-   * ResizeObserver watches) always counts.
-   */
-  const changesPairings = (
-    {
-      type,
-      target,
-      attributeName,
-      oldValue,
-      addedNodes,
-      removedNodes,
-    }: MutationRecord,
-    ids: ReadonlySet<string>,
-    selector: string,
-  ) => {
-    if (
-      type === 'attributes' &&
-      (attributeName === SCROLL_OVERFLOW || attributeName === SCROLL_DIVIDER)
-    )
-      return false;
-    if (target.nodeType === 1 && (target as Element).matches(selector))
-      return true;
-    if (type === 'attributes')
-      return attributeName === 'class'
-        ? hasStructuralClass(oldValue)
-        : attributeName === 'id' && oldValue !== null && ids.has(oldValue);
-    for (const node of [...addedNodes, ...removedNodes])
-      if (holds(node, selector)) return true;
-    return false;
-  };
-
-  const syncRoots = () => {
-    const roots = new Set([...registrations].map(({ root }) => root));
-    for (const root of listenedRoots)
-      if (!roots.has(root)) {
-        root.removeEventListener('scroll', onScroll, { capture: true });
-        listenedRoots.delete(root);
-      }
-    for (const root of roots)
-      if (!listenedRoots.has(root)) {
-        root.addEventListener('scroll', onScroll, {
-          capture: true,
-          passive: true,
-        });
-        listenedRoots.add(root);
-      }
-    mutationObserver?.disconnect();
-    for (const root of roots)
-      mutationObserver?.observe(root, {
-        subtree: true,
-        childList: true,
-        attributes: true,
-        // Old values tell a class or id that stopped being structural.
-        attributeOldValue: true,
-        // The shown NavStack view and TabNavigator scene change by attribute,
-        // and a Pane's header presentation by its attributes.
-        attributeFilter: [
-          'data-header-presentation',
-          'data-chrome-placement',
-          SCROLL_OVERFLOW,
-          SCROLL_DIVIDER,
-          'id',
-          'class',
-          'data-nav-active',
-          'data-nav-exiting',
-          'data-active',
-        ],
-      });
-  };
-
   return (registration) => {
     registrations.add(registration);
-    syncRoots();
+    syncRootListeners(registrations, listenedRoots, onScroll, mutationObserver);
     refresh();
     return () => {
       if (!registrations.delete(registration)) return;
-      syncRoots();
+      syncRootListeners(
+        registrations,
+        listenedRoots,
+        onScroll,
+        mutationObserver,
+      );
       if (registrations.size) refresh();
       else {
         disposed = true;
@@ -884,12 +942,18 @@ function createController(
         overlays.clear();
         headerSizes.clear();
         scrollbarSizes.clear();
-        publish();
+        publishClearance(
+          overlays,
+          headerSizes,
+          scrollbarSizes,
+          published,
+          overlayObserver,
+        );
         overlayObserver?.disconnect();
         overflow.clear();
         observed.clear();
         pairings = [];
-        fadeEdges();
+        fadeEdges(pairings, faded);
         CONTROLLERS.delete(ownerDocument);
       }
     };
