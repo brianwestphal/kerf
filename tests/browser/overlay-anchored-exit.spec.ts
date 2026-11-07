@@ -189,7 +189,17 @@ for (const native of [false, true]) {
         const pop = popover(menu, raw('<p>items</p>'));
         tooltip(help, 'help text', { delay: 0 });
         help.dispatchEvent(new Event('pointerenter'));
-        await new Promise((resolve) => setTimeout(resolve, 20));
+        // Wait for the zero-delay tooltip to show (frame by frame, bounded)
+        // instead of sleeping a fixed interval.
+        for (
+          let frame = 0;
+          frame < 120 && document.querySelector('.kerf-tooltip') === null;
+          frame++
+        ) {
+          await new Promise((resolve) =>
+            globalThis.requestAnimationFrame(resolve),
+          );
+        }
         const before = {
           pop: pop.el.isConnected,
           tips: document.querySelectorAll('.kerf-tooltip').length,

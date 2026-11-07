@@ -543,7 +543,9 @@ describe('overlay() — a slot-hosted surface whose node is removed closes insta
       settled = true;
     });
     h.el.remove();
-    await new Promise((resolve) => setTimeout(resolve, 50));
+    // Wait on the result itself (the removal observer settles it); a surface
+    // that never settles fails on the test timeout instead of a fixed sleep.
+    await h.result;
     expect(settled).toBe(true);
     expect(h.el.classList.contains('is-leaving')).toBe(false);
     expect(onDismiss).not.toHaveBeenCalled();

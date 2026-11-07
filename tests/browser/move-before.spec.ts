@@ -101,8 +101,16 @@ test('where moveBefore is supported, a running CSS animation survives the reorde
     'engine has no Node.prototype.moveBefore — insertBefore fallback restarts animations by design',
   );
 
-  // Let the animation run so its clock is well past zero.
-  await page.waitForTimeout(300);
+  // Let the animation run so its clock is well past zero: poll the clock
+  // itself rather than sleeping a fixed interval.
+  await expect
+    .poll(() =>
+      page.evaluate(() => {
+        const bar = document.querySelector('li[data-key="b"] .bar');
+        return Number(bar?.getAnimations()[0]?.currentTime ?? 0);
+      }),
+    )
+    .toBeGreaterThan(250);
 
   const before = await page.evaluate(() => {
     const bar = document.querySelector('li[data-key="b"] .bar') as HTMLElement;
