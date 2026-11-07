@@ -2006,25 +2006,11 @@ function inspectTsx(
   visit(source);
 }
 
-export async function analyzeUiProject({
-  root: requestedRoot = process.cwd(),
-  workspaceRoot: requestedWorkspaceRoot = requestedRoot,
-  paths,
-  knownRules = [],
-  adoption = false,
-  ownership = 'package',
-  ownershipContext = 'subject',
-  implicitComponentOwnership = false,
-  ownershipGroups = [],
-  profile: packageProfile = resolve(
-    import.meta.dirname,
-    '../ai/application-ui-profile.defaults.json',
-  ),
-} = {}) {
-  const root = resolve(requestedRoot);
-  const workspaceRoot = resolve(requestedWorkspaceRoot);
+// Phase 1 (file collection): the requested files plus every relative
+// stylesheet they import inside the project, each read once, with the
+// resolved style imports of every file.
+async function collectAnalyzedFiles(root, paths) {
   const files = await collectFiles(root, paths);
-  const diagnosticDecisions = new Map();
   const contents = new Map(
     await Promise.all(
       files.map(async (file) => [file, await readFile(file, 'utf8')]),
@@ -2055,6 +2041,25 @@ export async function analyzeUiProject({
   const imports = new Map(
     files.map((file) => [file, relativeStyleImports(file, contents.get(file))]),
   );
+  return { files, contents, imports };
+}
+
+// Phase 2 (profile contexts): one application-UI profile plus catalog facts
+// per directory that holds an analyzed file, mapped back to each file. The
+// per-directory promise map is returned as well, because the report lists
+// every profile file and profile diagnostic that resolution produced.
+async function loadProfileContexts({
+  files,
+  contents,
+  imports,
+  root,
+  workspaceRoot,
+  ownership,
+  implicitComponentOwnership,
+  ownershipGroups,
+  packageProfile,
+  knownRules,
+}) {
   const implicitEntries =
     ownership === 'component' && implicitComponentOwnership
       ? await implicitOwnershipEntries(files, imports, root)
@@ -2138,10 +2143,15 @@ export async function analyzeUiProject({
     ),
   );
   if (!files.length) await loadContext(root);
-  // A stylesheet or source file belongs to the package whose manifest is
-  // nearest it; entries of every other catalog package are foreign to it.
+  return { contexts, profileContexts };
+}
+
+// Phase 3 (package ownership): a stylesheet or source file belongs to the
+// package whose manifest is nearest it; entries of every other catalog
+// package are foreign to it. `packageOf` resolves (and caches) that package
+// for a directory; `foreignTo` builds a file's per-entry foreignness test.
+function createPackageOwnership({ root, contents, imports, ownership }) {
   const packages = new Map();
-  const compilerOptions = new Map();
   const packageOf = async (directory) => {
     if (!packages.has(directory))
       packages.set(
@@ -2238,35 +2248,13 @@ export async function analyzeUiProject({
       return !ownedSources?.includes(source);
     };
   };
+  return { packageOf, foreignTo };
+}
+
+// Phase 4 (CSS facts): the selector and declaration facts of every analyzed
+// stylesheet, gathered without reporting so the source pass can consult them.
+async function collectStyleFacts({ files, contents, contexts, adoption }) {
   const styleFacts = new Map();
-  const recordDiagnostics = (items, context) => {
-    for (const item of items) {
-      const key = JSON.stringify([
-        item.ruleId,
-        item.location,
-        item.message,
-        item.evidence,
-        item.chain,
-      ]);
-      const decision = diagnosticDecisions.get(key) ?? {
-        item,
-        active: false,
-        suppressed: false,
-        activeConsumers: new Set(),
-        suppressedConsumers: new Set(),
-      };
-      const consumer =
-        relative(root, context.startDirectory).replaceAll('\\', '/') || '.';
-      if (isSuppressed(item, context.profileResult.profile, workspaceRoot)) {
-        decision.suppressed = true;
-        decision.suppressedConsumers.add(consumer);
-      } else {
-        decision.active = true;
-        decision.activeConsumers.add(consumer);
-      }
-      diagnosticDecisions.set(key, decision);
-    }
-  };
   for (const file of files.filter((item) => item.endsWith('.css'))) {
     const context = contexts.get(file);
     const fileFacts = new Map();
@@ -2280,12 +2268,15 @@ export async function analyzeUiProject({
     );
     styleFacts.set(file, fileFacts);
   }
-  const styleConsumers = new Map(
-    [...styleFacts.keys()].map((file) => [file, new Set()]),
-  );
-  // KUI-L018 accepts an on-loud from another stylesheet the same entry loads:
-  // every stylesheet reachable from one file (a source module's CSS imports,
-  // or a stylesheet with its @imports) is loaded together.
+  return styleFacts;
+}
+
+// Phase 5 (co-loading): KUI-L018 accepts an on-loud from another stylesheet
+// the same entry loads: every stylesheet reachable from one file (a source
+// module's CSS imports, or a stylesheet with its @imports) is loaded together.
+// Returns a lookup of the on-loud declarations a stylesheet's co-loaded
+// siblings contribute.
+function coLoadedOnLoudDeclarations({ files, contents, imports, styleFacts }) {
   const onLoudByStyle = new Map();
   for (const style of styleFacts.keys()) {
     let parsed;
@@ -2311,10 +2302,71 @@ export async function analyzeUiProject({
       for (const sibling of loaded)
         if (sibling !== style) coLoadedStyles.get(style).add(sibling);
   }
-  const siblingOnLoud = (style) =>
+  return (style) =>
     [...coLoadedStyles.get(style)]
       .sort()
       .flatMap((sibling) => onLoudByStyle.get(sibling) ?? []);
+}
+
+// Phase 6 (diagnostic decisions): record each diagnostic once per consumer
+// context as active or suppressed there, so a finding two consumers share
+// keeps one entry that names both.
+function recordDiagnosticDecisions(
+  diagnosticDecisions,
+  items,
+  context,
+  root,
+  workspaceRoot,
+) {
+  for (const item of items) {
+    const key = JSON.stringify([
+      item.ruleId,
+      item.location,
+      item.message,
+      item.evidence,
+      item.chain,
+    ]);
+    const decision = diagnosticDecisions.get(key) ?? {
+      item,
+      active: false,
+      suppressed: false,
+      activeConsumers: new Set(),
+      suppressedConsumers: new Set(),
+    };
+    const consumer =
+      relative(root, context.startDirectory).replaceAll('\\', '/') || '.';
+    if (isSuppressed(item, context.profileResult.profile, workspaceRoot)) {
+      decision.suppressed = true;
+      decision.suppressedConsumers.add(consumer);
+    } else {
+      decision.active = true;
+      decision.activeConsumers.add(consumer);
+    }
+    diagnosticDecisions.set(key, decision);
+  }
+}
+
+// Phase 6 (diagnostic decisions, source pass): inspect every source module
+// against its own profile context, recording its diagnostics and noting
+// which contexts consume each stylesheet it reaches.
+async function inspectSourceModules({
+  files,
+  contents,
+  imports,
+  contexts,
+  styleFacts,
+  packageOf,
+  foreignTo,
+  compilerOptions,
+  diagnosticDecisions,
+  root,
+  workspaceRoot,
+  adoption,
+  ownership,
+}) {
+  const styleConsumers = new Map(
+    [...styleFacts.keys()].map((file) => [file, new Set()]),
+  );
   for (const file of files.filter((item) =>
     sourceExtensions.has(extname(item)),
   )) {
@@ -2335,8 +2387,36 @@ export async function analyzeUiProject({
       compilerOptionsFor(file, root, compilerOptions),
       ownership === 'component',
     );
-    recordDiagnostics(fileDiagnostics, context);
+    recordDiagnosticDecisions(
+      diagnosticDecisions,
+      fileDiagnostics,
+      context,
+      root,
+      workspaceRoot,
+    );
   }
+  return styleConsumers;
+}
+
+// Phase 6 (diagnostic decisions, stylesheet pass): inspect every stylesheet
+// once per context that consumes it (or its own context when nothing does),
+// with the co-loaded on-louds, package ownership, and Web Awesome facts that
+// the stylesheet rules consult.
+async function inspectStylesheets({
+  contents,
+  contexts,
+  styleConsumers,
+  packageOf,
+  foreignTo,
+  siblingOnLoud,
+  compilerOptions,
+  diagnosticDecisions,
+  root,
+  workspaceRoot,
+  adoption,
+  ownership,
+  ownershipContext,
+}) {
   for (const [file, consumers] of styleConsumers) {
     const applicableContexts = consumers.size
       ? consumers
@@ -2371,10 +2451,21 @@ export async function analyzeUiProject({
           foundationReads: await foundationWebAwesomeReads(),
         },
       );
-      recordDiagnostics(fileDiagnostics, context);
+      recordDiagnosticDecisions(
+        diagnosticDecisions,
+        fileDiagnostics,
+        context,
+        root,
+        workspaceRoot,
+      );
     }
   }
+}
 
+// Phase 7 (reporting): the active diagnostics in file, line, rule order —
+// each naming its consumers when they disagree — plus the count of findings
+// every consumer suppressed.
+function resolveDiagnosticDecisions(diagnosticDecisions) {
   const active = [...diagnosticDecisions.values()]
     .filter((decision) => decision.active)
     .map((decision) => {
@@ -2403,6 +2494,19 @@ export async function analyzeUiProject({
       a.location.line - b.location.line ||
       a.ruleId.localeCompare(b.ruleId),
   );
+  return { active, suppressed };
+}
+
+// Phase 7 (reporting): the portable report — project-relative paths, the
+// profile files and profile diagnostics behind every context, the active
+// diagnostics, and the summary counts.
+async function buildAnalysisReport({
+  root,
+  files,
+  profileContexts,
+  active,
+  suppressed,
+}) {
   const portablePath = (file) => {
     if (!file || !isAbsolute(file)) return file;
     const path = relative(root, file).replaceAll('\\', '/');
@@ -2469,6 +2573,97 @@ export async function analyzeUiProject({
       suppressed,
     },
   };
+}
+
+export async function analyzeUiProject({
+  root: requestedRoot = process.cwd(),
+  workspaceRoot: requestedWorkspaceRoot = requestedRoot,
+  paths,
+  knownRules = [],
+  adoption = false,
+  ownership = 'package',
+  ownershipContext = 'subject',
+  implicitComponentOwnership = false,
+  ownershipGroups = [],
+  profile: packageProfile = resolve(
+    import.meta.dirname,
+    '../ai/application-ui-profile.defaults.json',
+  ),
+} = {}) {
+  const root = resolve(requestedRoot);
+  const workspaceRoot = resolve(requestedWorkspaceRoot);
+  const { files, contents, imports } = await collectAnalyzedFiles(root, paths);
+  const { contexts, profileContexts } = await loadProfileContexts({
+    files,
+    contents,
+    imports,
+    root,
+    workspaceRoot,
+    ownership,
+    implicitComponentOwnership,
+    ownershipGroups,
+    packageProfile,
+    knownRules,
+  });
+  const { packageOf, foreignTo } = createPackageOwnership({
+    root,
+    contents,
+    imports,
+    ownership,
+  });
+  const styleFacts = await collectStyleFacts({
+    files,
+    contents,
+    contexts,
+    adoption,
+  });
+  const siblingOnLoud = coLoadedOnLoudDeclarations({
+    files,
+    contents,
+    imports,
+    styleFacts,
+  });
+  const diagnosticDecisions = new Map();
+  const compilerOptions = new Map();
+  const styleConsumers = await inspectSourceModules({
+    files,
+    contents,
+    imports,
+    contexts,
+    styleFacts,
+    packageOf,
+    foreignTo,
+    compilerOptions,
+    diagnosticDecisions,
+    root,
+    workspaceRoot,
+    adoption,
+    ownership,
+  });
+  await inspectStylesheets({
+    contents,
+    contexts,
+    styleConsumers,
+    packageOf,
+    foreignTo,
+    siblingOnLoud,
+    compilerOptions,
+    diagnosticDecisions,
+    root,
+    workspaceRoot,
+    adoption,
+    ownership,
+    ownershipContext,
+  });
+  const { active, suppressed } =
+    resolveDiagnosticDecisions(diagnosticDecisions);
+  return buildAnalysisReport({
+    root,
+    files,
+    profileContexts,
+    active,
+    suppressed,
+  });
 }
 
 export function formatUiAnalysisText(report) {
