@@ -7,7 +7,7 @@
  *
  * Scans every file `git ls-files` reports, skipping lockfiles and binary
  * assets. Placeholder paths used as fixtures (`/Users/someone/…`) are allowed
- * by name; a whole file is exempt only with a reason recorded below.
+ * by name.
  */
 
 import { execFileSync } from 'node:child_process';
@@ -35,17 +35,6 @@ const PLACEHOLDER_PATHS = new Set([
   '/home/someone/',
 ]);
 
-// Whole-file exemptions. Each needs a reason and, ideally, a ticket.
-const EXEMPT_FILES = new Map<string, string>([
-  [
-    '.claude/settings.json',
-    // KF-8CP37E: maintainer-owned hook config pointing at a sibling Hot Sheet
-    // checkout. Whether it moves to settings.local.json or becomes relative is
-    // the maintainer's decision; remove this entry once it is made.
-    'maintainer-owned hook configuration',
-  ],
-]);
-
 const SKIPPED_FILE =
   /(?:^|\/)(?:package-lock\.json|pnpm-lock\.yaml|yarn\.lock|Cargo\.lock)$|\.(?:png|jpe?g|gif|webp|ico|svgz|woff2?|ttf|otf|eot|pdf|mp3|mp4|webm|mov|zip|gz|tgz|wasm)$/i;
 
@@ -62,7 +51,6 @@ function trackedFiles(): string[] {
 function offenders(): string[] {
   const found: string[] = [];
   for (const file of trackedFiles()) {
-    if (EXEMPT_FILES.has(file)) continue;
     let text: string;
     try {
       text = readFileSync(join(REPO_ROOT, file), 'utf8');
@@ -85,12 +73,6 @@ describe('KF-8CP37E machine-local path policy', () => {
   it('no tracked file hard-codes a home directory or machine temp path', () => {
     expect(offenders()).toEqual([]);
     // Reads every tracked text file (~4k); generous under a loaded machine.
-  }, 30_000);
-
-  it('every whole-file exemption still names a tracked file', () => {
-    const tracked = new Set(trackedFiles());
-    for (const file of EXEMPT_FILES.keys())
-      expect(tracked.has(file), file).toBe(true);
   }, 30_000);
 
   it('recognizes the shapes it guards against', () => {
