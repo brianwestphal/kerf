@@ -6,7 +6,7 @@
  * check fails the pre-push gate when a new test file lands without a
  * corresponding mention in the doc.
  *
- * Behaviour:
+ * Behavior:
  *  - Walks `tests/unit/`, `tests/integration/`, `tests/browser/`, `tests/dist/`.
  *  - Collects every `*.test.ts`, `*.test.tsx`, `*.spec.ts`, `*.spec.tsx`.
  *  - Skips files starting with `_` (local probes / scratchpads).

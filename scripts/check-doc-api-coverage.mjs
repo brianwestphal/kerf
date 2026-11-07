@@ -6,7 +6,7 @@
  * never reflected in the api reference — the bug shipped for months because
  * nothing checked that the doc named every export.
  *
- * Behaviour:
+ * Behavior:
  *  - Parses `src/index.ts` for re-exports → main-barrel public names.
  *  - Parses `src/array-signal.ts` for `export ` declarations → subpath
  *    public names.

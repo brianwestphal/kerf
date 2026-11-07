@@ -11,7 +11,7 @@
  * index → test mapping *load-bearing*, so a renamed or deleted guarding test
  * trips the gate instead of silently un-covering the feature.
  *
- * Behaviour:
+ * Behavior:
  *  - Parses every Markdown table in `docs/14-feature-coverage.md` whose header
  *    row names a "Guarding test(s)" column.
  *  - For each data row, reads the last cell (the guarding-test references) and
