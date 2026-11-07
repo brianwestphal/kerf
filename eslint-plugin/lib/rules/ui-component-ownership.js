@@ -1,4 +1,4 @@
-import { existsSync, readFileSync } from 'node:fs';
+import { readFileSync, statSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 
 import {
@@ -49,27 +49,39 @@ function ownershipFacts(contract) {
   return facts;
 }
 
+// The `name` of each directory's package.json, re-read when the manifest's
+// modification time changes so a long-running editor ESLint server sees a
+// renamed package.
 const packageNames = new Map();
+function manifestName(manifest) {
+  let mtime;
+  try {
+    mtime = statSync(manifest).mtimeMs;
+  } catch {
+    packageNames.delete(manifest);
+    return undefined;
+  }
+  const cached = packageNames.get(manifest);
+  if (cached?.mtime === mtime) return cached.name;
+  let name;
+  try {
+    name = JSON.parse(readFileSync(manifest, 'utf8')).name;
+  } catch {
+    name = undefined;
+  }
+  if (typeof name !== 'string') name = undefined;
+  packageNames.set(manifest, { mtime, name });
+  return name;
+}
+
 function ownPackage(filename) {
   for (
     let directory = dirname(resolve(filename));
     ;
     directory = dirname(directory)
   ) {
-    if (packageNames.has(directory)) return packageNames.get(directory);
-    const manifest = resolve(directory, 'package.json');
-    if (existsSync(manifest)) {
-      let name;
-      try {
-        name = JSON.parse(readFileSync(manifest, 'utf8')).name;
-      } catch {
-        name = undefined;
-      }
-      if (typeof name === 'string') {
-        packageNames.set(directory, name);
-        return name;
-      }
-    }
+    const name = manifestName(resolve(directory, 'package.json'));
+    if (name !== undefined) return name;
     if (dirname(directory) === directory) return undefined;
   }
 }

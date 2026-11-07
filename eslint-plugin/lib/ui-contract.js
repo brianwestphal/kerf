@@ -4,7 +4,6 @@ import { createRequire } from 'node:module';
 import process from 'node:process';
 
 const PROFILE = '.kerf-ui-profile.json';
-const cache = new Map();
 const loadCommonJs = createRequire(import.meta.url);
 
 export const UI_CONTRACT_LOAD_CODE = 'KUI-L090';
@@ -24,6 +23,41 @@ export function isComponentExport(name) {
 }
 
 const readJson = (path) => JSON.parse(readFileSync(path, 'utf8'));
+
+// A file's modification time, or null when it does not exist (yet).
+function mtimeOf(path) {
+  try {
+    return statSync(path).mtimeMs;
+  } catch {
+    return null;
+  }
+}
+
+// The loaded contract, keyed by what it is built from rather than by the file
+// being linted: the workspace, the settings, and the profile layers that apply
+// to the file's directory. Each entry also records the modification time of
+// every JSON file it read, so a long-running editor ESLint server picks up a
+// regenerated catalog or an edited profile on its next lint. A failed load is
+// never cached: the next lint retries it.
+const cache = new Map();
+// Settings objects are usually shared across every linted file, so their
+// serialized form is computed once per object rather than on every call.
+const settingsKeys = new WeakMap();
+function settingsKey(settings) {
+  let key = settingsKeys.get(settings);
+  if (key === undefined) {
+    key = JSON.stringify(settings);
+    settingsKeys.set(settings, key);
+  }
+  return key;
+}
+const isFresh = (stamps) =>
+  stamps.every(([path, mtime]) => mtimeOf(path) === mtime);
+
+/** Test seam: forget every loaded contract. */
+export function clearUiContractCache() {
+  cache.clear();
+}
 
 // The directory whose package.json names `packageName`, searched upward from a
 // catalog file; a catalog's `source` paths are relative to that package root.
@@ -47,14 +81,14 @@ const exportName = (item) => (typeof item === 'string' ? item : item?.name);
 // the @kerfjs/ui catalog the rules load directly. Their entries join the
 // contract, and their components resolve by package subpath (a bare import)
 // or by source file (an app's relative import).
-function profileCatalogs(loadedProfile, basePackage) {
+function profileCatalogs(loadedProfile, basePackage, read) {
   const catalogs = [];
   for (const catalog of loadedProfile.profile?.catalogs ?? []) {
     if (catalog.package === basePackage) continue;
     const owner = loadedProfile.provenance?.[`$catalogs.${catalog.package}`];
     if (!owner || !catalog.composition?.path || owner.startsWith('<')) continue;
     const path = resolve(dirname(owner), catalog.composition.path);
-    const artifact = readJson(path);
+    const artifact = read(path);
     catalogs.push({ artifact, root: packageRootOf(path, catalog.package) });
   }
   return catalogs;
@@ -86,27 +120,18 @@ function packageAsset(cwd, name) {
   }
 }
 
-function discoveredProfiles(cwd, filename, settings) {
-  if (settings.profile)
-    return [
-      {
-        source: '<eslint settings kerfjs.ui.profile>',
-        profile: settings.profile,
-      },
-    ];
+// The profile layers that apply to `filename`, outermost first, without
+// reading them: the shipped package defaults, then every `.kerf-ui-profile.json`
+// from the workspace root down to the file's directory. Files whose directories
+// see the same layers share one loaded contract.
+function profileLayers(cwd, filename, settings) {
+  if (settings.profile || settings.profilePath) return [];
   const layers = [];
-  const add = (path, expectedScope) => {
-    const profile = readJson(path);
-    if (profile.scope !== expectedScope)
-      throw new Error(
-        `${path} must have profile scope ${expectedScope}, received ${profile.scope ?? 'missing'}`,
-      );
-    layers.push({ source: path, profile });
-  };
   const defaultsPath =
     settings.profileDefaultsPath ??
     packageAsset(cwd, 'application-ui-profile.defaults.json');
-  if (defaultsPath && existsSync(defaultsPath)) add(defaultsPath, 'package');
+  if (defaultsPath && existsSync(defaultsPath))
+    layers.push({ path: defaultsPath, scope: 'package' });
   const workspace = resolve(settings.workspaceRoot ?? cwd);
   const target = resolve(dirname(filename));
   if (relative(workspace, target).startsWith('..')) return layers;
@@ -120,9 +145,34 @@ function discoveredProfiles(cwd, filename, settings) {
   for (const candidate of directories.reverse()) {
     const path = resolve(candidate, PROFILE);
     if (existsSync(path))
-      add(path, candidate === workspace ? 'workspace' : 'directory');
+      layers.push({
+        path,
+        scope: candidate === workspace ? 'workspace' : 'directory',
+      });
   }
   return layers;
+}
+
+function readProfiles(settings, layers, read) {
+  if (settings.profilePath)
+    return [
+      { source: settings.profilePath, profile: read(settings.profilePath) },
+    ];
+  if (settings.profile)
+    return [
+      {
+        source: '<eslint settings kerfjs.ui.profile>',
+        profile: settings.profile,
+      },
+    ];
+  return layers.map(({ path, scope }) => {
+    const profile = read(path);
+    if (profile.scope !== scope)
+      throw new Error(
+        `${path} must have profile scope ${scope}, received ${profile.scope ?? 'missing'}`,
+      );
+    return { source: path, profile };
+  });
 }
 
 // `@kerfjs/ui`'s class-to-component rule ships beside its profile contract.
@@ -148,29 +198,37 @@ export function loadUiContract(context) {
   const packageCwd = context.cwd ?? process.cwd();
   const cwd = resolve(settings.workspaceRoot ?? packageCwd);
   const filename = context.filename ?? context.getFilename();
-  const key = JSON.stringify([cwd, filename, settings]);
-  if (cache.has(key)) return cache.get(key);
+  const layers = profileLayers(packageCwd, filename, settings);
+  const key = JSON.stringify([
+    cwd,
+    packageCwd,
+    settingsKey(settings),
+    layers.map(({ path }) => path),
+  ]);
+  const cached = cache.get(key);
+  if (cached && isFresh(cached.stamps)) return cached.value;
+  cache.delete(key);
+  // Every JSON file the contract is built from, with the modification time
+  // read just before the file itself.
+  const stamps = [];
+  const read = (path) => {
+    stamps.push([path, mtimeOf(path)]);
+    return readJson(path);
+  };
   try {
     const catalog =
       settings.catalog ??
-      readJson(
+      read(
         settings.catalogPath ??
           packageAsset(packageCwd, 'component-composition.json'),
       );
     const selection =
       settings.selectionCatalog ??
-      readJson(
+      read(
         settings.selectionCatalogPath ??
           packageAsset(packageCwd, 'component-catalog.json'),
       );
-    const profiles = settings.profilePath
-      ? [
-          {
-            source: settings.profilePath,
-            profile: readJson(settings.profilePath),
-          },
-        ]
-      : discoveredProfiles(packageCwd, filename, settings);
+    const profiles = readProfiles(settings, layers, read);
     const profileContractPath =
       settings.profileContractPath ??
       packageAsset(packageCwd, 'application-ui-profile-sync.cjs');
@@ -185,7 +243,7 @@ export function loadUiContract(context) {
         dirname(profileContractPath),
         'application-ui-diagnostic-ids-v1.json',
       );
-    const diagnosticRegistry = readJson(diagnosticRegistryPath);
+    const diagnosticRegistry = read(diagnosticRegistryPath);
     if (
       diagnosticRegistry.schemaVersion !== 1 ||
       !Array.isArray(diagnosticRegistry.ids)
@@ -228,6 +286,7 @@ export function loadUiContract(context) {
     for (const { artifact, root } of profileCatalogs(
       loadedProfile,
       selection.package,
+      read,
     ))
       for (const entry of artifact.entries ?? []) {
         const key = entry.key ?? `${artifact.package}:${entry.id}`;
@@ -328,12 +387,10 @@ export function loadUiContract(context) {
       ),
       error: undefined,
     };
-    cache.set(key, value);
+    cache.set(key, { stamps, value });
     return value;
   } catch (error) {
-    const value = { error: error.message };
-    cache.set(key, value);
-    return value;
+    return { error: error.message };
   }
 }
 
