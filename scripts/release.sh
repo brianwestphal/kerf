@@ -161,7 +161,8 @@ cleanup_state() { rm -f "$STATE_FILE"; }
 preflight() {
   info "Running pre-flight checks..."
 
-  # Dirty tree, wrong branch, missing node: refuse and print the fix.
+  # Dirty tree, wrong branch, missing node, stale lockfile: refuse and print
+  # the fix.
   release_preflight_repo
 
   if ! npm whoami &> /dev/null; then

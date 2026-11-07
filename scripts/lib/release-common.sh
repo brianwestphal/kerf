@@ -31,12 +31,43 @@ release_preflight_repo() {
     exit 1
   fi
 
+  release_refuse_stale_lockfiles
+
   # Intentionally NOT --prune-tags (would delete local-only unpushed tags).
   # Failure is non-fatal (offline): proceed with the local tag list and let the
   # push surface any conflict.
   info "Fetching tags from origin..."
   if ! git fetch --tags origin 2> /dev/null; then
     warn "git fetch --tags failed (offline?) — proceeding with the local tag list."
+  fi
+}
+
+# The lockstep packages whose lockfiles a release must agree with.
+RELEASE_LOCKFILE_DIRS=(. ui eslint-plugin create-kerf-component)
+
+# KF-F1CPCK: refuse a stale lockfile — one whose recorded tree no longer
+# satisfies its manifest (a dependency added, removed, or re-ranged in
+# package.json without regenerating package-lock.json). CI installs with
+# `npm ci`, which fails on exactly this, so catching it here keeps a broken
+# tag from ever being pushed. `npm ls --package-lock-only` reads only the
+# manifest and the lockfile, so the check works offline and never touches
+# node_modules. Directories without a lockfile are skipped.
+release_refuse_stale_lockfiles() {
+  local dir stale=() report
+  for dir in "${RELEASE_LOCKFILE_DIRS[@]}"; do
+    [[ -f "${dir}/package.json" && -f "${dir}/package-lock.json" ]] || continue
+    if ! command -v npm > /dev/null; then
+      error "npm not found on PATH. Install Node.js 22.12+ (it ships npm) and re-run."
+      exit 1
+    fi
+    if ! report=$(cd "$dir" && npm ls --package-lock-only --all 2>&1 > /dev/null); then
+      stale+=("$dir")
+      printf '%s\n' "$report" | grep -E '^npm error (missing|invalid|extraneous)' >&2 || true
+    fi
+  done
+  if ((${#stale[@]} > 0)); then
+    error "Stale lockfile in: ${stale[*]}. Run 'npm install' in each listed directory, commit the updated package-lock.json, and re-run."
+    exit 1
   fi
 }
 

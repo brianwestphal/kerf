@@ -91,9 +91,10 @@ source "$(dirname "${BASH_SOURCE[0]}")/lib/release-common.sh"
 preflight() {
   info "Preflight..."
 
-  # Shared with release.sh: refuses a dirty tree, a non-main branch, or a
-  # missing node, then fetches tags so the version plan and beta numbering
-  # see origin's tags (a stale clone would pick a number the remote holds).
+  # Shared with release.sh: refuses a dirty tree, a non-main branch, a
+  # missing node, or a stale lockfile, then fetches tags so the version
+  # plan and beta numbering see origin's tags (a stale clone would pick a
+  # number the remote holds).
   release_preflight_repo
   local branch
   branch=$(git branch --show-current)

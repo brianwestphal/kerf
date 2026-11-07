@@ -7,6 +7,9 @@
  * KF-RV39NE: pre-flight refuses a dirty tree, a non-main branch, and an
  * existing tag instead of asking to continue.
  *
+ * KF-F1CPCK: pre-flight also refuses a stale lockfile (a manifest dependency
+ * the lockfile no longer satisfies), offline, in every lockstep package.
+ *
  * KF-12QS9G: notes reach the tag verbatim (Markdown headings and literal
  * backslashes survive), the beta plan continues the highest series with
  * highest + 1, and gitgist resolution falls back to its --no-ai grouping.
@@ -121,6 +124,80 @@ describe(
       );
       expect(result.status).toBe(1);
       expect(result.stderr).toContain('No package.json');
+    });
+
+    describe('stale lockfile (KF-F1CPCK)', () => {
+      // A lockfile recording left-pad@1.3.0 as the package's only dependency.
+      // `npm ls --package-lock-only` reads just these two files, so nothing
+      // here installs or reaches the registry.
+      function writePackage(
+        dir: string,
+        dependencies: Record<string, string>,
+      ): void {
+        const name = `fixture-${dir === '.' ? 'root' : dir}`;
+        mkdirSync(join(repo, dir), { recursive: true });
+        writeFileSync(
+          join(repo, dir, 'package.json'),
+          JSON.stringify({ name, version: '1.2.3', dependencies }),
+        );
+        writeFileSync(
+          join(repo, dir, 'package-lock.json'),
+          JSON.stringify({
+            name,
+            version: '1.2.3',
+            lockfileVersion: 3,
+            requires: true,
+            packages: {
+              '': {
+                name,
+                version: '1.2.3',
+                dependencies: { 'left-pad': '^1.3.0' },
+              },
+              'node_modules/left-pad': {
+                version: '1.3.0',
+                resolved:
+                  'https://registry.npmjs.org/left-pad/-/left-pad-1.3.0.tgz',
+                license: 'WTFPL',
+              },
+            },
+          }),
+        );
+      }
+
+      function commitAll(): void {
+        git('add', '-A');
+        git('commit', '-q', '-m', 'fixture');
+      }
+
+      it('passes lockfiles that satisfy their manifests', () => {
+        writePackage('.', { 'left-pad': '^1.3.0' });
+        writePackage('ui', { 'left-pad': '^1.0.0' });
+        commitAll();
+        const result = runLib('release_refuse_stale_lockfiles; echo PASSED');
+        expect(result.status, result.stderr).toBe(0);
+        expect(result.stdout).toContain('PASSED');
+      });
+
+      it('refuses a re-ranged dependency and names the package to fix', () => {
+        writePackage('.', { 'left-pad': '^1.3.0' });
+        writePackage('eslint-plugin', { 'left-pad': '^2.0.0' });
+        commitAll();
+        const result = runLib('release_preflight_repo; echo PASSED');
+        expect(result.status).toBe(1);
+        expect(result.stdout).not.toContain('PASSED');
+        expect(result.stderr).toContain('Stale lockfile in: eslint-plugin.');
+        expect(result.stderr).toContain("Run 'npm install'");
+        expect(result.stderr).toContain('invalid: left-pad@1.3.0');
+      });
+
+      it('refuses a manifest dependency the lockfile does not record', () => {
+        writePackage('.', { 'left-pad': '^1.3.0', 'is-odd': '^3.0.0' });
+        commitAll();
+        const result = runLib('release_refuse_stale_lockfiles; echo PASSED');
+        expect(result.status).toBe(1);
+        expect(result.stderr).toContain('Stale lockfile in: .');
+        expect(result.stderr).toContain('missing: is-odd@^3.0.0');
+      });
     });
 
     it('refuses a tag that already exists, and allows a new one', () => {
