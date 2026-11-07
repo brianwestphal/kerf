@@ -470,12 +470,9 @@ filtering rejects roles plus case variants of component- or wiring-owned
 action, identity, selection, drag, drop, and component attributes. An optional
 `closeIcon` is decorative dormant content inside the already named close button
 and must not contain interactive descendants.
-The first `TabBarItem` can set `pinned` to stay at the inline start while its peers
-scroll. It remains a normal tab within the same tablist and roving-focus order;
-focus and controlled selection reveal peers beyond the pinned tab. Pin only the
-leading tab of a strip.
-WebKit currently moves a pinned tab outside an RTL strip as it scrolls;
-`KF-MYFQAS` tracks the browser correction.
+Tabs have no pinned variant: put a control that must stay visible while tabs
+scroll in TabBar's `leading`, `trailing`, or `end` zone, outside the scrolling
+tablist.
 `wireTabBars()` adds Left/Right wrapping, Home/End, Delete/Backspace close
 activation, same-bar pointer reordering, `Alt+Shift+ArrowLeft/ArrowRight`
 reordering, focus restoration, scroll-into-view, and pointer-proximity

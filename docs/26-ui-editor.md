@@ -1759,7 +1759,7 @@ surface a human reads: "adds the action `archive`, removes the input
 ## 8. Validation
 
 `validateView(document, catalog, { resolveView?(src, path) })` from `@kerfjs/ui/view`
-(and later `kerf-ui-view check` and the editor) reports diagnostics with stable
+(and `kerf-ui-view check` and the editor's Problems list) reports diagnostics with stable
 ids. `catalog` comes from `createViewCatalog({ props, composition })` over
 `component-props.json` / `component-composition.json` documents (Kerf UI's and
 any consumer's). The result is `{ valid, diagnostics: [{ code, path, message }],
@@ -1919,7 +1919,7 @@ documents.
 - **Behavior stays in code.** The document cannot express signals,
   computation, effects, or handlers. Interactive previews of wired layouts
   (collapsing rails, NavStack pushes) require the editor to run the real
-  wiring; play mode (§11, design) does that in an emulated device viewport,
+  wiring; play mode (§11) does that in an emulated device viewport,
   with host-registered mock handlers for actions.
 - **Validation is only as strict as the catalogs.** Most composition entries
   are still permissive defaults, and `accepts` concepts such as `fixed-chrome`
@@ -1956,7 +1956,7 @@ diff <doc…>` takes `--target js`, `--declarations-only`, and extra
    (KF-K5TKCV), control flow (KF-90GTJN), richer value editing (KF-YR91FA),
    and outline drag-and-drop with a Move to picker (KF-WXP6AB).
 
-## 11. Play mode (design; KF-95MPXS: interactive mode)
+## 11. Play mode (KF-95MPXS: interactive mode)
 
 **Status: built.** The core (KF-60BEEJ) is built:
 
@@ -2418,7 +2418,7 @@ threw, with its message). The newest entries are at the top, capped at 200,
 and the log clears on each entry into play mode. The play bar's log button
 shows the unseen count.
 
-### 11.6 Verification (when built)
+### 11.6 Verification
 
 - Unit: preset math (orientation swap, browser-chrome subtraction, Fit
   scale), the safe-area token mapping, and handler dispatch with logging.

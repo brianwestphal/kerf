@@ -167,7 +167,8 @@ API decisions (settled at implementation):
   (`src/list-virtualization-controller.ts`) observes `parent` to re-window on
   resize (§17.9). Only `observeRowHeights` observes rows. The handle↔helper
   coordination lives in a module-level `WeakMap` (GC-tied) so the public handle
-  type stays `(() => void) & { setHeight }`.
+  type stays `(() => void) & { setHeight(key, px); container?: HTMLElement }`
+  (`container` is §17.9's window container).
 - **`estimate` re-runs.** `estimate` is evaluated per row each time the prefix sum
   is (re)built — i.e. when the source changes or a height is reported — not
   cached, so a function estimate that reads the item stays correct across

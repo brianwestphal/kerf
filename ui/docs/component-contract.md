@@ -858,8 +858,10 @@ their CSS remain unreachable. The root barrel and `@kerfjs/ui/unstyled` stay
 CSS-free for Node, SSR, and custom styling pipelines; pair a root-barrel import
 with `styles.css` when the complete component layer is intended. Application
 overrides load later in the cascade or set scoped `--kui-*` variables. JavaScript
-modules are pure except the browser style wrappers and `@kerfjs/ui/select/register`,
-which registers exactly the Web Awesome elements used by `Select`. Eventful
+modules are pure except the browser style wrappers and the four `/register`
+entries (`@kerfjs/ui/select/register`, `popup-menu/register`, `help-tags/register`,
+and `surface-scaffold/register`), each of which defines only the custom elements
+its component needs. Eventful
 helpers such as `wireResizableRegions` and `wireTabBars` attach listeners only
 when called and return disposers. `wireSearchFields` goes one step further:
 by default it also owns the collapsible field's transient expand/collapse/focus

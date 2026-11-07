@@ -26,7 +26,7 @@ other container (`catalog-demo/wrapped-example-stack`): single-component demos
 sit directly on the catalog grid, and only composition and recipe routes frame
 their content.
 
-Ten lazy production-composition routes live under the `Recipes` category.
+Eleven lazy production-composition routes live under the `Recipes` category.
 Each `?component=recipe-*` route uses public package primitives, real wiring,
 deterministic state, and semantic layout owners from the [recipe guide](./recipes.md).
 

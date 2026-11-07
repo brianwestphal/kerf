@@ -116,6 +116,15 @@ pre-push check and CI.
       "history": { "0.9.0": "…", "1.0.0": "…" },
     },
     {
+      "name": "ui-skill",
+      "source": "kerf.ui-skill.md",
+      "bundle": "ai/ui-skill.md",
+      "dest": ".claude/skills/kerf-ui/SKILL.md",
+      "version": "1.0.0",
+      "sha256": "…",
+      "history": { "1.0.0": "…" },
+    },
+    {
       "name": "cursorrules",
       "source": "kerf.cursorrules",
       "bundle": "ai/cursorrules",

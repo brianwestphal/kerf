@@ -44,9 +44,9 @@ The basic single-concept examples (9 of them) are **not** built by this pipeline
 1. `npm ci` → installs kerf's deps.
 2. `npm run build` → emits `dist/` for the kerf package itself. This must happen before the site install/build: the site and examples consume local `file:` dependencies, while the site's install-script policy deliberately blocks the repository package's `prepare` script from building it implicitly.
 3. `npm run site:build` → runs `npm install` in `site/`, then `prebuild` (the no-op sync-docs inventory pass + separate site/example typechecks + build-examples + build-icons + gen-llms-txt) and `astro build`, producing the combined `site/dist/`.
-4. `actions/configure-pages@v5` → wires up Pages metadata.
-5. `actions/upload-pages-artifact@v3` with `path: site/dist` → uploads the bundle.
-6. A separate `deploy` job uses `actions/deploy-pages@v4` to publish.
+4. `actions/configure-pages@v6` → wires up Pages metadata.
+5. `actions/upload-pages-artifact@v5` with `path: site/dist` → uploads the bundle.
+6. A separate `deploy` job uses `actions/deploy-pages@v5` to publish.
 
 The workflow uses least-privilege permissions — top-level `contents: read`, with `pages: write` / `id-token: write` granted only to the deploy job — and a single `pages` concurrency group with `cancel-in-progress: true`, so an overlapping push cancels the older in-flight run rather than queueing behind it.
 

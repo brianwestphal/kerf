@@ -75,4 +75,5 @@ In prose: a `count.value += 1` write reaches the DOM down one of two paths. A **
 - [§23 App and dialog layouts](23-app-layouts.md) — responsive whole-screen `@kerfjs/ui` layout contracts.
 - [§24 AI-first project setup](24-ai-first-setup.md) — safe, deterministic `npx kerfjs setup` configuration.
 - [§25 Ticket phase timing](25-ticket-timing.md) — structured Hot Sheet work and verification timing.
-- [§27 Off-main-thread compute](27-worker.md) — design: measured Worker crossover, and recipe vs. a `kerfjs/worker` subpath.
+- [§26 UI editor](26-ui-editor.md) — the Kerf UI editor and its JSON view document.
+- [§27 Off-main-thread compute](27-worker.md) — decided: the measured Worker crossover led to an extended recipe (`createCompute` in the async Worker recipe), with no `kerfjs/worker` subpath.

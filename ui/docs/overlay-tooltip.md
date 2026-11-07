@@ -42,7 +42,7 @@ set their own text color.
 
 - A control or value needs a short explanation on hover and focus: a longer
   description of an action, a chart point, or a truncated label.
-- Not for icon-only Kerf controls: `@kerfjs/ui/help-tags-register` already
+- Not for icon-only Kerf controls: `@kerfjs/ui/help-tags/register` already
   shows their help tag.
 - Not for interactive content or the only copy of important information. Use an
   `AnchoredSurface` the person opens, or visible text.

@@ -1,6 +1,6 @@
 # Production composition recipes
 
-These ten reference compositions sit between individual primitives and product
+These eleven reference compositions sit between individual primitives and product
 code. Open each stable UX-catalog route to run it, then copy the linked TSX. The
 examples import public package subpaths, compose components through their
 props and tokens, and keep state in a per-instance application adapter. They

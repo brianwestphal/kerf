@@ -240,7 +240,7 @@ The **install fingerprint** is a SHA-256 over each package directory's
 committed `package-lock.json` and the `node_modules/.package-lock.json` that npm
 rewrites on every install, for the root, every sibling package that
 `scripts/check-package-gates.mjs` can run (`ui/`, `eslint-plugin/`,
-`create-kerf-component/`), and `site/`. A missing file hashes as absent, so
+`create-kerf-component/`, `editor/`), and `site/`. A missing file hashes as absent, so
 installing, reinstalling, or deleting `node_modules` in any of them invalidates
 a recorded pass even though the git tree is unchanged. Records written before
 the fingerprint existed (schema version 1) are never reused.
@@ -266,11 +266,11 @@ Force the gate with `KERF_FORCE_CHECK=1` whenever one of these changed.
 Because every Hot Sheet guidance file the integrity guard snapshots is tracked,
 a matching tree plus a clean worktree also proves the guidance is byte-for-byte
 what the passing run guarded; the guard itself still wraps every run that does
-execute. A skip prints why and how to force the gate, and records a
-`push_hook`/`root:check` interval with `"outcome":"skipped"` and
-`"skip_reason":"tree_already_verified"`. Summaries count skips separately: they
-are neither attempts nor failures, and their near-zero duration never dilutes
-the gate's timing. Force the full gate for one push with
+execute. A skip prints why and how to force the gate; like the rest of the
+hook, it writes no timing note. Historical records carrying `"outcome":"skipped"`
+and `"skip_reason":"tree_already_verified"` are still counted separately by
+`summary`: they are neither attempts nor failures, and their near-zero duration
+never dilutes the gate's timing. Force the full gate for one push with
 `KERF_FORCE_CHECK=1 git push`.
 
 ### Long gates and the remote connection
