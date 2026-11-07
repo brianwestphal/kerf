@@ -17,6 +17,7 @@ import {
   ZoneFill,
   zonePropOf,
 } from './catalog.mjs';
+import { childKind } from './child-kind.mjs';
 import { parseCssCall } from './css-grammar.mjs';
 import { composedViewPath, eachNodes } from './validate.mjs';
 
@@ -289,44 +290,49 @@ function createEmitter(document, catalog, imports, importFrom) {
   };
 
   const childExpr = (child, scope, slot) => {
-    if ('$each' in child) {
-      const inner = new Map(scope).set(child.as, true);
-      const template =
-        'templates' in child
-          ? kindExpr(child, inner, child.key, slot)
-          : rowExpr(child.template, inner, child.key, slot);
-      // Scope holds only `$each` items, so a non-empty scope is a row
-      // template. kerf never reconciles a list inside a row (a keyed each()
-      // there throws), so an inner repeat is a plain map that re-renders with
-      // its row (KF-CFA1S1).
-      if (scope.size > 0) {
-        return call(
-          `${flat(value(child.$each, scope))}.map((${child.as}) => `,
-          template,
+    switch (childKind(child)) {
+      case 'each':
+        return eachExpr(child, scope, slot);
+      case 'if': {
+        const otherwise =
+          'else' in child ? childExpr(child.else, scope, slot) : raw('null');
+        return cond(
+          flat(value(child.$if, scope)),
+          childExpr(child.then, scope, slot),
+          otherwise,
         );
       }
-      imports.value('kerfjs', 'each');
+      case 'slot':
+        return isObject(child.input)
+          ? call(`slots.${child.$slot}(`, value(child.input, scope))
+          : raw(`slots.${child.$slot}()`);
+      default:
+        return nodeExpr(child, scope, undefined, slot);
+    }
+  };
+
+  const eachExpr = (child, scope, slot) => {
+    const inner = new Map(scope).set(child.as, true);
+    const template =
+      'templates' in child
+        ? kindExpr(child, inner, child.key, slot)
+        : rowExpr(child.template, inner, child.key, slot);
+    // Scope holds only `$each` items, so a non-empty scope is a row
+    // template. kerf never reconciles a list inside a row (a keyed each()
+    // there throws), so an inner repeat is a plain map that re-renders with
+    // its row (KF-CFA1S1).
+    if (scope.size > 0) {
       return call(
-        `each(${flat(value(child.$each, scope))}, (${child.as}) => `,
+        `${flat(value(child.$each, scope))}.map((${child.as}) => `,
         template,
-        `, { key: ${literal(eachNodes(child)[0].id)} })`,
       );
     }
-    if ('$if' in child) {
-      const otherwise =
-        'else' in child ? childExpr(child.else, scope, slot) : raw('null');
-      return cond(
-        flat(value(child.$if, scope)),
-        childExpr(child.then, scope, slot),
-        otherwise,
-      );
-    }
-    if ('$slot' in child) {
-      return isObject(child.input)
-        ? call(`slots.${child.$slot}(`, value(child.input, scope))
-        : raw(`slots.${child.$slot}()`);
-    }
-    return nodeExpr(child, scope, undefined, slot);
+    imports.value('kerfjs', 'each');
+    return call(
+      `each(${flat(value(child.$each, scope))}, (${child.as}) => `,
+      template,
+      `, { key: ${literal(eachNodes(child)[0].id)} })`,
+    );
   };
 
   // A row: the template node, or the branch its `$if` chain picks per item
@@ -635,11 +641,19 @@ export function generateView(document, catalog, options = {}) {
       );
     for (const list of Object.values(isObject(node.zones) ? node.zones : {})) {
       for (const child of list) {
-        if ('$each' in child) eachNodes(child).forEach(collectViews);
-        else if ('$if' in child) {
-          collectViews(child.then);
-          collectViews(child.else);
-        } else collectViews(child);
+        switch (childKind(child)) {
+          case 'each':
+            eachNodes(child).forEach(collectViews);
+            break;
+          case 'if':
+            collectViews(child.then);
+            collectViews(child.else);
+            break;
+          case 'slot':
+            break;
+          default:
+            collectViews(child);
+        }
       }
     }
   };

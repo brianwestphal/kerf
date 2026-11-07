@@ -94,6 +94,28 @@ export type ViewChild =
       readonly input?: Readonly<Record<string, ViewValue>>;
     };
 
+/** An `$each` list child: one template, or per-kind `templates`. */
+export type ViewEachChild = Extract<ViewChild, { readonly $each: ViewValue }>;
+/** An `$if` branch child. */
+export type ViewIfChild = Extract<ViewChild, { readonly $if: ViewValue }>;
+/** A `$slot` placement child. */
+export type ViewSlotChild = Extract<ViewChild, { readonly $slot: string }>;
+
+/** A view child's kind; `view` is a composed `#view` node. */
+export type ViewChildKind = 'each' | 'if' | 'slot' | 'view' | 'node';
+
+/** A view child paired with its kind, narrowed by a switch on `kind`. */
+export type ClassifiedViewChild =
+  | { readonly kind: 'each'; readonly child: ViewEachChild }
+  | { readonly kind: 'if'; readonly child: ViewIfChild }
+  | { readonly kind: 'slot'; readonly child: ViewSlotChild }
+  | { readonly kind: 'view' | 'node'; readonly child: ViewNode };
+
+/** The kind of a view child: the one shared child-kind dispatch. */
+export function childKind(child: ViewChild): ViewChildKind;
+/** The child with its kind; switching on `.kind` narrows `.child`. */
+export function classifyChild(child: ViewChild): ClassifiedViewChild;
+
 export interface ViewDocument {
   readonly $schema?: string;
   readonly schema: typeof VIEW_DOCUMENT_SCHEMA_ID;

@@ -2,6 +2,7 @@
 // application code compiles against — inputs, actions, slots, refs — with its
 // layout-independent `kui1:` digest and a breaking/non-breaking diff. Shared
 // by the generator and the runtime interpreter so both compute the same digest.
+import { childKind } from './child-kind.mjs';
 import { eachTemplates, validateView } from './validate.mjs';
 
 const MASK_64 = 0xffffffffffffffffn;
@@ -108,12 +109,19 @@ function elementOf(catalog, node) {
 export function walkView(document, visit) {
   const child = (item, row) => {
     if (!isObject(item)) return;
-    if ('$each' in item)
-      for (const template of eachTemplates(item)) child(template, true);
-    else if ('$if' in item) {
-      child(item.then, row);
-      if ('else' in item) child(item.else, row);
-    } else if (!('$slot' in item)) node(item, row);
+    switch (childKind(item)) {
+      case 'each':
+        for (const template of eachTemplates(item)) child(template, true);
+        break;
+      case 'if':
+        child(item.then, row);
+        if ('else' in item) child(item.else, row);
+        break;
+      case 'slot':
+        break;
+      default:
+        node(item, row);
+    }
   };
   const node = (item, row) => {
     if (!isObject(item)) return;
@@ -136,12 +144,17 @@ export function walkView(document, visit) {
   const slots = (item, found) => {
     if (!isObject(item)) return;
     valueSlots(item.props, found);
-    if ('$slot' in item) found.add(item.$slot);
-    else if ('$each' in item)
-      for (const template of eachTemplates(item)) slots(template, found);
-    else if ('$if' in item) {
-      slots(item.then, found);
-      slots(item.else, found);
+    switch (childKind(item)) {
+      case 'slot':
+        found.add(item.$slot);
+        break;
+      case 'each':
+        for (const template of eachTemplates(item)) slots(template, found);
+        break;
+      case 'if':
+        slots(item.then, found);
+        slots(item.else, found);
+        break;
     }
     for (const children of Object.values(
       isObject(item.zones) ? item.zones : {},
@@ -164,17 +177,24 @@ function rowKinds(document) {
   const found = {};
   const child = (item) => {
     if (!isObject(item)) return;
-    if ('$each' in item) {
-      if (isObject(item.templates)) {
-        found[item.as] ??= new Set();
-        for (const kind of Object.keys(item.templates))
-          found[item.as].add(kind);
-      }
-      eachTemplates(item).forEach(child);
-    } else if ('$if' in item) {
-      child(item.then);
-      child(item.else);
-    } else if (!('$slot' in item)) node(item);
+    switch (childKind(item)) {
+      case 'each':
+        if (isObject(item.templates)) {
+          found[item.as] ??= new Set();
+          for (const kind of Object.keys(item.templates))
+            found[item.as].add(kind);
+        }
+        eachTemplates(item).forEach(child);
+        break;
+      case 'if':
+        child(item.then);
+        child(item.else);
+        break;
+      case 'slot':
+        break;
+      default:
+        node(item);
+    }
   };
   const node = (item) => {
     for (const list of Object.values(isObject(item.zones) ? item.zones : {}))

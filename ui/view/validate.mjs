@@ -17,6 +17,7 @@ import {
   resolveType,
   withFieldZones,
 } from './catalog.mjs';
+import { childKind } from './child-kind.mjs';
 import { CSS_HELPERS, parseCssCall } from './css-grammar.mjs';
 import { ICON_NAME, isAssignable, isLiteralOf, literalOf } from './types.mjs';
 
@@ -824,172 +825,174 @@ function checkChild(ctx, child, at, scope, rowScoped, parentKey, text = false) {
     ctx.report('KUI-V001', at, 'a zone child is an object');
     return;
   }
-  if ('$each' in child) {
-    for (const key of only(child, [
-      '$each',
-      'as',
-      'key',
-      'template',
-      'templates',
-      'kind',
-    ]))
-      ctx.report('KUI-V001', `${at}.${key}`, 'unknown `$each` field');
-    // KF-CFA1S1: an inner `$each` in this document renders as a plain map, but
-    // a document composed into another's row cannot know it is in one: its
-    // module renders a keyed each(), which kerf refuses inside a row render.
-    if (ctx.rowHost && !rowScoped) {
-      ctx.report(
-        'KUI-V016',
-        at,
-        'a document composed into an `$each` row cannot repeat; move the `$each` into the composing document',
-      );
-    }
-    const source = dynamicType(ctx, child.$each, scope, `${at}.$each`);
-    const list = source ? resolveType(source, {}) : undefined;
-    if (source === null)
-      ctx.report(
-        'KUI-V008',
-        `${at}.$each`,
-        '`$each` iterates a `$param` or `$bind`, not a literal',
-      );
-    else if (list && list.kind !== 'array')
-      ctx.report(
-        'KUI-V008',
-        `${at}.$each`,
-        `\`$each\` needs an array, not ${describe(list)}`,
-      );
-    // kerf's each() keys rows by item identity, so items are objects.
-    else if (
-      list &&
-      !['object', 'unknown', 'record'].includes(
-        resolveType(list.items, {}).kind,
-      )
-    ) {
-      ctx.report(
-        'KUI-V008',
-        `${at}.$each`,
-        '`$each` items are objects (each() keys rows by item identity)',
-      );
-    }
-    if (
-      typeof child.as !== 'string' ||
-      !CAMEL.test(child.as) ||
-      RESERVED_NAMES.has(child.as) ||
-      ctx.params.has(child.as) ||
-      scope.has(child.as)
-    ) {
-      ctx.report(
-        'KUI-V008',
-        `${at}.as`,
-        '`as` names the item with a camelCase identifier that is not reserved, a param, or an outer item',
-      );
-      return;
-    }
-    const inner = new Map(scope).set(
-      child.as,
-      list?.kind === 'array' ? list.items : { kind: 'unknown' },
+  switch (childKind(child)) {
+    case 'each':
+      return checkEach(ctx, child, at, scope, rowScoped, parentKey, text);
+    case 'if':
+      return checkIf(ctx, child, at, scope, rowScoped, parentKey, text);
+    case 'slot':
+      return checkSlot(ctx, child, at, scope, rowScoped);
+    default:
+      return checkNode(ctx, child, at, scope, rowScoped, parentKey, text);
+  }
+}
+
+/** Checks an `$each` child: its fields, source list, key, and rows. */
+function checkEach(ctx, child, at, scope, rowScoped, parentKey, text) {
+  for (const key of only(child, [
+    '$each',
+    'as',
+    'key',
+    'template',
+    'templates',
+    'kind',
+  ]))
+    ctx.report('KUI-V001', `${at}.${key}`, 'unknown `$each` field');
+  // KF-CFA1S1: an inner `$each` in this document renders as a plain map, but
+  // a document composed into another's row cannot know it is in one: its
+  // module renders a keyed each(), which kerf refuses inside a row render.
+  if (ctx.rowHost && !rowScoped) {
+    ctx.report(
+      'KUI-V016',
+      at,
+      'a document composed into an `$each` row cannot repeat; move the `$each` into the composing document',
     );
-    const keyType =
-      typeof child.key === 'string' && child.key.split('.')[0] === child.as
-        ? bindingType(ctx, child.key, inner, `${at}.key`)
-        : undefined;
-    const keyKind = keyType && resolveType(keyType, {}).kind;
-    if (!keyType || !['string', 'number', 'unknown'].includes(keyKind)) {
-      ctx.report(
-        'KUI-V008',
-        `${at}.key`,
-        '`key` is a path on the item that resolves to a string or number',
-      );
-    }
-    checkRows(ctx, child, at, inner, parentKey, text);
+  }
+  const source = dynamicType(ctx, child.$each, scope, `${at}.$each`);
+  const list = source ? resolveType(source, {}) : undefined;
+  if (source === null)
+    ctx.report(
+      'KUI-V008',
+      `${at}.$each`,
+      '`$each` iterates a `$param` or `$bind`, not a literal',
+    );
+  else if (list && list.kind !== 'array')
+    ctx.report(
+      'KUI-V008',
+      `${at}.$each`,
+      `\`$each\` needs an array, not ${describe(list)}`,
+    );
+  // kerf's each() keys rows by item identity, so items are objects.
+  else if (
+    list &&
+    !['object', 'unknown', 'record'].includes(resolveType(list.items, {}).kind)
+  ) {
+    ctx.report(
+      'KUI-V008',
+      `${at}.$each`,
+      '`$each` items are objects (each() keys rows by item identity)',
+    );
+  }
+  if (
+    typeof child.as !== 'string' ||
+    !CAMEL.test(child.as) ||
+    RESERVED_NAMES.has(child.as) ||
+    ctx.params.has(child.as) ||
+    scope.has(child.as)
+  ) {
+    ctx.report(
+      'KUI-V008',
+      `${at}.as`,
+      '`as` names the item with a camelCase identifier that is not reserved, a param, or an outer item',
+    );
     return;
   }
-  if ('$if' in child) {
-    for (const key of only(child, ['$if', 'then', 'else']))
-      ctx.report('KUI-V001', `${at}.${key}`, 'unknown `$if` field');
-    checkPropValue(
-      ctx,
-      { name: 'condition', type: { kind: 'boolean' } },
-      child.$if,
-      {},
-      scope,
-      `${at}.$if`,
-      rowScoped,
+  const inner = new Map(scope).set(
+    child.as,
+    list?.kind === 'array' ? list.items : { kind: 'unknown' },
+  );
+  const keyType =
+    typeof child.key === 'string' && child.key.split('.')[0] === child.as
+      ? bindingType(ctx, child.key, inner, `${at}.key`)
+      : undefined;
+  const keyKind = keyType && resolveType(keyType, {}).kind;
+  if (!keyType || !['string', 'number', 'unknown'].includes(keyKind)) {
+    ctx.report(
+      'KUI-V008',
+      `${at}.key`,
+      '`key` is a path on the item that resolves to a string or number',
     );
+  }
+  checkRows(ctx, child, at, inner, parentKey, text);
+}
+
+/** Checks an `$if` child: its condition and both branches. */
+function checkIf(ctx, child, at, scope, rowScoped, parentKey, text) {
+  for (const key of only(child, ['$if', 'then', 'else']))
+    ctx.report('KUI-V001', `${at}.${key}`, 'unknown `$if` field');
+  checkPropValue(
+    ctx,
+    { name: 'condition', type: { kind: 'boolean' } },
+    child.$if,
+    {},
+    scope,
+    `${at}.$if`,
+    rowScoped,
+  );
+  checkChild(ctx, child.then, `${at}.then`, scope, rowScoped, parentKey, text);
+  if ('else' in child)
     checkChild(
       ctx,
-      child.then,
-      `${at}.then`,
+      child.else,
+      `${at}.else`,
       scope,
       rowScoped,
       parentKey,
       text,
     );
-    if ('else' in child)
-      checkChild(
-        ctx,
-        child.else,
-        `${at}.else`,
-        scope,
-        rowScoped,
-        parentKey,
-        text,
-      );
+}
+
+/** Checks a `$slot` child: its name and the input it passes. */
+function checkSlot(ctx, child, at, scope, rowScoped) {
+  for (const key of only(child, ['$slot', 'input']))
+    ctx.report('KUI-V001', `${at}.${key}`, 'unknown `$slot` field');
+  if (typeof child.$slot !== 'string' || !CAMEL.test(child.$slot)) {
+    ctx.report(
+      'KUI-V001',
+      `${at}.$slot`,
+      'a slot name is a camelCase identifier',
+    );
     return;
   }
-  if ('$slot' in child) {
-    for (const key of only(child, ['$slot', 'input']))
-      ctx.report('KUI-V001', `${at}.${key}`, 'unknown `$slot` field');
-    if (typeof child.$slot !== 'string' || !CAMEL.test(child.$slot)) {
-      ctx.report(
-        'KUI-V001',
-        `${at}.$slot`,
-        'a slot name is a camelCase identifier',
-      );
-      return;
-    }
-    const declared = ctx.slots.get(child.$slot);
-    const props = declared?.input?.props ?? [];
-    if (child.input !== undefined && !declared?.input) {
-      ctx.report(
-        'KUI-V001',
-        `${at}.input`,
-        `slot "${child.$slot}" declares no input`,
-      );
-      return;
-    }
-    const given = isObject(child.input) ? child.input : {};
-    for (const prop of props) {
-      if (!(prop.name in given)) {
-        if (prop.required)
-          ctx.report(
-            'KUI-V005',
-            `${at}.input`,
-            `slot "${child.$slot}" requires input "${prop.name}"`,
-          );
-        continue;
-      }
-      checkPropValue(
-        ctx,
-        prop,
-        given[prop.name],
-        {},
-        scope,
-        `${at}.input.${prop.name}`,
-        rowScoped,
-      );
-    }
-    for (const name of Object.keys(given)) {
-      if (!props.some((prop) => prop.name === name))
+  const declared = ctx.slots.get(child.$slot);
+  const props = declared?.input?.props ?? [];
+  if (child.input !== undefined && !declared?.input) {
+    ctx.report(
+      'KUI-V001',
+      `${at}.input`,
+      `slot "${child.$slot}" declares no input`,
+    );
+    return;
+  }
+  const given = isObject(child.input) ? child.input : {};
+  for (const prop of props) {
+    if (!(prop.name in given)) {
+      if (prop.required)
         ctx.report(
-          'KUI-V003',
-          `${at}.input.${name}`,
-          `slot "${child.$slot}" has no input "${name}"`,
+          'KUI-V005',
+          `${at}.input`,
+          `slot "${child.$slot}" requires input "${prop.name}"`,
         );
+      continue;
     }
-    return;
+    checkPropValue(
+      ctx,
+      prop,
+      given[prop.name],
+      {},
+      scope,
+      `${at}.input.${prop.name}`,
+      rowScoped,
+    );
   }
-  checkNode(ctx, child, at, scope, rowScoped, parentKey, text);
+  for (const name of Object.keys(given)) {
+    if (!props.some((prop) => prop.name === name))
+      ctx.report(
+        'KUI-V003',
+        `${at}.input.${name}`,
+        `slot "${child.$slot}" has no input "${name}"`,
+      );
+  }
 }
 
 /**
@@ -1118,25 +1121,30 @@ function combine(shapes) {
 }
 function childShape(child) {
   if (!isObject(child)) return shape(0, 0, []);
-  if ('$each' in child) {
-    const items = eachTemplates(child).flatMap((template) =>
-      isObject(template) ? childShape(template).items : [],
-    );
-    return shape(0, Number.POSITIVE_INFINITY, items);
+  switch (childKind(child)) {
+    case 'each': {
+      const items = eachTemplates(child).flatMap((template) =>
+        isObject(template) ? childShape(template).items : [],
+      );
+      return shape(0, Number.POSITIVE_INFINITY, items);
+    }
+    case 'if': {
+      const then = childShape(child.then);
+      const otherwise =
+        'else' in child ? childShape(child.else) : shape(0, 0, []);
+      return shape(
+        Math.min(then.min, otherwise.min),
+        Math.max(then.max, otherwise.max),
+        [...then.items, ...otherwise.items],
+      );
+    }
+    case 'slot':
+    case 'view':
+      return shape(1, 1, []);
+    default:
+      if (child.type === '#text') return shape(1, 1, [{ label: 'text' }]);
+      return shape(1, 1, [{ node: child }]);
   }
-  if ('$if' in child) {
-    const then = childShape(child.then);
-    const otherwise =
-      'else' in child ? childShape(child.else) : shape(0, 0, []);
-    return shape(
-      Math.min(then.min, otherwise.min),
-      Math.max(then.max, otherwise.max),
-      [...then.items, ...otherwise.items],
-    );
-  }
-  if ('$slot' in child || child.type === '#view') return shape(1, 1, []);
-  if (child.type === '#text') return shape(1, 1, [{ label: 'text' }]);
-  return shape(1, 1, [{ node: child }]);
 }
 
 // Interactive content (HTML's button, a, input, label, and so on) cannot hold
@@ -1314,17 +1322,22 @@ function hintUnsizedLayouts(node, at, sized, hints, isRoot = false) {
     });
   const child = (item, path, childSized) => {
     if (!isObject(item)) return;
-    if ('$each' in item) {
-      if ('templates' in item)
-        for (const [kind, template] of Object.entries(
-          isObject(item.templates) ? item.templates : {},
-        ))
-          child(template, `${path}.templates.${kind}`, childSized);
-      else child(item.template, `${path}.template`, childSized);
-    } else if ('$if' in item) {
-      child(item.then, `${path}.then`, childSized);
-      if ('else' in item) child(item.else, `${path}.else`, childSized);
-    } else hintUnsizedLayouts(item, path, childSized, hints);
+    switch (childKind(item)) {
+      case 'each':
+        if ('templates' in item)
+          for (const [kind, template] of Object.entries(
+            isObject(item.templates) ? item.templates : {},
+          ))
+            child(template, `${path}.templates.${kind}`, childSized);
+        else child(item.template, `${path}.template`, childSized);
+        break;
+      case 'if':
+        child(item.then, `${path}.then`, childSized);
+        if ('else' in item) child(item.else, `${path}.else`, childSized);
+        break;
+      default:
+        hintUnsizedLayouts(item, path, childSized, hints);
+    }
   };
   for (const [zone, children] of Object.entries(
     isObject(node.zones) ? node.zones : {},

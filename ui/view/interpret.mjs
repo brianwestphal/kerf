@@ -14,6 +14,7 @@ import {
   ZoneFill,
   zonePropOf,
 } from './catalog.mjs';
+import { childKind } from './child-kind.mjs';
 import { parseCssTree } from './css-grammar.mjs';
 import { composedViewPath, eachNodes } from './validate.mjs';
 
@@ -169,47 +170,51 @@ function renderDocument(
   };
 
   const childValue = (child, scope, slot) => {
-    if ('$each' in child) {
-      // The key path starts with `as` (validation requires it); read the rest
-      // from the item.
-      const rest = child.key.split('.').slice(1);
-      // KF-A01VDM: a composed document's own repeat inside a row is the shape
-      // validation rejects (KUI-V016). Name it, rather than letting each()
-      // refuse the keyed list inside the row with a generic error.
-      if (inRow && !scope.size) {
-        throw new Error(
-          `KUI-V016 ${at} is composed into a row, so it cannot repeat`,
-        );
-      }
-      const items = value(child.$each, scope);
-      const row = (item) => {
-        const inner = new Map(scope).set(child.as, item);
-        return rowValue(
-          rowTemplate(child, inner),
-          inner,
-          readPath(item, rest),
-          slot,
-        );
-      };
-      // Scope holds only `$each` items, so a non-empty scope is a row
-      // template. kerf never reconciles a list inside a row (the row is
-      // flattened to HTML, and a keyed each() there throws), so an inner
-      // repeat is a plain map that re-renders with its row, as the generated
-      // module writes it (KF-CFA1S1).
-      return scope.size
-        ? items.map(row)
-        : each(items, row, { key: eachNodes(child)[0]?.id });
+    switch (childKind(child)) {
+      case 'each':
+        return eachValue(child, scope, slot);
+      case 'if':
+        if (value(child.$if, scope)) return childValue(child.then, scope, slot);
+        return 'else' in child ? childValue(child.else, scope, slot) : null;
+      case 'slot':
+        return isObject(child.input)
+          ? slots[child.$slot](value(child.input, scope))
+          : slots[child.$slot]();
+      default:
+        return nodeValue(child, scope, undefined, slot);
     }
-    if ('$if' in child) {
-      if (value(child.$if, scope)) return childValue(child.then, scope, slot);
-      return 'else' in child ? childValue(child.else, scope, slot) : null;
+  };
+
+  const eachValue = (child, scope, slot) => {
+    // The key path starts with `as` (validation requires it); read the rest
+    // from the item.
+    const rest = child.key.split('.').slice(1);
+    // KF-A01VDM: a composed document's own repeat inside a row is the shape
+    // validation rejects (KUI-V016). Name it, rather than letting each()
+    // refuse the keyed list inside the row with a generic error.
+    if (inRow && !scope.size) {
+      throw new Error(
+        `KUI-V016 ${at} is composed into a row, so it cannot repeat`,
+      );
     }
-    if ('$slot' in child) {
-      return isObject(child.input)
-        ? slots[child.$slot](value(child.input, scope))
-        : slots[child.$slot]();
-    }
-    return nodeValue(child, scope, undefined, slot);
+    const items = value(child.$each, scope);
+    const row = (item) => {
+      const inner = new Map(scope).set(child.as, item);
+      return rowValue(
+        rowTemplate(child, inner),
+        inner,
+        readPath(item, rest),
+        slot,
+      );
+    };
+    // Scope holds only `$each` items, so a non-empty scope is a row
+    // template. kerf never reconciles a list inside a row (the row is
+    // flattened to HTML, and a keyed each() there throws), so an inner
+    // repeat is a plain map that re-renders with its row, as the generated
+    // module writes it (KF-CFA1S1).
+    return scope.size
+      ? items.map(row)
+      : each(items, row, { key: eachNodes(child)[0]?.id });
   };
 
   // KF-YX6HMT: the template an item's `kind` picks from `templates`, else

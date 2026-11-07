@@ -7,6 +7,7 @@
 // adjusted. Where a check depends on more than those places (the order of
 // action uses, duplicate ids; docs/26-ui-editor.md §8.1), the check answers `undefined`
 // and the caller validates in full, so an answer is never a guess.
+import { childKind } from './child-kind.mjs';
 import {
   childFacts,
   createScopedCheck,
@@ -46,12 +47,16 @@ function sharedSlot(root) {
   };
   const child = (item) => {
     if (!isObject(item)) return false;
-    if ('$each' in item)
-      return value(item.kind) || eachTemplates(item).some(child);
-    if ('$if' in item)
-      return value(item.$if) || child(item.then) || child(item.else);
-    if ('$slot' in item) return value(item.input);
-    return node(item);
+    switch (childKind(item)) {
+      case 'each':
+        return value(item.kind) || eachTemplates(item).some(child);
+      case 'if':
+        return value(item.$if) || child(item.then) || child(item.else);
+      case 'slot':
+        return value(item.input);
+      default:
+        return node(item);
+    }
   };
   const node = (item) =>
     isObject(item) &&
@@ -90,16 +95,21 @@ function indexDocument(document) {
     }
   };
   const child = (item, parent, zone, index, direct) => {
-    if (!isObject(item)) ok = false;
-    else if ('$each' in item)
-      for (const template of eachTemplates(item))
-        child(template, parent, zone, index, false);
-    else if ('$if' in item) {
-      child(item.then, parent, zone, index, false);
-      if ('else' in item) child(item.else, parent, zone, index, false);
-    } else if (!('$slot' in item)) {
-      if (direct) placements.set(item.id, { parent, zone, index });
-      node(item);
+    if (!isObject(item)) return void (ok = false);
+    switch (childKind(item)) {
+      case 'each':
+        for (const template of eachTemplates(item))
+          child(template, parent, zone, index, false);
+        break;
+      case 'if':
+        child(item.then, parent, zone, index, false);
+        if ('else' in item) child(item.else, parent, zone, index, false);
+        break;
+      case 'slot':
+        break;
+      default:
+        if (direct) placements.set(item.id, { parent, zone, index });
+        node(item);
     }
   };
   if (ok) node(document.root);
@@ -108,15 +118,16 @@ function indexDocument(document) {
 
 /** The ids of every node a zone child holds, itself included. */
 function heldIds(item, ids = new Set()) {
-  if ('$slot' in item) return ids;
-  if ('$each' in item) {
-    for (const template of eachTemplates(item)) heldIds(template, ids);
-    return ids;
-  }
-  if ('$if' in item) {
-    heldIds(item.then, ids);
-    if (item.else) heldIds(item.else, ids);
-    return ids;
+  switch (childKind(item)) {
+    case 'slot':
+      return ids;
+    case 'each':
+      for (const template of eachTemplates(item)) heldIds(template, ids);
+      return ids;
+    case 'if':
+      heldIds(item.then, ids);
+      if (item.else) heldIds(item.else, ids);
+      return ids;
   }
   ids.add(item.id);
   for (const list of Object.values(item.zones ?? {}))
@@ -145,31 +156,38 @@ function prepareTree(node, prepare, map) {
 }
 
 function prepareChild(item, prepare, map) {
-  if ('$each' in item) {
-    if ('templates' in item) {
-      // KF-YX6HMT: one prepared node per kind, sharing an unchanged map.
-      const entries = Object.entries(item.templates);
-      const prepared = entries.map(([kind, node]) => [
-        kind,
-        prepareChild(node, prepare, map),
-      ]);
-      return prepared.every(([, node], index) => node === entries[index][1])
+  switch (childKind(item)) {
+    case 'each':
+      return prepareEach(item, prepare, map);
+    case 'if': {
+      const then = prepareChild(item.then, prepare, map);
+      const otherwise =
+        'else' in item ? prepareChild(item.else, prepare, map) : undefined;
+      return then === item.then && otherwise === item.else
         ? item
-        : { ...item, templates: Object.fromEntries(prepared) };
+        : { ...item, then, ...('else' in item ? { else: otherwise } : {}) };
     }
-    const template = prepareChild(item.template, prepare, map);
-    return template === item.template ? item : { ...item, template };
+    case 'slot':
+      return item;
+    default:
+      return prepareTree(item, prepare, map);
   }
-  if ('$if' in item) {
-    const then = prepareChild(item.then, prepare, map);
-    const otherwise =
-      'else' in item ? prepareChild(item.else, prepare, map) : undefined;
-    return then === item.then && otherwise === item.else
+}
+
+function prepareEach(item, prepare, map) {
+  if ('templates' in item) {
+    // KF-YX6HMT: one prepared node per kind, sharing an unchanged map.
+    const entries = Object.entries(item.templates);
+    const prepared = entries.map(([kind, node]) => [
+      kind,
+      prepareChild(node, prepare, map),
+    ]);
+    return prepared.every(([, node], index) => node === entries[index][1])
       ? item
-      : { ...item, then, ...('else' in item ? { else: otherwise } : {}) };
+      : { ...item, templates: Object.fromEntries(prepared) };
   }
-  if ('$slot' in item) return item;
-  return prepareTree(item, prepare, map);
+  const template = prepareChild(item.template, prepare, map);
+  return template === item.template ? item : { ...item, template };
 }
 
 /**
