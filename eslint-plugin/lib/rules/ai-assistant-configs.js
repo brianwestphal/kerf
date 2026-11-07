@@ -96,14 +96,12 @@ function usesUi(cwd) {
 
 // Module-level once-per-lint-run guard. ESLint instantiates the rule
 // per-file; we do the project-level filesystem check the first time the
-// `Program` visitor runs and cache the result for the remaining files in
-// the same lint pass.
+// `Program` visitor runs and skip it for the remaining files in the same
+// lint pass.
 let CHECKED = false;
-let CACHED_RESULT = null;
 
 export function _resetForTests() {
   CHECKED = false;
-  CACHED_RESULT = null;
 }
 
 function resolveManifestPath(cwd) {
@@ -388,7 +386,6 @@ function create(context) {
       // ESLint v9: `context.cwd` is a string. ESLint v8: `context.getCwd()`.
       const cwd = contextCwd(context);
       const checked = runCheck(cwd);
-      CACHED_RESULT = checked;
       if (!checked) return;
 
       for (const { file, result } of checked.results) {

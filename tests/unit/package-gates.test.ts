@@ -36,11 +36,11 @@ describe('selectPackageGates', () => {
       'eslint-plugin:check',
     ]);
     expect(names(['create-kerf-component/index.js'])).toEqual([
-      'create-kerf-component:test',
+      'create-kerf-component:check',
     ]);
   });
 
-  it('runs the eslint-plugin tests when the ui data its rules read changes', () => {
+  it('runs the eslint-plugin check when the ui data its rules read changes', () => {
     // A Discouraged-list change in the ui catalog/profile broke the plugin's
     // rule tests in CI while the ui-only local gate stayed green.
     expect(names(['ui/ai/application-ui-profile.defaults.json'])).toEqual([
@@ -85,7 +85,7 @@ describe('selectPackageGates', () => {
     expect(names(['ui/ai/component-composition.schema.json'])).toEqual([
       'ui:check',
       'eslint-plugin:check',
-      'create-kerf-component:test',
+      'create-kerf-component:check',
     ]);
   });
 

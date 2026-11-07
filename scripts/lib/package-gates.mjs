@@ -24,8 +24,8 @@ export const PACKAGE_GATES = [
   {
     name: 'eslint-plugin:check',
     dir: 'eslint-plugin',
-    // The matrix-parity check (SUPPORTED, the peer range, and the CI matrix
-    // name one set of ESLint majors), then the rule suite.
+    // `check` = the matrix-parity check (SUPPORTED, the peer range, and the CI
+    // matrix name one set of ESLint majors), the package's lint, then its tests.
     args: ['run', 'check'],
     // The plugin's rules read @kerfjs/ui's shipped AI data (the component
     // catalog, composition, and profile defaults), so a ui-only change to
@@ -40,9 +40,9 @@ export const PACKAGE_GATES = [
     ],
   },
   {
-    name: 'create-kerf-component:test',
+    name: 'create-kerf-component:check',
     dir: 'create-kerf-component',
-    args: ['test'],
+    args: ['run', 'check'],
     // The scaffold bundles copies of these @kerfjs/ui contract schemas.
     triggers: [
       'create-kerf-component/',

@@ -41,6 +41,8 @@
     "LICENSE"
   ],
   "scripts": {
+    "check": "npm run lint && npm test",
+    "lint": "eslint --max-warnings 0 .",
     "test": "node --test tests/*.test.js"
   },
   "peerDependencies": {
@@ -52,6 +54,8 @@
     }
   },
   "devDependencies": {
+    "@eslint/js": "^9.39.5",
+    "eslint": "^9.39.5",
     "typescript": "^5.0.0 || ^6.0.0"
   }
 }

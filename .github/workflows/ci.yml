@@ -121,6 +121,9 @@ jobs:
             cache-dependency-path: eslint-plugin/package-lock.json,
           }
       - run: npm ci
+      # Lint the plugin's own source with the locked ESLint, before the matrix
+      # swaps in the ESLint major under test.
+      - run: npm run lint
       # --no-save so the committed lockfile stays the source of truth for every
       # other dependency; only ESLint itself varies across the matrix.
       - run: npm install --no-save eslint@${{ matrix.eslint }}
@@ -142,6 +145,7 @@ jobs:
             cache-dependency-path: create-kerf-component/package-lock.json,
           }
       - run: npm ci
+      - run: npm run lint
       - run: npm test
 
   ui:
