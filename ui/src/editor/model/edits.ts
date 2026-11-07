@@ -167,10 +167,13 @@ export function insertNode(
 
 /**
  * Lists a component's package in the document's `catalogs` (KF-6GT5QY), as a
- * document must before it uses one of its components.
+ * document must before it uses one of its components. A type with no package
+ * (`#view`, KF-FXACB5: a Library document drop) leaves the catalogs alone.
  */
 export function withCatalog(document: ViewDocument, key: string): ViewDocument {
-  const pkg = key.slice(0, key.lastIndexOf(':'));
+  const at = key.lastIndexOf(':');
+  if (at < 0) return document;
+  const pkg = key.slice(0, at);
   return document.catalogs.includes(pkg)
     ? document
     : { ...document, catalogs: [...document.catalogs, pkg] };

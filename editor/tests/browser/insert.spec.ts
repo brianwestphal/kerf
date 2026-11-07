@@ -4,6 +4,7 @@
 // picked one renders on the canvas at once and one Undo removes it.
 import { expect, type Page, test } from '@playwright/test';
 
+import { openLibrary } from './areas.js';
 import { addChild, canvas, select } from './build.js';
 
 const API = '/__kerf-ui-editor/api/file';
@@ -157,6 +158,96 @@ for (const width of [1440, 390]) {
     });
     await row.click();
     await expect(dialog).toBeHidden();
+    await expect(canvas(page)).toContainText('Composed from a document');
+  });
+}
+
+// KF-FXACB5: the Library offers the project's documents after its component
+// groups; a click inserts one as a `#view` inside the selection, a drag drops
+// it like a component, and either renders at once.
+async function libraryDocument(page: Page, folder: string) {
+  await openLibrary(page);
+  const library = page.locator('#editor-library');
+  await library.getByRole('searchbox').fill(folder);
+  const row = library.getByRole('button', {
+    name: `${folder}/message-row.kui.json`,
+  });
+  await expect(row).toBeVisible();
+  await expect(library.getByText('Documents', { exact: true })).toBeVisible();
+  await expect(
+    library.getByRole('button', { name: `${folder}/inbox.kui.json` }),
+  ).toHaveCount(0);
+  return { library, row };
+}
+
+test('inserts a Library document by click and by drag', async ({
+  page,
+}, info) => {
+  const folder = await openMain(page, `library-${info.project.name}`);
+  await select(page, 'messages');
+  const { library, row } = await libraryDocument(page, folder);
+  await row.click();
+  // A transient Library closes after the insert.
+  await expect(library).toBeHidden();
+  await expect(canvas(page)).toContainText('Composed from a document');
+  await page.locator('[data-action="editor-undo"]').click();
+  await expect(canvas(page)).not.toContainText('Composed from a document');
+
+  const again = await libraryDocument(page, folder);
+  const from = (await again.row.boundingBox())!;
+  await page.mouse.move(from.x + 20, from.y + from.height / 2);
+  await page.mouse.down();
+  await page.mouse.move(from.x + 40, from.y + from.height / 2, { steps: 3 });
+  const to = (await canvas(page).boundingBox())!;
+  await page.mouse.move(to.x + to.width * 0.3, to.y + to.height * 0.85, {
+    steps: 10,
+  });
+  await page.mouse.up();
+  await expect(again.library).toBeHidden();
+  await expect(canvas(page)).toContainText('Composed from a document');
+  await expect
+    .poll(async () => {
+      const saved = JSON.parse(
+        await (await page.request.get(url(`${folder}/inbox.kui.json`))).text(),
+      );
+      return saved.root.zones.content.at(-1);
+    })
+    .toMatchObject({
+      type: '#view',
+      src: './message-row.kui.json',
+      props: { subject: 'Subject' },
+    });
+});
+
+for (const width of [1440, 390]) {
+  test(`captures the Library's documents at ${width}`, async ({
+    page,
+  }, info) => {
+    test.skip(info.project.name !== 'chromium', 'visual QA capture');
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    await page.setViewportSize({ width: 1440, height: 900 });
+    const folder = await openMain(page, `library-capture-${width}`);
+    await select(page, 'messages');
+    // Wide to the capture width before the Library opens over it.
+    await page.setViewportSize({ width, height: 900 });
+    const { library } = await libraryDocument(page, folder);
+    await expect
+      .poll(() => page.evaluate(() => document.getAnimations().length))
+      .toBe(0);
+    const box = (await library.boundingBox())!;
+    expect(box.width).toBeGreaterThan(0);
+    expect(box.x + box.width).toBeLessThanOrEqual(width);
+    await page.screenshot({
+      path: info.outputPath(`kf-fxacb5-library-documents-${width}.png`),
+    });
+    // The grid view shows a document as a tile with a file icon.
+    await library.getByRole('button', { name: 'Grid' }).click();
+    const tile = library.locator('[data-editor-palette-document]');
+    await expect(tile).toHaveText('message-row.kui.json');
+    await page.screenshot({
+      path: info.outputPath(`kf-fxacb5-library-documents-grid-${width}.png`),
+    });
+    await tile.click();
     await expect(canvas(page)).toContainText('Composed from a document');
   });
 }

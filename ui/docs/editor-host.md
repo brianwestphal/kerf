@@ -194,7 +194,9 @@ editor.wire(root);
   without it a `#view` previews as a placeholder. An optional `list()`
   answers the project's documents as project-relative `.kui.json` paths;
   with it, Add a child's **Existing document…** inserts one as a `#view`
-  from a picker, and without it that choice asks for a path.
+  from a picker, and without it that choice asks for a path. With it, the
+  Library also lists those documents after its components, to insert by
+  click or drag.
   `devServerStorage(api?, listApi?)` implements all three over the dev
   server (`EDITOR_FILE_API`, `EDITOR_LIST_API`).
 - `createEditorCatalog({ props, composition, selection?, components, placeholders? })`

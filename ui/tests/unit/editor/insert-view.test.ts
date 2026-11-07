@@ -4,11 +4,15 @@
 import type { ViewDocument } from '@kerfjs/ui/view';
 import { describe, expect, it } from 'vitest';
 
+import { withCatalog } from '../../../src/editor/model/edits.js';
 import {
+  documentFolder,
+  documentName,
   filterDocuments,
   insertableDocuments,
   insertedView,
   insertProblem,
+  libraryDocuments,
   requiredParamProps,
 } from '../../../src/editor/model/insert-view.js';
 import { rowDocument } from './fixtures-views.js';
@@ -113,5 +117,37 @@ describe('insertedView', () => {
     expect(
       insertedView('V2', 'app/main.kui.json', 'parts/part.kui.json', doc()),
     ).toEqual({ id: 'V2', type: '#view', src: '../parts/part.kui.json' });
+  });
+});
+
+// KF-FXACB5: the Library's Documents group.
+describe('the Library’s documents', () => {
+  const paths = ['app.kui.json', 'views/message-row.kui.json'];
+
+  it('keeps them all for no text or a match on the group’s name, else filters', () => {
+    expect(libraryDocuments(paths, '')).toBe(paths);
+    expect(libraryDocuments(paths, '  DOC ')).toBe(paths);
+    expect(libraryDocuments(paths, 'row')).toEqual([
+      'views/message-row.kui.json',
+    ]);
+    expect(libraryDocuments(paths, 'button')).toEqual([]);
+  });
+
+  it('names a document by its file, under its folder', () => {
+    expect(documentName('views/message-row.kui.json')).toBe(
+      'message-row.kui.json',
+    );
+    expect(documentFolder('views/message-row.kui.json')).toBe('views/');
+    expect(documentName('app.kui.json')).toBe('app.kui.json');
+    expect(documentFolder('app.kui.json')).toBe('./');
+  });
+
+  it('adds no catalog for a node type with no package', () => {
+    const document = doc();
+    expect(withCatalog(document, '#view')).toBe(document);
+    expect(withCatalog(document, '@acme/kit:card').catalogs).toEqual([
+      '@kerfjs/ui',
+      '@acme/kit',
+    ]);
   });
 });

@@ -44,6 +44,7 @@ import {
   FaceSlightlySmiling,
   FileCode,
   FilePlus,
+  FileText,
   FolderOpen,
   GitCompare,
   Group,
@@ -304,10 +305,14 @@ import {
   matchIcons,
 } from './model/icons.js';
 import {
+  documentFolder,
+  documentName,
   filterDocuments,
   insertableDocuments,
   insertedView,
   insertProblem,
+  LIBRARY_DOCUMENTS,
+  libraryDocuments,
 } from './model/insert-view.js';
 import {
   formatValue,
@@ -388,6 +393,11 @@ const OUTLINE_ACTION = 'editor-select-node';
 const OUTLINE_TOGGLE_ACTION = 'editor-toggle-node';
 const PALETTE_ACTION = 'editor-show-component';
 const PALETTE_CLEAR_ACTION = 'editor-clear-palette-filter';
+/**
+ * KF-FXACB5: a Library document, which a click inserts as a `#view` and a
+ * drag (source `document:<path>`) drops like a component.
+ */
+const PALETTE_DOCUMENT_ACTION = 'editor-insert-library-document';
 /** KF-JC7WTW: the Library shows a list or a grid of thumbnails. */
 const PALETTE_VIEW_ACTION = 'editor-palette-view';
 const PALETTE_VIEW_KEY = 'kerf-ui-editor:palette-view';
@@ -1349,6 +1359,13 @@ export function createEditor(options: EditorOptions) {
   const paletteFilter = signal('');
   const paletteFilterRevision = signal(0);
   const paletteView = signal<PaletteView>(rememberedPaletteView());
+  /**
+   * KF-FXACB5: the project's documents the Library offers, as its last
+   * listing answered (none while one loads, or when it failed), and why the
+   * last document insert from the Library was refused.
+   */
+  const libraryFiles = signal<readonly string[]>([]);
+  const libraryError = signal('');
   // Every caller passes a changed document (edits clone; moves are checked
   // against isMovable first).
   const commit = (next: ViewDocument) => {
@@ -1528,7 +1545,10 @@ export function createEditor(options: EditorOptions) {
   // KF-JC7WTW: in the grid view each category's components are tiles, each
   // showing its component as added (`wirePaletteThumbnails` draws them),
   // or its icon when it shows nothing until opened.
-  const palette = (groups: ReturnType<typeof paletteMatches>) => (
+  const palette = (
+    groups: ReturnType<typeof paletteMatches>,
+    documents: readonly string[],
+  ) => (
     <List gap="m">
       {groups.map((group) => (
         <List>
@@ -1593,6 +1613,55 @@ export function createEditor(options: EditorOptions) {
           )}
         </List>
       ))}
+      {documents.length ? libraryDocumentGroup(documents) : undefined}
+    </List>
+  );
+
+  /**
+   * KF-FXACB5: the Library's Documents group, after the components: each
+   * project document as a row led by its file name over its folder (as
+   * Insert Document lists them), or as a tile with a file icon (no live
+   * thumbnail). A click inserts it as a `#view`; it drags like a component.
+   */
+  const libraryDocumentGroup = (documents: readonly string[]) => (
+    <List>
+      <ListHeader label={LIBRARY_DOCUMENTS} />
+      {paletteView.value === 'grid' ? (
+        <Grid minColumnWidth={px(96)} autoFill gap="xs">
+          {documents.map((path) => (
+            <ContentItem
+              interactive
+              action={PALETTE_DOCUMENT_ACTION}
+              itemId={path}
+              ariaLabel={path}
+              title={path}
+              frame="framed"
+              rootAttributes={{
+                'data-editor-palette-document': path,
+                'data-key': `document:${path}`,
+              }}
+            >
+              <div class="kui-editor__palette-thumb" aria-hidden="true">
+                <LucideIcon icon={FileText} name="file-text" />
+              </div>
+              <Text variant="span" size="compact" maxLines={1}>
+                {documentName(path)}
+              </Text>
+            </ContentItem>
+          ))}
+        </Grid>
+      ) : (
+        documents.map((path) => (
+          <ListItem
+            action={PALETTE_DOCUMENT_ACTION}
+            label={documentName(path)}
+            description={documentFolder(path)}
+            accessibleLabel={path}
+            title={path}
+            rootAttributes={{ 'data-editor-palette-document': path }}
+          />
+        ))
+      )}
     </List>
   );
 
@@ -3333,18 +3402,111 @@ export function createEditor(options: EditorOptions) {
    */
   /** The id a palette drag of component `key` carries. */
   const PALETTE_SOURCE = 'component:';
+  /** KF-FXACB5: the id a Library drag of the document at `path` carries. */
+  const DOCUMENT_SOURCE = 'document:';
+  /** Whether a drag carries new content from the Library, not a node. */
+  const fromLibrary = (sourceId: string) =>
+    sourceId.startsWith(PALETTE_SOURCE) || sourceId.startsWith(DOCUMENT_SOURCE);
+  /** The Library document a drag carries, if it carries one. */
+  const documentSource = (sourceId: string) =>
+    sourceId.startsWith(DOCUMENT_SOURCE)
+      ? sourceId.slice(DOCUMENT_SOURCE.length)
+      : undefined;
+  /**
+   * KF-FXACB5: each Library document's read, started once per listing, and
+   * its answer once it came: the document, or why it cannot be inserted.
+   */
+  type LibraryRead =
+    { readonly document: ViewDocument } | { readonly problem: string };
+  let libraryReads = new Map<string, Promise<LibraryRead>>();
+  const libraryAnswers = new Map<string, LibraryRead>();
+  const readLibraryDocument = (path: string): Promise<LibraryRead> => {
+    let read = libraryReads.get(path);
+    if (!read) {
+      read = options
+        .storage!.read(path)
+        .then(
+          (text): LibraryRead => {
+            if (text === undefined) return { problem: `There is no ${path}.` };
+            const parsed = parseDocument(text);
+            if (!parsed.ok) return { problem: parsed.error };
+            const problem = insertProblem(parsed.document);
+            return problem ? { problem } : { document: parsed.document };
+          },
+          (error: unknown) => ({
+            problem: error instanceof Error ? error.message : String(error),
+          }),
+        )
+        .then((answer) => {
+          libraryAnswers.set(path, answer);
+          return answer;
+        });
+      libraryReads.set(path, read);
+    }
+    return read;
+  };
+  /** Why a drag's Library document cannot go anywhere, once it was read. */
+  const sourceProblem = (sourceId: string) => {
+    const path = documentSource(sourceId);
+    const answer = path === undefined ? undefined : libraryAnswers.get(path);
+    return answer && 'problem' in answer ? answer.problem : undefined;
+  };
+  /** A loaded document `#view` nodes compose, so the canvas shows it. */
+  const showDocument = (path: string, document: ViewDocument) => {
+    viewLoads.value = new Map(viewLoads.peek()).set(path, {
+      state: 'loaded',
+      document,
+    });
+  };
+  const CHANGED_MEANWHILE = 'The document changed meanwhile; insert it again.';
   /**
    * The node a palette drag adds, made once per drag so its id, and so the
-   * cached drop results, stay the same while it moves.
+   * cached drop results, stay the same while it moves. A document's `#view`
+   * is made again once its read answers, with its required params seeded.
    */
   let dragged: ViewNode | undefined;
-  const draggedNode = (sourceId: string) => {
-    const key = sourceId.slice(PALETTE_SOURCE.length);
-    if (dragged?.type !== key) dragged = seededNode(key);
-    return dragged;
+  let draggedKey: unknown;
+  const draggedNode = (sourceId: string): ViewNode => {
+    const path = documentSource(sourceId);
+    const read = path === undefined ? undefined : libraryAnswers.get(path);
+    const key = read ?? sourceId;
+    if (draggedKey !== key) {
+      draggedKey = key;
+      dragged =
+        path === undefined
+          ? seededNode(sourceId.slice(PALETTE_SOURCE.length))
+          : insertedView(
+              newNodeId(),
+              autosave!.path.peek(),
+              path,
+              // A refused document never reaches a drop (`sourceProblem`).
+              (read as { document: ViewDocument } | undefined)?.document ??
+                emptyDocument(),
+            );
+    }
+    return dragged!;
   };
 
+  /**
+   * KF-FXACB5: a Library document's drop waits for its read, then places
+   * like a component's; a refused or stale one says why in the Library.
+   */
   const applyMove = (move: TreeListMove) => {
+    const path = documentSource(move.sourceId);
+    if (path === undefined) {
+      placeMove(move);
+      return;
+    }
+    const before = doc.peek();
+    void readLibraryDocument(path).then((read) => {
+      if ('problem' in read) return refuseLibrary(read.problem);
+      if (doc.peek() !== before) return refuseLibrary(CHANGED_MEANWHILE);
+      showDocument(path, read.document);
+      placeMove(move);
+    });
+  };
+
+  const placeMove = (move: TreeListMove) => {
     // KF-WKABP2: a drop replacing a node alone in its zone; authored content
     // asks first, a seeded placeholder does not.
     const replaced = replaceTarget(move.target.id);
@@ -3359,11 +3521,11 @@ export function createEditor(options: EditorOptions) {
       else pendingReplace.value = move;
       return;
     }
-    if (move.sourceId.startsWith(PALETTE_SOURCE)) {
+    if (fromLibrary(move.sourceId)) {
       const to = dropFor(move);
       if (!to) return;
       const node = draggedNode(move.sourceId);
-      dragged = undefined;
+      draggedKey = undefined;
       if (to.parent === ROOT_TARGET) {
         // KF-PK3GVY: seeded as Replace the root seeds it (a Pane fills).
         const root = asRoot(node);
@@ -3459,12 +3621,15 @@ export function createEditor(options: EditorOptions) {
    * first problem placing it there would add, else that it does not fit.
    */
   const dropRefusal = (sourceId: string, targetId: string): string => {
+    // KF-FXACB5: a Library document that cannot be composed goes nowhere.
+    const problem = sourceProblem(sourceId);
+    if (problem) return problem;
     const empty = emptyZoneTarget(targetId);
     const slot = slotRowAddress(targetId);
     const parent = empty?.parent ?? slot?.parent ?? targetId;
     // Canvas targets and drag sources are always nodes of the document.
     const target = findNode(doc.value, parent)!.node;
-    const node = sourceId.startsWith(PALETTE_SOURCE)
+    const node = fromLibrary(sourceId)
       ? draggedNode(sourceId)
       : findNode(doc.value, sourceId)!.node;
     const name = node.name ?? nodeTitle(node, componentNames);
@@ -3477,7 +3642,7 @@ export function createEditor(options: EditorOptions) {
     const before = new Set(
       currentProblems.value.map(({ diagnostic }) => diagnostic.message),
     );
-    const inserted = sourceId.startsWith(PALETTE_SOURCE)
+    const inserted = fromLibrary(sourceId)
       ? node
       : // A copy, so its names do not clash with the original's.
         copyChild(
@@ -3558,10 +3723,11 @@ export function createEditor(options: EditorOptions) {
     return dropCache.drops;
   };
   const dropFor = (target: TreeListMove) => {
+    if (sourceProblem(target.sourceId)) return undefined;
     // KF-PK3GVY: only a palette drag reaches a rootless canvas, and it
     // becomes the root.
     if (target.target.id === ROOT_TARGET)
-      return doc.value.root || !target.sourceId.startsWith(PALETTE_SOURCE)
+      return doc.value.root || !fromLibrary(target.sourceId)
         ? undefined
         : { parent: ROOT_TARGET, zone: '', index: 0 };
     // KF-7BB55F: inside an empty zone's placeholder is the zone's first place.
@@ -3581,7 +3747,7 @@ export function createEditor(options: EditorOptions) {
     if (!drops.has(key))
       drops.set(
         key,
-        move.sourceId.startsWith(PALETTE_SOURCE)
+        fromLibrary(move.sourceId)
           ? insertPlacement(
               doc.value,
               viewCatalog,
@@ -3607,11 +3773,12 @@ export function createEditor(options: EditorOptions) {
    * component or node in place of the node the target names.
    */
   const replaceFor = (move: TreeListMove) => {
+    if (sourceProblem(move.sourceId)) return undefined;
     const target = replaceTarget(move.target.id)!;
     const drops = cachedDrops();
     const key = `replace ${move.sourceId} ${target}`;
     if (!drops.has(key)) {
-      const by: Replacement = move.sourceId.startsWith(PALETTE_SOURCE)
+      const by: Replacement = fromLibrary(move.sourceId)
         ? { node: draggedNode(move.sourceId) }
         : { moved: move.sourceId };
       drops.set(
@@ -3786,10 +3953,10 @@ export function createEditor(options: EditorOptions) {
   const commitReplace = (move: TreeListMove) => {
     const next = replaceFor(move);
     if (!next) return;
-    const id = move.sourceId.startsWith(PALETTE_SOURCE)
+    const id = fromLibrary(move.sourceId)
       ? draggedNode(move.sourceId).id
       : move.sourceId;
-    dragged = undefined;
+    draggedKey = undefined;
     commit(next);
     select({ kind: 'node', id });
     inspectorArea.value = 'properties';
@@ -4701,6 +4868,7 @@ export function createEditor(options: EditorOptions) {
    */
   const libraryPopover = () => {
     const groups = paletteMatches();
+    const documents = libraryDocuments(libraryFiles.value, paletteFilter.value);
     return (
       <PinnablePopoverSurface
         id={LIBRARY_ID}
@@ -4733,7 +4901,7 @@ export function createEditor(options: EditorOptions) {
         }
         rootAttributes={{ 'data-editor-library': '' }}
       >
-        <List controlInsets="trbl">
+        <List controlInsets="trbl" gap>
           <SearchField
             id="editor-palette-filter"
             label="Filter Components"
@@ -4744,10 +4912,18 @@ export function createEditor(options: EditorOptions) {
             clearLabel="Clear Filter"
             editorAttributes={{ 'data-editor-palette-filter': '' }}
           />
+          {libraryError.value ? (
+            <StateBanner
+              tone="danger"
+              title="That document cannot be inserted"
+              detail={libraryError.value}
+              rootAttributes={{ 'data-editor-library-error': '' }}
+            />
+          ) : undefined}
         </List>
         <List scrollable flex>
-          {groups.length ? (
-            palette(groups)
+          {groups.length || documents.length ? (
+            palette(groups, documents)
           ) : (
             <EmptyState
               title="No matching components"
@@ -6512,6 +6688,83 @@ export function createEditor(options: EditorOptions) {
   };
 
   /**
+   * KF-FXACB5: says in the Library why a document was not inserted, opening
+   * it again when a drop had closed it.
+   */
+  const refuseLibrary = (message: string) => {
+    const surface = librarySurface(wired!);
+    // Opening lists the documents again, clearing an earlier reason.
+    if (!surface.matches(':popover-open')) surface.showPopover();
+    libraryError.value = message;
+  };
+  /**
+   * KF-FXACB5: lists the project's documents for the Library as it opens,
+   * reading each one again when it is next inserted. Without a storage that
+   * lists them, or when listing fails, the Library shows no documents.
+   */
+  const listLibraryDocuments = () => {
+    libraryError.value = '';
+    const storage = options.storage;
+    if (!storage?.list) return;
+    libraryReads = new Map();
+    libraryAnswers.clear();
+    const current = autosave!.path.peek();
+    void storage.list().then(
+      (paths) => {
+        libraryFiles.value = insertableDocuments(paths, current);
+      },
+      () => {
+        libraryFiles.value = [];
+      },
+    );
+  };
+  /**
+   * KF-FXACB5: a Library document's click reads it, then puts a `#view` of
+   * it inside the selected node (its main zone first, at the end), else
+   * after it; with nothing selected, inside the root; in a rootless
+   * document, as the root. Each place is checked as a drop is. It is one
+   * undoable edit, selected, and renders at once; a transient Library then
+   * closes unless Option (`keep`) is held.
+   */
+  const insertFromLibrary = async (
+    root: HTMLElement,
+    path: string,
+    keep: boolean,
+  ) => {
+    libraryError.value = '';
+    const before = doc.peek();
+    const at = selectedNodeId() ?? before.root?.id;
+    const read = await readLibraryDocument(path);
+    if ('problem' in read) return refuseLibrary(read.problem);
+    if (doc.peek() !== before) return refuseLibrary(CHANGED_MEANWHILE);
+    const node = insertedView(
+      newNodeId(),
+      autosave!.path.peek(),
+      path,
+      read.document,
+    );
+    const place = (position: 'inside' | 'after') =>
+      insertPlacement(before, viewCatalog, node, at!, position, zoneKeys);
+    const to =
+      at === undefined ? undefined : (place('inside') ?? place('after'));
+    if (at !== undefined && !to)
+      return refuseLibrary(
+        'The selection has no place for it. Select a node that can hold it.',
+      );
+    batch(() => {
+      showDocument(path, read.document);
+      commit(
+        to
+          ? insertNode(before, to.parent, to.zone, node, to.index)
+          : replaceRoot(before, node),
+      );
+      select({ kind: 'node', id: node.id });
+      inspectorArea.value = 'properties';
+    });
+    if (!keep && libraryTransient(root)) librarySurface(root).hidePopover();
+  };
+
+  /**
    * KF-Z54E4H: the Library's pinned placement, kept per browser; Shift+Cmd+L
    * (Ctrl+Shift+L) toggles it; it opens with focus in its filter and closes
    * with focus back on the Library button; play mode closes it.
@@ -6544,6 +6797,7 @@ export function createEditor(options: EditorOptions) {
         surface
           .querySelector<HTMLElement>('[data-editor-palette-filter]')
           ?.focus();
+        listLibraryDocuments();
         return;
       }
       if (quiet || surface.matches(':popover-open')) return;
@@ -7355,6 +7609,12 @@ export function createEditor(options: EditorOptions) {
           select({ kind: 'node', id: target.dataset.itemId! }),
         [PALETTE_ACTION]: (_event, target) =>
           select({ kind: 'component', key: target.dataset.itemId! }),
+        [PALETTE_DOCUMENT_ACTION]: (event, target) =>
+          void insertFromLibrary(
+            root,
+            target.dataset.editorPaletteDocument!,
+            (event as MouseEvent).altKey,
+          ),
         [EXPORT_MODULE_ACTION]: () => exportAs('module'),
         [EXPORT_DECLARATIONS_ACTION]: () => exportAs('declarations'),
         // KF-QSSTMX: a new empty document; with storage it is a new draft,
@@ -7644,7 +7904,9 @@ export function createEditor(options: EditorOptions) {
         labelOf: (sourceId) =>
           sourceId.startsWith(PALETTE_SOURCE)
             ? componentNames.get(sourceId.slice(PALETTE_SOURCE.length))!
-            : rowLabel(sourceId),
+            : sourceId.startsWith(DOCUMENT_SOURCE)
+              ? documentName(sourceId.slice(DOCUMENT_SOURCE.length))
+              : rowLabel(sourceId),
         captionOf: dropCaption,
         refusalOf: dropRefusal,
         // KF-67K2VP: a drag also drops on the outline's rows, and resting on
@@ -7655,18 +7917,23 @@ export function createEditor(options: EditorOptions) {
           }),
           springTabs(),
         ],
+        // KF-FXACB5: a Library document drags as a `#view`.
         external: {
-          selector: '[data-editor-palette]',
+          selector: '[data-editor-palette], [data-editor-palette-document]',
           sourceOf: (element) =>
-            `${PALETTE_SOURCE}${element.dataset.editorPalette}`,
+            element.dataset.editorPalette
+              ? `${PALETTE_SOURCE}${element.dataset.editorPalette}`
+              : `${DOCUMENT_SOURCE}${element.dataset.editorPaletteDocument}`,
         },
         onDragStart: (sourceId, altKey) => {
-          if (sourceId.startsWith(PALETTE_SOURCE))
-            libraryDragStarted(root, altKey);
+          if (!fromLibrary(sourceId)) return;
+          // The read answers before most drops; a drop waits for it.
+          const path = documentSource(sourceId);
+          if (path !== undefined) void readLibraryDocument(path);
+          libraryDragStarted(root, altKey);
         },
         onDragEnd: ({ sourceId, dropped, altKey }) => {
-          if (sourceId.startsWith(PALETTE_SOURCE))
-            libraryDragEnded(root, dropped, altKey);
+          if (fromLibrary(sourceId)) libraryDragEnded(root, dropped, altKey);
         },
       }),
       wireFilePickers(root, {

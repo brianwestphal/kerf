@@ -693,6 +693,42 @@ show a simplified `currentColor` sketch instead (`palette-schematics.ts`);
 a component that draws nothing recognizable shows an icon. Tiles select,
 filter, and drag like rows.
 
+**Documents in the Library** (KF-FXACB5: Library documents). With a storage
+whose optional `list()` exists (§3.7), the Library lists the project's
+documents after its component groups, under a **Documents** `ListHeader`:
+the same documents Insert Document offers (every `.kui.json` path but the
+current document's own file and drafts, sorted), listed again each time the
+Library opens. A row leads with the file name over its folder (`./` at the
+project root), the whole path as its name and tooltip; in the grid view a
+tile shows a file icon (no live thumbnail) over the file name. The filter
+keeps the documents whose path holds every word of its text, or all of them
+when "Documents" holds it, as a category match keeps its group. Without
+storage, without `list()`, while the listing loads, or when it fails, there
+is no Documents group.
+
+- **A click inserts it.** A component's click shows its documentation; a
+  document has none, so its click reads the document (`storage.read`) and
+  puts a `#view` of it, as Insert Document makes it (`insertedView`: its
+  required params seeded), inside the selected node (its zones main-first,
+  at the end), else after the selected node in its parent's zone; with
+  nothing selected, inside the root; in a rootless document it becomes the
+  root. Each place is checked with `insertPlacement`, as a drop is. The
+  loaded document goes into the editor's composed-document cache so the
+  canvas shows it at once; the `#view` is selected, opens on its
+  Properties, and one Undo removes it. A transient Library then closes,
+  unless it is pinned or Option (Alt) is held.
+- **A drag drops it** like a component (source `document:<path>` beside a
+  component's `component:<key>`), on the canvas or an outline row, with
+  the file name on the drag chip. The read starts as the drag starts; once
+  it answers, a document that cannot be composed refuses every target and
+  the pointer says why. A drop made before the read answers waits for it.
+  The Library steps aside and closes around the drop as for a component.
+- **Refusals** say why in a danger `StateBanner` under the filter (opening
+  the Library again when a drop had closed it): the reasons are
+  `insertProblem`'s (declares slots, empty), a missing or unreadable file,
+  a document that does not parse, a selection with no place for it, and a
+  document edited while it was being read. The next opening clears it.
+
 Components drag from the palette onto the canvas the same way (KF-78MHM8:
 palette drag). The dragged component is a new node with its required props
 seeded, as Add a child makes it; `insertPlacement` asks the validator where
@@ -1324,8 +1360,9 @@ composing document belongs beside its rows before they render.
     `KUI-V012`; the picker shows the document and refuses it on choice,
     since only reading it tells), and when the document changed while it
     was being read.
-  - The Library palette does not list documents yet (KF-FXACB5), and
-    Embed in does not apply to a document.
+  - The Library offers the same documents (KF-FXACB5: see **The Library**
+    above): a click or a drag inserts one through the same read, refusals,
+    and seeded `#view`. Embed in does not apply to a document.
 
 - **Play** (KF-85SCQD: play renders composed documents). The play stage has
   no storage, so the editor sends the loaded composed documents with the

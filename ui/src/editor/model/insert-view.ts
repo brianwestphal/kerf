@@ -106,3 +106,32 @@ export function insertedView(
     ...(Object.keys(props).length ? { props } : {}),
   };
 }
+
+/** KF-FXACB5: the Library's group of the project's documents. */
+export const LIBRARY_DOCUMENTS = 'Documents';
+
+/**
+ * The documents the Library shows for its filter text `query`: all of them
+ * when the group's own name holds the text (as a category match keeps a
+ * component group whole; empty text always matches), else the ones
+ * `filterDocuments` keeps.
+ */
+export function libraryDocuments(
+  paths: readonly string[],
+  query: string,
+): readonly string[] {
+  const text = query.trim().toLocaleLowerCase();
+  return LIBRARY_DOCUMENTS.toLocaleLowerCase().includes(text)
+    ? paths
+    : filterDocuments(paths, text);
+}
+
+/** A document path's file name, which a Library row or tile leads with. */
+export function documentName(path: string): string {
+  return path.slice(path.lastIndexOf('/') + 1);
+}
+
+/** A document path's folder, `./` at the project root. */
+export function documentFolder(path: string): string {
+  return path.slice(0, path.lastIndexOf('/') + 1) || './';
+}
