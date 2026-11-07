@@ -16,6 +16,10 @@ import type { Rng } from './rng.js';
 export type Mutation =
   | { k: 'cond'; i: number }
   | { k: 'sig'; i: number; v: string }
+  | { k: 'reorder' }
+  | { k: 'protect'; mode: 'none' | 'skip-children' | 'preserve' | 'skip' }
+  | { k: 'type'; value: string }
+  | { k: 'dirty' }
   | { k: 'insert'; s: number; at: number; id: string }
   | { k: 'remove'; s: number; at: number }
   | { k: 'move'; s: number; from: number; to: number }
@@ -45,6 +49,16 @@ function itemsOf(world: World, s: number): readonly Item[] {
 /** Generate one mutation that is valid against the world's CURRENT state. */
 function genOne(rng: Rng, world: World, allowBatch: boolean): Mutation {
   const roll = rng.next();
+  const morph = world.spec.morph;
+  if (morph?.group && roll < 0.07) return { k: 'reorder' };
+  if (morph?.protect && roll < 0.14 && world.protection.value !== 'skip')
+    return {
+      k: 'protect',
+      mode: rng.pick(['none', 'skip-children', 'preserve', 'skip'] as const),
+    };
+  if (morph?.input && roll < 0.19)
+    return { k: 'type', value: `typed${rng.int(1000)}` };
+  if (morph?.dirty && roll < 0.23) return { k: 'dirty' };
   if (allowBatch && roll < 0.18) {
     // Batched multi-source edits are where a shared render context can leak
     // one list's patch queue into another list's DOM.
@@ -116,11 +130,11 @@ export function generateMutations(
  * than skipping) matters for shrinking: dropping an earlier mutation changes
  * later lengths, and a shrunk sequence must still run rather than throw.
  */
-export function applyMutation(m: Mutation, world: World): void {
+export function applyMutation(m: Mutation, world: World, root?: Element): void {
   switch (m.k) {
     case 'batch':
       batch(() => {
-        for (const sub of m.ms) applyMutation(sub, world);
+        for (const sub of m.ms) applyMutation(sub, world, root);
       });
       return;
     case 'cond': {
@@ -133,6 +147,25 @@ export function applyMutation(m: Mutation, world: World): void {
       return;
     case 'select':
       world.selected.value = m.id;
+      return;
+    case 'reorder':
+      world.order.value = !world.order.value;
+      return;
+    case 'protect':
+      if (world.protection.value !== 'skip') world.protection.value = m.mode;
+      return;
+    case 'type':
+      if (root !== undefined) {
+        const input = root.querySelector<HTMLInputElement>('[data-fuzz-input]');
+        input?.focus();
+        if (input !== null && input !== undefined) input.value = m.value;
+      }
+      return;
+    case 'dirty':
+      root
+        ?.querySelector('[data-fuzz-dirty]')
+        ?.setAttribute('data-dirty', 'kept');
+      // During generation there is no DOM; neither changes the signal model.
       return;
     default:
       break;

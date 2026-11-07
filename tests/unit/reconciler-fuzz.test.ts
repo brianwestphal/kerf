@@ -144,6 +144,50 @@ describe('reconciler fuzz', () => {
     document.body.innerHTML = '';
   });
 
+  it('reorders keyed static siblings while a focused input and protected subtree remain live', () => {
+    const spec: TreeSpec = {
+      sigCount: 1,
+      condCount: 1,
+      sources: [{ kind: 'plain', ids: [] }],
+      lists: [],
+      root: [{ kind: 'plain', sig: 0 }],
+      morph: { group: true, protect: true, input: true, dirty: true },
+    };
+    const mutations: Mutation[] = [
+      { k: 'dirty' },
+      { k: 'type', value: 'user text' },
+      { k: 'reorder' },
+      { k: 'protect', mode: 'skip-children' },
+      { k: 'sig', i: 0, v: 'new' },
+      { k: 'protect', mode: 'none' },
+      { k: 'protect', mode: 'preserve' },
+      { k: 'sig', i: 0, v: 'newer' },
+      { k: 'protect', mode: 'skip' },
+      { k: 'sig', i: 0, v: 'newest' },
+    ];
+    expect(runCase(spec, mutations)).toBeNull();
+  });
+
+  it('keeps an imperative attribute on an unchanged sibling of a plain text edit', () => {
+    const spec: TreeSpec = {
+      sigCount: 1,
+      condCount: 1,
+      sources: [{ kind: 'plain', ids: [] }],
+      lists: [],
+      root: [{ kind: 'plain', sig: 0 }],
+      morph: {
+        group: false,
+        protect: false,
+        input: false,
+        dirty: true,
+        dirtyHold: true,
+      },
+    };
+    expect(
+      runCase(spec, [{ k: 'dirty' }, { k: 'sig', i: 0, v: 'changed' }]),
+    ).toBeNull();
+  });
+
   it(
     'random trees and mutation sequences hold every reconciler invariant',
     () => {

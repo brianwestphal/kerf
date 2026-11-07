@@ -3,6 +3,11 @@ import { afterEach, describe, expect, it } from 'vitest';
 import { arraySignal } from '../../src/array-signal.js';
 import { batch } from '../../src/index.js';
 import { bindList } from '../../src/list.js';
+import {
+  type BindListSpec,
+  type BMutation,
+  runBindListCase,
+} from './fuzz/bindlist.js';
 
 interface Item {
   id: number;
@@ -32,6 +37,86 @@ function expectWholeState(parent: HTMLElement, items: readonly Item[]): void {
 }
 
 describe('bindList() — adversarial transition matrix', () => {
+  const base: BindListSpec = {
+    source: 'granular',
+    ids: ['a', 'b', 'c'],
+    mode: 'content',
+    rowSig: false,
+    before: false,
+    virtualize: null,
+    twin: false,
+  };
+  const holds = (spec: BindListSpec, mutations: BMutation[]) =>
+    expect(runBindListCase(spec, mutations)).toBeNull();
+
+  it('row throw latches recovery, then dispose stops the pending source notification', () => {
+    holds(base, [
+      { k: 'replace', ids: ['x', 'y', 'z'], badAt: 1 },
+      { k: 'dispose' },
+      { k: 'cure', via: 'patch' },
+      { k: 'insert', at: 0, id: 'new' },
+    ]);
+  });
+
+  it('virtualized deep scroll survives empty and refill without stale measured heights', () => {
+    holds(
+      {
+        ...base,
+        virtualize: {
+          model: 'measured',
+          minRows: null,
+          overscan: 1,
+          viewport: 40,
+          estimateFn: false,
+        },
+      },
+      [
+        { k: 'height', at: 2, px: 60 },
+        { k: 'scroll', top: 500 },
+        { k: 'replace', ids: [] },
+        { k: 'replace', ids: ['x', 'y', 'z'] },
+        { k: 'scroll', top: 0 },
+      ],
+    );
+  });
+
+  it('measured height, same-key replace, and scroll in one frame stay coherent', () => {
+    holds(
+      {
+        ...base,
+        virtualize: {
+          model: 'measured',
+          minRows: null,
+          overscan: 0,
+          viewport: 40,
+          estimateFn: true,
+        },
+      },
+      [
+        { k: 'height', at: 0, px: 50 },
+        { k: 'replace', ids: ['a', 'b', 'c'] },
+        { k: 'scroll', top: 25 },
+      ],
+    );
+  });
+
+  it('element-mode key change, duplicate rejection, and cure restore the row map', () => {
+    holds({ ...base, mode: 'element' }, [
+      { k: 'rekey', at: 0, id: 'x' },
+      { k: 'rekey', at: 2, id: 'x' },
+      { k: 'cure', via: 'patch' },
+      { k: 'insert', at: 1, id: 'fresh' },
+    ]);
+  });
+
+  it('two lists on one arraySignal recover independently after one row throws', () => {
+    holds({ ...base, twin: true }, [
+      { k: 'update', at: 1, t: 'poison', bad: true },
+      { k: 'cure', via: 'patch' },
+      { k: 'move', from: 0, to: 2 },
+    ]);
+  });
+
   it('remove-last → refill → update rebuilds from empty and keeps tracking patches', () => {
     const t = harness([{ id: 1, label: 'a' }]);
     const oldA = t.parent.firstElementChild;

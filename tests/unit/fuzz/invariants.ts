@@ -58,11 +58,27 @@ export function snapshot(root: Element): string {
     if (node.nodeType === ELEMENT_NODE) {
       const el = node as Element;
       const attrs = Array.from(el.attributes)
+        // The dedicated static sibling is dirtied imperatively. Its attribute
+        // is intentionally absent from a fresh render, so the differential
+        // compares the surrounding structure while the runner checks holding.
+        .filter(
+          (a) =>
+            !(el.hasAttribute('data-fuzz-dirty') && a.name === 'data-dirty'),
+        )
         .map((a) => `${a.name}="${a.value}"`)
         .sort()
         .join(' ');
       const ns = el.namespaceURI === SVG_NS ? '@svg' : '';
       out.push(`${pad}<${el.tagName.toLowerCase()}${ns} ${attrs}>`);
+      // Protection is an opaque subtree while active: a fresh render can have
+      // newer signal text, but the live protected subtree must remain frozen.
+      // The runner separately checks its exact innerHTML against the capture.
+      if (
+        el.hasAttribute('data-fuzz-protect') &&
+        (el.hasAttribute('data-morph-skip') ||
+          el.hasAttribute('data-morph-skip-children'))
+      )
+        return;
       walkChildren(el, depth + 1);
       return;
     }
@@ -99,6 +115,8 @@ function cloneState(from: World, to: World): void {
     to.conds[i].value = c.value;
   });
   to.selected.value = from.selected.value;
+  to.order.value = from.order.value;
+  to.protection.value = from.protection.value;
   from.sources.forEach((src, i) => {
     const items = src.value.map((it) => ({ ...it }));
     const target = to.sources[i] as {

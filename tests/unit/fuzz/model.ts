@@ -79,6 +79,14 @@ export interface TreeSpec {
   sources: SourceSpec[];
   lists: ListSpec[];
   root: NodeSpec[];
+  /** Fixed, keyed probes for mutations in the static surrounds. */
+  morph?: {
+    group: boolean;
+    protect: boolean;
+    input: boolean;
+    dirty: boolean;
+    dirtyHold?: boolean;
+  };
 }
 
 export interface World {
@@ -88,6 +96,8 @@ export interface World {
   sources: (ArraySignal<Item> | Signal<Item[]>)[];
   /** The selected row id for `select` lists ('' = none). */
   selected: Signal<string>;
+  order: Signal<boolean>;
+  protection: Signal<'none' | 'skip-children' | 'preserve' | 'skip'>;
 }
 
 // No `<p>`: the HTML parser auto-closes it before a block child, so a generated
@@ -234,6 +244,16 @@ export function generateSpec(rng: Rng, shape: SweepShape = 'lists'): TreeSpec {
     // the shape no data-identity scheme can separate.
     lists: [],
     root: [],
+    ...(shape === 'lists'
+      ? {}
+      : {
+          morph: {
+            group: rng.bool(0.5),
+            protect: rng.bool(0.5),
+            input: rng.bool(0.5),
+            dirty: rng.bool(0.5),
+          },
+        }),
   };
   const listCount = listFree ? 0 : rng.range(1, 4);
   for (let i = 0; i < listCount; i++) {
@@ -276,6 +296,8 @@ export function makeWorld(spec: TreeSpec): World {
         : signal(makeItems(s.ids)),
     ),
     selected: signal(''),
+    order: signal(false),
+    protection: signal('none'),
   };
 }
 
@@ -363,7 +385,61 @@ function renderNode(node: NodeSpec, world: World): Rendered {
 export function makeRender(world: World): () => SafeHtml {
   return () =>
     jsx(Fragment, {
-      children: world.spec.root.map((n) => renderNode(n, world)),
+      children: [
+        ...world.spec.root.map((n) => renderNode(n, world)),
+        ...(world.spec.morph?.group
+          ? [
+              jsx('div', {
+                'data-fuzz-group': true,
+                'data-key': 'fuzz-group',
+                children: (world.order.value ? ['b', 'a'] : ['a', 'b']).map(
+                  (id) =>
+                    jsx('span', {
+                      'data-key': `fuzz-${id}`,
+                      'data-fuzz-child': id,
+                      children: id,
+                    }),
+                ),
+              }),
+            ]
+          : []),
+        ...(world.spec.morph?.protect
+          ? [
+              jsx('div', {
+                'data-fuzz-protect': true,
+                'data-key': 'fuzz-protect',
+                ...(world.protection.value === 'skip'
+                  ? { 'data-morph-skip': true }
+                  : world.protection.value === 'skip-children'
+                    ? { 'data-morph-skip-children': true }
+                    : world.protection.value === 'preserve'
+                      ? { 'data-morph-preserve': true }
+                      : {}),
+                children: jsx('span', {
+                  'data-fuzz-protect-child': true,
+                  children: world.sigs[0].value,
+                }),
+              }),
+            ]
+          : []),
+        ...(world.spec.morph?.input
+          ? [
+              jsx('input', {
+                'data-fuzz-input': true,
+                'data-key': 'fuzz-input',
+              }),
+            ]
+          : []),
+        ...(world.spec.morph?.dirty
+          ? [
+              jsx('div', {
+                'data-fuzz-dirty': true,
+                'data-key': 'fuzz-dirty',
+                children: 'static',
+              }),
+            ]
+          : []),
+      ],
     });
 }
 

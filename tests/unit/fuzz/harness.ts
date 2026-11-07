@@ -104,10 +104,25 @@ function runCaseInner(
       return { step: -1, ...initial, identityShift: sawShift() };
     }
 
+    const groupChildren = (): Map<string, Element> =>
+      new Map(
+        Array.from(root.querySelectorAll('[data-fuzz-child]'), (el) => [
+          el.getAttribute('data-fuzz-child') ?? '',
+          el,
+        ]),
+      );
+    let typedValue: string | null = null;
+    let dirtySeen = false;
+    let protectedMode = 'none';
+    let protectedHtml: string | null = null;
+    const leaves = (m: Mutation): Mutation[] =>
+      m.k === 'batch' ? m.ms.flatMap(leaves) : [m];
+
     for (let i = 0; i < mutations.length; i++) {
       const before = rowIdentityMap(root, world);
+      const beforeGroup = groupChildren();
       try {
-        applyMutation(mutations[i], world);
+        applyMutation(mutations[i], world, root);
       } catch (err) {
         return {
           step: i,
@@ -125,6 +140,77 @@ function runCaseInner(
           identityShift: sawShift(),
         };
       }
+      for (const leaf of leaves(mutations[i])) {
+        if (leaf.k === 'type') typedValue = leaf.value;
+        if (leaf.k === 'dirty') dirtySeen = true;
+      }
+      const afterGroup = groupChildren();
+      for (const [key, el] of beforeGroup) {
+        if (afterGroup.get(key) !== el) {
+          return {
+            step: i,
+            kind: 'content',
+            identityShift: sawShift(),
+            message: `after ${describeMutation(mutations[i])}: keyed static child ${key} lost identity`,
+          };
+        }
+      }
+      if (typedValue !== null) {
+        const input = root.querySelector<HTMLInputElement>('[data-fuzz-input]');
+        if (
+          input === null ||
+          document.activeElement !== input ||
+          input.value !== typedValue
+        ) {
+          return {
+            step: i,
+            kind: 'content',
+            identityShift: sawShift(),
+            message: `after ${describeMutation(mutations[i])}: focused input lost its typed value or focus`,
+          };
+        }
+      }
+      // A full morph may legitimately clear an imperative attribute. Assert
+      // the dirty mutation itself and no-render edits; a dedicated simple
+      // surround sequence below holds the change-scoped preservation rule.
+      if (
+        (leaves(mutations[i]).some((leaf) => leaf.k === 'dirty') ||
+          (world.spec.morph?.dirtyHold === true && dirtySeen)) &&
+        root.querySelector('[data-fuzz-dirty]')?.getAttribute('data-dirty') !==
+          'kept'
+      ) {
+        return {
+          step: i,
+          kind: 'content',
+          identityShift: sawShift(),
+          message: `after ${describeMutation(mutations[i])}: unchanged static sibling lost its imperative attribute`,
+        };
+      }
+      const mode = world.protection.value;
+      const protectedNode = root.querySelector('[data-fuzz-protect]');
+      if (mode === 'none') {
+        protectedHtml = null;
+      } else if (protectedNode === null) {
+        return {
+          step: i,
+          kind: 'content',
+          identityShift: sawShift(),
+          message: `after ${describeMutation(mutations[i])}: protected node is missing`,
+        };
+      } else if (mode !== protectedMode || protectedHtml === null) {
+        protectedHtml = protectedNode.innerHTML;
+      } else if (
+        mode !== 'preserve' &&
+        protectedNode.innerHTML !== protectedHtml
+      ) {
+        return {
+          step: i,
+          kind: 'content',
+          identityShift: sawShift(),
+          message: `after ${describeMutation(mutations[i])}: protected subtree changed`,
+        };
+      }
+      protectedMode = mode;
       // A write to a signal that only feeds fine-grained holes must not re-run
       // the render, so no row may be rebuilt. Losing a row node here is exactly
       // the silent identity loss that costs focus, scroll, and IME state.
