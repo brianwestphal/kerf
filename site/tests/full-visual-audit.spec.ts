@@ -93,9 +93,18 @@ test('visually audits every emitted site route at desktop, tablet, and mobile wi
       expect
         .soft(response?.ok(), `${route || '/'} loads at ${viewport.name}`)
         .toBe(true);
-      // Some emitted compatibility pages use an immediate meta refresh. Let
-      // that navigation settle before measuring the destination document.
-      await page.waitForTimeout(100);
+      // Some emitted compatibility pages use an immediate meta refresh. Wait
+      // for that navigation to leave the redirect page before measuring the
+      // destination document. (If it already left, the meta lookup sees the
+      // destination, and `waitForURL` resolves at once on a changed URL.)
+      const loadedUrl = page.url();
+      const metaRefresh = await page
+        .locator('meta[http-equiv="refresh" i]')
+        .count()
+        .catch(() => 0);
+      if (metaRefresh > 0) {
+        await page.waitForURL((url) => url.href !== loadedUrl);
+      }
       await page.waitForLoadState('load');
       await page.waitForFunction(() => document.fonts.status === 'loaded');
       await page.evaluate(async () => {
