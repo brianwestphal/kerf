@@ -4,7 +4,7 @@
 
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
-import { batch, effect } from '../../src/reactive.js';
+import { batch, effect, signal } from '../../src/reactive.js';
 import { defineStore, resetAllStores } from '../../src/store.js';
 import { clearStoreRegistry } from '../../src/testing.js';
 import {
@@ -398,5 +398,159 @@ describe('batch() inside an action', () => {
     store.actions.bump();
     expect(runs).toBe(2); // not 3 — both writes coalesced
     expect(store.state.value).toEqual({ a: 1, b: 1 });
+  });
+});
+
+describe('actions called from inside an effect (store reads stay untracked)', () => {
+  // KF-1268ZK: an action's get() read used to be a tracked signal read, so an
+  // effect that merely CALLED an action subscribed to the store it wrote —
+  // re-running on its own write (a loop until the condition settled, or a
+  // signals-core cycle error).
+  it('an effect calling a get()+set() action is not subscribed to that store', () => {
+    const counter = defineStore({
+      initial: () => ({ n: 0 }),
+      actions: (set, get) => ({
+        inc: () => set({ ...get(), n: get().n + 1 }),
+      }),
+    });
+    const trigger = signal(0);
+    let runs = 0;
+    const dispose = effect(() => {
+      void trigger.value;
+      runs += 1;
+      counter.actions.inc();
+    });
+    expect(runs).toBe(1);
+    expect(counter.state.value.n).toBe(1);
+    trigger.value = 1;
+    expect(runs).toBe(2);
+    expect(counter.state.value.n).toBe(2);
+    // A write from outside does not re-run the effect either.
+    counter.actions.inc();
+    expect(runs).toBe(2);
+    dispose();
+  });
+
+  it('a conditional action inside an effect does not loop on its own write', () => {
+    const counter = defineStore({
+      initial: () => ({ n: 0 }),
+      actions: (set, get) => ({
+        incIfBelow: (max: number) => {
+          if (get().n < max) set({ ...get(), n: get().n + 1 });
+        },
+      }),
+    });
+    let runs = 0;
+    const dispose = effect(() => {
+      runs += 1;
+      counter.actions.incIfBelow(50);
+    });
+    expect(runs).toBe(1);
+    expect(counter.state.value.n).toBe(1);
+    dispose();
+  });
+
+  it('consumers that read state.value directly still subscribe', () => {
+    const counter = defineStore({
+      initial: () => ({ n: 0 }),
+      actions: (set, get) => ({ inc: () => set({ n: get().n + 1 }) }),
+    });
+    let seen = -1;
+    const dispose = effect(() => {
+      seen = counter.state.value.n;
+    });
+    counter.actions.inc();
+    expect(seen).toBe(1);
+    dispose();
+  });
+
+  it('an action called during ANOTHER store’s effect does not subscribe that effect', () => {
+    const source = defineStore({
+      initial: () => ({ v: 0 }),
+      actions: (set) => ({ put: (v: number) => set({ v }) }),
+    });
+    const mirror = defineStore({
+      initial: () => ({ copies: 0, last: 0 }),
+      actions: (set, get) => ({
+        record: (v: number) => set({ copies: get().copies + 1, last: v }),
+      }),
+    });
+    let runs = 0;
+    const dispose = effect(() => {
+      runs += 1;
+      mirror.actions.record(source.state.value.v);
+    });
+    expect(runs).toBe(1);
+    source.actions.put(5);
+    expect(runs).toBe(2);
+    expect(mirror.state.value).toEqual({ copies: 2, last: 5 });
+    mirror.actions.record(9); // mirror writes never re-run the effect
+    expect(runs).toBe(2);
+    dispose();
+  });
+});
+
+describe('store transition sequences', () => {
+  it('an action calling another action composes against fresh state', () => {
+    const store = defineStore({
+      initial: () => ({ n: 0, log: [] as number[] }),
+      actions: (set, get) => {
+        const inc = (): void => set({ ...get(), n: get().n + 1 });
+        return {
+          inc,
+          incTwiceAndLog: (): void => {
+            inc();
+            inc();
+            set({ ...get(), log: [...get().log, get().n] });
+          },
+        };
+      },
+    });
+    store.actions.inc();
+    store.actions.incTwiceAndLog();
+    expect(store.state.value).toEqual({ n: 3, log: [3] });
+  });
+
+  it('reset() inside batch() after a pending set() wins and notifies once', () => {
+    const store = defineStore({
+      initial: () => ({ n: 0 }),
+      actions: (set) => ({ put: (n: number) => set({ n }) }),
+    });
+    store.actions.put(4);
+    const seen: number[] = [];
+    const dispose = effect(() => {
+      seen.push(store.state.value.n);
+    });
+    batch(() => {
+      store.actions.put(7);
+      store.reset();
+    });
+    expect(store.state.value).toEqual({ n: 0 });
+    expect(seen).toEqual([4, 0]);
+    // A set after the batch still works.
+    store.actions.put(1);
+    expect(seen).toEqual([4, 0, 1]);
+    dispose();
+  });
+
+  it('clearStoreRegistry() then resetAllStores() leaves old stores alone; new ones reset', () => {
+    const old = defineStore({
+      initial: () => ({ n: 0 }),
+      actions: (set) => ({ put: (n: number) => set({ n }) }),
+    });
+    old.actions.put(3);
+    clearStoreRegistry();
+    const fresh = defineStore({
+      initial: () => ({ n: 0 }),
+      actions: (set) => ({ put: (n: number) => set({ n }) }),
+    });
+    fresh.actions.put(8);
+    resetAllStores();
+    expect(old.state.value).toEqual({ n: 3 }); // unregistered: untouched
+    expect(fresh.state.value).toEqual({ n: 0 });
+    // The old store is still fully usable through its own handle.
+    old.actions.put(4);
+    old.reset();
+    expect(old.state.value).toEqual({ n: 0 });
   });
 });

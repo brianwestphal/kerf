@@ -64,7 +64,7 @@ export function defineStore<TState, TActions>(
     const narrowSet = devHooks.narrowSet;
     if (narrowSet) {
       warnCtx ??= { warned: false };
-      narrowSet(internal.value, raw, warnCtx);
+      narrowSet(internal.peek(), raw, warnCtx);
     }
     internal.value = raw;
   };
@@ -74,8 +74,14 @@ export function defineStore<TState, TActions>(
   // landing on the underlying state without notifying subscribers. The live
   // state object is never frozen or mutated, so external references to it stay
   // writable. Production returns the bare reference — no proxy, no wrapping.
+  //
+  // The read is UNTRACKED (`peek()`, KF-1268ZK): `get()` exists for actions,
+  // and an action called from inside an `effect()` or a `mount()` render must
+  // not subscribe that caller to the store the action writes — otherwise the
+  // write re-runs the caller (a re-run loop, or a signals-core "Cycle
+  // detected" error). Consumers that want to subscribe read `state.value`.
   const get = (): Readonly<TState> => {
-    const v = internal.value;
+    const v = internal.peek();
     const readonly = devHooks.storeReadonly;
     if (readonly && v !== null && typeof v === 'object') {
       return readonly(v as TState & object);

@@ -34,6 +34,8 @@ counter.state.value.count; // direct read (not auto-tracked unless inside an eff
 
 Inside an `effect()` or a `mount()` render fn, `state.value` reads ARE tracked — that's how `mount` knows to re-render when actions mutate the store.
 
+The `get()` an action receives is the opposite: it reads the current state **untracked**. Calling an action from inside an `effect()` or a `mount()` render therefore never subscribes that caller to the store the action writes — an effect that calls `inc()` does not re-run on `inc()`'s own write (which would otherwise loop, or throw signals-core's "Cycle detected"). Read `state.value` when you want the subscription.
+
 ## 3.3 Calling actions
 
 ```ts
