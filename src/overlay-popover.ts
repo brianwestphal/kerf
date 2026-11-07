@@ -8,6 +8,7 @@ import {
   type OverlayContent,
   type OverlayHandle,
   overlayHost,
+  toArray,
 } from './overlay-core.js';
 import { autoReposition, type PopoverPlacement } from './overlay-position.js';
 
@@ -101,12 +102,7 @@ export function popover(
     exitDuration,
   } = options;
 
-  const extraIgnore =
-    outsideIgnore === undefined
-      ? []
-      : Array.isArray(outsideIgnore)
-        ? [...outsideIgnore]
-        : [outsideIgnore];
+  const extraIgnore = toArray(outsideIgnore);
 
   const handle = overlay(content, {
     container: container ?? overlayHost(anchor),

@@ -130,6 +130,23 @@ describe('overlay()', () => {
       expect(h.el.parentElement).toBeNull();
     });
 
+    it('outsideIgnore / dismiss arrays are copied at open: mutating them later changes nothing', () => {
+      const late = document.createElement('div');
+      document.body.appendChild(late);
+      const ignore: HTMLElement[] = [];
+      const triggers: Array<'outside' | 'escape'> = ['outside'];
+      const h = overlay(raw('<div/>'), {
+        dismiss: triggers,
+        trap: false,
+        outsideIgnore: ignore,
+      });
+      ignore.push(late); // too late — the open surface kept its own copy
+      triggers.length = 0;
+      late.click();
+      expect(h.el.parentElement).toBeNull();
+      late.remove();
+    });
+
     it('dismiss:false disables user dismissal (only close() works)', () => {
       const h = overlay(raw('<div/>'), { dismiss: false });
       key(document, 'Escape');

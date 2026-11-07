@@ -182,6 +182,16 @@ function supportsPopover(): boolean {
  */
 export const INSTANT: OverlayCloseOptions = { instant: true };
 
+/**
+ * Internal: normalize a "one, many, or none" option (`dismiss`,
+ * `outsideIgnore`) to a fresh array. Always copies, so a caller mutating the
+ * array it passed cannot change an open surface's behavior.
+ */
+export function toArray<T>(value: T | readonly T[] | undefined): T[] {
+  if (value === undefined) return [];
+  return Array.isArray(value) ? [...(value as readonly T[])] : [value as T];
+}
+
 /** The wrapper's custom property carrying a bottom sheet's keyboard overlap. */
 const KEYBOARD_INSET = '--kerf-keyboard-inset';
 
@@ -516,7 +526,7 @@ export function overlay(
     assertInitialFocusSelector(initialFocus);
 
   const triggers: readonly DismissTrigger[] =
-    dismiss === false ? [] : Array.isArray(dismiss) ? dismiss : [dismiss];
+    dismiss === false ? [] : toArray(dismiss);
 
   // Native top-layer backing (KF-526), feature-detected: a modal overlay
   // (`trap`) → `<dialog>.showModal()`; a non-modal one → `[popover]`. Each falls
@@ -847,12 +857,7 @@ export function overlay(
     }
 
     if (triggers.includes('outside')) {
-      const ignore =
-        outsideIgnore === undefined
-          ? []
-          : Array.isArray(outsideIgnore)
-            ? outsideIgnore
-            : [outsideIgnore];
+      const ignore = toArray(outsideIgnore);
       // Capture phase: the click that opened this overlay already passed
       // document's capture phase, so this never fires for that opening click.
       const onDocClick = (event: Event): void => {
