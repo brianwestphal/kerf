@@ -1146,12 +1146,17 @@ the app opts into `Pane.fill` (KF-RMEME0: `flex: 1 1 auto; height: 100%` in
 `pane.css`, the same height the region rules give, for a one-screen app whose
 root Pane sits in `.kui-app-root`, a `SizedRegion`, a grid cell, or a flex
 column); `ui/docs/app-layouts.md` "One pane on the whole screen" says when a
-filled Pane fits and when a one-entry `NavStack` does. The region's padding
-rule tests that with `region:not(:has(> delegated:only-child))` on the region
-itself, but the reset for its children is written on the child,
-`region > :not(:is(delegated):only-child)`, which has the same specificity and
-the same matches. KF-3D4T27: the earlier `region:not(:has(…)) > *` made every
-child of a region re-check the region's `:has()` on each DOM change, about
+filled Pane fits and when a one-entry `NavStack` does. A region's padding
+rule tests for a sole delegated child with
+`region:not(:has(> delegated:only-child))`. When the region pads, it first
+copies its resolved edge context into a region-owned private property for its
+own padding, then clears `--kui-edge-inset-*` on the same region element. Other
+content inherits zero; a sole delegated Pane or layout instead inherits the
+uncleared context and applies the inset itself. SplitView, NavStack,
+TabNavigator, and CollapsiblePanel follow this pattern, while Toolbar clears
+the context on its own slots. No region sets edge context on a foreign child.
+KF-3D4T27: the earlier `region:not(:has(…)) > *` made every child of a
+region re-check the region's `:has()` on each DOM change, about
 46ms per restyle in Chromium with 1000 rows directly inside a region and about
 2ms with the list one level down or any such region on the page. It now takes
 0.2ms. `ui/tests/unit/css-has-cost.test.ts` rejects any `:has()` compound,
