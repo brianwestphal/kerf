@@ -152,6 +152,7 @@ import {
   insertDocumentDialog,
   type InsertDocumentFiles,
 } from './insert-document-dialog.js';
+import { inspectorBindSection } from './inspector-bind-section.js';
 import { createInspectorControls } from './inspector-controls.js';
 import { createLibraryDrag, type LibraryRead } from './library-drag.js';
 import {
@@ -209,7 +210,6 @@ import { insertPlacement, moveDestinations } from './model/drop.js';
 import { isSeedPlaceholder } from './model/drop-zones.js';
 import {
   addsProblems,
-  bindingOptions,
   copyChild,
   duplicateNode,
   embedNode,
@@ -1577,79 +1577,6 @@ export function createEditor(options: EditorOptions) {
   };
 
   /**
-   * Bind a prop to a document param or an in-scope `$each` item field
-   * (KF-K5TKCV): the sources the validator accepts for the chosen prop.
-   */
-  const bindSection = (
-    node: ViewNode,
-    component: NonNullable<ReturnType<typeof propsByKey.get>>,
-  ) => {
-    const bindable = component.props.filter(
-      (prop) => prop.control !== 'hidden' && !prop.zone,
-    );
-    const prop =
-      bindable.find((item) => item.name === bindProp.value) ?? bindable[0];
-    if (!prop) return undefined;
-    const options = bindingOptions(
-      doc.value,
-      viewCatalog,
-      node.id,
-      prop.name,
-      [],
-      undefined,
-      resolveView,
-    );
-    const current = node.props?.[prop.name];
-    const bound =
-      current !== null &&
-      typeof current === 'object' &&
-      ('$param' in current || '$bind' in current)
-        ? JSON.stringify(current)
-        : '';
-    const choices = [
-      { value: '', label: 'Not bound' },
-      ...options.map((option) => ({
-        value: JSON.stringify(option.value),
-        label: option.label,
-      })),
-    ];
-    return (
-      <>
-        <ListHeader label="Bind a prop" size="xs" />
-        <List controlInsets="trbl" gap>
-          <Select
-            name="bind-prop"
-            label="Prop"
-            value={prop.name}
-            choices={bindable.map((item) => ({
-              value: item.name,
-              label: propLabel(item.name),
-            }))}
-            rootAttributes={{ 'data-editor-bind': 'prop' }}
-          />
-          <Select
-            name="bind-source"
-            label="Source"
-            value={
-              choices.some((choice) => choice.value === bound) ? bound : ''
-            }
-            choices={choices}
-            hint={
-              options.length
-                ? undefined
-                : 'No param or item field in scope fits this prop.'
-            }
-            rootAttributes={{
-              'data-editor-bind': 'source',
-              'data-editor-bind-prop': prop.name,
-            }}
-          />
-        </List>
-      </>
-    );
-  };
-
-  /**
    * Applies a legal drag move from the outline or the canvas and keeps the
    * moved node or slot selected.
    */
@@ -2123,7 +2050,7 @@ export function createEditor(options: EditorOptions) {
             </Text>
           </ListInsetText>
         )}
-        {bindSection(node, entry)}
+        {inspectorBindSection(ctx, bindProp, node, entry)}
         {moveSection(node)}
       </List>
     );
@@ -2374,7 +2301,7 @@ export function createEditor(options: EditorOptions) {
             </List>
           </>
         ) : undefined}
-        {bindSection(node, component)}
+        {inspectorBindSection(ctx, bindProp, node, component)}
       </List>
     );
     const flow = (
