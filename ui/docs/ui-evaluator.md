@@ -27,6 +27,28 @@ six contexts: wide, intermediate, narrow, a half-width CSS viewport representing
 200% browser zoom, dark color scheme, and reduced motion. Use
 `--browser chromium` for a fast local loop; keep all three engines in CI.
 
+## CLI options
+
+| Option                 | Meaning                                                                                                                 |
+| ---------------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| `--url <url>`          | The running application to evaluate (required).                                                                         |
+| `--root <path>`        | Workspace root (default: the current directory). Other paths resolve against it.                                        |
+| `--start <path>`       | Directory where profile discovery starts (default: the root), for one application in a monorepo.                        |
+| `--profile <path>`     | Use this profile in place of the package-default application UI profile Kerf ships.                                     |
+| `--browser <list>`     | Comma-separated engines: `chromium`, `firefox`, `webkit` (default: all three).                                          |
+| `--output <directory>` | Evidence directory (default: `kerf-ui-evidence`).                                                                       |
+| `--report <path>`      | Report JSON path (default: `<output>/report.json`).                                                                     |
+| `--timeout <ms>`       | Per-operation timeout (default: `15000`).                                                                               |
+| `--settle <ms>`        | Post-navigation settle delay (default: `100`).                                                                          |
+| `--retention <policy>` | Screenshot retention: `on-failure` (default), `always`, or `never` (see [Report and artifacts](#report-and-artifacts)). |
+| `--format <format>`    | Terminal output: `text` (default) or `json` (the full report). The report file is written either way.                   |
+| `--no-fail`            | Exit 0 even when objective diagnostics fail, for evidence-collection jobs.                                              |
+| `-h`, `--help`         | Print usage and exit 0.                                                                                                 |
+
+The command prints the report path on standard error. A flag missing its
+value, an unknown argument, or an invalid number prints
+`kerf-ui-evaluate: <message>` and exits 2.
+
 ## Objective checks
 
 The versioned JSON report uses stable `KUI-B###` codes and includes the context,
@@ -125,6 +147,19 @@ removes screenshots from the interrupted run, does not write a partial report,
 and rejects with `AbortError`.
 The CLI exits `1` for objective failures, `2` for invocation/profile errors, and
 `0` for a pass; `--no-fail` is available only for evidence-collection jobs.
+
+The rest of `@kerfjs/ui/evaluator` (types ship in `evaluator/index.d.mts`):
+
+| Export                                  | Purpose                                                                                                                                                                                      |
+| --------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `evaluateUi(options)`                   | Runs the evaluation above. Beyond the CLI's options it accepts `contexts` (a custom matrix), `recordedAt`, a preloaded `playwright` module, and `signal`.                                    |
+| `formatUiEvaluationText(report)`        | Renders a report as the CLI's terminal text.                                                                                                                                                 |
+| `buildEvaluationContexts(overrides?)`   | Returns the default six-context matrix, or normalizes custom contexts (filling `reducedMotion`) for `evaluateUi`'s `contexts`.                                                               |
+| `contrastRatio(foreground, background)` | The WCAG contrast ratio of two CSS colors or RGB(A) arrays, compositing a translucent foreground over the background; `null` when a color cannot be parsed.                                  |
+| `createEvaluationReport(options)`       | Assembles a schema-version-1 report from `target`, `profileFiles`, `contexts`, `diagnostics`, `artifacts`, `recordedAt`, and `retention`, with its summary and unrecorded subjective review. |
+| `SUBJECTIVE_REVIEW_RUBRIC`              | The named human-review rubric (`{ id, prompt }`) every report carries; see below.                                                                                                            |
+| `UI_EVALUATION_RULES`                   | Every `KUI-B###` rule: `{ severity, title }` by id.                                                                                                                                          |
+| `UI_EVALUATION_SCHEMA_VERSION`          | The report schema version (`1`).                                                                                                                                                             |
 
 ## Human visual review stays human
 

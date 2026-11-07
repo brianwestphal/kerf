@@ -10,7 +10,28 @@ npx kerf-ui-doctor --full --browser-url http://127.0.0.1:4173
 npx kerf-ui-doctor --full --fail-on warning
 ```
 
-The default terminal output is short and repair-oriented. `--format json` emits the schema-version-1 report; `--output report.json` writes the same representation. The package exports its contract from `@kerfjs/ui/doctor`, its configuration schema from `@kerfjs/ui/doctor/config.schema.json`, and its report schema from `@kerfjs/ui/doctor/report.schema.json`.
+The default terminal output is short and repair-oriented. `--format json` emits the schema-version-1 report; `--output report.json` writes the same representation. The package exports its contract from `@kerfjs/ui/doctor` (see [Node API](#node-api)), its configuration schema from `@kerfjs/ui/doctor/config.schema.json`, and its report schema from `@kerfjs/ui/doctor/report.schema.json`.
+
+## CLI options
+
+| Option                  | Meaning                                                                                                       |
+| ----------------------- | ------------------------------------------------------------------------------------------------------------- |
+| `--full`                | Check the whole selected package. Mutually exclusive with `--changed`.                                        |
+| `--changed`             | Check only changed files: `--path` values, or else git's tracked changes against `HEAD` plus untracked files. |
+| `--root <path>`         | Workspace root (default: the current directory).                                                              |
+| `--package <name/path>` | Select one workspace package by package name or workspace-relative path.                                      |
+| `--path <path>`         | Restrict changed mode to this path. Repeatable.                                                               |
+| `--config <path>`       | Doctor configuration file (default: `.kerf-ui-doctor.json` at the root).                                      |
+| `--browser-url <url>`   | Enable the browser evaluation stage against this running application.                                         |
+| `--browser <list>`      | Comma-separated engines for the browser stage: `chromium`, `firefox`, `webkit`. Used with `--browser-url`.    |
+| `--eslint <preset>`     | ESLint preset: `recommended-ui` (default) or `strict-ui`.                                                     |
+| `--format <format>`     | `text` (default) or `json`.                                                                                   |
+| `--fail-on <severity>`  | `error`, `review`, or `warning`; overrides the configuration's `failOn` for this run.                         |
+| `--output <path>`       | Write the report to this file (relative to the root) instead of standard output.                              |
+| `--no-cache`            | Disable the content-addressed cache.                                                                          |
+| `-h`, `--help`          | Print usage and exit 0.                                                                                       |
+
+A flag missing its value, an unknown argument, or an invalid choice prints `kerf-ui-doctor: <message>` and exits 2.
 
 ## Stages and trust boundary
 
@@ -318,6 +339,29 @@ Exit codes are deterministic. `failOn` defaults to `error`; `--fail-on error|rev
 - `130`: cancellation.
 
 Warnings and review findings remain visible at every threshold. A cached report keeps its original exit code and labels previously run stages `cached`.
+
+## Node API
+
+`@kerfjs/ui/doctor` exports the same pipeline the CLI runs (types ship in `doctor/index.d.mts`):
+
+| Export                                    | Purpose                                                                                                                                                                                                                                                                                      |
+| ----------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `runUiDoctor(options?)`                   | Runs every stage and resolves to the report. Options mirror the CLI: `root`, `package`, `mode` (`'full'` or `'changed'`), `paths`, `config` (an inline config object) or `configPath`, `cache`, `failOn`, `eslintConfig`, `browser` (`{ url, browsers }`), and an `AbortSignal` as `signal`. |
+| `readUiDoctorConfig(root, path?)`         | Reads and validates a configuration file (default `<root>/.kerf-ui-doctor.json`); resolves to `{ path, config, diagnostics }`. A missing file yields the default `{ schemaVersion: 1 }`.                                                                                                     |
+| `validateUiDoctorConfig(config, source?)` | Validates a configuration object; returns doctor diagnostics, empty when valid.                                                                                                                                                                                                              |
+| `resolveUiDoctorPackage(root, selector?)` | Resolves a workspace package name or workspace-relative path to its directory (the root when no selector); rejects when no package matches.                                                                                                                                                  |
+| `formatUiDoctorText(report)`              | Renders a report as the CLI's terminal text.                                                                                                                                                                                                                                                 |
+| `UI_DOCTOR_EXIT`                          | The exit codes: `{ clean: 0, findings: 1, configuration: 2, cancelled: 130 }`. `report.exitCode` is one of them.                                                                                                                                                                             |
+| `UI_DOCTOR_RULES`                         | The doctor's own `KUI-D###` rules: `{ severity, title }` by id.                                                                                                                                                                                                                              |
+| `UI_DOCTOR_SCHEMA_VERSION`                | The report schema version (`1`).                                                                                                                                                                                                                                                             |
+
+```js
+import { formatUiDoctorText, runUiDoctor } from '@kerfjs/ui/doctor';
+
+const report = await runUiDoctor({ root: process.cwd(), mode: 'changed' });
+console.log(formatUiDoctorText(report));
+process.exitCode = report.exitCode;
+```
 
 ## Monorepos and repair loops
 

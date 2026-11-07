@@ -53,6 +53,47 @@ nested `.claude/worktrees` checkout. Those checkouts are separate repositories,
 not application source, and cannot contribute files, diagnostics, profile
 policy, or analysis inputs to the containing application.
 
+## CLI options
+
+`kerf-ui-analyze [options] [path...]` analyzes the named files or directories
+(relative to the root), or the whole root when none are named.
+
+| Option              | Meaning                                                                             |
+| ------------------- | ----------------------------------------------------------------------------------- |
+| `--root <path>`     | Project root (default: the current directory). Must be an existing directory.       |
+| `--format <format>` | `text` (default), `json` (the versioned report), or `sarif`.                        |
+| `--output <path>`   | Write the report to this file (relative to the root) instead of standard output.    |
+| `--profile <path>`  | Use this application UI profile in place of the package-default profile Kerf ships. |
+| `--fail-on-review`  | Exit 1 on review findings as well as errors.                                        |
+| `--adoption`        | Report ownership-boundary diagnostics as review findings (see below).               |
+| `-h`, `--help`      | Print usage and exit 0.                                                             |
+
+Exit codes: `0` clean, `1` errors (or review findings with `--fail-on-review`),
+`2` a usage or input error — a flag missing its value, an unknown flag, an
+unknown format, or a missing root — reported as `kerf-ui-analyze: <message>`.
+
+## Node API
+
+`@kerfjs/ui/analyzer` exports the analysis the CLI runs (types ship in
+`analyzer/index.d.mts`):
+
+| Export                          | Purpose                                                                                                                                                                                                                                                                                 |
+| ------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `analyzeUiProject(options?)`    | Resolves to the versioned report. Options: `root`, `workspaceRoot`, `paths`, `profile` (package-default profile path), `adoption`, and the ownership settings the doctor configuration also exposes (`ownership`, `ownershipContext`, `implicitComponentOwnership`, `ownershipGroups`). |
+| `formatUiAnalysisText(report)`  | Renders a report as the CLI's terminal text.                                                                                                                                                                                                                                            |
+| `formatUiAnalysisSarif(report)` | Converts a report to a SARIF 2.1.0 log object (serialize it with `JSON.stringify`).                                                                                                                                                                                                     |
+| `UI_ANALYSIS_RULES`             | Every `KUI-L###` rule: `{ severity, title }` by id.                                                                                                                                                                                                                                     |
+| `UI_ANALYSIS_ACTIONS`           | The repair action for rules whose fix is more specific than the default, by id; the doctor attaches these to its diagnostics.                                                                                                                                                           |
+| `UI_ANALYSIS_SCHEMA_VERSION`    | The report schema version (`1`); the schema ships at `@kerfjs/ui/analyzer/report.schema.json`.                                                                                                                                                                                          |
+
+```js
+import { analyzeUiProject, formatUiAnalysisText } from '@kerfjs/ui/analyzer';
+
+const report = await analyzeUiProject({ root: process.cwd(), paths: ['src'] });
+console.log(formatUiAnalysisText(report));
+if (report.summary.errors) process.exitCode = 1;
+```
+
 ## Diagnostics and exit behavior
 
 | Rule       | Kind   | Meaning                                                                                  |
