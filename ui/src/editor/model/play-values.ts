@@ -17,6 +17,7 @@
 // Each returns its inputs unchanged when nothing applies.
 import {
   channelOf,
+  classifyChild,
   type ViewCatalog,
   type ViewChild,
   type ViewDocument,
@@ -203,20 +204,27 @@ export function markRows(
     }
   };
   const child = (item: ViewChild, keys: readonly ViewValue[]): ViewChild => {
-    if ('$each' in item)
-      return mapRows(item, (template) =>
-        mapTemplate(template, (branch) =>
-          node(branch, [...keys, { $bind: item.key }], true),
-        ),
-      );
-    if ('$if' in item)
-      return {
-        ...item,
-        then: child(item.then, keys),
-        ...(item.else ? { else: child(item.else, keys) } : {}),
-      };
-    if ('$slot' in item) return item;
-    return node(item, keys, false);
+    const kind = classifyChild(item);
+    switch (kind.kind) {
+      case 'each': {
+        const each = kind.child;
+        return mapRows(each, (template) =>
+          mapTemplate(template, (branch) =>
+            node(branch, [...keys, { $bind: each.key }], true),
+          ),
+        );
+      }
+      case 'if':
+        return {
+          ...kind.child,
+          then: child(kind.child.then, keys),
+          ...(kind.child.else ? { else: child(kind.child.else, keys) } : {}),
+        };
+      case 'slot':
+        return kind.child;
+      default:
+        return node(kind.child, keys, false);
+    }
   };
   const node = (
     item: ViewNode,

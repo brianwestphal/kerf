@@ -4,6 +4,7 @@
 // its place, passing those values back. These are the pure parts: the path
 // the editor suggests, why a node cannot be extracted, and the two documents.
 import {
+  classifyChild,
   validateView,
   type ViewCatalog,
   type ViewChild,
@@ -172,35 +173,40 @@ function mapSubtree(
         }
       : mapSubtree(item, names, reference);
   const child = (item: ViewChild): ViewChild => {
-    if ('$each' in item) {
-      const names = new Set([...local, item.as]);
-      if ('templates' in item)
+    const kind = classifyChild(item);
+    switch (kind.kind) {
+      case 'each': {
+        const each = kind.child;
+        const names = new Set([...local, each.as]);
+        if ('templates' in each)
+          return {
+            ...each,
+            $each: value(each.$each),
+            kind: value(each.kind, names),
+            templates: Object.fromEntries(
+              Object.entries(each.templates).map(([name, row]) => [
+                name,
+                mapSubtree(row, names, reference),
+              ]),
+            ),
+          } as ViewChild;
         return {
-          ...item,
-          $each: value(item.$each),
-          kind: value(item.kind, names),
-          templates: Object.fromEntries(
-            Object.entries(item.templates).map(([kind, row]) => [
-              kind,
-              mapSubtree(row, names, reference),
-            ]),
-          ),
-        } as ViewChild;
-      return {
-        ...item,
-        $each: value(item.$each),
-        template: template(item.template, names),
-      };
+          ...each,
+          $each: value(each.$each),
+          template: template(each.template, names),
+        };
+      }
+      case 'if':
+        return {
+          ...kind.child,
+          $if: value(kind.child.$if),
+          then: child(kind.child.then),
+          ...(kind.child.else ? { else: child(kind.child.else) } : {}),
+        };
+      default:
+        // A slot never reaches here: extractProblem refuses it first.
+        return mapSubtree(item as ViewNode, local, reference);
     }
-    if ('$if' in item)
-      return {
-        ...item,
-        $if: value(item.$if),
-        then: child(item.then),
-        ...(item.else ? { else: child(item.else) } : {}),
-      };
-    // A slot never reaches here: extractProblem refuses it first.
-    return mapSubtree(item as ViewNode, local, reference);
   };
   return {
     ...node,
@@ -253,26 +259,33 @@ function replaceNode(
       ? { ...item, then: node(item.then), else: template(item.else) }
       : node(item);
   const child = (item: ViewChild): ViewChild => {
-    if ('$each' in item)
-      return 'templates' in item
-        ? ({
-            ...item,
-            templates: Object.fromEntries(
-              Object.entries(item.templates).map(([kind, row]) => [
-                kind,
-                node(row),
-              ]),
-            ),
-          } as ViewChild)
-        : { ...item, template: template(item.template) };
-    if ('$if' in item)
-      return {
-        ...item,
-        then: child(item.then),
-        ...(item.else ? { else: child(item.else) } : {}),
-      };
-    if ('$slot' in item) return item;
-    return node(item);
+    const kind = classifyChild(item);
+    switch (kind.kind) {
+      case 'each': {
+        const each = kind.child;
+        return 'templates' in each
+          ? ({
+              ...each,
+              templates: Object.fromEntries(
+                Object.entries(each.templates).map(([name, row]) => [
+                  name,
+                  node(row),
+                ]),
+              ),
+            } as ViewChild)
+          : { ...each, template: template(each.template) };
+      }
+      case 'if':
+        return {
+          ...kind.child,
+          then: child(kind.child.then),
+          ...(kind.child.else ? { else: child(kind.child.else) } : {}),
+        };
+      case 'slot':
+        return kind.child;
+      default:
+        return node(kind.child);
+    }
   };
   return { ...document, root: node(document.root!) };
 }

@@ -3,6 +3,8 @@
 // place application-filled `$slot` holes. Every edit is a pure transform, like
 // the edits in edits.ts, and the validator decides which sources fit.
 import {
+  childKind,
+  classifyChild,
   type ViewCatalog,
   type ViewChild,
   type ViewDocument,
@@ -67,8 +69,10 @@ type Owner = {
   readonly eachRows?: EachRows;
 } & NodeControl;
 
-const isNode = (child: ViewChild): child is ViewNode =>
-  !('$each' in child) && !('$if' in child) && !('$slot' in child);
+const isNode = (child: ViewChild): child is ViewNode => {
+  const kind = childKind(child);
+  return kind === 'node' || kind === 'view';
+};
 
 /**
  * Node `id` as a whole branch: the node itself, or the template of `$each`,
@@ -146,15 +150,21 @@ function ownerOf(document: ViewDocument, id: string): Owner | undefined {
 }
 
 /** The nodes directly under a zone child, through its control flow. */
-function nodesUnder(child: ViewChild): ViewNode[] {
-  if ('$slot' in child) return [];
-  if ('$each' in child) return rowNodes(child);
-  if ('$if' in child)
-    return [
-      ...nodesUnder(child.then),
-      ...(child.else ? nodesUnder(child.else) : []),
-    ];
-  return [child];
+function nodesUnder(item: ViewChild): ViewNode[] {
+  const { kind, child } = classifyChild(item);
+  switch (kind) {
+    case 'slot':
+      return [];
+    case 'each':
+      return rowNodes(child);
+    case 'if':
+      return [
+        ...nodesUnder(child.then),
+        ...(child.else ? nodesUnder(child.else) : []),
+      ];
+    default:
+      return [child];
+  }
 }
 
 const clone = (document: ViewDocument): ViewDocument =>
@@ -571,12 +581,21 @@ function findHolder(document: ViewDocument, id: string): ViewNode | undefined {
 function placedSlots(document: ViewDocument): Set<string> {
   const names = new Set<string>();
   const child = (item: ViewChild) => {
-    if ('$slot' in item) names.add(item.$slot);
-    else if ('$each' in item) rowNodes(item).forEach(node);
-    else if ('$if' in item) {
-      child(item.then);
-      if (item.else) child(item.else);
-    } else node(item);
+    const kind = classifyChild(item);
+    switch (kind.kind) {
+      case 'slot':
+        names.add(kind.child.$slot);
+        break;
+      case 'each':
+        rowNodes(kind.child).forEach(node);
+        break;
+      case 'if':
+        child(kind.child.then);
+        if (kind.child.else) child(kind.child.else);
+        break;
+      default:
+        node(kind.child);
+    }
   };
   const node = (item: ViewNode) => {
     for (const children of Object.values(item.zones ?? {}))

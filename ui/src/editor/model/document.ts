@@ -6,7 +6,7 @@ import type {
   ViewTemplate,
   ViewValue,
 } from '@kerfjs/ui/view';
-import { VIEW_DOCUMENT_SCHEMA_ID } from '@kerfjs/ui/view';
+import { classifyChild, VIEW_DOCUMENT_SCHEMA_ID } from '@kerfjs/ui/view';
 
 export type ParseResult =
   | { readonly ok: true; readonly document: ViewDocument }
@@ -154,12 +154,21 @@ export function visitNodes(document: ViewDocument): NodeVisit[] {
     ancestors: NodeVisit['ancestors'],
     repeated: boolean,
   ) => {
-    if ('$each' in item)
-      for (const branch of rowNodes(item)) node(branch, ancestors, true);
-    else if ('$if' in item) {
-      child(item.then, ancestors, repeated);
-      if (item.else) child(item.else, ancestors, repeated);
-    } else if (!('$slot' in item)) node(item, ancestors, repeated);
+    const kind = classifyChild(item);
+    switch (kind.kind) {
+      case 'each':
+        for (const branch of rowNodes(kind.child))
+          node(branch, ancestors, true);
+        break;
+      case 'if':
+        child(kind.child.then, ancestors, repeated);
+        if (kind.child.else) child(kind.child.else, ancestors, repeated);
+        break;
+      case 'slot':
+        break;
+      default:
+        node(kind.child, ancestors, repeated);
+    }
   };
   const node = (
     item: ViewNode,

@@ -3,13 +3,14 @@
 // opens in, the fields of an object type, and edits at a path inside a prop
 // value. Read from the props catalog's type graph, so an application
 // component's catalog gets the same editors with no per-component table.
-import type {
-  ViewChild,
-  ViewDocument,
-  ViewNode,
-  ViewTemplate,
-  ViewType,
-  ViewValue,
+import {
+  classifyChild,
+  type ViewChild,
+  type ViewDocument,
+  type ViewNode,
+  type ViewTemplate,
+  type ViewType,
+  type ViewValue,
 } from '@kerfjs/ui/view';
 
 import { mapRows } from './document.js';
@@ -589,16 +590,24 @@ export function documentInDeclaredOrder(
     };
   };
   const child = (item: ViewChild): ViewChild => {
-    if ('$each' in item)
-      return mapRows(item, (template) => child(template) as ViewTemplate);
-    if ('$if' in item)
-      return {
-        ...item,
-        then: child(item.then),
-        ...(item.else ? { else: child(item.else) } : {}),
-      };
-    if ('$slot' in item) return item;
-    return node(item);
+    const kind = classifyChild(item);
+    switch (kind.kind) {
+      case 'each':
+        return mapRows(
+          kind.child,
+          (template) => child(template) as ViewTemplate,
+        );
+      case 'if':
+        return {
+          ...kind.child,
+          then: child(kind.child.then),
+          ...(kind.child.else ? { else: child(kind.child.else) } : {}),
+        };
+      case 'slot':
+        return kind.child;
+      default:
+        return node(kind.child);
+    }
   };
   return document.root ? { ...document, root: node(document.root) } : document;
 }

@@ -1,5 +1,10 @@
 // The outline rail's rows: one per node, in document order.
-import type { ViewChild, ViewDocument, ViewNode } from '@kerfjs/ui/view';
+import {
+  classifyChild,
+  type ViewChild,
+  type ViewDocument,
+  type ViewNode,
+} from '@kerfjs/ui/view';
 
 import { rowBranches, visitNodes } from './document.js';
 
@@ -250,51 +255,57 @@ export function outlineTree(
     repeated: boolean,
     control: readonly string[],
   ): OutlineNode[] => {
-    if ('$slot' in item)
-      return [
-        {
-          id: slotRowId(parent, zone, index),
-          label: `${item.$slot} slot`,
-          detail: [
-            zoneLabel(zone),
-            ...control,
-            repeated ? 'repeated' : undefined,
-          ]
-            .filter(Boolean)
-            .join(' · '),
-        },
-      ];
-    if ('$each' in item) {
-      // KF-1CRGP1: each row design of an `$if`-chain template, with when it
-      // shows.
-      const branches = rowBranches(item);
-      const kind = 'kind' in item ? sourceName(item.kind) : undefined;
-      return branches.map(({ node, condition, kind: name }, at) =>
-        entry(node, zone, true, [
-          ...control,
-          `for each ${item.as} in ${sourceName(item.$each)}`,
-          ...(branches.length === 1
-            ? []
-            : [rowDetail(at, condition, kind, name)]),
-        ]),
-      );
-    }
-    if ('$if' in item) {
-      const condition = sourceName(item.$if);
-      return [
-        ...child(item.then, parent, zone, index, repeated, [
-          ...control,
-          `if ${condition}`,
-        ]),
-        ...(item.else
-          ? child(item.else, parent, zone, index, repeated, [
+    const classified = classifyChild(item);
+    switch (classified.kind) {
+      case 'slot':
+        return [
+          {
+            id: slotRowId(parent, zone, index),
+            label: `${classified.child.$slot} slot`,
+            detail: [
+              zoneLabel(zone),
               ...control,
-              `unless ${condition}`,
-            ])
-          : []),
-      ];
+              repeated ? 'repeated' : undefined,
+            ]
+              .filter(Boolean)
+              .join(' · '),
+          },
+        ];
+      case 'each': {
+        const each = classified.child;
+        // KF-1CRGP1: each row design of an `$if`-chain template, with when it
+        // shows.
+        const branches = rowBranches(each);
+        const kind = 'kind' in each ? sourceName(each.kind) : undefined;
+        return branches.map(({ node, condition, kind: name }, at) =>
+          entry(node, zone, true, [
+            ...control,
+            `for each ${each.as} in ${sourceName(each.$each)}`,
+            ...(branches.length === 1
+              ? []
+              : [rowDetail(at, condition, kind, name)]),
+          ]),
+        );
+      }
+      case 'if': {
+        const branch = classified.child;
+        const condition = sourceName(branch.$if);
+        return [
+          ...child(branch.then, parent, zone, index, repeated, [
+            ...control,
+            `if ${condition}`,
+          ]),
+          ...(branch.else
+            ? child(branch.else, parent, zone, index, repeated, [
+                ...control,
+                `unless ${condition}`,
+              ])
+            : []),
+        ];
+      }
+      default:
+        return [entry(classified.child, zone, repeated, control)];
     }
-    return [entry(item, zone, repeated, control)];
   };
   return document.root ? [entry(document.root, undefined, false, [])] : [];
 }

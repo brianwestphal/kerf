@@ -8,6 +8,7 @@
 // person changes inside one goes where it comes from: through the `#view`'s
 // props to a param, to the `#view`'s row item, or into a play copy.
 import {
+  classifyChild,
   composedViewPath,
   type ViewCatalog,
   type ViewChild,
@@ -96,16 +97,21 @@ export function playedViews(
     };
   };
   const child = (item: ViewChild): ViewChild => {
-    if ('$each' in item)
-      return mapRows(item, (template) => mapTemplate(template, node));
-    if ('$if' in item)
-      return {
-        ...item,
-        then: child(item.then),
-        ...(item.else ? { else: child(item.else) } : {}),
-      };
-    if ('$slot' in item) return item;
-    return node(item);
+    const kind = classifyChild(item);
+    switch (kind.kind) {
+      case 'each':
+        return mapRows(kind.child, (template) => mapTemplate(template, node));
+      case 'if':
+        return {
+          ...kind.child,
+          then: child(kind.child.then),
+          ...(kind.child.else ? { else: child(kind.child.else) } : {}),
+        };
+      case 'slot':
+        return kind.child;
+      default:
+        return node(kind.child);
+    }
   };
   return document.root ? { ...document, root: node(document.root) } : document;
 }

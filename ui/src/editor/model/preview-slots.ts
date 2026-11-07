@@ -2,11 +2,12 @@
 // `$slot` through a function looked up by slot name, so two places that use
 // one slot would be indistinguishable. Each placed `$slot` gets its own
 // preview name, which maps back to where it sits.
-import type {
-  ViewChild,
-  ViewDocument,
-  ViewNode,
-  ViewTemplate,
+import {
+  classifyChild,
+  type ViewChild,
+  type ViewDocument,
+  type ViewNode,
+  type ViewTemplate,
 } from '@kerfjs/ui/view';
 
 import type { SlotAddress } from './control-flow.js';
@@ -41,25 +42,30 @@ export function previewSlots(
   const slots = new Map<string, PreviewSlot>();
   const declared: Record<string, unknown> = { ...(document.slots ?? {}) };
   const child = (item: ViewChild, address: SlotAddress): ViewChild => {
-    if ('$slot' in item) {
-      const preview = `${item.$slot}KuiPreview${slots.size}`;
-      slots.set(preview, { name: item.$slot, address });
-      if (document.slots?.[item.$slot])
-        declared[preview] = document.slots[item.$slot];
-      return { ...item, $slot: preview };
+    const kind = classifyChild(item);
+    switch (kind.kind) {
+      case 'slot': {
+        const slot = kind.child;
+        const preview = `${slot.$slot}KuiPreview${slots.size}`;
+        slots.set(preview, { name: slot.$slot, address });
+        if (document.slots?.[slot.$slot])
+          declared[preview] = document.slots[slot.$slot];
+        return { ...slot, $slot: preview };
+      }
+      case 'each':
+        return mapRows(
+          kind.child,
+          (template) => child(template, address) as ViewTemplate,
+        );
+      case 'if':
+        return {
+          ...kind.child,
+          then: child(kind.child.then, address),
+          ...(kind.child.else ? { else: child(kind.child.else, address) } : {}),
+        };
+      default:
+        return node(kind.child);
     }
-    if ('$each' in item)
-      return mapRows(
-        item,
-        (template) => child(template, address) as ViewTemplate,
-      );
-    if ('$if' in item)
-      return {
-        ...item,
-        then: child(item.then, address),
-        ...(item.else ? { else: child(item.else, address) } : {}),
-      };
-    return node(item);
   };
   const node = (item: ViewNode): ViewNode => {
     const zones = item.zones

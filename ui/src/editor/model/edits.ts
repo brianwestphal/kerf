@@ -2,6 +2,7 @@
 // that returns a new document, so the document stays the editor's only state
 // and history is a list of documents.
 import {
+  classifyChild,
   fieldZoneOf,
   validateView,
   type ViewCatalog,
@@ -70,22 +71,30 @@ function walk(document: ViewDocument, visit: (at: Located) => boolean) {
     zone: string,
     branch = false,
   ): void => {
-    if ('$each' in item)
-      for (const node of rowNodes(item))
-        visitNode(node as MutableNode, undefined, undefined, parent, zone);
-    else if ('$if' in item) {
-      // A branch is itself a child: a node, a repeat, or a nested condition.
-      visitChild(item.then, list, index, parent, zone, true);
-      if (item.else) visitChild(item.else, list, index, parent, zone, true);
-    } else if (!('$slot' in item))
-      // A node in a branch is not directly in the zone list.
-      visitNode(
-        item as MutableNode,
-        branch ? undefined : list,
-        branch ? undefined : index,
-        parent,
-        zone,
-      );
+    const kind = classifyChild(item);
+    switch (kind.kind) {
+      case 'each':
+        for (const node of rowNodes(kind.child))
+          visitNode(node as MutableNode, undefined, undefined, parent, zone);
+        return;
+      case 'if':
+        // A branch is itself a child: a node, a repeat, or a nested condition.
+        visitChild(kind.child.then, list, index, parent, zone, true);
+        if (kind.child.else)
+          visitChild(kind.child.else, list, index, parent, zone, true);
+        return;
+      case 'slot':
+        return;
+      default:
+        // A node in a branch is not directly in the zone list.
+        visitNode(
+          kind.child as MutableNode,
+          branch ? undefined : list,
+          branch ? undefined : index,
+          parent,
+          zone,
+        );
+    }
   };
   const visitNode = (
     node: MutableNode,
@@ -310,16 +319,18 @@ export function placeChild(
 }
 
 /** The ids of every node a zone child holds, itself included. */
-function heldIds(child: ViewChild, ids = new Set<string>()): Set<string> {
-  if ('$slot' in child) return ids;
-  if ('$each' in child) {
-    for (const node of rowNodes(child)) heldIds(node, ids);
-    return ids;
-  }
-  if ('$if' in child) {
-    heldIds(child.then, ids);
-    if (child.else) heldIds(child.else, ids);
-    return ids;
+function heldIds(item: ViewChild, ids = new Set<string>()): Set<string> {
+  const { kind, child } = classifyChild(item);
+  switch (kind) {
+    case 'slot':
+      return ids;
+    case 'each':
+      for (const node of rowNodes(child)) heldIds(node, ids);
+      return ids;
+    case 'if':
+      heldIds(child.then, ids);
+      if (child.else) heldIds(child.else, ids);
+      return ids;
   }
   ids.add(child.id);
   for (const list of Object.values(child.zones ?? {}))
@@ -359,16 +370,20 @@ export function copyChild<Child extends ViewChild>(
     return next;
   };
   const copy = (item: ViewChild): ViewChild => {
-    if ('$slot' in item) return { ...item };
-    if ('$each' in item)
-      return mapRows(item, (template) => copy(template) as ViewTemplate);
-    if ('$if' in item)
-      return {
-        ...item,
-        then: copy(item.then),
-        ...(item.else ? { else: copy(item.else) } : {}),
-      };
-    const node = globalThis.structuredClone(item) as MutableNode;
+    const { kind, child } = classifyChild(item);
+    switch (kind) {
+      case 'slot':
+        return { ...child };
+      case 'each':
+        return mapRows(child, (template) => copy(template) as ViewTemplate);
+      case 'if':
+        return {
+          ...child,
+          then: copy(child.then),
+          ...(child.else ? { else: copy(child.else) } : {}),
+        };
+    }
+    const node = globalThis.structuredClone(child) as MutableNode;
     node.id = makeId();
     if (node.name) node.name = unique(node.name);
     if (node.zones)
@@ -386,13 +401,17 @@ export function copyChild<Child extends ViewChild>(
 /** Every node name in `document`. */
 function namesIn(document: ViewDocument): Set<string> {
   const names = new Set<string>();
-  const visit = (child: ViewChild) => {
-    if ('$slot' in child) return;
-    if ('$each' in child) return rowNodes(child).forEach(visit);
-    if ('$if' in child) {
-      visit(child.then);
-      if (child.else) visit(child.else);
-      return;
+  const visit = (item: ViewChild) => {
+    const { kind, child } = classifyChild(item);
+    switch (kind) {
+      case 'slot':
+        return;
+      case 'each':
+        return rowNodes(child).forEach(visit);
+      case 'if':
+        visit(child.then);
+        if (child.else) visit(child.else);
+        return;
     }
     if (child.name) names.add(child.name);
     for (const list of Object.values(child.zones ?? {})) list.forEach(visit);
@@ -472,17 +491,22 @@ export function embedNode(
     } as ViewNode;
   };
   // The child in a holder's place: wrapped when it is the node, else visited.
-  const place = (child: ViewChild): ViewChild => {
+  const place = (item: ViewChild): ViewChild => {
     // The first node with the id is wrapped, as `locate` finds it.
-    if (wrapperId !== undefined || '$slot' in child) return child;
-    if ('$each' in child)
-      return mapRows(child, (template) => place(template) as ViewTemplate);
-    if ('$if' in child)
-      return {
-        ...child,
-        then: place(child.then),
-        ...(child.else ? { else: place(child.else) } : {}),
-      };
+    if (wrapperId !== undefined) return item;
+    const { kind, child } = classifyChild(item);
+    switch (kind) {
+      case 'slot':
+        return child;
+      case 'each':
+        return mapRows(child, (template) => place(template) as ViewTemplate);
+      case 'if':
+        return {
+          ...child,
+          then: place(child.then),
+          ...(child.else ? { else: place(child.else) } : {}),
+        };
+    }
     if (child.id === id) return wrap(child);
     const node = child as MutableNode;
     for (const list of Object.values(node.zones ?? {}))
@@ -905,23 +929,31 @@ export function eachScopes(
   id: string,
 ): { readonly as: string; readonly source: unknown }[] {
   type Frame = { readonly as: string; readonly source: unknown };
+  const scopeOf = (item: ViewChild, frames: Frame[]): Frame[] | undefined => {
+    const { kind, child } = classifyChild(item);
+    switch (kind) {
+      case 'each':
+        return rowNodes(child)
+          .map((node) =>
+            visit(node, [...frames, { as: child.as, source: child.$each }]),
+          )
+          .find(Boolean);
+      case 'if':
+        return (
+          visit(child.then as ViewNode, frames) ??
+          (child.else ? visit(child.else as ViewNode, frames) : undefined)
+        );
+      case 'slot':
+        return undefined;
+      default:
+        return visit(child, frames);
+    }
+  };
   const visit = (node: ViewNode, frames: Frame[]): Frame[] | undefined => {
     if (node.id === id) return frames;
     for (const children of Object.values(node.zones ?? {}))
       for (const item of children) {
-        const found =
-          '$each' in item
-            ? rowNodes(item)
-                .map((node) =>
-                  visit(node, [...frames, { as: item.as, source: item.$each }]),
-                )
-                .find(Boolean)
-            : '$if' in item
-              ? (visit(item.then as ViewNode, frames) ??
-                (item.else ? visit(item.else as ViewNode, frames) : undefined))
-              : '$slot' in item
-                ? undefined
-                : visit(item, frames);
+        const found = scopeOf(item, frames);
         if (found) return found;
       }
     return undefined;

@@ -4,6 +4,7 @@
 // problem (a zone that does not accept the component, a full zone, a binding
 // out of scope) is never offered.
 import {
+  classifyChild,
   createMoveCheck,
   type ViewCatalog,
   type ViewChild,
@@ -214,14 +215,20 @@ export function movesCleanly(
 }
 
 /** Whether zone child `child` holds node `id`, through its control flow. */
-function holds(child: ViewChild, id: string): boolean {
-  if ('$slot' in child) return false;
-  if ('$each' in child) return rowNodes(child).some((node) => node.id === id);
-  if ('$if' in child)
-    return (
-      holds(child.then, id) || (child.else ? holds(child.else, id) : false)
-    );
-  return child.id === id;
+function holds(item: ViewChild, id: string): boolean {
+  const { kind, child } = classifyChild(item);
+  switch (kind) {
+    case 'slot':
+      return false;
+    case 'each':
+      return rowNodes(child).some((node) => node.id === id);
+    case 'if':
+      return (
+        holds(child.then, id) || (child.else ? holds(child.else, id) : false)
+      );
+    default:
+      return child.id === id;
+  }
 }
 
 /**
