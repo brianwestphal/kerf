@@ -2,11 +2,13 @@
 
 import { readFile, writeFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 import {
   CLI_USAGE_EXIT,
   isMainModule,
   parseCliArguments,
+  readJsonFile,
   wantsHelp,
 } from './scripts/lib/cli-args.mjs';
 import { projectConsumerCatalog } from './catalog-projection.mjs';
@@ -31,6 +33,15 @@ Exit codes: 0 in sync or written, 1 stale, 2 usage or input error.`;
 
 /** A usage or input error: reported with exit status 2, a stale module with 1. */
 class UsageError extends Error {}
+
+/** Reads a JSON input; a missing or malformed file is an input error (exit 2). */
+function readInput(path, label = path) {
+  try {
+    return readJsonFile(path, label);
+  } catch (error) {
+    throw new UsageError(error.message);
+  }
+}
 
 function parseArgs(argv) {
   let options;
@@ -81,17 +92,12 @@ export function renderConsumerCatalog(rows, repoBase) {
 
 export async function runCatalogProjection(argv) {
   const options = parseArgs(argv);
-  const extension = JSON.parse(
-    await readFile(resolve(options.extension), 'utf8'),
-  );
-  const kerfCatalog = JSON.parse(
-    await readFile(
-      options.kerfCatalog
-        ? resolve(options.kerfCatalog)
-        : new URL('./ai/component-catalog.json', import.meta.url),
-      'utf8',
-    ),
-  );
+  const extension = readInput(resolve(options.extension), options.extension);
+  const kerfCatalog = options.kerfCatalog
+    ? readInput(resolve(options.kerfCatalog), options.kerfCatalog)
+    : readInput(
+        fileURLToPath(new URL('./ai/component-catalog.json', import.meta.url)),
+      );
   const rows = projectConsumerCatalog(extension, kerfCatalog, options);
   const output = renderConsumerCatalog(rows, options.repoBase);
   const outputPath = resolve(options.out);

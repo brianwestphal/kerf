@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 import console from 'node:console';
+import { statSync } from 'node:fs';
 import { writeFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import process from 'node:process';
@@ -49,6 +50,8 @@ try {
     positionals: true,
   });
   const root = resolve(options.root ?? process.cwd());
+  if (!statSync(root, { throwIfNoEntry: false })?.isDirectory())
+    throw new Error(`${root}: not a directory`);
   const format = options.format ?? 'text';
   if (!['text', 'json', 'sarif'].includes(format))
     throw new Error(

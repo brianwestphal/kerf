@@ -11,8 +11,10 @@ import process from 'node:process';
 import { fileURLToPath } from 'node:url';
 
 import {
+  CLI_USAGE_EXIT,
   isMainModule,
   parseCliArguments,
+  readJsonFile,
   wantsHelp,
 } from '../scripts/lib/cli-args.mjs';
 import { validateJsonSchemaSubset } from '../scripts/lib/json-schema-subset.mjs';
@@ -34,7 +36,8 @@ Exit codes: 0 success, 1 stale catalog or schema problems, 2 usage or
 input error.
 `;
 
-const readJson = (path) => JSON.parse(readFileSync(path, 'utf8'));
+// Every read names its file on failure (missing, unreadable, invalid JSON).
+const readJson = (path) => readJsonFile(path);
 const schemaPath = fileURLToPath(
   new URL('../ai/component-props.schema.json', import.meta.url),
 );
@@ -55,6 +58,18 @@ export function run(argv) {
   }
   const write = options.write === true;
   const root = resolve(options.root ?? process.cwd());
+  try {
+    return runIn(root, write);
+  } catch (error) {
+    return {
+      code: CLI_USAGE_EXIT,
+      output: `kerf-ui-props: ${error.message}\n`,
+    };
+  }
+}
+
+/** Writes or checks the props catalog of the package at `root`. */
+function runIn(root, write) {
   const packagePath = resolve(root, 'package.json');
   if (!existsSync(packagePath)) {
     return { code: 2, output: `kerf-ui-props: no package.json in ${root}\n` };

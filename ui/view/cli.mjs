@@ -9,8 +9,10 @@ import process from 'node:process';
 import { fileURLToPath } from 'node:url';
 
 import {
+  CLI_USAGE_EXIT,
   isMainModule,
   parseCliArguments,
+  readJsonFile,
   wantsHelp,
 } from '../scripts/lib/cli-args.mjs';
 import { contractOf, diffContracts } from './contract.mjs';
@@ -40,7 +42,8 @@ input error.
 `;
 
 const packageRoot = resolve(dirname(fileURLToPath(import.meta.url)), '..');
-const readJson = (path) => JSON.parse(readFileSync(path, 'utf8'));
+// Every read names its file on failure (missing, unreadable, invalid JSON).
+const readJson = (path) => readJsonFile(path);
 
 /** Parses argv into `{ command, documents, options }`, or throws a usage error. */
 export function parseArguments(argv) {
@@ -174,90 +177,100 @@ export function run(argv) {
   const { command, documents, options } = parsed;
   const lines = [];
   let failed = false;
-  for (const documentPath of documents) {
-    const catalog = loadCatalog(options, documentPath);
-    const document = readJson(documentPath);
-    const resolveView = viewResolver(documentPath);
-    const validation = validateView(document, catalog, { resolveView });
-    if (!validation.valid) {
-      failed = true;
-      for (const item of validation.diagnostics) {
-        lines.push(
-          `${documentPath}: ${item.code} ${item.path}: ${item.message}`,
-        );
+  try {
+    for (const documentPath of documents) {
+      const catalog = loadCatalog(options, documentPath);
+      const document = readJson(documentPath);
+      const resolveView = viewResolver(documentPath);
+      const validation = validateView(document, catalog, { resolveView });
+      if (!validation.valid) {
+        failed = true;
+        for (const item of validation.diagnostics) {
+          lines.push(
+            `${documentPath}: ${item.code} ${item.path}: ${item.message}`,
+          );
+        }
+        continue;
       }
-      continue;
-    }
-    // Hints are advice: printed, never a failure.
-    for (const item of validation.hints)
-      lines.push(
-        `${documentPath}: hint ${item.code} ${item.path}: ${item.message}`,
-      );
-    const modulePath = viewModulePath(documentPath, options.target);
-    const generated = generateView(document, catalog, {
-      source: basename(documentPath),
-      resolveView,
-      target: options.target,
-      declarationsOnly: options.declarationsOnly,
-      importFrom: dirname(resolve(documentPath)),
-    });
-    const outputs = [[modulePath, generated.code]];
-    if (generated.declarations)
-      outputs.push([
-        modulePath.replace(/\.js$/, '.d.ts'),
-        generated.declarations,
-      ]);
+      // Hints are advice: printed, never a failure.
+      for (const item of validation.hints)
+        lines.push(
+          `${documentPath}: hint ${item.code} ${item.path}: ${item.message}`,
+        );
+      const modulePath = viewModulePath(documentPath, options.target);
+      const generated = generateView(document, catalog, {
+        source: basename(documentPath),
+        resolveView,
+        target: options.target,
+        declarationsOnly: options.declarationsOnly,
+        importFrom: dirname(resolve(documentPath)),
+      });
+      const outputs = [[modulePath, generated.code]];
+      if (generated.declarations)
+        outputs.push([
+          modulePath.replace(/\.js$/, '.d.ts'),
+          generated.declarations,
+        ]);
 
-    if (command === 'generate') {
-      for (const [path, code] of outputs) writeFileSync(path, code);
-      lines.push(`${modulePath}: ${generated.digest}`);
-      continue;
-    }
-    const current = existsSync(modulePath)
-      ? readFileSync(modulePath, 'utf8')
-      : undefined;
-    const header = current === undefined ? undefined : readViewHeader(current);
-    if (command === 'diff') {
-      const before = header?.contract ?? {
-        inputs: {},
-        actions: {},
-        slots: {},
-        refs: {},
-      };
-      const changes = diffContracts(
-        before,
-        contractOf(document, catalog, { resolveView }),
-      );
-      lines.push(
-        `${modulePath}: ${changes.length ? `${changes.length} contract change(s)` : 'contract unchanged'}`,
-      );
-      for (const change of changes) {
-        lines.push(
-          `  ${change.breaking ? 'BREAKING' : 'compatible'} ${change.member} ${JSON.stringify(change.name)} ${change.change} (${change.detail})`,
-        );
+      if (command === 'generate') {
+        for (const [path, code] of outputs) writeFileSync(path, code);
+        lines.push(`${modulePath}: ${generated.digest}`);
+        continue;
       }
-      continue;
+      const current = existsSync(modulePath)
+        ? readFileSync(modulePath, 'utf8')
+        : undefined;
+      const header =
+        current === undefined ? undefined : readViewHeader(current);
+      if (command === 'diff') {
+        const before = header?.contract ?? {
+          inputs: {},
+          actions: {},
+          slots: {},
+          refs: {},
+        };
+        const changes = diffContracts(
+          before,
+          contractOf(document, catalog, { resolveView }),
+        );
+        lines.push(
+          `${modulePath}: ${changes.length ? `${changes.length} contract change(s)` : 'contract unchanged'}`,
+        );
+        for (const change of changes) {
+          lines.push(
+            `  ${change.breaking ? 'BREAKING' : 'compatible'} ${change.member} ${JSON.stringify(change.name)} ${change.change} (${change.detail})`,
+          );
+        }
+        continue;
+      }
+      for (const [path, code] of outputs) {
+        const existing =
+          path === modulePath
+            ? current
+            : existsSync(path)
+              ? readFileSync(path, 'utf8')
+              : undefined;
+        const existingHeader =
+          path === modulePath ? header : existing && readViewHeader(existing);
+        if (existing === undefined) {
+          failed = true;
+          lines.push(`${path}: missing; run kerf-ui-view generate`);
+        } else if (!existingHeader?.intact) {
+          failed = true;
+          lines.push(
+            `${path}: edited by hand; regenerate it instead of editing`,
+          );
+        } else if (existing !== code) {
+          failed = true;
+          lines.push(`${path}: stale; run kerf-ui-view generate`);
+        } else lines.push(`${path}: up to date`);
+      }
     }
-    for (const [path, code] of outputs) {
-      const existing =
-        path === modulePath
-          ? current
-          : existsSync(path)
-            ? readFileSync(path, 'utf8')
-            : undefined;
-      const existingHeader =
-        path === modulePath ? header : existing && readViewHeader(existing);
-      if (existing === undefined) {
-        failed = true;
-        lines.push(`${path}: missing; run kerf-ui-view generate`);
-      } else if (!existingHeader?.intact) {
-        failed = true;
-        lines.push(`${path}: edited by hand; regenerate it instead of editing`);
-      } else if (existing !== code) {
-        failed = true;
-        lines.push(`${path}: stale; run kerf-ui-view generate`);
-      } else lines.push(`${path}: up to date`);
-    }
+  } catch (error) {
+    // An unreadable or malformed input file, or a failed write: report it as
+    // `kerf-ui-view: <path>: <reason>` instead of a stack trace.
+    lines.push(`kerf-ui-view: ${error.message}`);
+    return { code: CLI_USAGE_EXIT, output: `${lines.join('\n')}\n` };
   }
   return { code: failed ? 1 : 0, output: `${lines.join('\n')}\n` };
 }

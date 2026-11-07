@@ -3,8 +3,10 @@ import {
   mkdirSync,
   mkdtempSync,
   readFileSync,
+  realpathSync,
   rmSync,
   symlinkSync,
+  writeFileSync,
 } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
@@ -86,4 +88,105 @@ describe('@kerfjs/ui bins', () => {
       expect(result.stderr).toBe('');
     }
   });
+
+  // KF-7NZM4K: a missing flag value, an unknown flag, and an unreadable or
+  // malformed input file are usage/input errors (`<bin>: <message>`, exit 2),
+  // never a silent fallback or a raw stack trace.
+  const missingValue: Record<string, string[]> = {
+    'kerf-ui-analyze': ['--format'],
+    'kerf-ui-doctor': ['--root'],
+    'kerf-ui-evaluate': ['--url'],
+    'kerf-ui-view': ['generate', 'a.kui.json', '--target'],
+    'kerf-ui-props': ['--write', '--root'],
+    'kerf-catalog-demo': ['--extension'],
+  };
+  const unknownFlag: Record<string, string[]> = {
+    'kerf-ui-analyze': ['--fail-on-reviw'],
+    'kerf-ui-doctor': ['--fail-on-reviw'],
+    'kerf-ui-evaluate': ['--url', 'http://localhost:1', '--fail-on-reviw'],
+    'kerf-ui-view': ['generate', 'a.kui.json', '--fail-on-reviw'],
+    'kerf-ui-props': ['--write', '--fail-on-reviw'],
+    'kerf-catalog-demo': ['--write', '--fail-on-reviw'],
+  };
+
+  function runBin(name: string, argv: string[]) {
+    return spawnSync(process.execPath, [join(binDirectory, name), ...argv], {
+      cwd: folder,
+      encoding: 'utf8',
+    });
+  }
+
+  it('has an error probe for every bin', () => {
+    const names = bins.map(([name]) => name).sort();
+    expect(Object.keys(missingValue).sort()).toEqual(names);
+    expect(Object.keys(unknownFlag).sort()).toEqual(names);
+  });
+
+  it.each(bins)('%s rejects a flag with no value', (name) => {
+    const result = runBin(name, missingValue[name]);
+    expect(result.status).toBe(2);
+    expect(result.stderr).toContain(
+      `${name}: ${missingValue[name].at(-1)} requires a value.`,
+    );
+  });
+
+  it.each(bins)('%s rejects an unknown flag', (name) => {
+    const result = runBin(name, unknownFlag[name]);
+    expect(result.status).toBe(2);
+    expect(result.stderr).toContain(
+      `${name}: Unknown arguments: --fail-on-reviw`,
+    );
+  });
+
+  it('names a missing or malformed input file instead of a stack trace', () => {
+    writeFileSync(join(folder, 'bad.json'), '{ "schema": ');
+    const packageFolder = join(folder, 'bad-package');
+    mkdirSync(packageFolder, { recursive: true });
+    writeFileSync(join(packageFolder, 'package.json'), '{');
+    const repoBase = ['--repo-base', 'https://example.com/blob/main'];
+    const out = ['--out', 'x.ts'];
+    const cases: Array<[string, string[], string]> = [
+      [
+        'kerf-ui-view',
+        ['check', 'missing.kui.json', '--no-profile'],
+        'kerf-ui-view: missing.kui.json: file not found',
+      ],
+      [
+        'kerf-ui-view',
+        ['check', 'bad.json', '--no-profile'],
+        'kerf-ui-view: bad.json: invalid JSON:',
+      ],
+      [
+        'kerf-ui-props',
+        ['--check', '--root', packageFolder],
+        `kerf-ui-props: ${join(packageFolder, 'package.json')}: invalid JSON:`,
+      ],
+      [
+        'kerf-catalog-demo',
+        ['--check', '--extension', 'missing.json', ...out, ...repoBase],
+        'kerf-catalog-demo: missing.json: file not found',
+      ],
+      [
+        'kerf-catalog-demo',
+        ['--check', '--extension', 'bad.json', ...out, ...repoBase],
+        'kerf-catalog-demo: bad.json: invalid JSON:',
+      ],
+      [
+        'kerf-ui-analyze',
+        ['--root', 'missing-root'],
+        `kerf-ui-analyze: ${join(realFolder(), 'missing-root')}: not a directory`,
+      ],
+    ];
+    for (const [name, argv, message] of cases) {
+      const result = runBin(name, argv);
+      expect(result.status, `${name} ${argv.join(' ')}`).toBe(2);
+      expect(result.stderr).toContain(message);
+      expect(result.stderr).not.toMatch(/\n\s+at /);
+    }
+  });
 });
+
+/** The temp folder as the child process sees its cwd (macOS /private/var). */
+function realFolder() {
+  return realpathSync(folder);
+}
