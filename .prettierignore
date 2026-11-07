@@ -31,7 +31,7 @@ test-results/
 .hotsheet2/rulesync.generated.jsonc
 
 # Generated mirrors, reports, captures, and fixtures
-# Editor build samples, written by editor/tests/browser/demo-builds.spec.ts in
+# Editor build samples, written by editor/tests/browser/demo-builds/*.spec.ts in
 # the editor's own two-space Save format.
 editor/samples/
 /ai/

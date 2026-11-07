@@ -1,6 +1,6 @@
 // @vitest-environment node
 // KF-JN4PF5: every ux-demo configuration the editor builds is saved as a
-// sample (editor/samples/, written by the demo-builds browser spec). Each one
+// sample (editor/samples/, written by the demo-builds browser specs). Each one
 // must load in the editor: a view document that parses and validates against
 // the editor's catalog with no diagnostics.
 import { readdirSync, readFileSync } from 'node:fs';
@@ -18,13 +18,15 @@ const samples = readdirSync(folder).filter((file) =>
 
 describe('editor build samples', () => {
   it('has a sample for each built configuration, and no other', () => {
-    const spec = readFileSync(
-      new URL('../browser/demo-builds.spec.ts', import.meta.url),
-      'utf8',
-    );
-    const builds = [...spec.matchAll(/^test\(\s*'(builds [^']+)'/gm)].map(
-      ([, title]) => sampleName(title!).file,
-    );
+    const specs = new URL('../browser/demo-builds/', import.meta.url);
+    const builds = readdirSync(specs)
+      .filter((file) => file.endsWith('.spec.ts'))
+      .flatMap((file) => [
+        ...readFileSync(new URL(file, specs), 'utf8').matchAll(
+          /^test\(\s*'(builds [^']+)'/gm,
+        ),
+      ])
+      .map(([, title]) => sampleName(title!).file);
     expect(builds.length).toBeGreaterThan(0);
     expect([...samples].sort()).toEqual([...builds].sort());
   });

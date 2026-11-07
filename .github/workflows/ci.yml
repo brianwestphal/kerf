@@ -209,8 +209,8 @@ jobs:
   # KF-PW9DA7: the editor's Playwright flows, one engine and a quarter of the
   # tests per job, fully parallel. The demo builds made one serial job run
   # about two hours, long enough that every push cancelled it before it
-  # reported; shards split by test count, so the long demo-builds file needs
-  # four of them to spread over two jobs.
+  # reported; shards split by test count across the demo-builds group files
+  # (editor/tests/browser/demo-builds/).
   editor-browser:
     runs-on: ubuntu-latest
     strategy:

@@ -164,7 +164,7 @@ async function saveSample(document: { name: string; root: unknown }) {
   const info = test.info();
   if (
     info.project.name !== 'chromium' ||
-    !info.file.endsWith('demo-builds.spec.ts') ||
+    !/[\\/]demo-builds[\\/][^\\/]+\.spec\.ts$/.test(info.file) ||
     !info.title.startsWith('builds ')
   )
     return;

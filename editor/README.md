@@ -58,7 +58,8 @@ come later.
 ## Demo build samples
 
 `samples/` holds one `.kui.json` document per ux-demo configuration the editor
-can build. `tests/browser/demo-builds.spec.ts` builds each one the way a person
+can build. The `tests/browser/demo-builds/*.spec.ts` files (one per component
+group, sharing `demo-builds/helpers.ts`) build each one the way a person
 would (palette drags, outline and canvas clicks, Inspector fields), and its
 Chromium run saves the exported document there, named after the build, with
 node ids numbered in document order so that an unchanged build rewrites the
@@ -74,7 +75,7 @@ sibling `ui/` build, so one copy of kerf serves both.
 
 ```bash
 npm ci            # in editor/
-npm run dev       # http://127.0.0.1:42917
+npm run dev       # http://127.0.0.1:42917 (ports.ts)
 npm run check     # builds ui/ if needed, then lint, types, unit tests, build
 npm run test:e2e  # Playwright (add --project=chromium locally)
 ```
