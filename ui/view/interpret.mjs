@@ -9,14 +9,13 @@ import * as cssValues from '../dist/css-values.js';
 import { contractDigest, contractOf } from './contract.mjs';
 import {
   channelOf,
-  composedViewPath,
   fieldZoneOf,
-  parseCssTree,
-  eachNodes,
   withFieldZones,
   ZoneFill,
   zonePropOf,
-} from './validate.mjs';
+} from './catalog.mjs';
+import { parseCssTree } from './css-grammar.mjs';
+import { composedViewPath, eachNodes } from './validate.mjs';
 
 const isObject = (value) =>
   value !== null && typeof value === 'object' && !Array.isArray(value);

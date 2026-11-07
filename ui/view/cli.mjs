@@ -17,7 +17,8 @@ import {
 } from '../scripts/lib/cli-args.mjs';
 import { contractOf, diffContracts } from './contract.mjs';
 import { generateView, readViewHeader, viewModulePath } from './generate.mjs';
-import { createViewCatalog, validateView } from './validate.mjs';
+import { createViewCatalog } from './catalog.mjs';
+import { validateView } from './validate.mjs';
 
 const USAGE = `Usage: kerf-ui-view <command> <document.kui.json...> [options]
 

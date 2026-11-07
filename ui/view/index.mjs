@@ -1,16 +1,12 @@
 // @kerfjs/ui/view: the published, browser-safe view-document layer
 // (docs/26-ui-editor.md). The private editor and the kerf-ui-view CLI are
 // its clients; neither owns the format.
+export { channelOf, createViewCatalog, fieldZoneOf } from './catalog.mjs';
+export { parseCssCall, parseCssTree } from './css-grammar.mjs';
+export { isAssignable, isLiteralOf } from './types.mjs';
 export {
-  channelOf,
   composedViewPath,
-  createViewCatalog,
   dataAttributeProblem,
-  fieldZoneOf,
-  isAssignable,
-  isLiteralOf,
-  parseCssCall,
-  parseCssTree,
   validateView,
   VIEW_DOCUMENT_SCHEMA_ID,
 } from './validate.mjs';

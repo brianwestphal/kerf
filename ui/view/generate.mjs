@@ -12,14 +12,13 @@ import {
 } from './contract.mjs';
 import {
   channelOf,
-  composedViewPath,
   fieldZoneOf,
-  parseCssCall,
   withFieldZones,
-  eachNodes,
   ZoneFill,
   zonePropOf,
-} from './validate.mjs';
+} from './catalog.mjs';
+import { parseCssCall } from './css-grammar.mjs';
+import { composedViewPath, eachNodes } from './validate.mjs';
 
 export const GENERATOR_VERSION = 1;
 const HEADER_LINES = 3;
