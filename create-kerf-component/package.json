@@ -32,6 +32,7 @@
   "files": [
     "index.js",
     "catalog.js",
+    "catalog",
     "component-metadata.schema.json",
     "component-composition.schema.json",
     "component-catalog-extension.schema.json",

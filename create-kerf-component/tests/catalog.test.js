@@ -865,6 +865,16 @@ test('the published generator package includes its bin and every schema', () => 
     const [{ files }] = JSON.parse(output);
     const paths = files.map((file) => file.path);
     assert.ok(paths.includes('catalog.js'));
+    for (const module of [
+      'export-discovery',
+      'generate',
+      'schema-validate',
+      'schemas',
+      'selection',
+      'validate-component',
+      'workspace',
+    ])
+      assert.ok(paths.includes(`catalog/${module}.js`), `missing ${module}`);
     assert.ok(paths.includes('component-metadata.schema.json'));
     assert.ok(paths.includes('component-composition.schema.json'));
     assert.ok(paths.includes('component-catalog-extension.schema.json'));

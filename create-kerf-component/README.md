@@ -133,6 +133,7 @@ my-widgets/
 ├── component-composition.json # deterministic generated AI catalog
 ├── scripts/
 │   ├── kerf-component-catalog.mjs # local generator + check mode
+│   ├── catalog/        # the generator's modules (validation, export discovery, generation)
 │   ├── component-metadata.schema.json # author-source schema used by the checker
 │   ├── component-composition.schema.json # emitted-catalog schema used by the checker
 │   └── component-catalog-extension.schema.json # optional selection-catalog schema

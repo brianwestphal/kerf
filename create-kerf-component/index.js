@@ -192,6 +192,17 @@ async function main(argv) {
     join(dirname(fileURLToPath(import.meta.url)), 'catalog.js'),
     join(targetDir, 'scripts', 'kerf-component-catalog.mjs'),
   );
+  // The command's modules, imported relatively by the entry above. Their
+  // own package.json keeps them ES modules whatever the host package's type.
+  cpSync(
+    join(dirname(fileURLToPath(import.meta.url)), 'catalog'),
+    join(targetDir, 'scripts', 'catalog'),
+    { recursive: true },
+  );
+  writeFileSync(
+    join(targetDir, 'scripts', 'catalog', 'package.json'),
+    '{ "type": "module" }\n',
+  );
   for (const schema of [
     'component-metadata.schema.json',
     'component-composition.schema.json',
