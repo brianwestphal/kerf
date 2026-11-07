@@ -1,6 +1,9 @@
 # Kerf UI editor: view documents and generated view contracts
 
-**Status: partly built.** Six pieces exist:
+**Status: built.** Every step of the implementation plan (§10) and play mode
+(§11) is done; the limits that remain are design limits, listed in §9 (no
+round trip from code, and no `data-*` channel, so no naming or selection, for
+a component without a single root). Seven pieces exist:
 
 - the foundation, `ui/ai/component-props.json` (KF-8PXPKW: generated
   per-component prop schema; see `docs/21-ui-package.md`);
@@ -11,7 +14,9 @@
 - `interpretView` (§7; KF-5G4CNW: runtime interpreter);
 - the `kerfjs/no-generated-view-edits` lint rule (§5.2; KF-BD3ZHQ: no-hand-edits
   lint rule);
-- the private `editor/` scaffold (KF-4NRZCV: editor scaffold): open and save,
+- the editor (KF-4NRZCV: editor scaffold), published as `@kerfjs/ui/editor`
+  with the `@kerfjs/ui/vite-editor` host plugin, and hosted privately by
+  `editor/`: open and save,
   canvas preview, selection, outline, an inspector, and a problems list
   linked to nodes (KF-WC0ZG3: editor problems list), and export of the generated
   module with a contract-change report against the last export or a chosen
@@ -145,13 +150,17 @@ the outline and inspector change or remove like any other. A unit test seeds
 every cataloged component as a lone document and requires it to validate and
 render.
 
-**Field editors (design, signed off 2026-10-30; KF-AJHJB8: first-class
-complex-prop editors).** Today 55 Kerf UI props are edited as typed JSON: 32
-objects (a Workbench's `mainToolbar`, a `ListConfig`), 13 lists of objects (a
-Select's `choices`, a NavStack's `views`), 6 lists of strings or enum values
-(TagField `tags`, Pane `separators`), 3 lists of union items (PopupMenu
-`items`), and LucideIcon's icon data. Each of these gets a first-class editor
-instead. The editors are derived from the props catalog's type graph (the same
+**Field editors (built; designed and signed off 2026-10-30; KF-AJHJB8:
+first-class complex-prop editors).** Before them, 55 Kerf UI props were edited
+as typed JSON: 32 objects (a Workbench's `mainToolbar`, a `ListConfig`), 13
+lists of objects (a Select's `choices`, a NavStack's `views`), 6 lists of
+strings or enum values (TagField `tags`, Pane `separators`), 3 lists of union
+items (PopupMenu `items`), and LucideIcon's icon data. Each now has a
+first-class editor (`ui/src/editor/model/fields.ts`,
+`ui/src/editor/field-editors.ts`). Typed JSON remains only for values a form
+cannot hold: app-supplied values (functions, signals, models), lists of
+numbers or mixed values, objects that are not plain field sets, and each
+editor's **Edit as JSON** escape hatch. The editors are derived from the props catalog's type graph (the same
 `resolveType` walk seeding uses), not written per component, so an
 application component's catalog gets them with no extra code.
 
@@ -831,15 +840,19 @@ The editor respects that:
 
 ### 1.2 Package layering
 
-| Layer                                                           | Package                                     | Published                |
-| --------------------------------------------------------------- | ------------------------------------------- | ------------------------ |
-| Document schema, validator, generator, contract digest and diff | `@kerfjs/ui` (`kerf-ui-view` bin + library) | yes                      |
-| Runtime interpreter (`interpretView`)                           | `@kerfjs/ui/view` subpath                   | yes                      |
-| The visual editor application                                   | `editor/`                                   | no (private, dogfooding) |
+| Layer                                                                       | Package                                                | Published                |
+| --------------------------------------------------------------------------- | ------------------------------------------------------ | ------------------------ |
+| Document schema, validator, generator, contract digest and diff             | `@kerfjs/ui/view` subpath, plus the `kerf-ui-view` bin | yes                      |
+| Runtime interpreter (`interpretView`)                                       | `@kerfjs/ui/view` subpath                              | yes                      |
+| The editor shell (`createEditor`, `createEditorCatalog`)                    | `@kerfjs/ui/editor` (`ui/src/editor/`)                 | yes                      |
+| The editor's Vite host plugin (`kerfUiEditor()`)                            | `@kerfjs/ui/vite-editor`                               | yes                      |
+| A thin host over Kerf UI's own catalog, and the editor's browser test suite | `editor/`                                              | no (private, dogfooding) |
 
 Developers who never open the editor can still validate and regenerate
 documents that AI agents or other tools write. The editor is one client of the
-published layers, never the only one.
+published layers, never the only one. Consumers read
+[`ui/docs/view.md`](../ui/docs/view.md) for the view layer and
+[`ui/docs/editor-host.md`](../ui/docs/editor-host.md) for the editor.
 
 ## 2. Files and naming
 
@@ -1950,7 +1963,9 @@ diff <doc…>` takes `--target js`, `--declarations-only`, and extra
 6. **Done:** a `data-*` channel (`rootAttributes`) for every component with a
    single root, recorded as `dataChannel` in `component-props.json` (§4.5;
    KF-PYR8XZ: component data channels).
-7. **Done:** the private `editor/` package (KF-4NRZCV: editor scaffold), with
+7. **Done:** the editor (KF-4NRZCV: editor scaffold; published as
+   `@kerfjs/ui/editor` with `@kerfjs/ui/vite-editor` since KF-6GT5QY, hosted
+   privately by `editor/`), with
    a problems list (KF-WC0ZG3), export and compare (KF-Y38YRT, KF-9J810J), and
    inspector editing with undo (KF-KX77TV: editor editing), and bindings
    (KF-K5TKCV), control flow (KF-90GTJN), richer value editing (KF-YR91FA),
