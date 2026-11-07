@@ -44,7 +44,7 @@ import { wireTagFields } from '../components/forms/tag-field/wiring/wire-tag-fie
 import { wireTextFields } from '../components/forms/text-field/wiring/wire-text-fields.js';
 import { wireSidebar } from '../components/layout/collapsible-panel/wiring/wire-sidebar.js';
 import { wireResizableRegions } from '../components/layout/resizable-region/wiring/wire-resizable-regions.js';
-import { workbenchRegionId } from '../components/layout/workbench/internal/workbench-resize.js';
+import { workbenchRegionId } from '../components/layout/workbench/model/workbench-resize.js';
 import { wireWorkbench } from '../components/layout/workbench/wiring/wire-workbench.js';
 import { wireNavStack } from '../components/navigation/nav-stack/wiring/wire-nav-stack.js';
 import { wireTabBars } from '../components/navigation/tab-bar/wiring/wire-tab-bars.js';

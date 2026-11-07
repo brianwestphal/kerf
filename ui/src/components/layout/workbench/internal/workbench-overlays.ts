@@ -7,7 +7,7 @@
 import { effect, type Signal } from 'kerfjs';
 
 import { realmOf } from '../../../../shared/dom/realm.js';
-import type { WorkbenchPanelKey } from './workbench-resize.js';
+import type { WorkbenchPanelKey } from '../model/workbench-resize.js';
 
 /** A Workbench panel whose app-owned `collapsed` signal the wiring may write. */
 export interface WorkbenchOverlayPanel {

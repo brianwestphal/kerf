@@ -27,7 +27,7 @@ import {
   WORKBENCH_RESIZE_DEFAULTS,
   type WorkbenchPanelKey,
   workbenchRegionId,
-} from './internal/workbench-resize.js';
+} from './model/workbench-resize.js';
 import {
   floatingRestore,
   mainBody,

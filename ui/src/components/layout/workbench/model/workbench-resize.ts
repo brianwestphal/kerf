@@ -1,5 +1,7 @@
-// The resizable-panel contract shared by `Workbench` (which renders it) and
-// `wireWorkbench` (which drives it). Internal.
+// The resizable-panel contract shared by `Workbench` (which renders it),
+// `wireWorkbench` (which drives it), and the editor's play adapters (which
+// address a panel by its region id). A pure model: slot slugs, region ids, and
+// default limits, with no DOM dependency.
 
 /** A Workbench panel slot, named after its `WorkbenchProps` prop. */
 export type WorkbenchPanelKey = 'leftRail' | 'rightRail' | 'bottomDrawer';

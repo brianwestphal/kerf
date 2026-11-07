@@ -29,7 +29,7 @@ import { Pane, type PaneConfig } from '../../pane/pane.js';
 import {
   type WorkbenchPanelKey,
   workbenchRegionId,
-} from './workbench-resize.js';
+} from '../model/workbench-resize.js';
 
 /** The standard toggle a Workbench renders for a panel (see {@link PanelToggle}). */
 export type WorkbenchPanelToggle = PanelToggle;

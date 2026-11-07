@@ -12,7 +12,7 @@ import {
 import {
   type WorkbenchPanelKey,
   workbenchRegionId,
-} from '../internal/workbench-resize.js';
+} from '../model/workbench-resize.js';
 
 export type { WorkbenchPanelKey };
 

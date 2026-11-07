@@ -134,12 +134,9 @@ for (const file of await sourceFiles(componentRoot)) {
 
 // KF-TA779Y: import edges. `internal/` is private to its component; another
 // component reaches it only through the owner's primary module or its
-// `model/`, `parts/`, `register/`, or `wiring/` folders. `shared/` is the
-// bottom layer and imports no component, composition, wiring, or catalog code.
-const ALLOWED_INTERNAL_EDGES = new Set([
-  // KF-8G51WR: move workbench-resize to Workbench's model/ with the editor.
-  'editor/play-adapters.ts -> components/layout/workbench/internal/workbench-resize.ts',
-]);
+// `model/`, `parts/`, `register/`, or `wiring/` folders, with no allowlisted
+// exceptions (KF-8G51WR retired the last one). `shared/` is the bottom layer
+// and imports no component, composition, wiring, or catalog code.
 const SHARED_FORBIDDEN = [
   'components/',
   'composition/',
@@ -175,8 +172,7 @@ for (const file of await sourceFiles(sourceRoot)) {
     if (
       targetOwner !== null &&
       targetOwner !== owner &&
-      target.slice(targetOwner.length).startsWith('internal/') &&
-      !ALLOWED_INTERNAL_EDGES.has(`${path} -> ${target}`)
+      target.slice(targetOwner.length).startsWith('internal/')
     )
       errors.push(
         `${path} imports ${target}, another component's internal/ module; move the shared piece to the owner's model/, parts/, or wiring/ folder (or to src/shared/) instead`,
