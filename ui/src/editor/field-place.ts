@@ -1,6 +1,6 @@
 // Where an Inspector control writes (KF-YF1PDR: split out of editor.tsx): a
 // prop, or a field inside one, and the keys the Inspector derives from it.
-import { type FieldContainer, type FieldPath } from './model/fields.js';
+import type { FieldContainer, FieldPath } from './model/fields.js';
 
 /** Where an inspector control writes: a prop, or a field inside one. */
 export interface FieldPlace {

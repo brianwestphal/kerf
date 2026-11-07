@@ -27,27 +27,22 @@ import {
 } from 'kerfjs';
 import { delegateActions } from 'kerfjs/actions';
 import {
-  Activity,
   ArrowDown,
   ArrowLeft,
   ArrowUp,
-  BadgeCheck,
   Ban,
   ChevronRight,
   Component,
   CopyPlus,
-  FaceSlightlySmiling,
   FileCode,
   FilePlus,
   FileText,
   FolderOpen,
   GitCompare,
   Group,
-  type IconNode,
   icons as lucideIcons,
   LayoutGrid,
   List as ListIcon,
-  LoaderCircle,
   Play,
   Plus,
   Redo2,
@@ -101,7 +96,6 @@ import { TagField } from '../components/forms/tag-field/tag-field.js';
 import { wireTagFields } from '../components/forms/tag-field/wiring/wire-tag-fields.js';
 import { TextField } from '../components/forms/text-field/text-field.js';
 import { Grid } from '../components/layout/grid/grid.js';
-import type { PaneConfig } from '../components/layout/pane/pane.js';
 import { Row } from '../components/layout/row/row.js';
 import { wireWorkbench } from '../components/layout/workbench/wiring/wire-workbench.js';
 import { Workbench } from '../components/layout/workbench/workbench.js';
@@ -116,7 +110,6 @@ import {
   DialogSurface,
   isPopoverPinned,
   openDialog,
-  type PinnablePopoverChange,
   PinnablePopoverSurface,
   wirePinnablePopover,
 } from '../components/surfaces/surface-scaffold/surface-scaffold.js';
@@ -167,6 +160,16 @@ import {
   type OpenField,
   placeKey,
 } from './field-place.js';
+import {
+  LIBRARY_ID,
+  PALETTE_ICONS,
+  PALETTE_VIEW_ACTION,
+  type PaletteView,
+  rememberedLibrary,
+  rememberedPaletteView,
+  rememberLibrary,
+  rememberPaletteView,
+} from './library-memory.js';
 import { contentOf, nodesToText, textToNodes } from './model/content.js';
 import {
   controlOf,
@@ -380,257 +383,104 @@ import {
   PLAY_ENVIRONMENT,
   PLAY_READY,
 } from './player.js';
+import {
+  ADD_ACTION,
+  CONTENT_ADD_ACTION,
+  CONTENT_TO_NODES_ACTION,
+  CONTENT_TO_TEXT_ACTION,
+  CONTEXT_DELETE_ACTION,
+  CONTEXT_DUPLICATE_ACTION,
+  CONTEXT_EMBED_ACTION,
+  CONTEXT_EMBED_OTHER_ACTION,
+  CONTEXT_MENU,
+  CONTEXT_MOVE_DOWN_ACTION,
+  CONTEXT_MOVE_UP_ACTION,
+  DATA_ATTRIBUTE_ADD_ACTION,
+  DATA_ATTRIBUTE_REMOVE_ACTION,
+  DELETE_ACTION,
+  DOCUMENT_AREAS,
+  DOCUMENT_TAB_ACTION,
+  DOCUMENT_TOGGLE,
+  type DocumentArea,
+  DROP_CHOICE_ACTION,
+  DROP_MENU,
+  DUPLICATE_ACTION,
+  EMBED_ACTION,
+  EMBED_CLEAR_ACTION,
+  EMBED_DIALOG,
+  EMBED_FIRST,
+  EMBED_OTHER_ACTION,
+  EMBED_PANES,
+  EMBED_PROPS,
+  EMPTY_ZONE_TARGET,
+  emptyZoneTarget,
+  EXAMPLE_ACTION,
+  EXPORT_DECLARATIONS_ACTION,
+  EXPORT_MODULE_ACTION,
+  EXTRACT_ACTION,
+  EXTRACT_DIALOG,
+  FIELD_ADD_ITEM_ACTION,
+  FIELD_BACK_ACTION,
+  FIELD_DIALOG,
+  FIELD_DONE_ACTION,
+  FIELD_EXAMPLE_ACTION,
+  FIELD_JSON_ACTION,
+  FIELD_OPEN_ACTION,
+  FIELD_REMOVE_ITEM_ACTION,
+  FIELD_RESET_ACTION,
+  FIELD_SET_ACTION,
+  FIRST_ROOT_ACTION,
+  ICON_CHOOSE_ACTION,
+  ICON_CLEAR_ACTION,
+  ICON_DIALOG,
+  ICON_OPEN_ACTION,
+  ICON_REMOVE_ACTION,
+  INSERT_DOCUMENT,
+  INSERT_DOCUMENT_ACTION,
+  INSERT_DOCUMENT_CLEAR_ACTION,
+  INSERT_DOCUMENT_DIALOG,
+  INSPECTOR_PANE,
+  INSPECTOR_STACK,
+  INSPECTOR_TAB_ACTION,
+  INSPECTOR_TOGGLE,
+  type InspectorArea,
+  type InspectorRow,
+  MOVE_DOWN_ACTION,
+  MOVE_UP_ACTION,
+  NEW_ACTION,
+  OPEN_VIEW_ACTION,
+  OUTLINE_ACTION,
+  OUTLINE_TOGGLE_ACTION,
+  PALETTE_ACTION,
+  PALETTE_CLEAR_ACTION,
+  PALETTE_DOCUMENT_ACTION,
+  PLAY_ACTION,
+  PLAY_DONE_ACTION,
+  PROBLEM_ACTION,
+  PROMOTE_ACTION,
+  PROMOTE_FIELD_ACTION,
+  PROMOTE_PROP_ACTION,
+  REDO_ACTION,
+  REPLACE_CONFIRM_ACTION,
+  REPLACE_DIALOG,
+  REPLACE_ROOT_ACTION,
+  REPLACE_TARGET,
+  replaceTarget,
+  RING_REACH,
+  ROOT_EMPTY,
+  ROOT_TARGET,
+  SAVE_ACTION,
+  SAVE_AS_ACTION,
+  SAVE_AS_DIALOG,
+  SHOW_VIEW_ACTION,
+  SPRING_MS,
+  TEXT_RUN,
+  UNDO_ACTION,
+  UNSET_ACTION,
+  VIEW_BACK_ACTION,
+} from './shell-names.js';
 
 export const WORKBENCH_ID = 'kerf-ui-editor';
-const OUTLINE_ACTION = 'editor-select-node';
-const OUTLINE_TOGGLE_ACTION = 'editor-toggle-node';
-const PALETTE_ACTION = 'editor-show-component';
-const PALETTE_CLEAR_ACTION = 'editor-clear-palette-filter';
-/**
- * KF-FXACB5: a Library document, which a click inserts as a `#view` and a
- * drag (source `document:<path>`) drops like a component.
- */
-const PALETTE_DOCUMENT_ACTION = 'editor-insert-library-document';
-/** KF-JC7WTW: the Library shows a list or a grid of thumbnails. */
-const PALETTE_VIEW_ACTION = 'editor-palette-view';
-const PALETTE_VIEW_KEY = 'kerf-ui-editor:palette-view';
-type PaletteView = 'list' | 'grid';
-/**
- * A palette tile's icon where its component draws nothing recognizable
- * when added (an icon with no name, a status mark) and has no sketch
- * (KF-JC7WTW); any other tile whose thumbnail is empty shows the generic
- * one.
- */
-const PALETTE_ICONS: Readonly<Record<string, IconNode>> = {
-  '@kerfjs/ui:lucide-icon': FaceSlightlySmiling,
-  '@kerfjs/ui:loading-spinner': LoaderCircle,
-  '@kerfjs/ui:corner-status': BadgeCheck,
-  '@kerfjs/ui:edge-activity-indicator': Activity,
-};
-
-/** The palette view the person last chose, kept per browser. */
-function rememberedPaletteView(): PaletteView {
-  try {
-    return globalThis.localStorage?.getItem(PALETTE_VIEW_KEY) === 'grid'
-      ? 'grid'
-      : 'list';
-  } catch {
-    return 'list';
-  }
-}
-
-function rememberPaletteView(view: PaletteView): void {
-  try {
-    globalThis.localStorage?.setItem(PALETTE_VIEW_KEY, view);
-  } catch {
-    // Without storage the choice lasts until the editor reloads.
-  }
-}
-
-/**
- * KF-Z54E4H: the component Library, an Xcode-style popover the Preview
- * toolbar's Library button (and Shift+Cmd+L) opens, and where it was
- * pinned, kept per browser.
- */
-const LIBRARY_ID = 'editor-library';
-const LIBRARY_KEY = 'kerf-ui-editor:library';
-type LibraryMemory = Pick<PinnablePopoverChange, 'pinned' | 'placement'>;
-
-/** Whether the Library was left pinned, and where, in this browser. */
-function rememberedLibrary(): LibraryMemory | undefined {
-  try {
-    const stored = globalThis.localStorage?.getItem(LIBRARY_KEY);
-    if (!stored) return undefined;
-    const value = JSON.parse(stored) as Partial<LibraryMemory> | null;
-    return {
-      pinned: value?.pinned === true,
-      placement:
-        value?.placement &&
-        Number.isFinite(value.placement.x) &&
-        Number.isFinite(value.placement.y)
-          ? value.placement
-          : null,
-    };
-  } catch {
-    return undefined;
-  }
-}
-
-function rememberLibrary({ pinned, placement }: LibraryMemory): void {
-  try {
-    globalThis.localStorage?.setItem(
-      LIBRARY_KEY,
-      JSON.stringify({ pinned, placement }),
-    );
-  } catch {
-    // Without storage the Library opens transient after a reload.
-  }
-}
-const PROBLEM_ACTION = 'editor-select-problem';
-const NEW_ACTION = 'editor-new';
-// KF-60BEEJ: play mode's Play (Canvas toolbar) and Done (play bar).
-const PLAY_ACTION = 'editor-play';
-const PLAY_DONE_ACTION = 'editor-play-done';
-// KF-MHY1GB: each rail switches between focus areas with a segmented tab strip.
-const DOCUMENT_TAB_ACTION = 'editor-document-tab';
-const INSPECTOR_TAB_ACTION = 'editor-inspector-tab';
-/** The Document rail's tab strip id. */
-const DOCUMENT_AREAS = 'editor-document-areas';
-/** How long a drag rests on a tab before it opens. */
-const SPRING_MS = 500;
-type DocumentArea = 'outline' | 'problems';
-type InspectorArea = 'properties' | 'flow' | 'children';
-const SAVE_ACTION = 'editor-save';
-const SAVE_AS_ACTION = 'editor-save-as';
-const SAVE_AS_DIALOG = 'editor-save-as-dialog';
-/** KF-D9P3NP: Extract to document, and its Save As–style dialog. */
-const EXTRACT_ACTION = 'editor-extract';
-const EXTRACT_DIALOG = 'editor-extract-dialog';
-const UNDO_ACTION = 'editor-undo';
-const REDO_ACTION = 'editor-redo';
-const MOVE_UP_ACTION = 'editor-move-up';
-const MOVE_DOWN_ACTION = 'editor-move-down';
-const DELETE_ACTION = 'editor-delete';
-/** Copies the selected node right after itself (KF-QAVK73). */
-const DUPLICATE_ACTION = 'editor-duplicate';
-const ADD_ACTION = 'editor-add-child';
-/** Add a child's choice for a text run in a text-accepting zone (KF-YBMVVM). */
-const TEXT_RUN = '#text';
-const REPLACE_ROOT_ACTION = 'editor-replace-root';
-/** KF-PK3GVY: makes the chosen component a rootless document's root. */
-const FIRST_ROOT_ACTION = 'editor-first-root';
-/**
- * A rootless document's canvas empty state (KF-PK3GVY): a drop target whose
- * outline id is `ROOT_TARGET`, where a palette drop becomes the root.
- */
-const ROOT_EMPTY = 'root';
-const ROOT_TARGET = 'editor-root';
-const CONTENT_TO_NODES_ACTION = 'editor-content-to-nodes';
-const CONTENT_TO_TEXT_ACTION = 'editor-content-to-text';
-/** A canvas drop target naming an empty zone (KF-7BB55F). */
-const EMPTY_ZONE_TARGET = 'editor-empty-zone:';
-/** The zone an empty-zone drop target names, if `id` is one. */
-const emptyZoneTarget = (id: string) =>
-  id.startsWith(EMPTY_ZONE_TARGET)
-    ? (JSON.parse(id.slice(EMPTY_ZONE_TARGET.length)) as SlotAddress)
-    : undefined;
-/**
- * KF-WKABP2: a drop target replacing the node it names, alone in a zone
- * that holds one child.
- */
-const REPLACE_TARGET = 'editor-replace:';
-/** The node a replacing drop target names, if `id` is one. */
-const replaceTarget = (id: string) =>
-  id.startsWith(REPLACE_TARGET) ? id.slice(REPLACE_TARGET.length) : undefined;
-/** KF-WKABP2: the menu a drop asks with, and its entries' action. */
-const DROP_MENU = 'data-editor-drop-menu';
-const DROP_CHOICE_ACTION = 'editor-drop-choice';
-const REPLACE_DIALOG = 'editor-replace-dialog';
-const REPLACE_CONFIRM_ACTION = 'editor-replace-confirm';
-/** Adds a node to a content prop's zone from its Properties row (KF-5T3TE4). */
-const CONTENT_ADD_ACTION = 'editor-content-add';
-/**
- * KF-3Y2GS2: an optional text prop's Not set toggle. Pressed while the prop
- * is unset; an empty field is the empty string.
- */
-const UNSET_ACTION = 'editor-toggle-unset';
-const EXAMPLE_ACTION = 'editor-fill-example';
-// KF-Z9S029: object forms in a pushed Inspector view or a dialog.
-const FIELD_OPEN_ACTION = 'editor-open-field';
-const FIELD_BACK_ACTION = 'editor-field-back';
-const FIELD_DONE_ACTION = 'editor-field-done';
-const FIELD_RESET_ACTION = 'editor-reset-field';
-const FIELD_EXAMPLE_ACTION = 'editor-fill-field-example';
-const FIELD_JSON_ACTION = 'editor-field-json';
-const FIELD_DIALOG = 'editor-field-dialog';
-const INSPECTOR_STACK = 'editor-inspector-stack';
-/**
- * KF-NV427Y: the Inspector's own edits insert and remove rows above the
- * reader, and Safari then applies a stale scroll-anchoring jump on the next
- * unrelated reflow (the autosave status), so its panes opt out of anchoring.
- */
-const INSPECTOR_PANE: PaneConfig = { scrollAnchoring: 'none' };
-// KF-VYRDDQ: icon data picks a Lucide icon in a searchable dialog.
-const ICON_OPEN_ACTION = 'editor-open-icon';
-const ICON_CHOOSE_ACTION = 'editor-choose-icon';
-const ICON_REMOVE_ACTION = 'editor-remove-icon';
-const ICON_CLEAR_ACTION = 'editor-clear-icon-search';
-const ICON_DIALOG = 'editor-icon-dialog';
-// KF-65FTKX: a component's data-* attributes.
-const OPEN_VIEW_ACTION = 'editor-open-view';
-const VIEW_BACK_ACTION = 'editor-view-back';
-const DATA_ATTRIBUTE_ADD_ACTION = 'editor-add-data-attribute';
-const DATA_ATTRIBUTE_REMOVE_ACTION = 'editor-remove-data-attribute';
-const SHOW_VIEW_ACTION = 'editor-show-view';
-const EMBED_ACTION = 'editor-embed';
-const EMBED_OTHER_ACTION = 'editor-embed-other';
-const EMBED_CLEAR_ACTION = 'editor-embed-clear';
-const EMBED_DIALOG = 'editor-embed-dialog';
-/**
- * KF-PX5EVZ: Add a child's choice that inserts an existing document as a
- * `#view`, and its dialog: a filtered pick list when the storage lists the
- * project's documents, a path field when it does not.
- */
-const INSERT_DOCUMENT = '#view';
-const INSERT_DOCUMENT_ACTION = 'editor-insert-document';
-const INSERT_DOCUMENT_CLEAR_ACTION = 'editor-insert-document-clear';
-const INSERT_DOCUMENT_DIALOG = 'editor-insert-document-dialog';
-/** The node context menu's root (KF-JV7XW1). */
-const CONTEXT_MENU = 'data-editor-context-menu';
-// The node context menu's commands have actions of their own, so a page
-// still finds one Inspector control per action.
-const CONTEXT_EMBED_ACTION = 'editor-context-embed';
-const CONTEXT_EMBED_OTHER_ACTION = 'editor-context-embed-other';
-const CONTEXT_MOVE_UP_ACTION = 'editor-context-move-up';
-const CONTEXT_MOVE_DOWN_ACTION = 'editor-context-move-down';
-const CONTEXT_DUPLICATE_ACTION = 'editor-context-duplicate';
-const CONTEXT_DELETE_ACTION = 'editor-context-delete';
-/**
- * The containers Embed in offers first (KF-6MGYSG); Other… lists every
- * container that can hold the node.
- */
-const EMBED_FIRST = [
-  '@kerfjs/ui:sized-region',
-  '@kerfjs/ui:list-inset-control',
-  '@kerfjs/ui:list-inset-text',
-];
-/**
- * KF-N7K17T: the pane a split layout holds an embedded node in, when it has
- * no main zone: a SplitView's detail, the content beside its list.
- */
-const EMBED_PANES: Readonly<Record<string, string>> = {
-  '@kerfjs/ui:split-view': 'detail',
-};
-/**
- * Props a new container starts with when it embeds a node: a SizedRegion
- * keeps a usable height even where its parent sizes to its content, such as
- * the canvas's root Pane.
- */
-const EMBED_PROPS: Readonly<Record<string, Record<string, ViewValue>>> = {
-  '@kerfjs/ui:sized-region': { minHeight: { $css: 'rem(20)' } },
-};
-// KF-CY1D5W: a list of objects or union items edits item by item.
-const FIELD_ADD_ITEM_ACTION = 'editor-add-item';
-const FIELD_REMOVE_ITEM_ACTION = 'editor-remove-item';
-// KF-EXA2WH: an application field editor's button sets its value.
-const FIELD_SET_ACTION = 'editor-set-field';
-const PROMOTE_ACTION = 'editor-promote';
-/** Promotes one app-supplied prop from its own row (KF-D85GY0). */
-const PROMOTE_PROP_ACTION = 'editor-promote-prop';
-/** Promotes one field inside an object prop to a param (KF-3QEZFB). */
-const PROMOTE_FIELD_ACTION = 'editor-promote-field';
-const EXPORT_MODULE_ACTION = 'editor-export-module';
-const EXPORT_DECLARATIONS_ACTION = 'editor-export-declarations';
-const DOCUMENT_TOGGLE = 'editor-toggle-document';
-const INSPECTOR_TOGGLE = 'editor-toggle-inspector';
-/** How far the selection ring reaches outside its box: 3px plus 1px offset. */
-const RING_REACH = 4;
-
-/** One row of an Inspector section and how it is contained. */
-interface InspectorRow {
-  readonly kind: 'edit' | 'open' | 'fixed';
-  readonly row: SafeHtml;
-}
 
 /** What the inspector shows: a document node or a palette component. */
 export type Selection =

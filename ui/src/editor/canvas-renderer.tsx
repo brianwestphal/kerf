@@ -19,7 +19,7 @@ import { EmptyState } from '../components/feedback/empty-state/empty-state.js';
 import { Text } from '../components/typography/text/text.js';
 import type { EditorCatalog } from './catalog.js';
 import { HOOK } from './dom-hooks.js';
-import { type FieldPlace } from './field-place.js';
+import type { FieldPlace } from './field-place.js';
 import { visitNodes } from './model/document.js';
 import { legalZones } from './model/edits.js';
 import { propLabel } from './model/fields.js';
@@ -27,7 +27,7 @@ import { itemSlots, nodeTitle, zoneLabel } from './model/outline.js';
 import { markRows, type RowProps, withRowProps } from './model/play-values.js';
 import { playedView, playedViews } from './model/play-views.js';
 import { type PreviewSlot, previewSlots } from './model/preview-slots.js';
-import { type Problem } from './model/problems.js';
+import type { Problem } from './model/problems.js';
 import { sampleInputs } from './model/sample-inputs.js';
 import {
   embeddedDialogs,
