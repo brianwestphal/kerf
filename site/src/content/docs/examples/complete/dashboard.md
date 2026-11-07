@@ -57,17 +57,23 @@ mount(root, () => (
 
 // Imperative canvas, set up once. data-morph-skip keeps the diff away.
 const ctx = (document.getElementById('chart') as HTMLCanvasElement).getContext('2d')!;
-function draw() { /* rAF loop */ ; requestAnimationFrame(draw); }
-draw();
+let rafId = 0;
+function draw() { /* paint one frame */ ; rafId = requestAnimationFrame(draw); }
 
-// effect() = "WS lifecycle". Starts the simulated feed; cleanup stops it.
+// effect() = "WS lifecycle". Starts the simulated feed and the chart loop;
+// cleanup stops both.
 effect(() => {
   connected.value = true;
+  draw();
   const interval = setInterval(() => {
     batch(() => {
       // …mutate ~60 of 500 ticker rows + bump frame counter
     });
   }, 33);
-  return () => { clearInterval(interval); connected.value = false; };
+  return () => {
+    clearInterval(interval);
+    cancelAnimationFrame(rafId);
+    connected.value = false;
+  };
 });
 ```

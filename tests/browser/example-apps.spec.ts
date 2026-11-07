@@ -129,6 +129,54 @@ test.describe('kanban', () => {
     );
   });
 
+  test('a pointercancel ends the drag, and a later drag still drops', async ({
+    page,
+  }) => {
+    await page.goto(`${BASE}/kanban/`);
+
+    const todoCol = page.locator('.col[data-col="todo"]');
+    const doneCol = page.locator('.col[data-col="done"]');
+    const card = todoCol.locator('.card').first();
+    const cardBox = await card.boundingBox();
+    expect(cardBox).not.toBeNull();
+
+    // Start a drag, then cancel it the way a touch scroll takeover would: the
+    // browser fires pointercancel and never a pointerup.
+    await page.mouse.move(cardBox!.x + 20, cardBox!.y + 20);
+    await page.mouse.down();
+    await page.mouse.move(cardBox!.x + 60, cardBox!.y + 40, { steps: 4 });
+    await expect(page.locator('.card.dragging')).toHaveCount(1);
+    await page.evaluate(() => {
+      window.dispatchEvent(
+        new PointerEvent('pointercancel', { bubbles: true, pointerId: 1 }),
+      );
+    });
+    await expect(page.locator('.card.dragging')).toHaveCount(0);
+    await page.mouse.up();
+
+    // The cancelled drag left no stale state behind: a fresh drag drops.
+    const todoCountBefore = Number(await todoCol.locator('.count').innerText());
+    const doneCountBefore = Number(await doneCol.locator('.count').innerText());
+    const freshBox = await todoCol.locator('.card').first().boundingBox();
+    const doneBox = await doneCol.boundingBox();
+    expect(freshBox).not.toBeNull();
+    expect(doneBox).not.toBeNull();
+    await page.mouse.move(freshBox!.x + 20, freshBox!.y + 20);
+    await page.mouse.down();
+    await page.mouse.move(
+      doneBox!.x + doneBox!.width / 2,
+      doneBox!.y + doneBox!.height / 2,
+      { steps: 10 },
+    );
+    await page.mouse.up();
+    await expect(todoCol.locator('.count')).toHaveText(
+      String(todoCountBefore - 1),
+    );
+    await expect(doneCol.locator('.count')).toHaveText(
+      String(doneCountBefore + 1),
+    );
+  });
+
   test('pointerdown does not start a text selection on the card', async ({
     page,
   }) => {
@@ -324,6 +372,13 @@ test.describe('cart-htmx', () => {
     await expect(items).toHaveCount(3);
     await expect(items.nth(0)).toContainText('Espresso');
     await expect(page.locator('.total')).toContainText('Total: $19');
+
+    // The island's initial data round-trips through `dataset` (set after the
+    // static shell is inserted, never interpolated into the HTML string).
+    const initial = await page
+      .locator('#cart-shell > [data-cart-island]')
+      .getAttribute('data-initial');
+    expect(JSON.parse(initial!)).toHaveLength(3);
 
     // Remove the first item; total updates.
     await items.nth(0).locator('.remove').click();

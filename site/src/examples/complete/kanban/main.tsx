@@ -231,8 +231,29 @@ void delegate(root, 'pointerdown', '.card', (e, el) => {
     `.card.dragging[data-card="${card.dataset.card!}"]`,
   ) as HTMLElement | null;
   window.addEventListener('pointermove', onMove);
-  window.addEventListener('pointerup', onUp, { once: true });
+  window.addEventListener('pointerup', onUp);
+  // A pointercancel (a touch scroll takeover, an OS gesture) never delivers a
+  // pointerup. Without this the drag would stay set and the `if (drag.value)`
+  // guard above would block every later drag.
+  window.addEventListener('pointercancel', onCancel);
 });
+
+// Shared teardown for both ways a drag ends: detach the window listeners and
+// clear the drag state. Returns the drag that was in progress, if any.
+function endDrag(): DragState | null {
+  window.removeEventListener('pointermove', onMove);
+  window.removeEventListener('pointerup', onUp);
+  window.removeEventListener('pointercancel', onCancel);
+  const d = drag.value;
+  dragEl = null;
+  drag.value = null;
+  return d;
+}
+
+function onCancel() {
+  // The card snaps back: nothing moves in the store.
+  endDrag();
+}
 
 function onMove(ev: PointerEvent) {
   if (!dragEl) return;
@@ -244,10 +265,7 @@ function onMove(ev: PointerEvent) {
 }
 
 function onUp(ev: PointerEvent) {
-  window.removeEventListener('pointermove', onMove);
-  const d = drag.value;
-  dragEl = null;
-  drag.value = null;
+  const d = endDrag();
   if (!d) return;
   // Find the column and slot the cursor was over.
   const colEl = (

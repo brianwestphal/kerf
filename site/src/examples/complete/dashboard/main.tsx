@@ -89,11 +89,13 @@ mount(root, () => (
 ));
 
 // Imperative canvas — set up once after first render. The data-morph-skip wrapper
-// keeps the diff out, so this rAF loop is never disturbed.
+// keeps the diff out, so this rAF loop is never disturbed. The loop keeps its
+// frame handle so the feed's disposer below stops it alongside the interval.
 const ctx = (document.getElementById('chart') as HTMLCanvasElement).getContext(
   '2d',
 )!;
 let cf = 0;
+let rafId = 0;
 function draw() {
   ctx.fillStyle = '#0f172a';
   ctx.fillRect(0, 0, 240, 40);
@@ -103,14 +105,15 @@ function draw() {
     ctx.fillRect(x, y, 1, 1);
   }
   cf += 2;
-  requestAnimationFrame(draw);
+  rafId = requestAnimationFrame(draw);
 }
-draw();
 
-// effect() = the WS lifecycle. The disposer returned would stop the feed if we
-// later wanted to (e.g., on unmount). Here we just let it run.
+// effect() = the WS lifecycle, plus the chart loop it feeds. The disposer it
+// returns would stop both the feed and the rAF loop if we later wanted to
+// (e.g., on unmount). Here we just let it run.
 effect(() => {
   connected.value = true;
+  draw();
   const interval = setInterval(() => {
     // Simulate a single WS message containing many updates. batch() ensures
     // signal mutations inside coalesce into one render, even though we're
@@ -137,6 +140,7 @@ effect(() => {
 
   return () => {
     clearInterval(interval);
+    cancelAnimationFrame(rafId);
     connected.value = false;
   };
 });

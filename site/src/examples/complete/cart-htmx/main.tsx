@@ -58,16 +58,21 @@ function simulateSwap(initial: CartItem[]): void {
   // server would have returned — the inner content is the empty-shell layout
   // that kerf will then hydrate via mount().
   shell.innerHTML = `
-    <div data-cart-island data-initial='${JSON.stringify(initial)}'>
+    <div data-cart-island>
       <h2>Cart</h2>
       <ul class="cart-items"></ul>
       <p class="total"></p>
     </div>
   `;
+  // The server would have rendered `data-initial` with its own attribute
+  // escaping. Here we set it through `dataset` rather than interpolating JSON
+  // into the HTML string above: an unescaped `'` in a product name would
+  // otherwise break out of the attribute.
+  const root = shell.querySelector('[data-cart-island]') as HTMLElement;
+  root.dataset.initial = JSON.stringify(initial);
   logLine(`swapped shell with ${initial.length} initial items`);
 
   // Real htmx: this runs in a `document.body.addEventListener('htmx:afterSwap', ...)` handler.
-  const root = shell.querySelector('[data-cart-island]') as HTMLElement;
   const parsed = JSON.parse(root.dataset.initial!) as CartItem[];
   const items = signal<CartItem[]>(parsed);
 

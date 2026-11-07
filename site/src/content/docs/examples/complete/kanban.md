@@ -25,7 +25,7 @@ A mini Kanban board. Three columns (`To do` / `Doing` / `Done`), drag any card a
 **What to look at:**
 
 - **One `each()` per column.** Three keyed lists, one parent each. The list reconciler owns the rows of each column independently — moving a card across columns is just a remove from one list and insert into another.
-- **`delegate('pointerdown', '.card', …)`** kicks off the drag. `delegate()` matches via `closest()`, so a pointer-down landing on any descendant of `.card` (the tag badge, the text, the meta row) climbs up to the card itself. The remaining `pointermove` / `pointerup` listeners go on `window` because the cursor can leave the board.
+- **`delegate('pointerdown', '.card', …)`** kicks off the drag. `delegate()` matches via `closest()`, so a pointer-down landing on any descendant of `.card` (the tag badge, the text, the meta row) climbs up to the card itself. The remaining `pointermove` / `pointerup` / `pointercancel` listeners go on `window` because the cursor can leave the board. A `pointercancel` (a touch scroll takeover, an OS gesture) runs the same teardown as a drop, so an interrupted drag never blocks the next one.
 - **`data-morph-skip` on the dragging card.** While dragged, the card is marked skip and the live `transform: translate(...)` is written imperatively from the `pointermove` handler. The skip stops the morph from fighting the drag handler — the row becomes "owned by the drag handler" until drop. (Doing the transform reactively would either freeze the row to its initial position via memo cache, or thrash a per-frame re-render of pure visuals.)
 - **Optimistic store update on drop.** The drag handler computes the target column + slot from `elementFromPoint`, then calls `board.actions.move(cardId, toCol, toIdx)`. The store mutation triggers exactly one re-render — the dropped card lands in its new home.
 
@@ -89,9 +89,9 @@ mount(root, () => (
 
 // `delegate()` (not `delegateCapture()`) — pointerdown bubbles, and `delegate()`
 // uses `closest()` so a click on any descendant of `.card` resolves to the card.
-delegate(root, "pointerdown", ".card", (e, el) => {
+void delegate(root, "pointerdown", ".card", (e, el) => {
   // preventDefault, set drag.value, dragEl = querySelector('.card.dragging[...]'),
-  // attach window listeners for pointermove (writes dragEl.style.transform) and
-  // pointerup (drops + clears).
+  // attach window listeners for pointermove (writes dragEl.style.transform),
+  // pointerup (drops + clears), and pointercancel (clears without dropping).
 });
 ```
