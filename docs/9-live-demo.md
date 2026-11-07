@@ -20,7 +20,7 @@ Both are static asset bundles. There is no server-side rendering, no API. The si
 1. **`typecheck`** — runs `astro sync` to generate Astro's module declarations on a fresh install, then checks the site source and the Kerf TSX examples in separate TypeScript projects. `site/tsconfig.json` excludes `src/examples/`; `site/src/examples/tsconfig.json` supplies `jsxImportSource: "kerfjs"` and includes both basic and complete examples. Run `npm run typecheck` from `site/` to check both without building.
 2. **`build-examples`** — runs in two passes:
    - Builds each complete app (`site/src/examples/complete/<name>/`) via Vite into `site/public/run/<name>/`. Each app's docs page links here as **Run live →**.
-   - Builds the nine-section reactivity demo (`examples/reactivity-demo/`) via its own Vite config (base `/kerf/demo/`) and copies the result into `site/public/demo/`.
+   - Builds the nine-section reactivity demo (`examples/reactivity-demo/`) via its own Vite config (base `/kerf/demo/`) and copies the result into `site/public/demo/`. Its dependencies are installed with a lockfile-strict `npm ci` only when `node_modules` is missing or disagrees with `package-lock.json`, so a current checkout builds offline and the build never rewrites the lockfile.
 3. **`build-icons`** — generates the site's icon assets.
 4. **`gen-llms-txt`** — regenerates the site's `llms.txt` AI-discovery index.
 
