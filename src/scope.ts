@@ -77,15 +77,10 @@ export function createScope(): DisposerScope {
       const oldController = controller;
       disposers = [];
       controller = new AbortController();
-      const errors: unknown[] = [];
-      try {
-        for (let index = pending.length - 1; index >= 0; index--)
-          runCollecting(pending[index], errors);
-      } finally {
+      runAll(pending.reverse(), () => {
         oldController.abort();
         disposing = false;
-      }
-      reportAll(errors);
+      });
     },
   };
 }
@@ -128,40 +123,27 @@ interface ScopeState {
 const scopes = new WeakMap<Element, ScopeState>();
 
 /**
- * Run a disposer, collecting (not propagating) what it throws, so a throwing
- * one never strands the rest of a teardown loop.
+ * Run every disposer in order — a throwing one never strands the rest — then
+ * `settle`, then surface what was thrown (KF-C0S46R: a teardown used to
+ * swallow it with no trace). `reportError` reports without throwing; where it
+ * is missing, a microtask rethrow surfaces the error as uncaught instead.
  */
-function runCollecting(dispose: () => void, errors: unknown[]): void {
-  try {
-    dispose();
-  } catch (error) {
-    errors.push(error);
-  }
-}
-
-/**
- * Surface the errors a teardown collected, AFTER it finished, so a broken
- * disposer is visible (console / `window.onerror` / error monitoring) without
- * stranding the disposers that came after it (KF-C0S46R: a teardown used to
- * swallow them with no trace). `reportError` reports without throwing; where
- * it is missing, a microtask rethrow surfaces it as an uncaught error instead.
- */
-function reportAll(errors: readonly unknown[]): void {
-  for (const error of errors) {
-    if (typeof globalThis.reportError === 'function')
+function runAll(disposers: Array<() => void>, settle?: () => void): void {
+  const errors: unknown[] = [];
+  for (const dispose of disposers)
+    try {
+      dispose();
+    } catch (error) {
+      errors.push(error);
+    }
+  settle?.();
+  for (const error of errors)
+    if (typeof globalThis.reportError == 'function')
       globalThis.reportError(error);
     else
       globalThis.queueMicrotask(() => {
         throw error;
       });
-  }
-}
-
-/** Run one disposer now and report anything it throws. */
-function runReporting(dispose: () => void): void {
-  const errors: unknown[] = [];
-  runCollecting(dispose, errors);
-  reportAll(errors);
 }
 
 /**
@@ -180,7 +162,7 @@ export function disposeScope(el: Element): Scope {
   // array nothing will ever run — a leak (KF-DFGD1R).
   let disposed = false;
   const register = (dispose: () => void): (() => void) => {
-    if (disposed) runReporting(dispose);
+    if (disposed) runAll([dispose]);
     else disposers.push(dispose);
     return dispose;
   };
@@ -194,9 +176,7 @@ export function disposeScope(el: Element): Scope {
       if (disposed) return;
       disposed = true;
       scopes.delete(el);
-      const errors: unknown[] = [];
-      for (const d of disposers.splice(0)) runCollecting(d, errors);
-      reportAll(errors);
+      runAll(disposers.splice(0));
     },
   };
   scopes.set(el, { scope, disposers });
