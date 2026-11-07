@@ -19,7 +19,11 @@
  * Adding a major is therefore a deliberate act: add it here, widen the range,
  * add it to the matrix, and only then does anything go green.
  *
- * Run: `npm run test:eslint-matrix` (from eslint-plugin/)
+ * Run: `npm run test:eslint-matrix` (from eslint-plugin/). `--parity-only`
+ * runs just check 2 without installing anything; `npm run check` runs it
+ * before the suite, and both the CI eslint-plugin job and the root package
+ * gate run that, so drifted declarations fail without anyone remembering
+ * to run the full matrix.
  */
 
 import { execFileSync } from 'node:child_process';
@@ -109,6 +113,13 @@ if (matrixLine === null) {
 }
 
 if (problems.length) fail(problems);
+
+if (process.argv.includes('--parity-only')) {
+  console.log(
+    `[eslint-matrix] parity OK — SUPPORTED, peerDependencies.eslint (${peerRange}), and the CI matrix agree.`,
+  );
+  process.exit(0);
+}
 
 // --- 2. The suite must pass on each ----------------------------------------
 

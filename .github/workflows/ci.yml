@@ -125,7 +125,7 @@ jobs:
       # other dependency; only ESLint itself varies across the matrix.
       - run: npm install --no-save eslint@${{ matrix.eslint }}
       - run: node -e "console.log('eslint', require('eslint').ESLint.version)"
-      - run: npm test
+      - run: npm run check
 
   create-kerf-component:
     runs-on: ubuntu-latest

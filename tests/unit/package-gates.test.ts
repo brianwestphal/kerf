@@ -33,7 +33,7 @@ describe('selectPackageGates', () => {
 
   it('scopes the sibling package tests to their own directories', () => {
     expect(names(['eslint-plugin/lib/rules/x.js'])).toEqual([
-      'eslint-plugin:test',
+      'eslint-plugin:check',
     ]);
     expect(names(['create-kerf-component/index.js'])).toEqual([
       'create-kerf-component:test',
@@ -45,20 +45,26 @@ describe('selectPackageGates', () => {
     // rule tests in CI while the ui-only local gate stayed green.
     expect(names(['ui/ai/application-ui-profile.defaults.json'])).toEqual([
       'ui:check',
-      'eslint-plugin:test',
+      'eslint-plugin:check',
     ]);
     expect(names(['ui/ai/component-catalog.json'])).toEqual([
       'ui:check',
-      'eslint-plugin:test',
+      'eslint-plugin:check',
       'editor:check',
     ]);
     expect(names(['ui/package.json'])).toEqual([
       'ui:check',
-      'eslint-plugin:test',
+      'eslint-plugin:check',
     ]);
     // ui source alone stays ui-only.
     expect(names(['ui/src/components/actions/button/button.tsx'])).toEqual([
       'ui:check',
+    ]);
+  });
+
+  it('runs the eslint-plugin matrix parity check when the CI matrix changes', () => {
+    expect(names(['.github/workflows/ci.yml'])).toEqual([
+      'eslint-plugin:check',
     ]);
   });
 
@@ -70,7 +76,7 @@ describe('selectPackageGates', () => {
     ]);
     expect(names(['ui/ai/component-props.json'])).toEqual([
       'ui:check',
-      'eslint-plugin:test',
+      'eslint-plugin:check',
       'editor:check',
     ]);
   });
@@ -78,7 +84,7 @@ describe('selectPackageGates', () => {
   it('runs the scaffold tests when a schema it bundles changes', () => {
     expect(names(['ui/ai/component-composition.schema.json'])).toEqual([
       'ui:check',
-      'eslint-plugin:test',
+      'eslint-plugin:check',
       'create-kerf-component:test',
     ]);
   });

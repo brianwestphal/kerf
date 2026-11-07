@@ -143,6 +143,7 @@ When a real bug ships that the existing defense stack misses AND a new lint rule
 ```bash
 npm install
 npm test
+npm run check              # matrix-parity check, then the rule suite (what CI runs)
 npm run test:eslint-matrix # real packed-plugin loading on every supported ESLint major
 ```
 

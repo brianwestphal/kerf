@@ -37,7 +37,8 @@
   ],
   "scripts": {
     "test": "node --test tests/rules/*.test.js",
-    "test:eslint-matrix": "node scripts/eslint-matrix.mjs"
+    "test:eslint-matrix": "node scripts/eslint-matrix.mjs",
+    "check": "node scripts/eslint-matrix.mjs --parity-only && npm test"
   },
   "peerDependencies": {
     "eslint": "^9.0.0 || ^10.0.0"

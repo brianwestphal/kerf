@@ -22,14 +22,22 @@ export const PACKAGE_GATES = [
     triggers: ['ui/', 'src/', 'package.json', 'package-lock.json'],
   },
   {
-    name: 'eslint-plugin:test',
+    name: 'eslint-plugin:check',
     dir: 'eslint-plugin',
-    args: ['test'],
+    // The matrix-parity check (SUPPORTED, the peer range, and the CI matrix
+    // name one set of ESLint majors), then the rule suite.
+    args: ['run', 'check'],
     // The plugin's rules read @kerfjs/ui's shipped AI data (the component
     // catalog, composition, and profile defaults), so a ui-only change to
     // that data can break its tests: a Discouraged-list change once turned
     // both eslint-plugin CI jobs red while every local gate passed.
-    triggers: ['eslint-plugin/', 'ui/ai/', 'ui/package.json'],
+    // ci.yml carries the plugin's ESLint version matrix.
+    triggers: [
+      'eslint-plugin/',
+      'ui/ai/',
+      'ui/package.json',
+      '.github/workflows/ci.yml',
+    ],
   },
   {
     name: 'create-kerf-component:test',
