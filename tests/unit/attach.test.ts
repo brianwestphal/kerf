@@ -1,6 +1,11 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { attach } from '../../src/attach.js';
+import { each } from '../../src/each.js';
+import { jsx } from '../../src/jsx-runtime.js';
+import { bindList } from '../../src/list.js';
+import { mount } from '../../src/mount.js';
+import { signal } from '../../src/reactive.js';
 
 const microtask = (): Promise<void> =>
   new Promise((resolve) => setTimeout(resolve, 0));
@@ -240,5 +245,97 @@ describe('attach()', () => {
     expect(disconnect).toHaveBeenCalled(); // no throw despite no teardown fn
     stop();
     disconnect.mockRestore();
+  });
+});
+
+describe('attach() — transitions (KF-4EA89E)', () => {
+  interface Row {
+    id: string;
+  }
+  const rowsOf = (ids: string[], pool: Map<string, Row>): Row[] =>
+    ids.map((id) => {
+      if (!pool.has(id)) pool.set(id, { id });
+      return pool.get(id)!;
+    });
+
+  it('a node inside an each() row survives a keyed reorder (the row is moved, not removed)', async () => {
+    const root = document.createElement('ul');
+    document.body.appendChild(root);
+    const pool = new Map<string, Row>();
+    const items = signal(rowsOf(['a', 'b', 'c'], pool));
+    const stopMount = mount(root, () =>
+      each(
+        items.value,
+        (row) =>
+          jsx('li', {
+            'data-key': row.id,
+            children: jsx('div', { class: `w-${row.id}` }),
+          }),
+        (row) => row.id,
+      ),
+    );
+    const widget = root.querySelector('.w-a')!;
+    const torn: string[] = [];
+    attach(widget, () => () => torn.push('a'));
+
+    items.value = rowsOf(['c', 'b', 'a'], pool); // a moves to the end
+    await microtask();
+    expect(root.querySelector('.w-a')).toBe(widget); // same node, moved
+    expect(widget.isConnected).toBe(true);
+    expect(torn).toEqual([]);
+
+    items.value = rowsOf(['a', 'c', 'b'], pool); // and back to the front
+    await microtask();
+    expect(torn).toEqual([]);
+
+    items.value = rowsOf(['c', 'b'], pool); // a genuinely removed
+    await microtask();
+    expect(torn).toEqual(['a']);
+    stopMount();
+  });
+
+  it('a bindList row element survives a keyed reorder and tears down on removal', async () => {
+    const parent = document.createElement('ul');
+    document.body.appendChild(parent);
+    const pool = new Map<string, Row>();
+    const items = signal(rowsOf(['a', 'b', 'c'], pool));
+    const dispose = bindList(parent, items, {
+      key: (row) => row.id,
+      render: (row) => row.id,
+      tag: 'li',
+    });
+    const rowA = parent.firstElementChild!;
+    const torn: string[] = [];
+    attach(rowA, () => () => torn.push('a'));
+
+    items.value = rowsOf(['b', 'c', 'a'], pool);
+    await microtask();
+    expect(parent.lastElementChild).toBe(rowA);
+    expect(torn).toEqual([]);
+
+    items.value = rowsOf(['b', 'c'], pool);
+    await microtask();
+    expect(torn).toEqual(['a']);
+    dispose();
+  });
+
+  it('remove, then re-insert in a later task: the widget stays dead (no second setup, no second teardown)', async () => {
+    const parent = host();
+    const node = parent.querySelector('.widget')!;
+    const calls: string[] = [];
+    attach(node, () => {
+      calls.push('setup');
+      return () => calls.push('teardown');
+    });
+    node.remove();
+    await microtask();
+    expect(calls).toEqual(['setup', 'teardown']);
+
+    parent.appendChild(node); // a later task re-inserts the same node
+    await microtask();
+    await frame();
+    node.remove();
+    await microtask();
+    expect(calls).toEqual(['setup', 'teardown']); // attach() again to revive it
   });
 });

@@ -442,6 +442,62 @@ describe('resource()', () => {
     });
   });
 
+  describe('keyed run → reset() → same key again, with the first run reporting late (KF-4EA89E)', () => {
+    it('the first run’s late progress and late data never reach the second run or the cache', async () => {
+      const r = resource<string, string>({ cacheKey: (id) => id });
+      const first = deferred<string>();
+      let firstReport!: (completed: number, total: number) => void;
+      let firstSignal!: AbortSignal;
+      const p1 = r.run('a', (report, signal) => {
+        firstReport = report;
+        firstSignal = signal;
+        return first.promise;
+      });
+      firstReport(1, 4);
+      expect(r.value.progress).toEqual({ completed: 1, total: 4 });
+
+      r.reset();
+      expect(firstSignal.aborted).toBe(true);
+      expect(r.value.status).toBe('idle');
+
+      const second = deferred<string>();
+      let secondReport!: (completed: number, total: number) => void;
+      const p2 = r.run('a', (report) => {
+        secondReport = report;
+        return second.promise;
+      });
+      expect(r.value).toMatchObject({
+        status: 'running',
+        input: 'a',
+        data: undefined, // reset() cleared the cache: no stale slice for 'a'
+        progress: undefined,
+      });
+
+      firstReport(3, 4); // late progress from the invalidated run: ignored
+      expect(r.value.progress).toBeUndefined();
+      secondReport(2, 10);
+      expect(r.value.progress).toEqual({ completed: 2, total: 10 });
+      firstReport(4, 4); // still ignored after the live run reported
+      expect(r.value.progress).toEqual({ completed: 2, total: 10 });
+
+      first.resolve('OLD'); // the invalidated run resolves late
+      await expect(p1).resolves.toBe('OLD');
+      expect(r.cached('a')).toBeUndefined();
+      expect(r.value.status).toBe('running');
+
+      second.resolve('NEW');
+      await expect(p2).resolves.toBe('NEW');
+      expect(r.value).toMatchObject({
+        status: 'completed',
+        data: 'NEW',
+        progress: undefined,
+      });
+      expect(r.cached('a')).toBe('NEW');
+      firstReport(4, 4); // after everything settled: still ignored
+      expect(r.value.progress).toBeUndefined();
+    });
+  });
+
   describe('cacheKey interleavings (KF-W9H29J: keyed runs crossing each other)', () => {
     it("run('a') → run('b') → A resolves late: dropped from state AND cache; then B rejects", async () => {
       const r = resource<string, string>({ cacheKey: (id) => id });

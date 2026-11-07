@@ -272,6 +272,65 @@ describe('overlay() — re-entrancy during the exit', () => {
     expect(first.el.isConnected).toBe(false);
   });
 
+  it('Escape while the top overlay is exiting closes the one beneath, never the leaving one', () => {
+    stubAnimations([fakeAnimation().animation]);
+    const belowDismiss = vi.fn();
+    const below = overlay(raw('<button class="below">a</button>'), {
+      onDismiss: belowDismiss,
+    });
+    const topDismiss = vi.fn();
+    const top = overlay(raw('<button class="top">b</button>'), {
+      ...EXIT,
+      onDismiss: topDismiss,
+    });
+    top.close();
+    // The leaving surface left the stack at close start: focus went back to
+    // the surface beneath, which now owns Escape.
+    expect(document.activeElement?.className).toBe('below');
+    document.dispatchEvent(
+      new KeyboardEvent('keydown', { key: 'Escape', cancelable: true }),
+    );
+    expect(belowDismiss).toHaveBeenCalledTimes(1);
+    expect(topDismiss).not.toHaveBeenCalled();
+    expect(below.el.isConnected).toBe(false);
+    expect(top.el.isConnected).toBe(true); // its exit keeps running
+    expect(document.activeElement).toBe(opener);
+    vi.advanceTimersByTime(300);
+    expect(top.el.isConnected).toBe(false);
+  });
+
+  it('a modal opened during another’s exit, over a surface beneath: Escape walks the live stack only', () => {
+    stubAnimations([fakeAnimation().animation]);
+    const order: string[] = [];
+    const a = overlay(raw('<button class="a">a</button>'), {
+      onDismiss: () => order.push('a'),
+    });
+    const b = overlay(raw('<button class="b">b</button>'), {
+      ...EXIT,
+      onDismiss: () => order.push('b'),
+    });
+    b.close();
+    const c = overlay(raw('<button class="c">c</button>'), {
+      onDismiss: () => order.push('c'),
+    });
+    expect(document.activeElement?.className).toBe('c');
+    const escape = () =>
+      document.dispatchEvent(
+        new KeyboardEvent('keydown', { key: 'Escape', cancelable: true }),
+      );
+    escape();
+    expect(order).toEqual(['c']);
+    expect(document.activeElement?.className).toBe('a');
+    escape();
+    expect(order).toEqual(['c', 'a']);
+    expect(a.el.isConnected).toBe(false);
+    expect(c.el.isConnected).toBe(false);
+    expect(b.el.isConnected).toBe(true); // still exiting, never re-dismissed
+    vi.advanceTimersByTime(300);
+    expect(b.el.isConnected).toBe(false);
+    expect(document.activeElement).toBe(opener);
+  });
+
   it('open → close-with-exit → reopen: the new overlay is independent of the leaving one', () => {
     stubAnimations([fakeAnimation().animation]);
     const a = overlay(raw('<button>a</button>'), EXIT);

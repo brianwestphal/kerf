@@ -289,6 +289,93 @@ describe('disposeSubtree()', () => {
   });
 });
 
+describe('observeRemovals() — nested roots (KF-4EA89E)', () => {
+  const tick = () => new Promise((resolve) => setTimeout(resolve, 0));
+  function nested(): {
+    outer: HTMLElement;
+    inner: HTMLElement;
+    card: HTMLElement;
+    calls: string[];
+  } {
+    const outer = document.createElement('main');
+    const inner = document.createElement('section');
+    const card = document.createElement('div');
+    inner.appendChild(card);
+    outer.appendChild(inner);
+    document.body.appendChild(outer);
+    const calls: string[] = [];
+    disposeScope(card).add(() => calls.push('card'));
+    return { outer, inner, card, calls };
+  }
+
+  it('both active: a removal disposes once (the second observer finds nothing left)', async () => {
+    const { outer, inner, card, calls } = nested();
+    const stopOuter = observeRemovals(outer);
+    const stopInner = observeRemovals(inner);
+    card.remove();
+    await tick();
+    expect(calls).toEqual(['card']);
+    stopOuter();
+    stopInner();
+    outer.remove();
+  });
+
+  it('inner stopped: the outer observer still disposes a removal inside the inner root', async () => {
+    const { outer, inner, card, calls } = nested();
+    const stopOuter = observeRemovals(outer);
+    const stopInner = observeRemovals(inner);
+    stopInner();
+    card.remove();
+    await tick();
+    expect(calls).toEqual(['card']);
+    stopOuter();
+    outer.remove();
+  });
+
+  it('inner stopped: a move out of the inner root but within the outer root keeps the scope alive', async () => {
+    const { outer, card, calls } = nested();
+    const stopOuter = observeRemovals(outer);
+    const stopInner = observeRemovals(outer.querySelector('section')!);
+    stopInner();
+    outer.appendChild(card); // leaves inner, stays inside outer
+    await tick();
+    expect(calls).toEqual([]);
+    card.remove();
+    await tick();
+    expect(calls).toEqual(['card']);
+    stopOuter();
+    outer.remove();
+  });
+
+  it('inner active: a move out of the inner root disposes (each root judges containment by itself)', async () => {
+    const { outer, inner, card, calls } = nested();
+    const stopOuter = observeRemovals(outer);
+    const stopInner = observeRemovals(inner);
+    outer.appendChild(card);
+    await tick();
+    expect(calls).toEqual(['card']);
+    stopOuter();
+    stopInner();
+    outer.remove();
+  });
+
+  it('outer stopped, inner active: a removal inside the inner root still disposes; outside it does not', async () => {
+    const { outer, inner, card, calls } = nested();
+    const sibling = document.createElement('div');
+    outer.appendChild(sibling);
+    disposeScope(sibling).add(() => calls.push('sibling'));
+    const stopOuter = observeRemovals(outer);
+    const stopInner = observeRemovals(inner);
+    stopOuter();
+    card.remove();
+    sibling.remove();
+    await tick();
+    expect(calls).toEqual(['card']);
+    stopInner();
+    outer.remove();
+  });
+});
+
 describe('observeRemovals()', () => {
   it("auto-disposes a removed node's scope and its descendants", async () => {
     const stop = observeRemovals(document.body);
