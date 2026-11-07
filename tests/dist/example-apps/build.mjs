@@ -20,7 +20,10 @@ import { fileURLToPath } from 'node:url';
 
 // The shared list + builder loads Vite lazily, so importing it here is safe
 // before ensureSiteDeps() has installed site/node_modules.
-import { buildCompleteApp, COMPLETE_APPS } from '../../../site/scripts/lib/complete-apps.mjs';
+import {
+  buildCompleteApp,
+  COMPLETE_APPS,
+} from '../../../site/scripts/lib/complete-apps.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const repoRoot = resolve(__dirname, '../../..');
@@ -50,7 +53,12 @@ async function main() {
       cacheDir: resolve(siteRoot, `node_modules/.vite-test-examples/${name}`),
     });
   }
-  console.log(`[example-apps] built ${COMPLETE_APPS.length} apps → tests/dist/example-apps/`);
+  console.log(
+    `[example-apps] built ${COMPLETE_APPS.length} apps → tests/dist/example-apps/`,
+  );
 }
 
-main().catch((err) => { console.error(err); process.exit(1); });
+main().catch((err) => {
+  console.error(err);
+  process.exit(1);
+});

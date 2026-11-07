@@ -13,7 +13,8 @@ const SEED = '# Live';
 // Build the cumulative text after each keystroke-group, continuing from SEED and
 // ending exactly on TEXT.
 const stops = [];
-for (let k = SEED.length + STEP; k < TEXT.length; k += STEP) stops.push(TEXT.slice(0, k));
+for (let k = SEED.length + STEP; k < TEXT.length; k += STEP)
+  stops.push(TEXT.slice(0, k));
 stops.push(TEXT); // ensure the final, complete doc is the last typed stop
 
 // An `evaluate` action that sets the editor's text to `s` and fires a real
@@ -34,7 +35,10 @@ frames.push({
   input: '${base}/markdown-editor/',
   waitFor: '.editor-input',
   wait: 350,
-  actions: [{ type: 'evaluate', script: typeAction(SEED) }, { type: 'wait', ms: 120 }],
+  actions: [
+    { type: 'evaluate', script: typeAction(SEED) },
+    { type: 'wait', ms: 120 },
+  ],
   duration: 650,
 });
 
@@ -44,7 +48,10 @@ stops.forEach((s, idx) => {
   frames.push({
     continue: true,
     transition: { type: 'cut', duration: 0 },
-    actions: [{ type: 'evaluate', script: typeAction(s) }, { type: 'wait', ms: 45 }],
+    actions: [
+      { type: 'evaluate', script: typeAction(s) },
+      { type: 'wait', ms: 45 },
+    ],
     // ~110 ms on-screen per group reads as brisk typing; hold the final doc long
     // enough to read the rendered preview (KF-280).
     duration: isLast ? 3000 : 110,
@@ -67,4 +74,6 @@ writeFileSync(
   'site/scripts/demo-captures/markdown-editor.json',
   JSON.stringify(config, null, 2) + '\n',
 );
-console.log(`markdown-editor.json: ${frames.length} frames (1 seeded + ${stops.length} typing)`);
+console.log(
+  `markdown-editor.json: ${frames.length} frames (1 seeded + ${stops.length} typing)`,
+);

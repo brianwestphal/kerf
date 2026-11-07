@@ -10,7 +10,20 @@
  * Runtime never executes — `tsc --noEmit` is the only check.
  */
 
-import { computed, delegate, delegateCapture, each, type EachOptions, Fragment, isSafeHtml, type JSXChildren, mount, raw, signal, type SafeHtml } from 'kerfjs';
+import {
+  computed,
+  delegate,
+  delegateCapture,
+  each,
+  type EachOptions,
+  Fragment,
+  isSafeHtml,
+  type JSXChildren,
+  mount,
+  raw,
+  signal,
+  type SafeHtml,
+} from 'kerfjs';
 import { arraySignal } from 'kerfjs/array-signal';
 import type { JSXChildren as RuntimeJSXChildren } from 'kerfjs/jsx-runtime';
 
@@ -40,7 +53,9 @@ const readonlyChildren: readonly JSXChildren[] = [
 const recursiveChildrenContract: SafeHtml = (
   <ContentSlot>
     {includeIntro ? <strong>intro</strong> : null}
-    {['a', 'b'].map((label) => <span>{label}</span>)}
+    {['a', 'b'].map((label) => (
+      <span>{label}</span>
+    ))}
     {readonlyChildren}
     {count}
     {computed(() => count.value + 1)}
@@ -68,22 +83,42 @@ const safeRef: SafeHtml = (
       </button>
       <span>{count.value}</span>
       <input type="text" value="x" placeholder="type" />
-      <textarea rows={4} cols={40}>seed</textarea>
+      <textarea rows={4} cols={40}>
+        seed
+      </textarea>
       <select>
         <option value="a">A</option>
       </select>
       <ul>
-        {each(rows, (r) => <li data-key={r.id}>{r.label}</li>, rowOptions)}
+        {each(
+          rows,
+          (r) => (
+            <li data-key={r.id}>{r.label}</li>
+          ),
+          rowOptions,
+        )}
       </ul>
       <details open>
         <summary>more</summary>
-        <pre><code>{raw('<b>raw</b>')}</code></pre>
+        <pre>
+          <code>{raw('<b>raw</b>')}</code>
+        </pre>
       </details>
-      <a href="/x" rel="noopener" target="_blank">link</a>
+      <a href="/x" rel="noopener" target="_blank">
+        link
+      </a>
       <img src="/x.png" alt="" width={32} height={32} />
       <table>
-        <thead><tr><th scope="col">a</th></tr></thead>
-        <tbody><tr><td>1</td></tr></tbody>
+        <thead>
+          <tr>
+            <th scope="col">a</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>1</td>
+          </tr>
+        </tbody>
       </table>
       <form action="/x" method="post">
         <label htmlFor="i">L</label>

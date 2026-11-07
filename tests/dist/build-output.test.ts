@@ -20,8 +20,13 @@ describe('published JavaScript output', () => {
 
     for (const file of files) {
       const source = await readFile(resolve(DIST, file), 'utf8');
-      expect(source.match(/^import\s+['"]\.\/chunk-.*\.js['"];?$/gm), file).toBeNull();
-      expect(source.match(/^\/\/# sourceMappingURL=.*$/gm), file).toHaveLength(1);
+      expect(
+        source.match(/^import\s+['"]\.\/chunk-.*\.js['"];?$/gm),
+        file,
+      ).toBeNull();
+      expect(source.match(/^\/\/# sourceMappingURL=.*$/gm), file).toHaveLength(
+        1,
+      );
     }
   });
 });

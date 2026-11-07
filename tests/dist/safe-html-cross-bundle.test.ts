@@ -37,23 +37,28 @@ function requireDist(): void {
 describe('dist/ — SafeHtml cross-bundle identity (KF-14)', () => {
   it('exposes a SafeHtml class from both entries', async () => {
     requireDist();
-    const indexMod = await import(DIST_INDEX) as Record<string, unknown>;
-    const jsxMod = await import(DIST_JSX) as Record<string, unknown>;
+    const indexMod = (await import(DIST_INDEX)) as Record<string, unknown>;
+    const jsxMod = (await import(DIST_JSX)) as Record<string, unknown>;
     expect(typeof indexMod.SafeHtml).toBe('function');
     expect(typeof jsxMod.SafeHtml).toBe('function');
   });
 
   it('exposes isSafeHtml from the public entry', async () => {
     requireDist();
-    const indexMod = await import(DIST_INDEX) as Record<string, unknown>;
+    const indexMod = (await import(DIST_INDEX)) as Record<string, unknown>;
     expect(typeof indexMod.isSafeHtml).toBe('function');
   });
 
   it('a SafeHtml created by the barrel is recognized by the JSX runtime as a valid child (the KF-14 case)', async () => {
     requireDist();
-    const { raw } = await import(DIST_INDEX) as { raw: (html: string) => unknown };
-    const { jsx } = await import(DIST_JSX) as {
-      jsx: (tag: string, props: Record<string, unknown>) => { toString(): string };
+    const { raw } = (await import(DIST_INDEX)) as {
+      raw: (html: string) => unknown;
+    };
+    const { jsx } = (await import(DIST_JSX)) as {
+      jsx: (
+        tag: string,
+        props: Record<string, unknown>,
+      ) => { toString(): string };
     };
 
     // This is the exact failure mode reported in KF-14: a SafeHtml from
@@ -64,12 +69,12 @@ describe('dist/ — SafeHtml cross-bundle identity (KF-14)', () => {
     expect(out.toString()).toBe('<div><b>x</b></div>');
   });
 
-  it('a SafeHtml created by the JSX runtime is recognized by the barrel\'s isSafeHtml()', async () => {
+  it("a SafeHtml created by the JSX runtime is recognized by the barrel's isSafeHtml()", async () => {
     requireDist();
-    const { isSafeHtml } = await import(DIST_INDEX) as {
+    const { isSafeHtml } = (await import(DIST_INDEX)) as {
       isSafeHtml: (v: unknown) => boolean;
     };
-    const { jsx } = await import(DIST_JSX) as {
+    const { jsx } = (await import(DIST_JSX)) as {
       jsx: (tag: string, props: Record<string, unknown>) => unknown;
     };
     const node = jsx('span', { children: 'hi' });
@@ -78,9 +83,10 @@ describe('dist/ — SafeHtml cross-bundle identity (KF-14)', () => {
 
   it('the brand is `Symbol.for("kerfjs.SafeHtml")` so any module copy interoperates', async () => {
     requireDist();
-    const { raw } = await import(DIST_INDEX) as { raw: (html: string) => Record<symbol, unknown> };
+    const { raw } = (await import(DIST_INDEX)) as {
+      raw: (html: string) => Record<symbol, unknown>;
+    };
     const instance = raw('<p>x</p>');
     expect(instance[Symbol.for('kerfjs.SafeHtml')]).toBe(true);
   });
 });
-

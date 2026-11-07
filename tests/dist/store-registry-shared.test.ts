@@ -42,7 +42,7 @@ function requireDist(): void {
 describe('dist/ — kerfjs/testing shares the store registry with kerfjs (KF-15)', () => {
   it('clearStoreRegistry has a non-empty body', async () => {
     requireDist();
-    const { clearStoreRegistry } = await import(DIST_TESTING) as {
+    const { clearStoreRegistry } = (await import(DIST_TESTING)) as {
       clearStoreRegistry: () => void;
     };
     // Smoke check that catches the original failure mode directly: an empty
@@ -56,14 +56,17 @@ describe('dist/ — kerfjs/testing shares the store registry with kerfjs (KF-15)
 
   it('a store created via dist/index.js is removed by dist/testing.js clearStoreRegistry', async () => {
     requireDist();
-    const indexMod = await import(DIST_INDEX) as {
+    const indexMod = (await import(DIST_INDEX)) as {
       defineStore: (spec: {
         initial: () => number;
-        actions: (set: (n: number) => void, get: () => number) => { inc: () => void };
+        actions: (
+          set: (n: number) => void,
+          get: () => number,
+        ) => { inc: () => void };
       }) => { state: { value: number }; actions: { inc: () => void } };
       resetAllStores: () => void;
     };
-    const { clearStoreRegistry } = await import(DIST_TESTING) as {
+    const { clearStoreRegistry } = (await import(DIST_TESTING)) as {
       clearStoreRegistry: () => void;
     };
 

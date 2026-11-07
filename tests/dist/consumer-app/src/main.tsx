@@ -43,21 +43,32 @@ declare module 'kerfjs/jsx-runtime' {
   const count = signal(0);
   const doubled = computed(() => count.value * 2);
   let renderTicks = 0;
-  effect(() => { count.value; renderTicks++; });
+  effect(() => {
+    count.value;
+    renderTicks++;
+  });
   mount(root, () => (
     <div>
       <h2>Counter</h2>
       <div class="row">
-        <button data-action="inc" data-testid="counter-inc">+</button>
-        <button data-action="dec" data-testid="counter-dec">−</button>
+        <button data-action="inc" data-testid="counter-inc">
+          +
+        </button>
+        <button data-action="dec" data-testid="counter-dec">
+          −
+        </button>
         <span data-testid="counter-value">{count.value}</span>
         <span data-testid="counter-doubled">×2={doubled.value}</span>
         <span data-testid="counter-ticks">ticks:{renderTicks}</span>
       </div>
     </div>
   ));
-  delegate(root, 'click', '[data-action="inc"]', () => { count.value += 1; });
-  delegate(root, 'click', '[data-action="dec"]', () => { count.value -= 1; });
+  delegate(root, 'click', '[data-action="inc"]', () => {
+    count.value += 1;
+  });
+  delegate(root, 'click', '[data-action="dec"]', () => {
+    count.value -= 1;
+  });
 }
 
 // ────────────────────────────────────────────────────────────────
@@ -66,7 +77,10 @@ declare module 'kerfjs/jsx-runtime' {
 {
   const root = document.getElementById('zone-store')!;
   const cart = defineStore({
-    initial: () => ({ items: [] as { id: string; name: string }[], coupon: '' }),
+    initial: () => ({
+      items: [] as { id: string; name: string }[],
+      coupon: '',
+    }),
     actions: (set, get) => ({
       add: (id: string, name: string) =>
         set({ items: [...get().items, { id, name }] }),
@@ -83,11 +97,21 @@ declare module 'kerfjs/jsx-runtime' {
     <div>
       <h2>Store</h2>
       <div class="row">
-        <button data-action="add-a" data-testid="store-add-a">add A</button>
-        <button data-action="add-b" data-testid="store-add-b">add B</button>
-        <button data-action="apply-coupon" data-testid="store-apply">apply SAVE10 + clear</button>
-        <span data-testid="store-count">items:{cart.state.value.items.length}</span>
-        <span data-testid="store-coupon">coupon:{cart.state.value.coupon || '(none)'}</span>
+        <button data-action="add-a" data-testid="store-add-a">
+          add A
+        </button>
+        <button data-action="add-b" data-testid="store-add-b">
+          add B
+        </button>
+        <button data-action="apply-coupon" data-testid="store-apply">
+          apply SAVE10 + clear
+        </button>
+        <span data-testid="store-count">
+          items:{cart.state.value.items.length}
+        </span>
+        <span data-testid="store-coupon">
+          coupon:{cart.state.value.coupon || '(none)'}
+        </span>
       </div>
       <ul data-testid="store-list">
         {each(
@@ -95,7 +119,13 @@ declare module 'kerfjs/jsx-runtime' {
           (i) => (
             <li data-key={i.id}>
               {i.name}
-              <button data-action="remove" data-id={i.id} data-testid={`store-remove-${i.id}`}>×</button>
+              <button
+                data-action="remove"
+                data-id={i.id}
+                data-testid={`store-remove-${i.id}`}
+              >
+                ×
+              </button>
             </li>
           ),
           (i) => i.id,
@@ -103,9 +133,15 @@ declare module 'kerfjs/jsx-runtime' {
       </ul>
     </div>
   ));
-  delegate(root, 'click', '[data-action="add-a"]', () => cart.actions.add(`a-${Date.now()}`, 'A'));
-  delegate(root, 'click', '[data-action="add-b"]', () => cart.actions.add(`b-${Date.now()}`, 'B'));
-  delegate(root, 'click', '[data-action="apply-coupon"]', () => cart.actions.applyAndClear('SAVE10'));
+  delegate(root, 'click', '[data-action="add-a"]', () =>
+    cart.actions.add(`a-${Date.now()}`, 'A'),
+  );
+  delegate(root, 'click', '[data-action="add-b"]', () =>
+    cart.actions.add(`b-${Date.now()}`, 'B'),
+  );
+  delegate(root, 'click', '[data-action="apply-coupon"]', () =>
+    cart.actions.applyAndClear('SAVE10'),
+  );
   delegate(root, 'click', '[data-action="remove"]', (_e, btn) => {
     cart.actions.remove((btn as HTMLElement).dataset.id!);
   });
@@ -128,8 +164,12 @@ declare module 'kerfjs/jsx-runtime' {
       <div>
         <h2>each()</h2>
         <div class="row">
-          <button data-action="reverse" data-testid="each-reverse">reverse</button>
-          <button data-action="rename-1" data-testid="each-rename">rename #1</button>
+          <button data-action="reverse" data-testid="each-reverse">
+            reverse
+          </button>
+          <button data-action="rename-1" data-testid="each-rename">
+            rename #1
+          </button>
           <span data-testid="each-renders">renders:{renderCalls}</span>
         </div>
         <ol data-testid="each-list">
@@ -150,7 +190,9 @@ declare module 'kerfjs/jsx-runtime' {
     items.value = [...items.value].reverse();
   });
   delegate(root, 'click', '[data-action="rename-1"]', () => {
-    items.value = items.value.map((i) => (i.id === 1 ? { id: 1, label: 'Alpha-RENAMED' } : i));
+    items.value = items.value.map((i) =>
+      i.id === 1 ? { id: 1, label: 'Alpha-RENAMED' } : i,
+    );
   });
 }
 
@@ -169,16 +211,33 @@ declare module 'kerfjs/jsx-runtime' {
     <div>
       <h2>arraySignal</h2>
       <div class="row">
-        <button data-action="push" data-testid="array-push">push</button>
-        <button data-action="update0" data-testid="array-update0">update[0]</button>
-        <button data-action="move" data-testid="array-move">move 0→last</button>
-        <button data-action="remove0" data-testid="array-remove0">remove[0]</button>
-        <button data-action="invalid-indices" data-testid="array-invalid-indices">try invalid indices</button>
+        <button data-action="push" data-testid="array-push">
+          push
+        </button>
+        <button data-action="update0" data-testid="array-update0">
+          update[0]
+        </button>
+        <button data-action="move" data-testid="array-move">
+          move 0→last
+        </button>
+        <button data-action="remove0" data-testid="array-remove0">
+          remove[0]
+        </button>
+        <button
+          data-action="invalid-indices"
+          data-testid="array-invalid-indices"
+        >
+          try invalid indices
+        </button>
         <span data-testid="array-len">len:{rows.value.length}</span>
         <span data-testid="array-invalid-result">{invalidIndexResult}</span>
       </div>
       <ul data-testid="array-list">
-        {each(rows, (r) => <li data-key={r.id} data-testid={`array-row-${r.id}`}>{r.label}</li>)}
+        {each(rows, (r) => (
+          <li data-key={r.id} data-testid={`array-row-${r.id}`}>
+            {r.label}
+          </li>
+        ))}
       </ul>
     </div>
   ));
@@ -187,7 +246,8 @@ declare module 'kerfjs/jsx-runtime' {
     nextId++;
   });
   delegate(root, 'click', '[data-action="update0"]', () => {
-    if (rows.value.length > 0) rows.update(0, (r) => ({ ...r, label: `${r.label}!` }));
+    if (rows.value.length > 0)
+      rows.update(0, (r) => ({ ...r, label: `${r.label}!` }));
   });
   delegate(root, 'click', '[data-action="move"]', () => {
     if (rows.value.length > 1) rows.move(0, rows.value.length - 1);
@@ -212,9 +272,10 @@ declare module 'kerfjs/jsx-runtime' {
         return true;
       }
     }).length;
-    invalidIndexResult.value = rejected === invalidCalls.length && probe.value.length === 2
-      ? 'invalid:rejected'
-      : 'invalid:failed';
+    invalidIndexResult.value =
+      rejected === invalidCalls.length && probe.value.length === 2
+        ? 'invalid:rejected'
+        : 'invalid:failed';
   });
 }
 
@@ -231,7 +292,9 @@ declare module 'kerfjs/jsx-runtime' {
       <span data-testid="capture-count">focuses:{captured.value}</span>
     </div>
   ));
-  delegateCapture(root, 'focus', 'input', () => { captured.value += 1; });
+  delegateCapture(root, 'focus', 'input', () => {
+    captured.value += 1;
+  });
 }
 
 // ────────────────────────────────────────────────────────────────
@@ -240,11 +303,17 @@ declare module 'kerfjs/jsx-runtime' {
 {
   const root = document.getElementById('zone-focus')!;
   const tick = signal(0);
-  setInterval(() => { tick.value += 1; }, 50);
+  setInterval(() => {
+    tick.value += 1;
+  }, 50);
   mount(root, () => (
     <div>
       <h2>Focus survival</h2>
-      <input type="text" data-testid="focus-input" placeholder="type without losing focus" />
+      <input
+        type="text"
+        data-testid="focus-input"
+        placeholder="type without losing focus"
+      />
       <span data-testid="focus-tick">tick:{tick.value}</span>
     </div>
   ));
@@ -256,7 +325,9 @@ declare module 'kerfjs/jsx-runtime' {
 {
   const root = document.getElementById('zone-skip')!;
   const tick = signal(0);
-  setInterval(() => { tick.value += 1; }, 50);
+  setInterval(() => {
+    tick.value += 1;
+  }, 50);
   const rawHtml: SafeHtml = raw('<i data-testid="skip-injected">injected</i>');
   mount(root, () => (
     <div>
@@ -264,7 +335,9 @@ declare module 'kerfjs/jsx-runtime' {
       <span data-testid="skip-tick">tick:{tick.value}</span>
       <div class="skip-host" data-morph-skip data-testid="skip-host">
         {rawHtml}
-        <span data-testid="skip-issafehtml">{isSafeHtml(rawHtml) ? 'safe-true' : 'safe-false'}</span>
+        <span data-testid="skip-issafehtml">
+          {isSafeHtml(rawHtml) ? 'safe-true' : 'safe-false'}
+        </span>
       </div>
     </div>
   ));
@@ -286,7 +359,11 @@ declare module 'kerfjs/jsx-runtime' {
   root.innerHTML = '<h2>toElement(SVG)</h2><div data-testid="svg-host"></div>';
   const host = root.querySelector('[data-testid="svg-host"]')!;
   const svg = toElement(
-    <svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg" data-testid="svg-root">
+    <svg
+      viewBox="0 0 20 20"
+      xmlns="http://www.w3.org/2000/svg"
+      data-testid="svg-root"
+    >
       <circle cx={10} cy={10} r={8} fill="navy" />
     </svg>,
   );
@@ -307,7 +384,9 @@ declare module 'kerfjs/jsx-runtime' {
         <span data-testid="frag-a">{a.value}</span>
         <span data-testid="frag-b">{b.value}</span>
       </Fragment>
-      <button data-action="frag-swap" data-testid="frag-swap">swap</button>
+      <button data-action="frag-swap" data-testid="frag-swap">
+        swap
+      </button>
     </div>
   ));
   delegate(root, 'click', '[data-action="frag-swap"]', () => {

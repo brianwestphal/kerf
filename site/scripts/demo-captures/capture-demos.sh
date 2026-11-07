@@ -37,7 +37,7 @@ fi
 PAGES=(architecture getting-started)
 
 cleanup() {
-  [[ -n "${SERVE_PID:-}" ]] && kill "$SERVE_PID" 2>/dev/null || true
+  [[ -n "${SERVE_PID:-}" ]] && kill "$SERVE_PID" 2> /dev/null || true
   rm -rf "$SERVE_DIR" "$PORT_FILE"
   rm -f "$CONFIG_DIR"/.*.capture.json
 }
@@ -46,7 +46,7 @@ trap cleanup EXIT
 # 1. Build each app with a per-app base into the temp serve root so a single
 #    static server can host them all at http://127.0.0.1:<port>/<name>/.
 echo "[demos] building example apps → $SERVE_DIR"
-( cd site && node scripts/build-demos-for-capture.mjs "$SERVE_DIR" )
+(cd site && node scripts/build-demos-for-capture.mjs "$SERVE_DIR")
 
 # 1b. Copy the static capture pages next to the built apps.
 for page in "${PAGES[@]}"; do

@@ -102,16 +102,23 @@
   </head>
   <body>
     <div class="diagram">
-      <div class="code">const count = <span class="kw">signal</span>(0);
+      <div class="code">
+        const count = <span class="kw">signal</span>(0);
 
-<span class="kw">mount</span>(rootEl, () =&gt; (
-  &lt;div&gt;
-    &lt;button data-action=<span class="str">"inc"</span>&gt;+&lt;/button&gt;   <span class="cm">← Tier-1 delegation target</span>
-    &lt;span&gt;<span class="hole">{count}</span>&lt;/span&gt;                   <span class="cm">← bound: the signal itself, not .value</span>
-  &lt;/div&gt;
-));
+        <span class="kw">mount</span>(rootEl, () =&gt; ( &lt;div&gt; &lt;button
+        data-action=<span class="str">"inc"</span>&gt;+&lt;/button&gt;
+        <span class="cm">← Tier-1 delegation target</span> &lt;span&gt;<span
+          class="hole"
+          >{count}</span
+        >&lt;/span&gt;
+        <span class="cm">← bound: the signal itself, not .value</span>
+        &lt;/div&gt; ));
 
-<span class="kw">delegate</span>(rootEl, <span class="str">'click'</span>, <span class="str">'[data-action="inc"]'</span>, () =&gt; <span class="write">count.value += 1</span>);</div>
+        <span class="kw">delegate</span>(rootEl,
+        <span class="str">'click'</span>,
+        <span class="str">'[data-action="inc"]'</span>, () =&gt;
+        <span class="write">count.value += 1</span>);
+      </div>
 
       <div class="flow"><span class="write-chip">count.value += 1</span></div>
       <div class="arrows"><span>↓</span><span>↓</span></div>
@@ -120,24 +127,58 @@
         <div class="card card-bound">
           <h2>Value hole <span class="tag">bound</span></h2>
           <div class="holes mono">{count} · class={sig}</div>
-          <p>One binding effect writes the text node / attribute <b>directly</b>.</p>
-          <div class="nots"><span>no re-render</span><span>no morph</span><span>no reconcile</span></div>
+          <p>
+            One binding effect writes the text node / attribute <b>directly</b>.
+          </p>
+          <div class="nots">
+            <span>no re-render</span><span>no morph</span
+            ><span>no reconcile</span>
+          </div>
           <div class="touch mono" data-touch>✓ touched: 1 text node</div>
         </div>
 
         <div class="card card-structure">
           <h2>Structure <span class="tag">re-render</span></h2>
           <ol class="stages">
-            <li><span class="n">1</span><span><b>.value</b> read in the render fn — <b>effect()</b> re-fires it</span></li>
-            <li><span class="n">2</span><span>JSX → <b>SafeHtml</b> segment tree (strings + list segments)</span></li>
-            <li><span class="n">3</span><span><b>morph()</b> reconciles the static surrounds in place</span></li>
-            <li><span class="n">4</span><span><b>each()</b> keyed reconciler patches list rows</span></li>
-            <li><span class="n">5</span><span>minimal DOM mutations applied — identity &amp; focus preserved</span></li>
+            <li>
+              <span class="n">1</span
+              ><span
+                ><b>.value</b> read in the render fn — <b>effect()</b> re-fires
+                it</span
+              >
+            </li>
+            <li>
+              <span class="n">2</span
+              ><span
+                >JSX → <b>SafeHtml</b> segment tree (strings + list
+                segments)</span
+              >
+            </li>
+            <li>
+              <span class="n">3</span
+              ><span
+                ><b>morph()</b> reconciles the static surrounds in place</span
+              >
+            </li>
+            <li>
+              <span class="n">4</span
+              ><span><b>each()</b> keyed reconciler patches list rows</span>
+            </li>
+            <li>
+              <span class="n">5</span
+              ><span
+                >minimal DOM mutations applied — identity &amp; focus
+                preserved</span
+              >
+            </li>
           </ol>
         </div>
       </div>
 
-      <p class="tagline"><b>Values bind</b>, <i>structure re-renders</i> — the smallest possible cut, either way.</p>
+      <p class="tagline">
+        <b>Values bind</b>, <i>structure re-renders</i> — the smallest possible
+        cut, either way.
+      </p>
     </div>
   </body>
 </html>

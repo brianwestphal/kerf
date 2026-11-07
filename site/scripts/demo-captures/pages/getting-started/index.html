@@ -224,43 +224,85 @@
       <!-- the cursor track hides on this scene (explicit cursor events in the
            config), so the card is simply centered — no space reserved for a
            parked pointer -->
-      <div class="endcard" style="text-align:center;color:#e2e8f0;padding-top:170px;">
+      <div
+        class="endcard"
+        style="text-align:center;color:#e2e8f0;padding-top:170px;"
+      >
         <!-- Menlo, not system-ui bold @44px: domotion's multi-frame font
              subsetting renders that face with overlapping glyphs (single-frame
              captures are fine); Menlo is exercised at many sizes across the
              whole session and stays clean — and suits the dev-tool theme. -->
-        <div class="mark" style="font-size:40px;font-weight:700;font-family:Menlo,ui-monospace,monospace;">kerf</div>
-        <div class="cut" style="color:#64748b;font-size:15px;margin-top:2px;font-style:italic;">The smallest cut.</div>
-        <div class="install" style="margin-top:26px;font-family:Menlo,ui-monospace,monospace;font-size:16px;background:#1e293b;border:1px solid #334155;border-radius:8px;padding:12px 26px;display:inline-block;"><span class="t-dim">$</span> npm install kerfjs</div>
-        <div class="sub" style="margin-top:16px;font-size:13px;color:#94a3b8;">~11 KB · no virtual DOM · no compiler · your existing build (or none at all)</div>
+        <div
+          class="mark"
+          style="font-size:40px;font-weight:700;font-family:Menlo,ui-monospace,monospace;"
+        >
+          kerf
+        </div>
+        <div
+          class="cut"
+          style="color:#64748b;font-size:15px;margin-top:2px;font-style:italic;"
+        >
+          The smallest cut.
+        </div>
+        <div
+          class="install"
+          style="margin-top:26px;font-family:Menlo,ui-monospace,monospace;font-size:16px;background:#1e293b;border:1px solid #334155;border-radius:8px;padding:12px 26px;display:inline-block;"
+        >
+          <span class="t-dim">$</span> npm install kerfjs
+        </div>
+        <div class="sub" style="margin-top:16px;font-size:13px;color:#94a3b8;">
+          ~11 KB · no virtual DOM · no compiler · your existing build (or none
+          at all)
+        </div>
       </div>
     </div>
 
     <!-- ============ terminal ============ -->
     <div class="window terminal">
-      <div class="titlebar"><span class="dots"><i></i><i></i><i></i></span><span class="title">my-app — zsh</span></div>
+      <div class="titlebar">
+        <span class="dots"><i></i><i></i><i></i></span
+        ><span class="title">my-app — zsh</span>
+      </div>
       <div class="termarea" id="term"></div>
     </div>
 
     <!-- ============ editor (top when front) ============ -->
     <div class="window editor">
-      <div class="titlebar"><span class="dots"><i></i><i></i><i></i></span><span class="title">my-app — Visual Studio Code</span></div>
-      <div class="tabbar"><span class="tab">app.tsx<span class="dot">●</span></span></div>
+      <div class="titlebar">
+        <span class="dots"><i></i><i></i><i></i></span
+        ><span class="title">my-app — Visual Studio Code</span>
+      </div>
+      <div class="tabbar">
+        <span class="tab">app.tsx<span class="dot">●</span></span>
+      </div>
       <div class="codearea" id="code"></div>
     </div>
 
     <!-- ============ browser ============ -->
     <div class="window browser">
-      <div class="titlebar"><span class="dots"><i></i><i></i><i></i></span><span class="urlbar">localhost:5173</span></div>
+      <div class="titlebar">
+        <span class="dots"><i></i><i></i><i></i></span
+        ><span class="urlbar">localhost:5173</span>
+      </div>
       <div class="page">
-        <div class="appwrap"><button class="btn" id="counter-btn"><span id="btn-label">Clicked 0 times</span><span id="btn-hit"></span></button></div>
+        <div class="appwrap">
+          <button class="btn" id="counter-btn">
+            <span id="btn-label">Clicked 0 times</span
+            ><span id="btn-hit"></span>
+          </button>
+        </div>
         <div class="hmr">[vite] hot updated: /app.tsx</div>
       </div>
     </div>
 
-
     <!-- ============ lower third ============ -->
-    <div class="ltwrap"><div class="lt">The change: <code>cls = computed(…)</code> bound as <code>class={cls}</code> → the button turns hot at 5 clicks. No reload, no re-render.</div></div>
+    <div class="ltwrap">
+      <div class="lt">
+        The change: <code>cls = computed(…)</code> bound as
+        <code>class={cls}</code> → the button turns hot at 5 clicks. No reload,
+        no re-render.
+      </div>
+    </div>
     <!-- glyph hint over the terminal's localhost link (see the cursor CSS
          comment); positioned by termRender, DFS-last so it wins the
          auto-cursor hit-test -->

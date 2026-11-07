@@ -23,7 +23,7 @@ const frameDur = (i, isLast) => (isLast ? FRAME_MS + LAST_EXTRA_MS : FRAME_MS);
 // constant SPEED so delta/duration is identical for every frame (= constant
 // playback speed, seamless across the hard cuts).
 const offsets = [0];
-const totalFrames = 1 /* frame 0 */ + N_NORMAL + 1 /* last */;
+const totalFrames = 1 /* frame 0 */ + N_NORMAL + 1; /* last */
 for (let i = 0; i < totalFrames; i++) {
   const isLast = i === totalFrames - 1;
   offsets.push(offsets[i] + (SPEED * frameDur(i, isLast)) / 1000);
@@ -42,13 +42,13 @@ d = d.trim();
 // Injection that (a) trims the table to 10 rows, (b) hides the canvas, and
 // (c) injects the scrolling sine once (idempotent via the #sparkclip guard).
 const injectScript =
-  "(()=>{" +
+  '(()=>{' +
   `if(!document.getElementById('demo-trim')){const s=document.createElement('style');s.id='demo-trim';s.textContent='.tickers tbody tr:nth-child(n+${ROWS + 1}){display:none}';document.head.appendChild(s);}` +
   "const host=document.querySelector('.chart-host');const c=host.querySelector('canvas');if(c)c.style.display='none';" +
   "if(host.querySelector('#sparkclip'))return;" +
   `const W=${CHART_W},H=${CHART_H},TW=${TW};const d=${JSON.stringify(d)};` +
-  "host.insertAdjacentHTML('beforeend','<div id=\"sparkclip\" style=\"width:'+W+'px;height:'+H+'px;overflow:hidden\"><div id=\"sparkscroll\" style=\"width:'+TW+'px;height:'+H+'px\"><svg width=\"'+TW+'\" height=\"'+H+'\" viewBox=\"0 0 '+TW+' '+H+'\"><path d=\"'+d+'\" fill=\"none\" stroke=\"#22d3ee\" stroke-width=\"1.5\" stroke-linejoin=\"round\"/></svg></div></div>');" +
-  "})()";
+  'host.insertAdjacentHTML(\'beforeend\',\'<div id="sparkclip" style="width:\'+W+\'px;height:\'+H+\'px;overflow:hidden"><div id="sparkscroll" style="width:\'+TW+\'px;height:\'+H+\'px"><svg width="\'+TW+\'" height="\'+H+\'" viewBox="0 0 \'+TW+\' \'+H+\'"><path d="\'+d+\'" fill="none" stroke="#22d3ee" stroke-width="1.5" stroke-linejoin="round"/></svg></div></div>\');' +
+  '})()';
 
 const scrollAnim = (i) => ({
   selector: '#sparkscroll',
@@ -78,7 +78,10 @@ for (let i = 0; i < totalFrames; i++) {
       transition: { type: 'cut', duration: 0 },
       // Let the live feed tick between captures, then re-assert the injection
       // (cheap + idempotent) in case anything reset.
-      actions: [{ type: 'wait', ms: TICK_WAIT_MS }, { type: 'evaluate', script: injectScript }],
+      actions: [
+        { type: 'wait', ms: TICK_WAIT_MS },
+        { type: 'evaluate', script: injectScript },
+      ],
       animations: [scrollAnim(i)],
       duration: frameDur(i, isLast),
     });
@@ -95,7 +98,10 @@ const config = {
   frames,
 };
 
-writeFileSync('site/scripts/demo-captures/dashboard.json', JSON.stringify(config, null, 2) + '\n');
+writeFileSync(
+  'site/scripts/demo-captures/dashboard.json',
+  JSON.stringify(config, null, 2) + '\n',
+);
 console.log(
   `dashboard.json: ${frames.length} frames, TW=${TW}px, maxOffset=${maxOffset}px, lastDur=${frameDur(
     totalFrames - 1,

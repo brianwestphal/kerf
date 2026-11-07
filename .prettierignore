@@ -1,6 +1,13 @@
 # Dependencies and build/test output
 node_modules/
-dist/
+# Build output, anchored: an unanchored `dist/` also hid the hand-written
+# sources under tests/dist/.
+/dist/
+ui/dist/
+editor/dist/
+site/dist/
+tests/dist/consumer-app/dist/
+tests/dist/example-apps/*/
 dist-demo/
 coverage/
 playwright-report/
@@ -32,7 +39,7 @@ editor/samples/
 bench/results.json
 bench/results.md
 site/public/
-site/scripts/demo-captures/
+site/scripts/demo-captures/*.json
 ui/ai/component-catalog.json
 ui/ai/component-catalog.schema.json
 create-kerf-component/template/component-composition.json

@@ -67,8 +67,13 @@ const EXPECTED_EXPORTS: readonly ExpectedExport[] = [
 ] as const;
 
 function requireDist(): void {
-  if (!existsSync(DIST_INDEX) || !existsSync(DIST_JSX) || !existsSync(DIST_TESTING)
-      || !existsSync(DIST_ARRAY_SIGNAL) || !existsSync(DIST_HTML)) {
+  if (
+    !existsSync(DIST_INDEX) ||
+    !existsSync(DIST_JSX) ||
+    !existsSync(DIST_TESTING) ||
+    !existsSync(DIST_ARRAY_SIGNAL) ||
+    !existsSync(DIST_HTML)
+  ) {
     throw new Error(
       `dist/ is missing — run 'npm run build' first. Expected: ${DIST_INDEX}, ${DIST_JSX}, ${DIST_TESTING}, ${DIST_ARRAY_SIGNAL}, ${DIST_HTML}`,
     );
@@ -78,7 +83,7 @@ function requireDist(): void {
 describe('dist/ — barrel completeness (KF-24)', () => {
   it('every documented public export is present on the kerfjs barrel', async () => {
     requireDist();
-    const mod = await import(DIST_INDEX) as Record<string, unknown>;
+    const mod = (await import(DIST_INDEX)) as Record<string, unknown>;
 
     const missing: string[] = [];
     const wrongKind: string[] = [];
@@ -98,17 +103,26 @@ describe('dist/ — barrel completeness (KF-24)', () => {
       }
     }
 
-    expect(missing, `kerfjs barrel is missing exports: ${missing.join(', ')}`).toEqual([]);
-    expect(wrongKind, `kerfjs barrel exports have wrong kind: ${wrongKind.join(', ')}`).toEqual([]);
+    expect(
+      missing,
+      `kerfjs barrel is missing exports: ${missing.join(', ')}`,
+    ).toEqual([]);
+    expect(
+      wrongKind,
+      `kerfjs barrel exports have wrong kind: ${wrongKind.join(', ')}`,
+    ).toEqual([]);
   });
 
   it('Fragment imported from kerfjs renders as a Fragment, not <undefined> (the KF-24 case)', async () => {
     requireDist();
-    const { Fragment } = await import(DIST_INDEX) as {
+    const { Fragment } = (await import(DIST_INDEX)) as {
       Fragment: (props: { children?: unknown }) => { toString(): string };
     };
-    const { jsx } = await import(DIST_JSX) as {
-      jsx: (tag: unknown, props: Record<string, unknown>) => { toString(): string };
+    const { jsx } = (await import(DIST_JSX)) as {
+      jsx: (
+        tag: unknown,
+        props: Record<string, unknown>,
+      ) => { toString(): string };
     };
 
     // Mirrors the bug report: `<><span>a</span></>` desugars (in Babel /
@@ -122,8 +136,12 @@ describe('dist/ — barrel completeness (KF-24)', () => {
 
   it('Fragment from kerfjs and Fragment from kerfjs/jsx-runtime are the same function', async () => {
     requireDist();
-    const { Fragment: barrelFragment } = await import(DIST_INDEX) as { Fragment: unknown };
-    const { Fragment: jsxFragment } = await import(DIST_JSX) as { Fragment: unknown };
+    const { Fragment: barrelFragment } = (await import(DIST_INDEX)) as {
+      Fragment: unknown;
+    };
+    const { Fragment: jsxFragment } = (await import(DIST_JSX)) as {
+      Fragment: unknown;
+    };
     // Both entries share the same module via the chunk, so the identity
     // should be preserved. If this fails, code-splitting has regressed.
     expect(barrelFragment).toBe(jsxFragment);
@@ -131,16 +149,19 @@ describe('dist/ — barrel completeness (KF-24)', () => {
 
   it('clearStoreRegistry is reachable via kerfjs/testing only (not the main barrel)', async () => {
     requireDist();
-    const indexMod = await import(DIST_INDEX) as Record<string, unknown>;
-    const testingMod = await import(DIST_TESTING) as Record<string, unknown>;
+    const indexMod = (await import(DIST_INDEX)) as Record<string, unknown>;
+    const testingMod = (await import(DIST_TESTING)) as Record<string, unknown>;
     expect(indexMod.clearStoreRegistry).toBeUndefined();
     expect(typeof testingMod.clearStoreRegistry).toBe('function');
   });
 
   it('arraySignal / ArraySignal / ArrayPatch are reachable via kerfjs/array-signal only (KF-95)', async () => {
     requireDist();
-    const indexMod = await import(DIST_INDEX) as Record<string, unknown>;
-    const arrayMod = await import(DIST_ARRAY_SIGNAL) as Record<string, unknown>;
+    const indexMod = (await import(DIST_INDEX)) as Record<string, unknown>;
+    const arrayMod = (await import(DIST_ARRAY_SIGNAL)) as Record<
+      string,
+      unknown
+    >;
     // Main barrel must NOT expose them — that's the point of the subpath split.
     expect(indexMod.arraySignal).toBeUndefined();
     expect(indexMod.ArraySignal).toBeUndefined();
@@ -151,19 +172,25 @@ describe('dist/ — barrel completeness (KF-24)', () => {
 
   it('each() detects arraySignal-from-subpath via the brand symbol, no shared class identity required', async () => {
     requireDist();
-    const { each, mount } = await import(DIST_INDEX) as {
-      each: <T extends object>(items: unknown, render: (item: T) => unknown) => unknown;
+    const { each, mount } = (await import(DIST_INDEX)) as {
+      each: <T extends object>(
+        items: unknown,
+        render: (item: T) => unknown,
+      ) => unknown;
       mount: (root: HTMLElement, render: () => unknown) => () => void;
     };
-    const { arraySignal } = await import(DIST_ARRAY_SIGNAL) as {
+    const { arraySignal } = (await import(DIST_ARRAY_SIGNAL)) as {
       arraySignal: <T>(initial?: readonly T[]) => {
         update(i: number, fn: (item: T) => T): void;
         push(item: T): void;
         value: readonly T[];
       };
     };
-    const { jsx } = await import(DIST_JSX) as {
-      jsx: (tag: unknown, props: Record<string, unknown>) => { toString(): string };
+    const { jsx } = (await import(DIST_JSX)) as {
+      jsx: (
+        tag: unknown,
+        props: Record<string, unknown>,
+      ) => { toString(): string };
     };
 
     // Live render to confirm each() picks up the brand-stamped class
@@ -175,10 +202,13 @@ describe('dist/ — barrel completeness (KF-24)', () => {
         { id: 1, label: 'a' },
         { id: 2, label: 'b' },
       ]);
-      mount(root, () => jsx('ul', {
-        children: each(rows, (r: { id: number; label: string }) =>
-          jsx('li', { 'data-key': String(r.id), children: r.label })),
-      }));
+      mount(root, () =>
+        jsx('ul', {
+          children: each(rows, (r: { id: number; label: string }) =>
+            jsx('li', { 'data-key': String(r.id), children: r.label }),
+          ),
+        }),
+      );
       // First render via snapshot path (no patches yet).
       expect(root.querySelectorAll('li').length).toBe(2);
       // Granular path: update fires a brand-detected ArraySignal.
@@ -191,9 +221,12 @@ describe('dist/ — barrel completeness (KF-24)', () => {
 
   it('html is reachable via kerfjs/html only (tagged-template authoring path), and renders through the shared SafeHtml chunk', async () => {
     requireDist();
-    const indexMod = await import(DIST_INDEX) as Record<string, unknown>;
-    const htmlMod = await import(DIST_HTML) as {
-      html: (strings: TemplateStringsArray, ...values: unknown[]) => { toString(): string };
+    const indexMod = (await import(DIST_INDEX)) as Record<string, unknown>;
+    const htmlMod = (await import(DIST_HTML)) as {
+      html: (
+        strings: TemplateStringsArray,
+        ...values: unknown[]
+      ) => { toString(): string };
     };
     // Main barrel must NOT expose it — that's the point of the subpath split.
     expect(indexMod.html).toBeUndefined();
@@ -209,7 +242,7 @@ describe('dist/ — barrel completeness (KF-24)', () => {
 
   it('jsx / jsxs / jsxDEV are reachable via kerfjs/jsx-runtime (the JSX transform contract)', async () => {
     requireDist();
-    const jsxMod = await import(DIST_JSX) as Record<string, unknown>;
+    const jsxMod = (await import(DIST_JSX)) as Record<string, unknown>;
     expect(typeof jsxMod.jsx).toBe('function');
     expect(typeof jsxMod.jsxs).toBe('function');
     expect(typeof jsxMod.jsxDEV).toBe('function');
