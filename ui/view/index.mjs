@@ -26,8 +26,6 @@ export {
   GENERATOR_VERSION,
   generateView,
   lucideExportName,
-  moduleSpecifier,
-  printDoc,
   readViewHeader,
   viewModulePath,
 } from './generate.mjs';

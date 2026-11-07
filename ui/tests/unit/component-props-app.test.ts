@@ -18,7 +18,7 @@ import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
 import { run as props } from '../../props/cli.mjs';
 import { run as view } from '../../view/cli.mjs';
-import { moduleSpecifier } from '../../view/index.mjs';
+import { moduleSpecifier } from '../../view/generate.mjs';
 
 const uiRoot = resolve(import.meta.dirname, '../..');
 const repoRoot = resolve(uiRoot, '..');

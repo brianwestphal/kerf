@@ -286,8 +286,7 @@ read or change documents; `@kerfjs/ui/editor` uses each of them.
 The types (`ViewDocument`, `ViewNode`, `ViewChild`, `ViewEachChild`,
 `ViewIfChild`, `ViewSlotChild`, `ViewType`, `ViewValue`, `ViewCatalog`,
 `ViewDiagnostic`, `ViewValidation`, `ViewContract`, `ViewContractChange`,
-`GeneratedView`) are exported alongside. `printDoc` and `moduleSpecifier` are
-generator internals and are not part of the supported surface.
+`GeneratedView`) are exported alongside.
 
 ## See also
 

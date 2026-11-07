@@ -408,9 +408,6 @@ export function viewModulePath(
   target?: 'ts' | 'js',
 ): string;
 
-/** Layout printer for generated expressions. */
-export function printDoc(doc: unknown, indent?: number): string;
-
 /** A parsed `$css` call: `{ name, args }`, each argument a literal or nested call. */
 export interface CssCallTree {
   readonly name: string;
@@ -478,6 +475,3 @@ export function previewView(
     readonly placeholder: (node: ViewNode, reason: string) => SafeHtmlLike;
   },
 ): SafeHtmlLike;
-
-/** A component import as the generated module writes it, relative to `importFrom` when absolute. */
-export function moduleSpecifier(specifier: string, importFrom?: string): string;

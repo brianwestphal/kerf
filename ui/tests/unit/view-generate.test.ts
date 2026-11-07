@@ -11,12 +11,12 @@ import {
   createViewCatalog,
   diffContracts,
   generateView,
-  printDoc,
   readViewHeader,
   typeText,
   viewDigest,
   viewModulePath,
 } from '../../view/index.mjs';
+import { printDoc } from '../../view/generate.mjs';
 import {
   inboxContract,
   inboxRefs,
