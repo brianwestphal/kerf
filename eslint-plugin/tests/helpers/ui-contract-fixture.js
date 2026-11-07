@@ -290,4 +290,19 @@ export const uiSettings = (overrides = {}) => ({
   },
 });
 import process from 'node:process';
-import { resolve } from 'node:path';
+import { join, resolve } from 'node:path';
+
+// The catalogs @kerfjs/ui actually ships, so documented public anatomy is
+// checked against the real contract rather than the fixture.
+export const shippedUiSettings = uiSettings({
+  catalog: undefined,
+  selectionCatalog: undefined,
+  catalogPath: join(
+    import.meta.dirname,
+    '../../../ui/ai/component-composition.json',
+  ),
+  selectionCatalogPath: join(
+    import.meta.dirname,
+    '../../../ui/ai/component-catalog.json',
+  ),
+});
