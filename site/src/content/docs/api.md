@@ -207,8 +207,8 @@ but four are decided when their host is created — `untrackedSignals` per
 `signal()`, `delegateInEffect` per `effect()`, `rebuiltListeners` per
 `mount()`, and `selectorFanout` per `signal()` and `computed()`. Enabling `untrackedSignals` prints its coverage boundary once.
 
-The subpath also re-exports `clearDevHooks()`, `installDevHooks()` and
-`devHooks` so a consumer's own test suite can assert production-shaped
+The subpath also re-exports `clearDevHooks(): void`,
+`installDevHooks(hooks: DevHooks): void` and `devHooks` so a consumer's own test suite can assert production-shaped
 behavior without reloading modules. It also exports `DEV_HOOKS`, the standard
 hook bundle the entry installs on import: a suite can `clearDevHooks()` for a
 production-shaped test and `installDevHooks(DEV_HOOKS)` afterwards to restore

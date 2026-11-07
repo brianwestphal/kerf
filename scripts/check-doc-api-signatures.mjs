@@ -8,10 +8,11 @@
  * undocumented overload.
  *
  * ── What it reads ──────────────────────────────────────────────────────────
- * The built entry declaration files (dist/ must exist — run `npm run build`
- * first; the `check` chain calls this right after the build step):
- *   dist/index.d.ts, dist/array-signal.d.ts, dist/jsx-runtime.d.ts,
- *   dist/testing.d.ts
+ * The built declaration file of every tsup entry (read from
+ * `tsup.config.ts`'s `entry` list, so all 15 subpaths — index, jsx-runtime,
+ * testing, array-signal, html, actions, overlay, scope, async, list, router,
+ * timing, remount, attach, dev). dist/ must exist — run `npm run build`
+ * first; the `check` chain calls this right after the build step.
  * Re-exports that point at sibling dist chunks (`export { d as defineStore }
  * from './testing-….js'`) are followed into the chunk to find the real
  * `declare function` declaration. Re-exports of EXTERNAL modules
@@ -74,21 +75,16 @@ const REPO_ROOT = dirname(dirname(fileURLToPath(import.meta.url)));
 const DIST = resolve(REPO_ROOT, 'dist');
 const API_DOC = resolve(REPO_ROOT, 'docs/8-api-reference.md');
 
+// Every tsup entry, read from tsup.config.ts so a new subpath is checked the
+// moment it ships rather than when someone remembers to list it here.
+const TSUP_CONFIG = readFileSync(resolve(REPO_ROOT, 'tsup.config.ts'), 'utf8');
 const ENTRY_DTS = [
-  'index.d.ts',
-  'array-signal.d.ts',
-  'jsx-runtime.d.ts',
-  'testing.d.ts',
-  'html.d.ts',
-  'actions.d.ts',
-  'overlay.d.ts',
-  'scope.d.ts',
-  'async.d.ts',
-  'list.d.ts',
-  'timing.d.ts',
-  'remount.d.ts',
-  'attach.d.ts',
-];
+  ...(/entry:\s*\[([^\]]*)\]/.exec(TSUP_CONFIG)?.[1] ?? '').matchAll(
+    /'src\/([\w-]+)\.ts'/g,
+  ),
+].map((m) => `${m[1]}.d.ts`);
+if (ENTRY_DTS.length === 0)
+  throw new Error('could not read the entry list from tsup.config.ts');
 
 // Internal function exports the JSX transform consumes but users never call by
 // hand, plus JSX sugar with no user-facing parameter signature. Presence of
