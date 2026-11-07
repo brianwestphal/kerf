@@ -1,4 +1,4 @@
-import { afterEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { signal } from '../../src/reactive.js';
 import {
@@ -7,6 +7,125 @@ import {
   disposeSubtree,
   observeRemovals,
 } from '../../src/scope.js';
+
+// A throwing disposer is reported through `reportError` after the teardown
+// loop (KF-C0S46R). happy-dom has no `reportError`, so stub it for every test
+// (an unstubbed run would fall back to a microtask rethrow, which vitest
+// reports as an unhandled error).
+let reported: unknown[] = [];
+beforeEach(() => {
+  reported = [];
+  vi.stubGlobal('reportError', (error: unknown) => {
+    reported.push(error);
+  });
+});
+afterEach(() => {
+  vi.unstubAllGlobals();
+});
+
+describe('disposer errors are reported, not swallowed', () => {
+  it('createScope(): every disposer runs, then each error is reported in run order after the signal aborts', () => {
+    const scope = createScope();
+    const signalAtReport: boolean[] = [];
+    const sig = scope.signal;
+    vi.stubGlobal('reportError', (error: unknown) => {
+      reported.push(error);
+      signalAtReport.push(sig.aborted);
+    });
+    const a = new Error('a');
+    const b = new Error('b');
+    const ran: string[] = [];
+    scope.add(() => {
+      ran.push('first');
+      throw a;
+    });
+    scope.add(() => ran.push('middle'));
+    scope.add(() => {
+      ran.push('last');
+      throw b;
+    });
+    expect(() => scope.dispose()).not.toThrow();
+    expect(ran).toEqual(['last', 'middle', 'first']);
+    expect(reported).toEqual([b, a]); // newest-first run order
+    expect(signalAtReport).toEqual([true, true]); // reported after teardown
+  });
+
+  it('disposeScope(): errors are reported after every disposer ran', () => {
+    const el = document.createElement('div');
+    const s = disposeScope(el);
+    const ran: string[] = [];
+    const boom = new Error('boom');
+    vi.stubGlobal('reportError', (error: unknown) => {
+      reported.push(error);
+      ran.push('reported');
+    });
+    s.add(() => {
+      ran.push('a');
+      throw boom;
+    });
+    s.add(() => ran.push('b'));
+    s.dispose();
+    expect(ran).toEqual(['a', 'b', 'reported']);
+    expect(reported).toEqual([boom]);
+    s.dispose(); // idempotent: nothing reported twice
+    expect(reported).toEqual([boom]);
+  });
+
+  it('a registration on a disposed handle that throws is reported too', () => {
+    const el = document.createElement('div');
+    const s = disposeScope(el);
+    s.dispose();
+    const late = new Error('late');
+    s.add(() => {
+      throw late;
+    });
+    expect(reported).toEqual([late]);
+  });
+
+  it('disposeSubtree() reports each scope’s errors and still disposes the rest', () => {
+    const root = document.createElement('div');
+    root.innerHTML = '<p></p><span></span>';
+    const e1 = new Error('p');
+    const after = vi.fn();
+    disposeScope(root.querySelector('p')!).add(() => {
+      throw e1;
+    });
+    disposeScope(root.querySelector('span')!).add(after);
+    disposeSubtree(root);
+    expect(after).toHaveBeenCalledTimes(1);
+    expect(reported).toEqual([e1]);
+  });
+
+  it('without reportError, the error is rethrown from a microtask', async () => {
+    vi.stubGlobal('reportError', undefined);
+    const thrown: unknown[] = [];
+    const queued: Array<() => void> = [];
+    vi.stubGlobal('queueMicrotask', (fn: () => void) => queued.push(fn));
+    const boom = new Error('boom');
+    const scope = createScope();
+    scope.add(() => {
+      throw boom;
+    });
+    expect(() => scope.dispose()).not.toThrow();
+    expect(queued).toHaveLength(1);
+    try {
+      queued[0]();
+    } catch (error) {
+      thrown.push(error);
+    }
+    expect(thrown).toEqual([boom]);
+  });
+
+  it('a clean teardown reports nothing', () => {
+    const scope = createScope();
+    scope.add(() => {});
+    scope.dispose();
+    const s = disposeScope(document.createElement('div'));
+    s.add(() => {});
+    s.dispose();
+    expect(reported).toEqual([]);
+  });
+});
 
 describe('createScope()', () => {
   it('runs newest first, keeps going after errors, and rotates its signal after cleanup', () => {

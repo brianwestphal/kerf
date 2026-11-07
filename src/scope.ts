@@ -35,7 +35,11 @@ import { effect } from './reactive.js';
 export interface DisposerScope {
   /** Register a disposer in the current generation and return it. */
   add(dispose: () => void): () => void;
-  /** Run the current generation newest first, then abort its signal. */
+  /**
+   * Run the current generation newest first, then abort its signal. A throwing
+   * disposer does not stop the rest; its error is reported through
+   * `reportError` once the generation is torn down, never rethrown.
+   */
   readonly dispose: () => void;
   /** Signal for native listeners in the current generation. */
   readonly signal: AbortSignal;
@@ -73,13 +77,15 @@ export function createScope(): DisposerScope {
       const oldController = controller;
       disposers = [];
       controller = new AbortController();
+      const errors: unknown[] = [];
       try {
         for (let index = pending.length - 1; index >= 0; index--)
-          runBestEffort(pending[index]);
+          runCollecting(pending[index], errors);
       } finally {
         oldController.abort();
         disposing = false;
       }
+      reportAll(errors);
     },
   };
 }
@@ -102,7 +108,8 @@ export interface Scope {
   ): () => void;
   /**
    * Run every registered disposer (best-effort — a throwing one won't strand the
-   * rest). Idempotent. The handle is then dead: a later `add` / `mount` /
+   * rest; what it threw is reported through `reportError` once the loop
+   * finishes, never rethrown to the caller). Idempotent. The handle is then dead: a later `add` / `mount` /
    * `effect` / `delegate` on it (including one made by a disposer while this
    * runs) tears down at once — `add(fn)` calls `fn` immediately — so nothing
    * leaks into a scope that will never run again. `disposeScope(el)` hands out
@@ -120,13 +127,41 @@ interface ScopeState {
 // "no module-level mutable state" rule (like bindings.ts:insertedTextNodes).
 const scopes = new WeakMap<Element, ScopeState>();
 
-/** Run a disposer; a throwing one must not strand the rest. */
-function runBestEffort(dispose: () => void): void {
+/**
+ * Run a disposer, collecting (not propagating) what it throws, so a throwing
+ * one never strands the rest of a teardown loop.
+ */
+function runCollecting(dispose: () => void, errors: unknown[]): void {
   try {
     dispose();
-  } catch {
-    /* best-effort */
+  } catch (error) {
+    errors.push(error);
   }
+}
+
+/**
+ * Surface the errors a teardown collected, AFTER it finished, so a broken
+ * disposer is visible (console / `window.onerror` / error monitoring) without
+ * stranding the disposers that came after it (KF-C0S46R: a teardown used to
+ * swallow them with no trace). `reportError` reports without throwing; where
+ * it is missing, a microtask rethrow surfaces it as an uncaught error instead.
+ */
+function reportAll(errors: readonly unknown[]): void {
+  for (const error of errors) {
+    if (typeof globalThis.reportError === 'function')
+      globalThis.reportError(error);
+    else
+      globalThis.queueMicrotask(() => {
+        throw error;
+      });
+  }
+}
+
+/** Run one disposer now and report anything it throws. */
+function runReporting(dispose: () => void): void {
+  const errors: unknown[] = [];
+  runCollecting(dispose, errors);
+  reportAll(errors);
 }
 
 /**
@@ -145,7 +180,7 @@ export function disposeScope(el: Element): Scope {
   // array nothing will ever run — a leak (KF-DFGD1R).
   let disposed = false;
   const register = (dispose: () => void): (() => void) => {
-    if (disposed) runBestEffort(dispose);
+    if (disposed) runReporting(dispose);
     else disposers.push(dispose);
     return dispose;
   };
@@ -159,7 +194,9 @@ export function disposeScope(el: Element): Scope {
       if (disposed) return;
       disposed = true;
       scopes.delete(el);
-      for (const d of disposers.splice(0)) runBestEffort(d);
+      const errors: unknown[] = [];
+      for (const d of disposers.splice(0)) runCollecting(d, errors);
+      reportAll(errors);
     },
   };
   scopes.set(el, { scope, disposers });

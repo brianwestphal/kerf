@@ -874,7 +874,7 @@ teardown(); // runs registered disposers newest first, then aborts the signal
 // The same handle can now collect another generation of listeners.
 ```
 
-`add(dispose)` returns the disposer. `size` counts registered disposers in the current generation. `dispose()` is bound and idempotent for that generation; it keeps running after a disposer throws, then aborts the generation's `signal`. The next read of `signal` returns a fresh, un-aborted signal. New registrations made during cleanup belong to the next generation. Reading `signal` starts that generation even if no disposer is added, so native listeners registered with the signal alone are removed by the next `dispose()`.
+`add(dispose)` returns the disposer. `size` counts registered disposers in the current generation. `dispose()` is bound and idempotent for that generation; it keeps running after a disposer throws, then aborts the generation's `signal`, then reports each thrown error through `reportError` (a microtask rethrow where `reportError` is missing) — never rethrown to the caller, but never silent. The next read of `signal` returns a fresh, un-aborted signal. New registrations made during cleanup belong to the next generation. Reading `signal` starts that generation even if no disposer is added, so native listeners registered with the signal alone are removed by the next `dispose()`.
 
 ### `disposeScope(el): Scope`
 
@@ -888,7 +888,7 @@ s.add(() => observer.disconnect()); // any () => void disposer
 s.dispose(); // runs them all, best-effort, idempotent
 ```
 
-Returns the per-element [`Scope`](#scope-type). Calling `disposeScope(el)` again for the same element returns the **same** scope (so disparate code paths register into one place); after `dispose()`, a later call starts fresh. `Scope` has `add(dispose)` (register any disposer, returns it), the convenience wrappers `mount(el, render)` / `effect(fn)` / `delegate(root, type, selector, handler, options?)` (which call the kerf primitive **and** register its disposer), and `dispose()` (runs every registered disposer best-effort — a throwing one won't strand the rest — then resets; idempotent). The disposed handle is then dead: a later `add` / `mount` / `effect` / `delegate` on it — including one made by a disposer while `dispose()` runs — tears down at once (`add(fn)` calls `fn` immediately; the wrappers create and immediately dispose), so nothing leaks into a scope that will never run again.
+Returns the per-element [`Scope`](#scope-type). Calling `disposeScope(el)` again for the same element returns the **same** scope (so disparate code paths register into one place); after `dispose()`, a later call starts fresh. `Scope` has `add(dispose)` (register any disposer, returns it), the convenience wrappers `mount(el, render)` / `effect(fn)` / `delegate(root, type, selector, handler, options?)` (which call the kerf primitive **and** register its disposer), and `dispose()` (runs every registered disposer best-effort — a throwing one won't strand the rest, and its error is reported through `reportError` once the loop finishes rather than swallowed — then resets; idempotent). The disposed handle is then dead: a later `add` / `mount` / `effect` / `delegate` on it — including one made by a disposer while `dispose()` runs — tears down at once (`add(fn)` calls `fn` immediately; the wrappers create and immediately dispose), so nothing leaks into a scope that will never run again.
 
 ### `disposeSubtree(root): void`
 
