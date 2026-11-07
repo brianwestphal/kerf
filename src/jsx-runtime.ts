@@ -138,7 +138,7 @@ export function raw(html: string): SafeHtml {
  * Internal: build a `SafeHtml` representing a list segment. Used by
  * `each()` so the JSX runtime is the sole owner of `SafeHtml` construction.
  */
-export function listSafeHtml(
+export function _listSafeHtml(
   id: string,
   items: ListSegment['items'],
   source?: object,
@@ -150,7 +150,7 @@ export function listSafeHtml(
  * Internal: build a `SafeHtml` representing a granular list segment with
  * patches (KF-92). The reconciler applies the patches to the existing
  * binding directly, skipping the per-item iteration that the snapshot
- * `listSafeHtml` requires. `items` is included for fall-through paths
+ * `_listSafeHtml` requires. `items` is included for fall-through paths
  * (toString during SSR, fall-back when the binding doesn't exist yet).
  *
  * Patch HTML is rendered upstream (in `each()`) inside a try/catch — see
@@ -158,7 +158,7 @@ export function listSafeHtml(
  * already carries a `html` string, and the reconciler does no further
  * row rendering.
  */
-export function granularListSafeHtml(
+export function _granularListSafeHtml(
   id: string,
   items: ListSegment['items'],
   patches: NonNullable<ListSegment['patches']>,

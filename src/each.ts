@@ -47,9 +47,9 @@ import { devHooks } from './dev-hooks.js';
 import { itemVersion } from './item-version.js';
 import type { SafeHtml } from './jsx-runtime.js';
 import {
-  granularListSafeHtml,
+  _granularListSafeHtml,
+  _listSafeHtml,
   isSafeHtml,
-  listSafeHtml,
 } from './jsx-runtime.js';
 import { decideListPath, deriveListRenderState } from './list-render-state.js';
 import type { ArrayPatchInternal } from './segment.js';
@@ -654,7 +654,7 @@ function eachGranular<T extends object>(
   if (staleIndexShift) devHooks.staleIndex?.(id);
   // The `items` field is left empty for the granular case — the reconciler
   // doesn't need it; every insert/update patch carries pre-rendered HTML.
-  return granularListSafeHtml(id, [], internalPatches, sig);
+  return _granularListSafeHtml(id, [], internalPatches, sig);
 }
 
 /** Like eachSnapshot but uses a pre-allocated id (caller already advanced the counter). */
@@ -738,5 +738,5 @@ function eachSnapshotById<T extends object>(
   if (cacheKey !== undefined) {
     devHooks.duplicateCacheKeys?.(id, segItems);
   }
-  return listSafeHtml(id, segItems, source);
+  return _listSafeHtml(id, segItems, source);
 }

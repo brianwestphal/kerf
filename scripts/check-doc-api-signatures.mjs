@@ -93,14 +93,7 @@ const ENTRY_DTS = [
 // Internal function exports the JSX transform consumes but users never call by
 // hand, plus JSX sugar with no user-facing parameter signature. Presence of
 // the user-facing ones (`Fragment`) is covered by check-doc-api-coverage.
-const EXEMPT_FUNCS = new Set([
-  'jsx',
-  'jsxs',
-  'jsxDEV',
-  'listSafeHtml',
-  'granularListSafeHtml',
-  'Fragment',
-]);
+const EXEMPT_FUNCS = new Set(['jsx', 'jsxs', 'jsxDEV', 'Fragment']);
 
 // ── .d.ts scanning helpers ────────────────────────────────────────────────
 
