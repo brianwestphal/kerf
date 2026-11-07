@@ -2,12 +2,17 @@
 // kerf-ui-view: generate, check, and diff read-only view modules from Kerf UI
 // view documents (docs/26-ui-editor.md §6). An authoring step, like a
 // formatter — never part of a consumer's build.
-import { existsSync, readFileSync, realpathSync, writeFileSync } from 'node:fs';
+import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
 import { basename, dirname, join, resolve } from 'node:path';
 import process from 'node:process';
 import { fileURLToPath } from 'node:url';
 
+import {
+  isMainModule,
+  parseCliArguments,
+  wantsHelp,
+} from '../scripts/lib/cli-args.mjs';
 import { contractOf, diffContracts } from './contract.mjs';
 import { generateView, readViewHeader, viewModulePath } from './generate.mjs';
 import { createViewCatalog, validateView } from './validate.mjs';
@@ -28,6 +33,10 @@ Options:
   --props <file>        an extra component-props.json (repeatable)
   --no-profile          skip catalogs .kerf-ui-profile.json declares
   --composition <file>  an extra component-composition.json (repeatable)
+  -h, --help            show this help
+
+Exit codes: 0 success, 1 invalid, stale, or hand-edited output, 2 usage or
+input error.
 `;
 
 const packageRoot = resolve(dirname(fileURLToPath(import.meta.url)), '..');
@@ -35,40 +44,37 @@ const readJson = (path) => JSON.parse(readFileSync(path, 'utf8'));
 
 /** Parses argv into `{ command, documents, options }`, or throws a usage error. */
 export function parseArguments(argv) {
-  const [command, ...rest] = argv;
-  const options = {
-    target: 'ts',
-    declarationsOnly: false,
-    props: [],
-    composition: [],
-    profile: true,
-  };
-  const documents = [];
-  for (let index = 0; index < rest.length; index += 1) {
-    const argument = rest[index];
-    const next = () => {
-      const value = rest[(index += 1)];
-      if (value === undefined) throw new Error(`${argument} needs a value`);
-      return value;
-    };
-    if (argument === '--target') {
-      options.target = next();
-      if (!['ts', 'js'].includes(options.target))
-        throw new Error('--target is ts or js');
-    } else if (argument === '--declarations-only')
-      options.declarationsOnly = true;
-    else if (argument === '--props') options.props.push(next());
-    else if (argument === '--composition') options.composition.push(next());
-    else if (argument === '--no-profile') options.profile = false;
-    else if (argument.startsWith('--'))
-      throw new Error(`unknown option ${argument}`);
-    else documents.push(argument);
-  }
+  const { options, positionals } = parseCliArguments(argv, {
+    values: {
+      '--target': 'target',
+      '--props': 'props',
+      '--composition': 'composition',
+    },
+    repeatable: ['--props', '--composition'],
+    flags: {
+      '--declarations-only': 'declarationsOnly',
+      '--no-profile': 'noProfile',
+    },
+    positionals: true,
+  });
+  const [command, ...documents] = positionals;
+  const target = options.target ?? 'ts';
+  if (!['ts', 'js'].includes(target)) throw new Error('--target is ts or js');
   if (!['generate', 'check', 'diff'].includes(command))
     throw new Error(`unknown command ${command ?? '(none)'}`);
   if (documents.length === 0)
     throw new Error('name at least one .kui.json document');
-  return { command, documents, options };
+  return {
+    command,
+    documents,
+    options: {
+      target,
+      declarationsOnly: options.declarationsOnly === true,
+      props: options.props,
+      composition: options.composition,
+      profile: options.noProfile !== true,
+    },
+  };
 }
 
 const require = createRequire(import.meta.url);
@@ -158,6 +164,7 @@ const viewResolver = (documentPath) => (src, path) => {
 
 /** Runs one command; returns `{ code, output }` instead of exiting, for tests. */
 export function run(argv) {
+  if (wantsHelp(argv)) return { code: 0, output: USAGE };
   let parsed;
   try {
     parsed = parseArguments(argv);
@@ -255,11 +262,9 @@ export function run(argv) {
   return { code: failed ? 1 : 0, output: `${lines.join('\n')}\n` };
 }
 
-if (
-  process.argv[1] &&
-  // npm runs bins through symlinks (node_modules/.bin), so compare real paths.
-  realpathSync(resolve(process.argv[1])) === fileURLToPath(import.meta.url)
-) {
+// npm runs bins through symlinks (node_modules/.bin); isMainModule compares
+// real paths.
+if (isMainModule(import.meta.url)) {
   const result = run(process.argv.slice(2));
   (result.code === 0 ? process.stdout : process.stderr).write(result.output);
   process.exitCode = result.code;

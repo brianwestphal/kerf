@@ -4,21 +4,13 @@ import console from 'node:console';
 import { resolve } from 'node:path';
 import process from 'node:process';
 
+import { parseCliArguments, wantsHelp } from '../scripts/lib/cli-args.mjs';
 import { evaluateUi, formatUiEvaluationText } from './index.mjs';
 
 const args = process.argv.slice(2);
-const take = (name) => {
-  const index = args.indexOf(name);
-  if (index < 0) return undefined;
-  const value = args[index + 1];
-  if (!value || value.startsWith('--'))
-    throw new Error(`${name} requires a value.`);
-  args.splice(index, 2);
-  return value;
-};
 
 try {
-  if (args.includes('--help') || args.includes('-h')) {
+  if (wantsHelp(args)) {
     console.log(`Usage: kerf-ui-evaluate --url <running-app> [options]
 
 Options:
@@ -32,30 +24,44 @@ Options:
   --settle <ms>          App settle delay after navigation (default: 100)
   --retention <policy>   always, on-failure, or never
   --format <format>      text or json (default: text)
-  --no-fail              Exit zero even when objective diagnostics fail`);
+  --no-fail              Exit zero even when objective diagnostics fail
+  -h, --help             Show this help
+
+Exit codes: 0 passed, 1 objective diagnostics failed, 2 usage or input error.`);
     process.exit(0);
   }
-  const url = take('--url');
-  const root = resolve(take('--root') ?? process.cwd());
-  const startDirectory = resolve(root, take('--start') ?? '.');
-  const packageProfile = take('--profile');
-  const outputDirectory = resolve(root, take('--output') ?? 'kerf-ui-evidence');
-  const reportValue = take('--report');
-  const reportPath = reportValue
-    ? resolve(root, reportValue)
+  const { options } = parseCliArguments(args, {
+    values: {
+      '--url': 'url',
+      '--root': 'root',
+      '--start': 'start',
+      '--profile': 'profile',
+      '--output': 'output',
+      '--report': 'report',
+      '--browser': 'browser',
+      '--timeout': 'timeout',
+      '--settle': 'settle',
+      '--retention': 'retention',
+      '--format': 'format',
+    },
+    flags: { '--no-fail': 'noFail' },
+  });
+  const url = options.url;
+  const root = resolve(options.root ?? process.cwd());
+  const startDirectory = resolve(root, options.start ?? '.');
+  const packageProfile = options.profile;
+  const outputDirectory = resolve(root, options.output ?? 'kerf-ui-evidence');
+  const reportPath = options.report
+    ? resolve(root, options.report)
     : resolve(outputDirectory, 'report.json');
-  const browserValue = take('--browser');
-  const browsers = browserValue
-    ? browserValue.split(',').map((value) => value.trim())
+  const browsers = options.browser
+    ? options.browser.split(',').map((value) => value.trim())
     : undefined;
-  const timeoutMs = Number(take('--timeout') ?? 15_000);
-  const settleMs = Number(take('--settle') ?? 100);
-  const retention = take('--retention') ?? 'on-failure';
-  const format = take('--format') ?? 'text';
-  const noFail = args.includes('--no-fail');
-  const unknown = args.filter((argument) => argument !== '--no-fail');
-  if (unknown.length)
-    throw new Error(`Unknown arguments: ${unknown.join(' ')}`);
+  const timeoutMs = Number(options.timeout ?? 15_000);
+  const settleMs = Number(options.settle ?? 100);
+  const retention = options.retention ?? 'on-failure';
+  const format = options.format ?? 'text';
+  const noFail = options.noFail === true;
   if (!url) throw new Error('--url is required.');
   if (!['text', 'json'].includes(format))
     throw new Error('--format must be text or json.');

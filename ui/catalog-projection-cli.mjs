@@ -1,47 +1,72 @@
 #!/usr/bin/env node
 
-import { realpathSync } from 'node:fs';
 import { readFile, writeFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
-import { fileURLToPath } from 'node:url';
 
+import {
+  CLI_USAGE_EXIT,
+  isMainModule,
+  parseCliArguments,
+  wantsHelp,
+} from './scripts/lib/cli-args.mjs';
 import { projectConsumerCatalog } from './catalog-projection.mjs';
 
-const usage =
-  'Usage: kerf-catalog-demo --extension <catalog.json> --out <catalog.generated.ts> --repo-base <blob-url> [--kerf-catalog <catalog.json>] [--category <name>] [--source-template <path>] [--demo-template <path>] [--documentation-template <path>] [--design-template <path>] (--write|--check)';
+const usage = `Usage: kerf-catalog-demo --extension <catalog.json> --out <catalog.generated.ts> --repo-base <blob-url> (--write | --check) [options]
+
+Options:
+  --extension <path>               Consumer catalog extension JSON (required)
+  --out <path>                     Generated TypeScript module (required)
+  --repo-base <url>                HTTP(S) blob URL for source links (required)
+  --write                          Write the generated module
+  --check                          Fail when the generated module is stale
+  --kerf-catalog <path>            Kerf catalog (default: the installed one)
+  --category <name>                Catalog category for consumer rows
+  --source-template <path>         Component source path template ({id})
+  --demo-template <path>           Demo path template ({id})
+  --documentation-template <path>  Documentation path template ({id})
+  --design-template <path>         Design template path template ({id})
+  -h, --help                       Show this help
+
+Exit codes: 0 in sync or written, 1 stale, 2 usage or input error.`;
+
+/** A usage or input error: reported with exit status 2, a stale module with 1. */
+class UsageError extends Error {}
 
 function parseArgs(argv) {
-  const options = {};
-  const values = new Map([
-    ['--extension', 'extension'],
-    ['--out', 'out'],
-    ['--repo-base', 'repoBase'],
-    ['--kerf-catalog', 'kerfCatalog'],
-    ['--category', 'category'],
-    ['--source-template', 'sourceTemplate'],
-    ['--demo-template', 'demoTemplate'],
-    ['--documentation-template', 'documentationTemplate'],
-    ['--design-template', 'designTemplate'],
-  ]);
-  for (let index = 0; index < argv.length; index += 1) {
-    const arg = argv[index];
-    if (arg === '--check' || arg === '--write') {
-      if (options.mode)
-        throw new Error('Choose exactly one of --write or --check');
-      options.mode = arg;
-    } else if (values.has(arg)) {
-      const value = argv[++index];
-      if (!value || value.startsWith('--'))
-        throw new Error(`${arg} needs a value`);
-      options[values.get(arg)] = value;
-    } else {
-      throw new Error(`Unknown option ${arg}`);
-    }
+  let options;
+  try {
+    ({ options } = parseCliArguments(argv, {
+      values: {
+        '--extension': 'extension',
+        '--out': 'out',
+        '--repo-base': 'repoBase',
+        '--kerf-catalog': 'kerfCatalog',
+        '--category': 'category',
+        '--source-template': 'sourceTemplate',
+        '--demo-template': 'demoTemplate',
+        '--documentation-template': 'documentationTemplate',
+        '--design-template': 'designTemplate',
+      },
+      flags: { '--write': 'write', '--check': 'check' },
+    }));
+  } catch (error) {
+    throw new UsageError(error.message);
   }
-  if (!options.mode || !options.extension || !options.out || !options.repoBase)
-    throw new Error(usage);
+  if (options.write && options.check)
+    throw new UsageError('Choose exactly one of --write or --check');
+  options.mode = options.write ? '--write' : options.check ? '--check' : null;
+  const missing = [
+    ['--extension', options.extension],
+    ['--out', options.out],
+    ['--repo-base', options.repoBase],
+  ]
+    .filter(([, value]) => !value)
+    .map(([flag]) => flag);
+  if (!options.mode) missing.push('--write or --check');
+  if (missing.length)
+    throw new UsageError(`missing ${missing.join(', ')}\n\n${usage}`);
   if (!/^https?:\/\//.test(options.repoBase))
-    throw new Error('--repo-base must be an HTTP(S) URL');
+    throw new UsageError('--repo-base must be an HTTP(S) URL');
   return options;
 }
 
@@ -86,13 +111,16 @@ export async function runCatalogProjection(argv) {
   }
 }
 
-if (
-  process.argv[1] &&
-  // npm runs bins through symlinks (node_modules/.bin), so compare real paths.
-  realpathSync(resolve(process.argv[1])) === fileURLToPath(import.meta.url)
-) {
-  runCatalogProjection(process.argv.slice(2)).catch((error) => {
-    process.stderr.write(`kerf-catalog-demo: ${error.message}\n`);
-    process.exitCode = 1;
-  });
+// npm runs bins through symlinks (node_modules/.bin); isMainModule compares
+// real paths.
+if (isMainModule(import.meta.url)) {
+  const argv = process.argv.slice(2);
+  if (wantsHelp(argv)) {
+    process.stdout.write(`${usage}\n`);
+  } else {
+    runCatalogProjection(argv).catch((error) => {
+      process.stderr.write(`kerf-catalog-demo: ${error.message}\n`);
+      process.exitCode = error instanceof UsageError ? CLI_USAGE_EXIT : 1;
+    });
+  }
 }

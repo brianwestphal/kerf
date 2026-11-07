@@ -753,6 +753,7 @@
     "vite-ux-review.d.mts",
     "view",
     "props",
+    "scripts/lib/cli-args.mjs",
     "scripts/lib/json-schema-subset.mjs",
     "scripts/component-catalog-extension-validation.mjs",
     "analyzer",

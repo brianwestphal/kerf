@@ -5,11 +5,16 @@
 // Reads package.json#kerfComponentCatalog: `output` (the composition catalog
 // create-kerf-component writes), `propsOutput` (where to write), and an
 // optional `propsOverlay` of inspector hints. Run after the package's build.
-import { existsSync, readFileSync, realpathSync, writeFileSync } from 'node:fs';
+import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import process from 'node:process';
 import { fileURLToPath } from 'node:url';
 
+import {
+  isMainModule,
+  parseCliArguments,
+  wantsHelp,
+} from '../scripts/lib/cli-args.mjs';
 import { validateJsonSchemaSubset } from '../scripts/lib/json-schema-subset.mjs';
 import { buildPackageComponentProps } from './component-props.mjs';
 
@@ -18,6 +23,15 @@ const USAGE = `Usage: kerf-ui-props (--write | --check) [--root <package directo
 Reads package.json#kerfComponentCatalog.output (composition catalog),
 .propsOutput (destination), and optional .propsOverlay (inspector hints).
 Run it after building the package: it reads the built declarations.
+
+Options:
+  --write          write the props catalog
+  --check          fail when the props catalog is missing or stale
+  --root <path>    package directory (default: current directory)
+  -h, --help       show this help
+
+Exit codes: 0 success, 1 stale catalog or schema problems, 2 usage or
+input error.
 `;
 
 const readJson = (path) => JSON.parse(readFileSync(path, 'utf8'));
@@ -27,21 +41,20 @@ const schemaPath = fileURLToPath(
 
 /** Runs one invocation; returns `{ code, output }` instead of exiting, for tests. */
 export function run(argv) {
-  const write = argv.includes('--write');
-  const check = argv.includes('--check');
-  const rootFlag = argv.indexOf('--root');
-  const known = new Set(['--write', '--check', '--root']);
-  const unknown = argv.filter(
-    (item, index) => !known.has(item) && argv[index - 1] !== '--root',
-  );
-  if (
-    write === check ||
-    unknown.length ||
-    (rootFlag >= 0 && !argv[rootFlag + 1])
-  ) {
-    return { code: 2, output: USAGE };
+  if (wantsHelp(argv)) return { code: 0, output: USAGE };
+  let options;
+  try {
+    ({ options } = parseCliArguments(argv, {
+      values: { '--root': 'root' },
+      flags: { '--write': 'write', '--check': 'check' },
+    }));
+    if (options.write === options.check)
+      throw new Error('choose exactly one of --write or --check');
+  } catch (error) {
+    return { code: 2, output: `kerf-ui-props: ${error.message}\n\n${USAGE}` };
   }
-  const root = resolve(rootFlag >= 0 ? argv[rootFlag + 1] : process.cwd());
+  const write = options.write === true;
+  const root = resolve(options.root ?? process.cwd());
   const packagePath = resolve(root, 'package.json');
   if (!existsSync(packagePath)) {
     return { code: 2, output: `kerf-ui-props: no package.json in ${root}\n` };
@@ -105,11 +118,9 @@ export function run(argv) {
   };
 }
 
-if (
-  process.argv[1] &&
-  // npm runs bins through symlinks (node_modules/.bin), so compare real paths.
-  realpathSync(resolve(process.argv[1])) === fileURLToPath(import.meta.url)
-) {
+// npm runs bins through symlinks (node_modules/.bin); isMainModule compares
+// real paths.
+if (isMainModule(import.meta.url)) {
   const result = run(process.argv.slice(2));
   (result.code === 0 ? process.stdout : process.stderr).write(result.output);
   process.exitCode = result.code;

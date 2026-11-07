@@ -7,23 +7,11 @@ import { resolve } from 'node:path';
 import process from 'node:process';
 import { promisify } from 'node:util';
 
+import { parseCliArguments, wantsHelp } from '../scripts/lib/cli-args.mjs';
 import { formatUiDoctorText, runUiDoctor, UI_DOCTOR_EXIT } from './index.mjs';
 
 const execFileAsync = promisify(execFile);
 const args = process.argv.slice(2);
-const take = (name, repeat = false) => {
-  const values = [];
-  while (args.includes(name)) {
-    const index = args.indexOf(name);
-    const value = args[index + 1];
-    if (!value || value.startsWith('--'))
-      throw new Error(`${name} requires a value.`);
-    args.splice(index, 2);
-    values.push(value);
-    if (!repeat) break;
-  }
-  return repeat ? values : values[0];
-};
 
 async function changedPaths(root) {
   const { stdout: tracked } = await execFileAsync(
@@ -42,7 +30,7 @@ async function changedPaths(root) {
 }
 
 try {
-  if (args.includes('--help') || args.includes('-h')) {
+  if (wantsHelp(args)) {
     console.log(`Usage: kerf-ui-doctor [--full | --changed] [options]
 
 Options:
@@ -57,27 +45,44 @@ Options:
   --fail-on <severity>   error, review, or warning (default: error)
   --output <path>        Also write the merged report
   --no-cache             Disable the content-addressed cache
+  -h, --help             Show this help
 
 Exit codes: 0 clean, 1 findings, 2 configuration/tool failure, 130 cancelled.`);
     process.exit(0);
   }
-  const root = resolve(take('--root') ?? process.cwd());
-  const packageSelector = take('--package');
-  const explicitPaths = take('--path', true);
-  const configPath = take('--config');
-  const url = take('--browser-url');
-  const browserList = take('--browser');
-  const eslintConfig = take('--eslint') ?? 'recommended-ui';
-  const format = take('--format') ?? 'text';
-  const failOn = take('--fail-on');
-  const output = take('--output');
-  const full = args.includes('--full');
-  const changed = args.includes('--changed');
-  const noCache = args.includes('--no-cache');
-  const known = new Set(['--full', '--changed', '--no-cache']);
-  const unknown = args.filter((item) => !known.has(item));
-  if (unknown.length)
-    throw new Error(`Unknown arguments: ${unknown.join(' ')}`);
+  const { options } = parseCliArguments(args, {
+    values: {
+      '--root': 'root',
+      '--package': 'package',
+      '--path': 'paths',
+      '--config': 'config',
+      '--browser-url': 'browserUrl',
+      '--browser': 'browser',
+      '--eslint': 'eslint',
+      '--format': 'format',
+      '--fail-on': 'failOn',
+      '--output': 'output',
+    },
+    repeatable: ['--path'],
+    flags: {
+      '--full': 'full',
+      '--changed': 'changed',
+      '--no-cache': 'noCache',
+    },
+  });
+  const root = resolve(options.root ?? process.cwd());
+  const packageSelector = options.package;
+  const explicitPaths = options.paths;
+  const configPath = options.config;
+  const url = options.browserUrl;
+  const browserList = options.browser;
+  const eslintConfig = options.eslint ?? 'recommended-ui';
+  const format = options.format ?? 'text';
+  const failOn = options.failOn;
+  const output = options.output;
+  const full = options.full === true;
+  const changed = options.changed === true;
+  const noCache = options.noCache === true;
   if (full && changed)
     throw new Error('--full and --changed are mutually exclusive.');
   if (!['text', 'json'].includes(format))

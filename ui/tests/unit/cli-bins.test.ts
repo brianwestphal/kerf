@@ -1,15 +1,24 @@
 import { spawnSync } from 'node:child_process';
-import { mkdirSync, mkdtempSync, rmSync, symlinkSync } from 'node:fs';
+import {
+  mkdirSync,
+  mkdtempSync,
+  readFileSync,
+  rmSync,
+  symlinkSync,
+} from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 import process from 'node:process';
 
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
-import packageJson from '../../package.json' with { type: 'json' };
-
 const root = resolve(import.meta.dirname, '../..');
-const bins = Object.entries(packageJson.bin as Record<string, string>);
+const binPaths = (
+  JSON.parse(readFileSync(resolve(root, 'package.json'), 'utf8')) as {
+    bin: Record<string, string>;
+  }
+).bin;
+const bins = Object.entries(binPaths);
 
 // One invocation per bin that must produce observable output (a usage error or
 // a report) without touching the network or a browser.
@@ -52,6 +61,29 @@ describe('@kerfjs/ui bins', () => {
       { cwd: folder, encoding: 'utf8' },
     );
     expect(`${result.stdout}${result.stderr}`.trim()).not.toBe('');
-    expect(result.status).not.toBe(0);
+    expect(result.status).toBe(2);
+  });
+
+  // KF-FSCXYT: every bin prints its usage and exits 0 on --help / -h, without
+  // doing work, both run directly and through the npm bin symlink.
+  it.each(
+    bins.flatMap(([name]) => [
+      [name, '--help'],
+      [name, '-h'],
+    ]),
+  )('%s %s prints its usage and exits 0', (name, flag) => {
+    for (const entry of [
+      resolve(root, binPaths[name]),
+      join(binDirectory, name),
+    ]) {
+      const result = spawnSync(process.execPath, [entry, flag], {
+        cwd: folder,
+        encoding: 'utf8',
+      });
+      expect(result.status).toBe(0);
+      expect(result.stdout).toMatch(new RegExp(`^Usage: ${name}\\b`));
+      expect(result.stdout).toContain('--help');
+      expect(result.stderr).toBe('');
+    }
   });
 });
