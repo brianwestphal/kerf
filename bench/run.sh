@@ -93,16 +93,47 @@ if ! preflight; then
   exit 1
 fi
 
-echo "==> Starting upstream HTTP server in the background"
-(cd "${UPSTREAM_DIR}" && npm start > /tmp/jfb-server.log 2>&1) &
-SERVER_PID=$!
-trap 'kill ${SERVER_PID} 2>/dev/null || true' EXIT
+# Something already answering on :8080 would satisfy the readiness probe
+# below and get benchmarked instead of the server this run starts.
+if curl -sf -o /dev/null http://localhost:8080/; then
+  echo "Error: port 8080 is already serving; stop that server first." >&2
+  exit 1
+fi
 
-# Wait for the server to come up.
-for _ in {1..30}; do
-  if curl -sf http://localhost:8080/ > /dev/null 2>&1; then break; fi
-  sleep 1
+echo "==> Starting upstream HTTP server in the background"
+SERVER_LOG="$(mktemp "${TMPDIR:-/tmp}/jfb-server.XXXXXX")"
+# Job control gives the server its own process group (pgid = SERVER_PID), so
+# teardown can signal npm AND the node server it spawns. Killing only the
+# subshell PID would orphan the real server on :8080.
+set -m
+(cd "${UPSTREAM_DIR}" && exec npm start > "${SERVER_LOG}" 2>&1) &
+SERVER_PID=$!
+set +m
+stop_server() {
+  kill -- "-${SERVER_PID}" 2> /dev/null || kill "${SERVER_PID}" 2> /dev/null || true
+}
+trap stop_server EXIT
+trap 'exit 130' INT TERM
+
+# Wait for the server to come up; a server that never answers must fail the
+# run rather than let webdriver-ts benchmark nothing.
+SERVER_READY=0
+for _ in $(seq 1 60); do
+  if curl -sf -o /dev/null http://localhost:8080/; then
+    SERVER_READY=1
+    break
+  fi
+  # Bail early if the server died on startup (e.g. port already in use).
+  kill -0 "${SERVER_PID}" 2> /dev/null || break
+  sleep 0.5
 done
+if [[ "${SERVER_READY}" -ne 1 ]]; then
+  echo "Error: the benchmark server did not become ready on :8080." >&2
+  echo "Server log (${SERVER_LOG}):" >&2
+  tail -n 20 "${SERVER_LOG}" >&2 || true
+  exit 1
+fi
+echo "    server log: ${SERVER_LOG}"
 
 echo "==> Running benchmarks: ${FRAMEWORKS[*]}"
 # Passthrough flags must come BEFORE --framework, since --framework takes a
