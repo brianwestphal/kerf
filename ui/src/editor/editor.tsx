@@ -54,7 +54,6 @@ import { Button } from '../components/actions/button/button.js';
 import {
   openPopupMenuAt,
   PopupMenu,
-  type PopupMenuEntry,
 } from '../components/actions/popup-menu/popup-menu.js';
 import { Toolbar } from '../components/actions/toolbar/toolbar.js';
 import { ToolbarControlGroup } from '../components/actions/toolbar-control-group/toolbar-control-group.js';
@@ -365,6 +364,7 @@ import {
   viewPath,
   viewPropsEntry,
 } from './model/views.js';
+import { nodeContextMenu } from './node-context-menu.js';
 import { paletteSketch } from './palette-schematics.js';
 import { wirePaletteThumbnails } from './palette-thumbnails.js';
 import { createPlayStage } from './play-stage.js';
@@ -2649,68 +2649,7 @@ export function createEditor(options: EditorOptions) {
    * It acts on the selected node, which opening it selects.
    */
   const contextMenu = () => {
-    const id = selectedNodeId();
-    const movable = id ? isMovable(doc.value, id) : undefined;
-    const embedIn: PopupMenuEntry[] = [
-      ...EMBED_FIRST.filter((key) => propsByKey.has(key)).map((key) => {
-        const legal = embedFirstLegal.value.has(key);
-        return {
-          label: componentNames.get(key)!,
-          action: CONTEXT_EMBED_ACTION,
-          disabled: !legal,
-          ...(legal
-            ? {}
-            : { disabledReason: 'It cannot hold this node here.' }),
-          attributes: { 'data-editor-context-embed': key },
-        };
-      }),
-      { kind: 'divider' },
-      { label: 'Other…', action: CONTEXT_EMBED_OTHER_ACTION },
-    ];
-    return (
-      <PopupMenu
-        context
-        label="Node actions"
-        rootAttributes={{ [CONTEXT_MENU]: '' }}
-        items={
-          movable
-            ? [
-                { label: 'Embed in', submenu: embedIn },
-                { kind: 'divider' },
-                {
-                  label: 'Move up',
-                  action: CONTEXT_MOVE_UP_ACTION,
-                  disabled: !movable.up,
-                },
-                {
-                  label: 'Move down',
-                  action: CONTEXT_MOVE_DOWN_ACTION,
-                  disabled: !movable.down,
-                },
-                {
-                  label: 'Duplicate',
-                  action: CONTEXT_DUPLICATE_ACTION,
-                  disabled: !movable.placed,
-                },
-                {
-                  label: 'Extract to Document…',
-                  action: EXTRACT_ACTION,
-                  ...(extractBlocked(id!)
-                    ? { disabled: true, disabledReason: extractBlocked(id!) }
-                    : {}),
-                },
-                { kind: 'divider' },
-                {
-                  label: 'Delete',
-                  action: CONTEXT_DELETE_ACTION,
-                  tone: 'danger',
-                  disabled: !movable.remove,
-                },
-              ]
-            : []
-        }
-      />
-    );
+    return nodeContextMenu(ctx, { embedFirstLegal, extractBlocked });
   };
 
   /** Move and delete controls for the selected node, when it can move. */
