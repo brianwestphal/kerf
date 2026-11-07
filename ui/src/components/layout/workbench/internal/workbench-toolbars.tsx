@@ -1,4 +1,3 @@
-import type { KerfUiContent } from '../../../../shared/content/semantic-content.js';
 import {
   composedPanelBody,
   groupSizeFor,
@@ -10,7 +9,8 @@ import {
   panelToggleGroup,
   type PanelToolbar,
   relocatedPanelGroups,
-} from '../../../../shared/panels/panel-toolbar.js';
+} from '../../../../composition/panels/panel-toolbar.js';
+import type { KerfUiContent } from '../../../../shared/content/semantic-content.js';
 import {
   FloatingToolbar,
   type FloatingToolbarPosition,
@@ -24,7 +24,7 @@ import {
   NavStack,
   type NavStackProps,
 } from '../../../navigation/nav-stack/nav-stack.js';
-import { paneConfigProps } from '../../pane/internal/pane-config-props.js';
+import { paneConfigProps } from '../../pane/model/pane-config-props.js';
 import { Pane, type PaneConfig } from '../../pane/pane.js';
 import {
   type WorkbenchPanelKey,

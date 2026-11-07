@@ -1,16 +1,16 @@
 import type { SafeHtml } from 'kerfjs';
 
+import type { NavPane } from '../../../composition/panels/nav-pane.js';
 import type { KerfUiContent } from '../../../shared/content/semantic-content.js';
 import {
   filterDataAttributes,
   type RootDataAttributes,
 } from '../../../shared/dom/extension-attributes.js';
-import type { NavPane } from '../../../shared/panels/nav-pane.js';
 import { ensureSunkenTexture } from '../../../shared/styles/sunken-texture.js';
 import type { ListConfig } from '../../collections/list/list.js';
 import type { NavStackProps } from '../../navigation/nav-stack/nav-stack.js';
 import type { PaneConfig } from '../pane/pane.js';
-import { ResizeGrip } from '../resizable-region/internal/resize-grip.js';
+import { ResizeGrip } from '../resizable-region/parts/resize-grip.js';
 import {
   clampRegionSize,
   type ResizableRegionAxis,

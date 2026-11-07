@@ -1,11 +1,11 @@
-import { installHelpTags } from '../../../../wiring/help-tags.js';
-import { installPopupMenus } from '../../../actions/popup-menu/internal/popup-menu-controller.js';
+// The Catalog's related-entries menus are PopupMenus: PopupMenu's own
+// registration installs them (and the help tags) through its public register
+// module rather than reaching into its internal controller.
+import '../../../actions/popup-menu/register/popup-menu-register.js';
+
 import { installSelects } from '../internal/select-controller.js';
 
 installSelects();
-// The Catalog's related-entries menus are PopupMenus.
-installPopupMenus();
-installHelpTags();
 
 /**
  * Marker export for tests and tooling; importing this module defines the

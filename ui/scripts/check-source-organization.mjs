@@ -1,5 +1,5 @@
 import { access, readFile, readdir } from 'node:fs/promises';
-import { basename, extname, relative, resolve, sep } from 'node:path';
+import { basename, dirname, extname, relative, resolve, sep } from 'node:path';
 
 const root = resolve(import.meta.dirname, '..');
 const sourceRoot = resolve(root, 'src');
@@ -84,9 +84,13 @@ for (const family of await readdir(componentRoot, { withFileTypes: true })) {
       );
     for (const child of await readdir(componentPath, { withFileTypes: true })) {
       if (child.isDirectory()) {
-        if (!['internal', 'model', 'register', 'wiring'].includes(child.name))
+        if (
+          !['internal', 'model', 'parts', 'register', 'wiring'].includes(
+            child.name,
+          )
+        )
           errors.push(
-            `${relative(root, resolve(componentPath, child.name)).split(sep).join('/')} must use internal, model, register, or wiring for component-local support code`,
+            `${relative(root, resolve(componentPath, child.name)).split(sep).join('/')} must use internal, model, parts, register, or wiring for component-local support code`,
           );
         continue;
       }
@@ -126,6 +130,65 @@ for (const file of await sourceFiles(componentRoot)) {
     errors.push(
       `${path} is a component-specific model and must live in model/`,
     );
+}
+
+// KF-TA779Y: import edges. `internal/` is private to its component; another
+// component reaches it only through the owner's primary module or its
+// `model/`, `parts/`, `register/`, or `wiring/` folders. `shared/` is the
+// bottom layer and imports no component, composition, wiring, or catalog code.
+const ALLOWED_INTERNAL_EDGES = new Set([
+  // KF-8G51WR: move workbench-resize to Workbench's model/ with the editor.
+  'editor/play-adapters.ts -> components/layout/workbench/internal/workbench-resize.ts',
+]);
+const SHARED_FORBIDDEN = [
+  'components/',
+  'composition/',
+  'wiring/',
+  'catalog/',
+  'editor/',
+];
+const componentOwner = (path) =>
+  /^components\/[^/]+\/[^/]+\//.exec(path)?.[0] ?? null;
+
+async function resolveSource(base) {
+  for (const candidate of [
+    base.replace(/\.js$/, '.ts'),
+    base.replace(/\.js$/, '.tsx'),
+    base,
+  ])
+    if (/\.(?:ts|tsx)$/.test(candidate) && (await exists(candidate)))
+      return candidate;
+  return null;
+}
+
+for (const file of await sourceFiles(sourceRoot)) {
+  const path = relative(sourceRoot, file).split(sep).join('/');
+  const source = await readFile(file, 'utf8');
+  const owner = componentOwner(path);
+  for (const match of source.matchAll(
+    /(?:\bfrom\s*|\bimport\s*\(\s*|\bimport\s+)'(\.\.?\/[^']+)'/g,
+  )) {
+    const resolved = await resolveSource(resolve(dirname(file), match[1]));
+    if (!resolved) continue;
+    const target = relative(sourceRoot, resolved).split(sep).join('/');
+    const targetOwner = componentOwner(target);
+    if (
+      targetOwner !== null &&
+      targetOwner !== owner &&
+      target.slice(targetOwner.length).startsWith('internal/') &&
+      !ALLOWED_INTERNAL_EDGES.has(`${path} -> ${target}`)
+    )
+      errors.push(
+        `${path} imports ${target}, another component's internal/ module; move the shared piece to the owner's model/, parts/, or wiring/ folder (or to src/shared/) instead`,
+      );
+    if (
+      path.startsWith('shared/') &&
+      SHARED_FORBIDDEN.some((prefix) => target.startsWith(prefix))
+    )
+      errors.push(
+        `${path} imports ${target}; src/shared/ is component-free, so move the module to src/composition/ or into its owning component`,
+      );
+  }
 }
 
 if (errors.length) {

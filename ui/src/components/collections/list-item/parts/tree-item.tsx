@@ -7,7 +7,7 @@ import type { SafeHtml } from 'kerfjs';
 import type { KerfUiContent } from '../../../../shared/content/semantic-content.js';
 import { remify } from '../../../../shared/styles/css-values.js';
 import { DisclosureArrow } from '../../../navigation/disclosure-arrow/disclosure-arrow.js';
-import { listItemContent } from './list-item-content.js';
+import { listItemContent } from '../internal/list-item-content.js';
 
 export interface ListTreeItemProps {
   readonly itemId: string;

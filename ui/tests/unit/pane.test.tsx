@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { paneConfigProps } from '../../src/components/layout/pane/internal/pane-config-props.js';
+import { paneConfigProps } from '../../src/components/layout/pane/model/pane-config-props.js';
 import { Pane } from '../../src/components/layout/pane/pane.js';
 
 describe('Pane', () => {

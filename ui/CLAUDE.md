@@ -18,9 +18,14 @@ Files directly under `src/` are stable public package facades and global style
 entries. Put component implementation and CSS in
 `src/components/<family>/<component>/`; put support code used by one component
 in that component's `internal/`, `model/`, `register/`, or `wiring/` folder.
-Reusable utilities belong in `src/shared/`, cross-component wiring in
-`src/wiring/`, external integration code in `src/integrations/`, and catalog
-implementation in `src/catalog/`. Preserve the flat published subpaths through
+`internal/` is private to its component: another component reaches the owner
+only through its primary module or its `model/`, `parts/` (non-public render
+pieces other components compose, such as `ButtonFace`), `register/`, or
+`wiring/` folders. Reusable component-free utilities belong in `src/shared/`
+(which imports no component), render helpers that compose several components
+in `src/composition/`, cross-component wiring in `src/wiring/`, external
+integration code in `src/integrations/`, and catalog implementation in
+`src/catalog/`. `check:source-organization` enforces these import edges. Preserve the flat published subpaths through
 the root facades. Run `npm run check:source-organization` when moving or adding
 source files.
 

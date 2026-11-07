@@ -879,7 +879,7 @@ Chromium), plus the catalog "Translucent Tab Bar" example.
 ### 3.5 Standalone collapsible panel — `CollapsiblePanel` + `wireSidebar` (`@kerfjs/ui/collapsible-panel`, `@kerfjs/ui/wire-sidebar`)
 
 **Panel toolbars (KF-7MD6HT).** A `CollapsiblePanel` takes the same `toolbar`
-roles as a Workbench panel (shared through `ui/src/shared/panels/panel-toolbar.tsx`) and
+roles as a Workbench panel (shared through `ui/src/composition/panels/panel-toolbar.tsx`) and
 composes its own toolbar over a `Pane`; because a standalone panel does not own
 the work area, the app renders `CollapsiblePanelRelocated` in its work-area
 toolbar to hold the collapsed panel's marked groups and toggle, and

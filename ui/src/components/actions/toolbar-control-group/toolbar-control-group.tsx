@@ -4,9 +4,9 @@ import {
   filterDataAttributes,
   type RootDataAttributes,
 } from '../../../shared/dom/extension-attributes.js';
-import { markRelocatableGroup } from '../../../shared/panels/panel-toolbar-group.js';
 import type { CssLength } from '../../../shared/styles/css-values.js';
 import type { SemanticTone } from '../../../shared/styles/semantic-tone.js';
+import { markRelocatableGroup } from '../../../shared/toolbar/panel-toolbar-group.js';
 import { Badge } from '../../feedback/badge/badge.js';
 import { LoadingSpinner } from '../../feedback/loading-spinner/loading-spinner.js';
 import type { ButtonLabel } from '../button/button.js';

@@ -4,7 +4,7 @@ import type { DeviceClass } from '../../../../shared/environment/device-class.js
 import {
   type ResizeLimit,
   wireResizeHandles,
-} from '../../resizable-region/internal/resize-wiring.js';
+} from '../../resizable-region/wiring/resize-wiring.js';
 import {
   wireWorkbenchOverlays,
   type WorkbenchOverlayPanel,

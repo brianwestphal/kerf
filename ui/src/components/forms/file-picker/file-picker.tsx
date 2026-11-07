@@ -9,7 +9,7 @@ import type {
   ButtonSize,
   ButtonTone,
 } from '../../actions/button/button.js';
-import { ButtonFace } from '../../actions/button/internal/button-face.js';
+import { ButtonFace } from '../../actions/button/parts/button-face.js';
 
 interface FileInputProps {
   /** Accepted types, as the native `accept` attribute (`.png,image/*`). */

@@ -20,11 +20,11 @@ import {
   List,
   type ListConfig,
 } from '../../components/collections/list/list.js';
-import { paneConfigProps } from '../../components/layout/pane/internal/pane-config-props.js';
+import { paneConfigProps } from '../../components/layout/pane/model/pane-config-props.js';
 import { Pane, type PaneConfig } from '../../components/layout/pane/pane.js';
 import { LucideIcon } from '../../components/media/lucide-icon/lucide-icon.js';
-import type { KerfUiContent } from '../content/semantic-content.js';
-import { isRelocatableGroup } from './panel-toolbar-group.js';
+import type { KerfUiContent } from '../../shared/content/semantic-content.js';
+import { isRelocatableGroup } from '../../shared/toolbar/panel-toolbar-group.js';
 
 /** Which edge a collapsible panel docks to. */
 export type PanelSide = 'left' | 'right' | 'bottom';

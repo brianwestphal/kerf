@@ -2,7 +2,7 @@ import {
   filterDataAttributes,
   type RootDataAttributes,
 } from '../../../shared/dom/extension-attributes.js';
-import { ListTreeItem } from '../list-item/internal/tree-item.js';
+import { ListTreeItem } from '../list-item/parts/tree-item.js';
 import {
   type TreeListNode,
   treeListPath,

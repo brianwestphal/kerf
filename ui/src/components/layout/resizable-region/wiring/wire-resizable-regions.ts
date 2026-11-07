@@ -2,7 +2,7 @@ import {
   type ResizeCommit,
   type WireResizableRegionsOptions,
   wireResizeHandles,
-} from '../internal/resize-wiring.js';
+} from './resize-wiring.js';
 
 export type { ResizeCommit, WireResizableRegionsOptions };
 

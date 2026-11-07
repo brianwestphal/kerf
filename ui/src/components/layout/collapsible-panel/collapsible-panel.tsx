@@ -1,10 +1,5 @@
 import type { SafeHtml } from 'kerfjs';
 
-import type { KerfUiContent } from '../../../shared/content/semantic-content.js';
-import {
-  filterDataAttributes,
-  type RootDataAttributes,
-} from '../../../shared/dom/extension-attributes.js';
 import {
   collapsiblePanelToggleIcon,
   composedPanelBody,
@@ -16,7 +11,12 @@ import {
   type PanelToggleAttributes,
   type PanelToolbar,
   relocatedPanelGroups,
-} from '../../../shared/panels/panel-toolbar.js';
+} from '../../../composition/panels/panel-toolbar.js';
+import type { KerfUiContent } from '../../../shared/content/semantic-content.js';
+import {
+  filterDataAttributes,
+  type RootDataAttributes,
+} from '../../../shared/dom/extension-attributes.js';
 import type { ToolbarConfig } from '../../actions/toolbar/toolbar.js';
 import type { ListConfig } from '../../collections/list/list.js';
 import { LucideIcon } from '../../media/lucide-icon/lucide-icon.js';
@@ -29,7 +29,7 @@ import type {
   ResizableRegionSeparator,
 } from '../resizable-region/resizable-region.js';
 
-export { collapsiblePanelToggleIcon } from '../../../shared/panels/panel-toolbar.js';
+export { collapsiblePanelToggleIcon } from '../../../composition/panels/panel-toolbar.js';
 
 /** Which edge a {@link CollapsiblePanel} docks to. */
 export type CollapsiblePanelSide = PanelSide;

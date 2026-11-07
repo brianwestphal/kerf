@@ -1,5 +1,7 @@
 import { ChevronLeft } from 'lucide';
 
+import type { NavPane } from '../../../composition/panels/nav-pane.js';
+import type { PanelBottomToolbar } from '../../../composition/panels/panel-toolbar.js';
 import type { KerfUiContent } from '../../../shared/content/semantic-content.js';
 import {
   filterDataAttributes,
@@ -9,8 +11,6 @@ import {
   type ScrollEdge,
   scrollEdgeAttributes,
 } from '../../../shared/layout/scroll-edge.js';
-import type { NavPane } from '../../../shared/panels/nav-pane.js';
-import type { PanelBottomToolbar } from '../../../shared/panels/panel-toolbar.js';
 import type { CssColor } from '../../../shared/styles/css-values.js';
 import {
   joinStyles,
@@ -26,7 +26,7 @@ import {
   type ToolbarTextSize,
 } from '../../actions/toolbar-text/toolbar-text.js';
 import { List, type ListConfig } from '../../collections/list/list.js';
-import { paneConfigProps } from '../../layout/pane/internal/pane-config-props.js';
+import { paneConfigProps } from '../../layout/pane/model/pane-config-props.js';
 import { Pane } from '../../layout/pane/pane.js';
 import { LucideIcon } from '../../media/lucide-icon/lucide-icon.js';
 

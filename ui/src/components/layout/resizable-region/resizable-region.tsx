@@ -6,7 +6,7 @@ import {
   type RootDataAttributes,
 } from '../../../shared/dom/extension-attributes.js';
 import type { CssLength } from '../../../shared/styles/css-values.js';
-import { ResizeGrip } from './internal/resize-grip.js';
+import { ResizeGrip } from './parts/resize-grip.js';
 
 export type ResizableRegionAxis = 'horizontal' | 'vertical';
 export type ResizableRegionEdge = 'start' | 'end';
