@@ -1,3 +1,4 @@
+import { itemLabel } from '../../../../shared/dom/typeahead.js';
 import { summarizeSelection } from '../model/select-summary.js';
 
 const OPTION = '.kui-select__option';
@@ -9,8 +10,9 @@ const isDisabled = (option: Element): boolean =>
 export const optionValue = (option: Element): string =>
   option.getAttribute('data-value')!;
 
-const optionLabel = (option: Element): string =>
-  option.querySelector('.kui-select__option-label')!.textContent;
+/** An option's label words; the whole option's when it lacks the label span. */
+export const optionLabel = (option: Element): string =>
+  itemLabel(option, '.kui-select__option-label');
 
 /** Every option of a Select, in choice order. */
 export function optionsOf(root: Element): HTMLElement[] {

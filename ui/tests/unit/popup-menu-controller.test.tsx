@@ -540,6 +540,35 @@ describe('PopupMenu register: keyboard navigation', () => {
     expect(key(document.activeElement!, ' ').defaultPrevented).toBe(false);
   });
 
+  it('backs up a query with Backspace, as Select does (KF-NF65PK)', () => {
+    vi.useFakeTimers();
+    const { trigger, item } = setup({
+      items: [{ label: 'Copy' }, { label: 'Cut' }, { label: 'Delete' }],
+    });
+    click(trigger);
+    key(document.activeElement!, 'c');
+    key(document.activeElement!, 'u');
+    expect(document.activeElement).toBe(item('Cut'));
+    expect(key(document.activeElement!, 'Backspace').defaultPrevented).toBe(
+      true,
+    );
+    expect(document.activeElement).toBe(item('Copy'));
+  });
+
+  it('finds an item that lacks its label span instead of throwing (KF-NF65PK)', () => {
+    const { trigger, root } = setup({
+      items: [{ label: 'Copy' }, { label: 'Paste' }],
+    });
+    const paste = [
+      ...root.querySelectorAll<HTMLElement>('.kui-popup-menu__item'),
+    ][1];
+    // Hand-authored markup: the label is the item's own text.
+    paste.textContent = 'Paste';
+    click(trigger);
+    expect(() => key(document.activeElement!, 'p')).not.toThrow();
+    expect(document.activeElement).toBe(paste);
+  });
+
   it('ignores modified keys, keys outside an open menu, and non-character keys', () => {
     const { trigger, menu, item } = setup();
     click(trigger);

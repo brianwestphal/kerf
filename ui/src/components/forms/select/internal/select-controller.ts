@@ -1,10 +1,15 @@
 import {
+  createTypeahead,
+  TYPEAHEAD_RESET,
+} from '../../../../shared/dom/typeahead.js';
+import {
   followAnchor,
   positionPopup,
 } from '../../../../shared/popup/position-popup.js';
 import {
   chosenOptions,
   KuiSelectElement,
+  optionLabel,
   optionsOf,
   optionValue,
   setChosen,
@@ -15,8 +20,11 @@ const ROOT = 'kui-select.kui-select:not([data-embedded])';
 const TRIGGER = '.kui-select__trigger';
 const POPUP = '.kui-select__popup';
 
-/** A typeahead query resets after this long without a keystroke. */
-export const SELECT_TYPEAHEAD_RESET = 1000;
+/**
+ * A typeahead query resets after this long without a keystroke: the shared
+ * Select/PopupMenu {@link TYPEAHEAD_RESET}.
+ */
+export const SELECT_TYPEAHEAD_RESET = TYPEAHEAD_RESET;
 
 const isOpen = (popup: Element): boolean => popup.matches(':popover-open');
 
@@ -28,9 +36,6 @@ const triggerOf = (root: Element): HTMLButtonElement =>
 
 const popupOf = (root: Element): HTMLElement =>
   root.querySelector<HTMLElement>(`:scope > ${POPUP}`)!;
-
-const labelOf = (option: Element): string =>
-  option.querySelector('.kui-select__option-label')!.textContent.trim();
 
 /** Scroll the popup by the least amount that shows `option` whole. */
 function reveal(option: HTMLElement, popup: HTMLElement): void {
@@ -61,10 +66,7 @@ export function installSelects(doc: Document = document): void {
     win.customElements.define('kui-select', KuiSelectElement);
   const following = new WeakMap<HTMLElement, () => void>();
   const openRoots = new Set<HTMLElement>();
-  const typeahead = new WeakMap<
-    HTMLElement,
-    { query: string; timer: number | undefined }
-  >();
+  const typeahead = createTypeahead(win);
 
   // Stop placing a closed Select's listbox and reset its open state.
   const reset = (popup: HTMLElement) => {
@@ -194,19 +196,7 @@ export function installSelects(doc: Document = document): void {
   };
 
   const runTypeahead = (root: HTMLElement, key: string): boolean => {
-    const state = typeahead.get(root) ?? { query: '', timer: undefined };
-    typeahead.set(root, state);
-    win.clearTimeout(state.timer);
-    state.timer = win.setTimeout(() => {
-      state.query = '';
-    }, SELECT_TYPEAHEAD_RESET);
-    state.query =
-      key === 'Backspace'
-        ? state.query.slice(0, -1)
-        : state.query + key.toLowerCase();
-    const match = optionsOf(root).find((option) =>
-      labelOf(option).toLowerCase().startsWith(state.query),
-    );
+    const match = typeahead.type(root, key, optionsOf(root), optionLabel);
     if (!match) return false;
     focusOption(root, match);
     return true;
@@ -266,7 +256,7 @@ export function installSelects(doc: Document = document): void {
       const root = target.closest<HTMLElement>(ROOT);
       if (!root || event.altKey || event.ctrlKey || event.metaKey) return;
       const popup = popupOf(root);
-      const query = typeahead.get(root)?.query ?? '';
+      const query = typeahead.query(root);
       // On the closed trigger: open, or open and find a typed choice.
       if (target.closest(TRIGGER)?.parentElement === root) {
         if (isOpen(popup)) return;

@@ -507,6 +507,17 @@ describe('Select register: choosing', () => {
     expect(key(at(), 'a', { ctrlKey: true }).defaultPrevented).toBe(false);
   });
 
+  it('finds an option that lacks its label span instead of throwing (KF-NF65PK)', () => {
+    const { trigger, root } = setup();
+    const thorough = [
+      ...root.querySelectorAll<HTMLElement>('.kui-select__option'),
+    ].find((option) => option.getAttribute('data-value') === 'thorough')!;
+    thorough.textContent = 'Thorough';
+    click(trigger);
+    expect(() => key(document.activeElement!, 't')).not.toThrow();
+    expect(document.activeElement).toBe(thorough);
+  });
+
   it('toggles multiple choices and stays open', () => {
     const { root, trigger, popup, option, events } = setup({
       multiple: true,

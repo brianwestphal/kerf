@@ -210,7 +210,10 @@ function anchorOf(host: HelpTagHost): Element | null {
 /** The tag text: the same words as the trigger's accessible name. */
 function helpText(host: HelpTagHost): string {
   if (isPlainControl(host)) return ariaLabel(host);
-  if (!isSelect(host)) return words(host.querySelector(MENU_LABEL)!);
+  // A PopupMenu trigger's label span; the whole trigger (or host) when
+  // hand-authored markup omits it.
+  if (!isSelect(host))
+    return words(host.querySelector(MENU_LABEL) ?? anchorOf(host) ?? host);
   // A Select's trigger name (a multiple icon trigger's already ends with the
   // chosen labels), then a single choice's visually hidden value.
   const trigger = anchorOf(host)!;

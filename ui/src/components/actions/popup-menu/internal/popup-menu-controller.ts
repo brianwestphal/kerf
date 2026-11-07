@@ -1,4 +1,9 @@
 import {
+  createTypeahead,
+  itemLabel,
+  TYPEAHEAD_RESET as SHARED_TYPEAHEAD_RESET,
+} from '../../../../shared/dom/typeahead.js';
+import {
   followAnchor,
   PHONE_SUBMENU_QUERY,
   phoneSubmenuPosition,
@@ -24,8 +29,11 @@ const TRIGGER = '.kui-popup-menu__trigger';
 const ROOT_OPENER =
   ':scope > .kui-popup-menu__trigger, :scope > .kui-popup-menu__context-anchor';
 
-/** A typeahead query resets after this long without a keystroke. */
-export const TYPEAHEAD_RESET = 1000;
+/**
+ * A typeahead query resets after this long without a keystroke: the shared
+ * Select/PopupMenu reset.
+ */
+export const TYPEAHEAD_RESET = SHARED_TYPEAHEAD_RESET;
 
 /** A submenu the pointer has left closes after this grace period. */
 export const SUBMENU_CLOSE_DELAY = 100;
@@ -99,9 +107,9 @@ const isRtl = (element: Element): boolean =>
   element.ownerDocument.defaultView!.getComputedStyle(element).direction ===
   'rtl';
 
-// Every rendered item holds its label span.
+// A rendered item holds its label span; hand-authored markup may not.
 const labelOf = (item: Element): string =>
-  item.querySelector('.kui-popup-menu__item-label')!.textContent!.trim();
+  itemLabel(item, '.kui-popup-menu__item-label');
 
 function focusItem(menu: HTMLElement, focus: Focus): void {
   if (focus === 'none') return;
@@ -110,11 +118,6 @@ function focusItem(menu: HTMLElement, focus: Focus): void {
   // A menu with nothing to focus still takes focus, so its keys work.
   (target ?? menu).focus({ preventScroll: true });
   if (target) revealInMenu(target, menu);
-}
-
-interface Typeahead {
-  query: string;
-  timer: number | undefined;
 }
 
 /**
@@ -130,7 +133,7 @@ export function installPopupMenus(doc: Document = document): void {
   const win = doc.defaultView!;
   const following = new WeakMap<HTMLElement, () => void>();
   const pendingClose = new WeakMap<HTMLElement, number>();
-  const typeahead = new WeakMap<HTMLElement, Typeahead>();
+  const typeahead = createTypeahead(win);
   // Open root menus, for dismissal by a press outside them.
   const openRoots = new Set<HTMLElement>();
   // Menus closing without returning focus (a press outside moves it).
@@ -327,16 +330,7 @@ export function installPopupMenus(doc: Document = document): void {
   };
 
   const runTypeahead = (menu: HTMLElement, key: string): boolean => {
-    const state = typeahead.get(menu) ?? { query: '', timer: undefined };
-    typeahead.set(menu, state);
-    win.clearTimeout(state.timer);
-    state.timer = win.setTimeout(() => {
-      state.query = '';
-    }, TYPEAHEAD_RESET);
-    state.query += key.toLowerCase();
-    const match = levelItems(menu).find((item) =>
-      labelOf(item).toLowerCase().startsWith(state.query.trim()),
-    );
+    const match = typeahead.type(menu, key, levelItems(menu), labelOf);
     if (!match) return false;
     match.focus({ preventScroll: true });
     revealInMenu(match, menu);
@@ -435,7 +429,7 @@ export function installPopupMenus(doc: Document = document): void {
         next.focus({ preventScroll: true });
         revealInMenu(next, menu);
       };
-      const query = typeahead.get(menu)?.query ?? '';
+      const query = typeahead.query(menu);
       switch (event.key) {
         case 'ArrowDown':
           move(items[index >= 0 && index < items.length - 1 ? index + 1 : 0]);
@@ -484,7 +478,10 @@ export function installPopupMenus(doc: Document = document): void {
           }
           return;
         default:
-          if (event.key.length === 1 && runTypeahead(menu, event.key)) {
+          if (
+            (event.key.length === 1 || event.key === 'Backspace') &&
+            runTypeahead(menu, event.key)
+          ) {
             event.preventDefault();
             event.stopPropagation();
           }
