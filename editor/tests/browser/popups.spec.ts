@@ -4,6 +4,8 @@
 // popup.
 import { expect, type Locator, type Page, test } from '@playwright/test';
 
+import { settled } from './settled.js';
+
 const ids = {
   pane: '01JB8Z1M6Q8E1X9V4S7K2R3TDA',
   toolbar: '01JB8Z1M6Q8E1X9V4S7K2R3TDB',
@@ -125,7 +127,7 @@ const canvasNode = (page: Page, id: string) =>
 
 const capture = async (page: Page, path: string) => {
   await page.mouse.move(1, 1);
-  await page.waitForTimeout(250);
+  await settled(page);
   await page.screenshot({ path, animations: 'disabled' });
 };
 

@@ -18,6 +18,7 @@ import {
   turnOff,
   zoneSpot,
 } from './build.js';
+import { settled } from './settled.js';
 
 const COMPOSE = '01JB8Z1M6Q8E1X9V4S7K2R3T5D';
 
@@ -182,7 +183,7 @@ for (const [width, height] of [
         .locator(`[data-editor-canvas] [data-kerf-node="${COMPOSE}"]`)
         .click();
     await page.mouse.move(1, height - 1);
-    await page.waitForTimeout(250);
+    await settled(page);
     await page.screenshot({
       path: info.outputPath(`kf-4nrzcv-editor-selected-${width}.png`),
       animations: 'disabled',
