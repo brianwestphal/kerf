@@ -53,6 +53,53 @@ jobs:
       - run: npx vitest run --config vitest.config.dist-full.ts
       - run: npm pack --dry-run
 
+  # KF-Q1S54S: holds the published `engines.node >=18.0.0` floor. The package
+  # is built and packed on the toolchain's Node, then installed into a scratch
+  # consumer and exercised on Node 18: the `kerfjs setup` CLI dry run (the
+  # Node-only code in setup/) and a server-side render from dist/. A newer
+  # Node API reaching either surface fails here instead of in a consumer.
+  node-floor:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with: { node-version: '${{ env.NODE_VERSION }}', cache: npm }
+      - run: npm ci
+      - run: npm run build
+      - name: Pack kerfjs
+        run: |
+          mkdir -p "$RUNNER_TEMP/pack"
+          npm pack --pack-destination "$RUNNER_TEMP/pack"
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with: { node-version: '18' }
+      - name: Install the tarball into a scratch consumer on Node 18
+        run: |
+          node --version
+          mkdir -p "$RUNNER_TEMP/consumer"
+          cd "$RUNNER_TEMP/consumer"
+          npm init -y > /dev/null
+          npm pkg set type=module
+          npm install --no-audit --no-fund "$RUNNER_TEMP"/pack/kerfjs-*.tgz
+      - name: Run the kerfjs setup dry run on Node 18
+        working-directory: ${{ runner.temp }}/consumer
+        # The consumer depends on the tarball (`file:` spec), which setup
+        # reports as a conflict with its own version pin; keep it so the dry
+        # run exits 0. A dry run writes nothing.
+        run: npx --no-install kerfjs setup --core --resolve 'package.json#dependencies.kerfjs=keep'
+      - name: Render on the server from dist on Node 18
+        working-directory: ${{ runner.temp }}/consumer
+        run: |
+          node --input-type=module -e "
+            import { renderDocument, signal } from 'kerfjs';
+            import { jsx } from 'kerfjs/jsx-runtime';
+            const count = signal(2);
+            const page = jsx('html', { children: jsx('body', { children: jsx('p', { class: 'n', children: ['Count: ', count.value] }) }) });
+            const out = renderDocument(page);
+            const expected = '<!DOCTYPE html><html><body><p class=\"n\">Count: 2</p></body></html>';
+            if (out !== expected) { console.error('unexpected SSR output:', out); process.exit(1); }
+            console.log(out);
+          "
+
   # The `check:core` gates no other job runs: the doc, skill, design-rule,
   # feature-coverage, lockstep, AI-bundle, bundle-size, API-signature, and
   # typing gates, plus the published-tree audit from `check:full`. The skipped
