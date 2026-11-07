@@ -23,7 +23,7 @@ import type {
 // Rule 11 in this audit pins the correct declaration-merge target. The
 // merge below also makes the no-runtime-error fixture below type-check.
 declare module '../../src/jsx-runtime.js' {
-  // eslint-disable-next-line @typescript-eslint/no-namespace
+  // eslint-disable-next-line @typescript-eslint/no-namespace -- declaration-merging into the runtime's JSX namespace requires the namespace form.
   namespace JSX {
     interface IntrinsicElements {
       'my-widget': KerfCustomElement & KerfBaseAttrs & { 'data-foo'?: string };

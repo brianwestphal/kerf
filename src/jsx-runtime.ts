@@ -467,7 +467,7 @@ export function Fragment({ children }: { children?: JSXChildren }): SafeHtml {
   );
 }
 
-// eslint-disable-next-line @typescript-eslint/no-namespace
+// eslint-disable-next-line @typescript-eslint/no-namespace -- TypeScript resolves `jsxImportSource` JSX types only through an exported `JSX` namespace.
 export namespace JSX {
   export type Element = SafeHtml;
   export interface ElementChildrenAttribute {

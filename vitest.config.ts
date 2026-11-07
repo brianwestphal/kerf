@@ -73,24 +73,33 @@ export default defineConfig({
         // the old line-range mapping silently credited as covered. Same
         // source, same tests: branches 99.41 -> 98.71, statements 100 -> 99.75.
         //
-        // The seventeen it newly resolved, all of the same shape. Line numbers
-        // are as of that switch and drift with edits; the file and the guard
-        // shape are what identify each one:
+        // The seventeen it newly resolved, all of the same shape, named as
+        // `file › function › guard shape` so the list survives edits (line
+        // numbers drifted within weeks of the switch):
         //
-        //   mount-list-bindings.ts .......... `parentElement !== null` on a node
-        //   (then mount.ts 707,711)           the reconciler just found attached
-        //   morph.ts 455,537,579 ............ nodeType discriminators + an
-        //                                     attribute-equality arm
-        //   list-reconcile-fast-paths.ts .... 81,90,153,166,251,269,286 —
-        //                                     short-circuit bails and
-        //                                     loop-completion branches
-        //   list-reconcile-snapshot.ts 202 .. `parentElement === liveParent`
-        //   list-reconcile-granular.ts 112 .. patch-type discriminator
-        //   each.ts 475 .................... patch-type discriminator
-        //   dev-rerender-warn.ts 63 ......... nodeType discriminator
-        //   url-screen.ts 118 .............. `?? ''` after a regex that always
-        //                                     matches for a `data:` scheme —
-        //                                     a TypeScript-only guard
+        //   mount-list-bindings.ts › bindListsFromMarkers › the
+        //     `parentElement?.` arm on a stale row it just found contained
+        //     (counted twice when the guard lived in mount.ts)
+        //   morph.ts › morphChildren / morphElement › nodeType
+        //     discriminators; morph.ts › morphAttributes › the
+        //     attribute-equality arm
+        //   list-reconcile-fast-paths.ts (seven) › tryAttributeOnlyFastPath,
+        //     tryTextContentFastPath, isPureTextWindow, lastIndexOfChar,
+        //     countTextNodesBefore › short-circuit bails and
+        //     loop-completion branches
+        //   list-reconcile-snapshot.ts › removeOldNodes ›
+        //     `parentElement === liveParent`
+        //   list-reconcile-granular.ts › reconcileGranular › the final
+        //     patch-type discriminator
+        //   each.ts › _hasGranularIndexShift › patch-type `switch`
+        //   dev-rerender-warn.ts › _isValueOnlyDiff › nodeType discriminator
+        //   utils/url-screen.ts › isDangerousDataUrl › `?? ''` after a regex
+        //     that always matches for a `data:` scheme (a TypeScript-only
+        //     guard)
+        //
+        // Each guard was re-read in source on 2026-11-07 when line numbers
+        // gave way to function names; KF-2Q54E4 (reconcile this list with a
+        // fresh coverage run) confirms which arms are still the uncovered ones.
         //
         // Set a little under the measured floor so an ordinary new defensive
         // guard doesn't fail the build, but far enough above it that a real

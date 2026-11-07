@@ -61,7 +61,7 @@ void invalidFunctionChild;
 // declared as an interface there, so this merge slots a custom tag into
 // the table without overwriting the existing tags.
 declare module '../../src/jsx-runtime.js' {
-  // eslint-disable-next-line @typescript-eslint/no-namespace
+  // eslint-disable-next-line @typescript-eslint/no-namespace -- declaration-merging into the runtime's JSX namespace requires the namespace form.
   namespace JSX {
     interface IntrinsicElements {
       'kf-test-element': KerfCustomElement & { foo?: string; bar?: number };

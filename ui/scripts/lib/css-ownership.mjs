@@ -115,6 +115,11 @@ const EDGE_INSET_CONTEXT =
  * from, a substring of the offending selector (whitespace-collapsed) or, for a
  * variable finding, the property, and the reason. An exception that no longer
  * matches a finding fails the check, so the list can only shrink.
+ *
+ * All five current entries are the layout regions' edge-inset context
+ * (`--kui-edge-inset-*` set or cleared on a child the region does not own);
+ * KF-48X8J5 (replace it with a child-owned edge contract and delete these
+ * exceptions) tracks retiring them.
  */
 export const ownershipExceptions = [
   {

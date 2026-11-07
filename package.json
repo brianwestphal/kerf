@@ -139,7 +139,7 @@
     "bench:serve": "bash bench/site.sh",
     "format": "prettier --write . --ignore-unknown",
     "format:check": "prettier --check . --ignore-unknown",
-    "lint:eslint": "eslint src tests scripts",
+    "lint:eslint": "eslint src tests scripts --max-warnings 0",
     "lint:site": "npm --prefix site run lint",
     "lint": "npm run lint:eslint && npm run lint:site && npm run format:check",
     "typecheck": "node node_modules/typescript7/bin/tsc --noEmit",
