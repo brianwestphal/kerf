@@ -47,7 +47,7 @@
  * Wired into `npm run check`.
  */
 
-import { execSync } from 'node:child_process';
+import { execFileSync } from 'node:child_process';
 import {
   existsSync,
   mkdirSync,
@@ -442,9 +442,13 @@ if (totalCompiledBlocks === 0) {
 }
 
 try {
-  execSync(`node node_modules/typescript7/bin/tsc -p ${scratchDir}`, {
-    stdio: 'inherit',
-  });
+  // argv form, not a shell string: the scratch path is absolute and a
+  // checkout path containing spaces would split under a shell.
+  execFileSync(
+    process.execPath,
+    [resolve(repoRoot, 'node_modules/typescript7/bin/tsc'), '-p', scratchDir],
+    { stdio: 'inherit', cwd: repoRoot },
+  );
   ok(
     `${totalCompiledBlocks} self-contained kerf code blocks compile clean (${totalSkippedBlocks} fragments skipped)`,
   );

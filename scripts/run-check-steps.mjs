@@ -45,7 +45,12 @@ function run(segment) {
       stdio: 'inherit',
       env: process.env,
     });
-    current.once('error', () => resolve({ code: 1, signal: null }));
+    current.once('error', (error) => {
+      // A spawn failure (missing shell, bad cwd) would otherwise fail the
+      // gate with no explanation.
+      console.error(`[check] could not start "${segment}": ${error.message}`);
+      resolve({ code: 1, signal: null });
+    });
     current.once('exit', (code, signal) => resolve({ code, signal }));
   });
 }
