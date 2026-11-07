@@ -1,13 +1,17 @@
-import { signal, mount, delegate } from 'kerfjs';
+import { signal, mount, delegate, attr } from 'kerfjs';
 
 const count = signal(0);
+
+const ACTIONS = {
+  inc: attr('data-action', 'inc'),
+} as const;
 
 const root = document.getElementById('app')!;
 
 mount(root, () => (
   <div class="kerf-stack" style="max-width: 24rem;">
     <div class="kerf-toolbar" style="justify-content: space-between;">
-      <button data-action="inc">Force re-render</button>
+      <button {...ACTIONS.inc.attrs}>Force re-render</button>
       <span class="kerf-helper-text">
         Re-renders: <strong class="kerf-mono">{count.value}</strong>
       </span>
@@ -49,6 +53,8 @@ function tick() {
 }
 tick();
 
-delegate(root, 'click', '[data-action="inc"]', () => {
+// The demo root lives as long as the page, so each delegate() is
+// page-lifetime and its disposer is deliberately discarded with `void`.
+void delegate(root, 'click', ACTIONS.inc.selector, () => {
   count.value += 1;
 });

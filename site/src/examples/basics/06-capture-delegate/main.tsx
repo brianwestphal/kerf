@@ -1,7 +1,11 @@
-import { signal, mount, delegate, delegateCapture } from 'kerfjs';
+import { signal, mount, delegate, delegateCapture, attr } from 'kerfjs';
 
 const fields = signal(['Name', 'Email']);
 const focused = signal<string | null>(null);
+
+const ACTIONS = {
+  add: attr('data-action', 'add'),
+} as const;
 
 const root = document.getElementById('app')!;
 
@@ -23,7 +27,7 @@ mount(root, () => (
       ))}
     </div>
     <div class="kerf-toolbar">
-      <button type="button" data-action="add">
+      <button type="button" {...ACTIONS.add.attrs}>
         Add field
       </button>
     </div>
@@ -37,17 +41,19 @@ mount(root, () => (
   </form>
 ));
 
-delegateCapture(root, 'focus', 'input', (_e, input) => {
+// The demo root lives as long as the page, so each delegate() is
+// page-lifetime and its disposer is deliberately discarded with `void`.
+void delegateCapture(root, 'focus', 'input', (_e, input) => {
   focused.value = (input as HTMLInputElement).dataset.field ?? null;
 });
-delegateCapture(root, 'blur', 'input', () => {
+void delegateCapture(root, 'blur', 'input', () => {
   focused.value = null;
 });
 
-delegate(root, 'submit', 'form', (event) => {
+void delegate(root, 'submit', 'form', (event) => {
   event.preventDefault();
 });
 
-delegate(root, 'click', '[data-action="add"]', () => {
+void delegate(root, 'click', ACTIONS.add.selector, () => {
   fields.value = [...fields.value, `Field ${fields.value.length + 1}`];
 });

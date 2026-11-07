@@ -34,7 +34,9 @@ mount(root, () => (
   </div>
 ));
 
-delegate(root, 'input', '[data-slider]', (_, input) => {
+// The demo root lives as long as the page, so each delegate() is
+// page-lifetime and its disposer is deliberately discarded with `void`.
+void delegate(root, 'input', '[data-slider]', (_, input) => {
   x.value = Number((input as HTMLInputElement).value);
 });
 

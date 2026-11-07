@@ -54,7 +54,9 @@ mount(root, () => (
   </div>
 ));
 
-delegate(root, 'input', 'input[data-input]', (_, el) => {
+// The demo root lives as long as the page, so each delegate() is
+// page-lifetime and its disposer is deliberately discarded with `void`.
+void delegate(root, 'input', 'input[data-input]', (_, el) => {
   const key = (el as HTMLElement).dataset.input as keyof typeof inputs;
   const v = Number((el as HTMLInputElement).value);
   if (Number.isFinite(v)) inputs[key].value = v;

@@ -9,7 +9,7 @@
   "scripts": {
     "preinstall": "node scripts/check-install-script-policy.mjs",
     "typecheck": "astro sync && tsc --noEmit -p tsconfig.json && tsc --noEmit -p src/examples/tsconfig.json",
-    "lint": "eslint --max-warnings 0 src/examples/complete",
+    "lint": "eslint --max-warnings 0 src/examples",
     "build-examples": "node scripts/build-examples.mjs",
     "build-icons": "node scripts/build-icons.mjs",
     "gen-llms-txt": "node scripts/gen-llms-txt.mjs",

@@ -1,12 +1,17 @@
-import { signal, mount, delegate } from 'kerfjs';
+import { signal, mount, delegate, attr } from 'kerfjs';
 
 const count = signal(0);
+
+const ACTIONS = {
+  inc: attr('data-action', 'inc'),
+  dec: attr('data-action', 'dec'),
+} as const;
 
 const root = document.getElementById('app')!;
 
 mount(root, () => (
   <div class="kerf-toolbar">
-    <button data-action="dec" aria-label="Decrement">
+    <button {...ACTIONS.dec.attrs} aria-label="Decrement">
       −
     </button>
     <span
@@ -15,15 +20,17 @@ mount(root, () => (
     >
       {count.value}
     </span>
-    <button data-action="inc" aria-label="Increment">
+    <button {...ACTIONS.inc.attrs} aria-label="Increment">
       +
     </button>
   </div>
 ));
 
-delegate(root, 'click', '[data-action="inc"]', () => {
+// The demo root lives as long as the page, so each delegate() is
+// page-lifetime and its disposer is deliberately discarded with `void`.
+void delegate(root, 'click', ACTIONS.inc.selector, () => {
   count.value += 1;
 });
-delegate(root, 'click', '[data-action="dec"]', () => {
+void delegate(root, 'click', ACTIONS.dec.selector, () => {
   count.value -= 1;
 });

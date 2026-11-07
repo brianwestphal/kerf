@@ -1,4 +1,4 @@
-import { signal, mount, each, delegate } from 'kerfjs';
+import { signal, mount, each, delegate, attr } from 'kerfjs';
 
 interface Row {
   id: string;
@@ -31,6 +31,13 @@ function stopTicking(): void {
 
 if (ticking.value) startTicking();
 
+const ACTIONS = {
+  toggleTick: attr('data-action', 'toggle-tick'),
+  insert: attr('data-action', 'insert'),
+  shuffleNow: attr('data-action', 'shuffle-now'),
+  delete: attr('data-action', 'delete'),
+} as const;
+
 const root = document.getElementById('app')!;
 
 mount(root, () => (
@@ -40,7 +47,7 @@ mount(root, () => (
       your text, and your caret all survive.
     </p>
     <div class="kerf-toolbar">
-      <button data-action="toggle-tick">
+      <button {...ACTIONS.toggleTick.attrs}>
         {ticking.value ? 'Pause auto-shuffle' : 'Resume auto-shuffle'}
       </button>
     </div>
@@ -54,7 +61,7 @@ mount(root, () => (
           >
             <input value={r.label} data-id={r.id} style="flex: 1;" />
             <button
-              data-action="delete"
+              {...ACTIONS.delete.attrs}
               data-id={r.id}
               aria-label={`Delete ${r.label}`}
             >
@@ -70,8 +77,8 @@ mount(root, () => (
         Manual triggers (these will steal focus when clicked)
       </summary>
       <div class="kerf-toolbar" style="margin-top: 0.5rem;">
-        <button data-action="insert">Insert at top</button>
-        <button data-action="shuffle-now">Shuffle now</button>
+        <button {...ACTIONS.insert.attrs}>Insert at top</button>
+        <button {...ACTIONS.shuffleNow.attrs}>Shuffle now</button>
       </div>
       <p style="margin-top: 0.5rem;">
         Clicks transfer focus to the button itself, so by the time the list
@@ -82,19 +89,21 @@ mount(root, () => (
   </div>
 ));
 
-delegate(root, 'click', '[data-action="toggle-tick"]', () => {
+// The demo root lives as long as the page, so each delegate() is
+// page-lifetime and its disposer is deliberately discarded with `void`.
+void delegate(root, 'click', ACTIONS.toggleTick.selector, () => {
   ticking.value = !ticking.value;
   if (ticking.value) startTicking();
   else stopTicking();
 });
-delegate(root, 'click', '[data-action="insert"]', () => {
+void delegate(root, 'click', ACTIONS.insert.selector, () => {
   rows.value = [
     { id: `new-${nextId++}`, label: `Row ${nextId}` },
     ...rows.value,
   ];
 });
-delegate(root, 'click', '[data-action="shuffle-now"]', shuffle);
-delegate(root, 'click', '[data-action="delete"]', (_, btn) => {
+void delegate(root, 'click', ACTIONS.shuffleNow.selector, shuffle);
+void delegate(root, 'click', ACTIONS.delete.selector, (_, btn) => {
   const id = (btn as HTMLElement).dataset.id!;
   rows.value = rows.value.filter((r) => r.id !== id);
 });

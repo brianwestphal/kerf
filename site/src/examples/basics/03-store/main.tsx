@@ -1,4 +1,4 @@
-import { defineStore, computed, mount, delegate } from 'kerfjs';
+import { defineStore, computed, mount, delegate, attr } from 'kerfjs';
 
 const cart = defineStore({
   initial: () => ({
@@ -20,6 +20,12 @@ const subtotal = computed(() =>
 );
 const fmt = (n: number) => `$${n}`;
 
+const ACTIONS = {
+  remove: attr('data-action', 'remove'),
+  clear: attr('data-action', 'clear'),
+  reset: attr('data-action', 'reset'),
+} as const;
+
 const root = document.getElementById('app')!;
 
 mount(root, () => (
@@ -33,7 +39,7 @@ mount(root, () => (
           <span style="flex: 1;">{it.name}</span>
           <span class="kerf-mono">{fmt(it.price)}</span>
           <button
-            data-action="remove"
+            {...ACTIONS.remove.attrs}
             data-id={it.id}
             aria-label={`Remove ${it.name}`}
           >
@@ -50,10 +56,10 @@ mount(root, () => (
       <strong class="kerf-mono">{fmt(subtotal.value)}</strong>
     </div>
     <div class="kerf-toolbar">
-      <button data-action="clear">Clear cart</button>
+      <button {...ACTIONS.clear.attrs}>Clear cart</button>
       <button
         class="kerf-link-button"
-        data-action="reset"
+        {...ACTIONS.reset.attrs}
         style="margin-left: auto;"
       >
         Reset to initial
@@ -62,8 +68,12 @@ mount(root, () => (
   </div>
 ));
 
-delegate(root, 'click', '[data-action="remove"]', (_, btn) => {
+// The demo root lives as long as the page, so each delegate() is
+// page-lifetime and its disposer is deliberately discarded with `void`.
+void delegate(root, 'click', ACTIONS.remove.selector, (_, btn) => {
   cart.actions.remove((btn as HTMLElement).dataset.id!);
 });
-delegate(root, 'click', '[data-action="clear"]', () => cart.actions.clear());
-delegate(root, 'click', '[data-action="reset"]', () => cart.reset());
+void delegate(root, 'click', ACTIONS.clear.selector, () =>
+  cart.actions.clear(),
+);
+void delegate(root, 'click', ACTIONS.reset.selector, () => cart.reset());

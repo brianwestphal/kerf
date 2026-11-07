@@ -28,6 +28,7 @@ mount(root, () => (
       <div>
         <p class="kerf-section-label">Rendered</p>
         <article class="kerf-output" style="overflow: auto;">
+          {/* eslint-disable-next-line kerfjs/no-raw-with-dynamic-arg -- render() sanitizes with DOMPurify */}
           {raw(render(source.value))}
         </article>
       </div>
@@ -35,6 +36,8 @@ mount(root, () => (
   </div>
 ));
 
-delegate(root, 'input', '[data-source]', (_, ta) => {
+// The demo root lives as long as the page, so each delegate() is
+// page-lifetime and its disposer is deliberately discarded with `void`.
+void delegate(root, 'input', '[data-source]', (_, ta) => {
   source.value = (ta as HTMLTextAreaElement).value;
 });

@@ -1,9 +1,8 @@
-// Lints the site's complete example apps (src/examples/complete) with
-// eslint-plugin-kerfjs's recommended rules. The examples are reference code
-// readers copy, so they dogfood the published rules: a pattern the plugin
-// flags in a consumer app must not appear here either. (The basic examples
-// under src/examples/basics are not linted yet; they still use literal
-// selectors and bare delegate() calls.)
+// Lints the site's example apps (src/examples/complete and
+// src/examples/basics) with eslint-plugin-kerfjs's recommended rules. The
+// examples are reference code readers copy, so they dogfood the published
+// rules: a pattern the plugin flags in a consumer app must not appear here
+// either.
 //
 // Run with `npm run lint` from site/ (or `npm run lint:site` from the repo
 // root). The script passes --max-warnings 0, so the rules the plugin ships as
@@ -23,7 +22,7 @@ export default [
     ignores: ['**/dist/**', '**/node_modules/**'],
   },
   {
-    files: ['src/examples/complete/**/*.{js,ts,tsx}'],
+    files: ['src/examples/**/*.{js,ts,tsx}'],
     languageOptions: {
       parser: tsParser,
       parserOptions: {

@@ -44,7 +44,9 @@ mount(root, () => (
   </div>
 ));
 
-delegate(root, 'click', '[data-action]', (_e, btn) => {
+// The demo root lives as long as the page, so each delegate() is
+// page-lifetime and its disposer is deliberately discarded with `void`.
+void delegate(root, 'click', '[data-action]', (_e, btn) => {
   const action = (btn as HTMLElement).dataset.action!;
   if (action === 'clear-log') {
     log.value = [];
