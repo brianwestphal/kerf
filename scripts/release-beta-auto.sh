@@ -84,44 +84,19 @@ success() { echo -e "${GREEN}${BOLD}>>>${RESET} $1"; }
 warn() { echo -e "${YELLOW}${BOLD}>>>${RESET} $1"; }
 error() { echo -e "${RED}${BOLD}>>>${RESET} $1" >&2; }
 
+# shellcheck source=scripts/lib/release-common.sh
+source "$(dirname "${BASH_SOURCE[0]}")/lib/release-common.sh"
+
 # --- Preflight ---
 preflight() {
   info "Preflight..."
 
-  if [[ ! -f "package.json" ]]; then
-    error "No package.json — run from the project root."
-    exit 1
-  fi
-
-  if [[ -n "$(git status --porcelain)" ]]; then
-    error "Working tree is dirty. Commit or stash before running a beta."
-    git status --short >&2
-    exit 1
-  fi
-
+  # Shared with release.sh: refuses a dirty tree, a non-main branch, or a
+  # missing node, then fetches tags so the version plan and beta numbering
+  # see origin's tags (a stale clone would pick a number the remote holds).
+  release_preflight_repo
   local branch
   branch=$(git branch --show-current)
-  if [[ "$branch" != "main" && "$branch" != "master" ]]; then
-    error "Current branch is '${branch}', not main/master. Refusing to push a beta from a side branch."
-    exit 1
-  fi
-
-  if ! command -v node > /dev/null; then
-    error "node not found on PATH."
-    exit 1
-  fi
-
-  # Fetch tags from origin before read_version / draft_release_notes /
-  # tag_and_push read the local tag list. A stale local clone would (a) compute
-  # the wrong "previous tag" anchor for the notes diff, (b) auto-increment to a
-  # beta number the remote already holds (causing the subsequent push to fail).
-  # Intentionally NOT --prune-tags (would delete local-only unpushed tags).
-  # Failure is non-fatal (offline / network blip): proceed with local state and
-  # let the downstream push surface any conflict.
-  info "Fetching tags from origin..."
-  if ! git fetch --tags origin 2> /dev/null; then
-    warn "git fetch --tags failed (offline?) — proceeding with local tag list."
-  fi
 
   success "Preflight clean (branch=${branch}, tree clean)"
 }

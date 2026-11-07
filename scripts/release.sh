@@ -15,7 +15,6 @@ set -euo pipefail
 
 # --- Config ---
 STATE_FILE=".release-state.json"
-PACKAGE_JSON="package.json"
 
 # --- Colors ---
 BOLD="\033[1m"
@@ -30,7 +29,10 @@ RESET="\033[0m"
 info() { echo -e "${CYAN}${BOLD}>>>${RESET} $1"; }
 success() { echo -e "${GREEN}${BOLD}>>>${RESET} $1"; }
 warn() { echo -e "${YELLOW}${BOLD}>>>${RESET} $1"; }
-error() { echo -e "${RED}${BOLD}>>>${RESET} $1"; }
+error() { echo -e "${RED}${BOLD}>>>${RESET} $1" >&2; }
+
+# shellcheck source=scripts/lib/release-common.sh
+source "$(dirname "${BASH_SOURCE[0]}")/lib/release-common.sh"
 
 confirm() {
   local prompt="$1"
@@ -150,17 +152,8 @@ cleanup_state() { rm -f "$STATE_FILE"; }
 preflight() {
   info "Running pre-flight checks..."
 
-  if [[ ! -f "$PACKAGE_JSON" ]]; then
-    error "No package.json found. Run from the project root."
-    exit 1
-  fi
-
-  if [[ -n "$(git status --porcelain)" ]]; then
-    warn "Working directory is not clean:"
-    git status --short
-    echo ""
-    if ! confirm "Continue anyway?"; then exit 1; fi
-  fi
+  # Dirty tree, wrong branch, missing node: refuse and print the fix.
+  release_preflight_repo
 
   if ! npm whoami &> /dev/null; then
     warn "Not logged in to npm locally — that's OK if you rely on CI's OIDC publish."
@@ -168,13 +161,6 @@ preflight() {
     local npm_user
     npm_user=$(npm whoami)
     success "Logged in to npm as ${BOLD}${npm_user}${RESET}"
-  fi
-
-  local branch
-  branch=$(git branch --show-current)
-  if [[ "$branch" != "main" && "$branch" != "master" ]]; then
-    warn "On branch '${branch}', not main/master."
-    if ! confirm "Continue anyway?"; then exit 1; fi
   fi
 }
 
@@ -204,6 +190,7 @@ step_version() {
     echo -e "    ${DIM}Previous selection:${RESET} ${prev_version}"
     if confirm "Keep ${prev_version}?"; then
       REPLY="$prev_version"
+      release_refuse_existing_tag "v${REPLY}"
       set_state "version" "$REPLY"
       return
     fi
@@ -227,6 +214,7 @@ step_version() {
       ;;
   esac
 
+  release_refuse_existing_tag "v${REPLY}"
   set_state "version" "$REPLY"
 }
 
