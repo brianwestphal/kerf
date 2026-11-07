@@ -62,6 +62,7 @@ import {
   type RenderedAttrsHost,
   seedRenderedAttrs,
 } from './utils/isUserAgentOwnedAttr.js';
+import { protectionOf } from './utils/morph-protection.js';
 import { moveNode } from './utils/moveNode.js';
 import { syncFormProp } from './utils/syncFormProp.js';
 
@@ -160,35 +161,20 @@ function parseTemplate(
 }
 
 /**
- * A canonical tag for the ways a live node is managed OUTSIDE the template, so
- * the positional diff must not repurpose it as some other element.
- *
- * Three attributes make a node "something else": `data-morph-skip` and
- * `data-morph-skip-children` mark a library-owned subtree, and
- * `data-morph-preserve` marks a node imperatively injected after render that
- * the template never emits. Steps 2 and 2.5 require this tag to be EQUAL on
- * both sides before pairing — so a template element carrying no such claim
- * never adopts a protected live node (it gets inserted fresh beside it), and a
- * protected live node pairs only with a template that declares the same
- * protection, i.e. it genuinely is that same widget across both renders.
+ * Steps 2 and 2.5 below require `protectionOf` (the skip / skip-children /
+ * preserve triple, see `utils/morph-protection.ts`) to be EQUAL on both sides
+ * before pairing — so a template element carrying no such claim never adopts a
+ * protected live node (it gets inserted fresh beside it), and a protected live
+ * node pairs only with a template that declares the same protection, i.e. it
+ * genuinely is that same widget across both renders.
  *
  * The keyed match (step 1) is unaffected: a protected node WITH an `id`/
  * `data-key` the template also emits still matches and morphs in place, which
  * is the "attrs morph if matched" the docs describe. This gate only governs the
  * *positional* fallback, where "matched" would otherwise mean "happened to sit
- * at the same index as an unrelated template element".
+ * at the same index as an unrelated template element". Both call sites only
+ * ever reach the helper with an element, so `dataset` is always present.
  */
-function protectionTag(node: Node): string {
-  // Both call sites (step 2's element arm and step 2.5's element scan) only ever
-  // reach here with an element, so `dataset` is always present — no non-element
-  // guard, which would be an unreachable branch.
-  const { dataset } = node as HTMLElement;
-  return (
-    (dataset.morphSkip !== undefined ? 's' : '') +
-    (dataset.morphSkipChildren !== undefined ? 'c' : '') +
-    (dataset.morphPreserve !== undefined ? 'p' : '')
-  );
-}
 
 const MARKER_PREFIXES = [
   LIST_MARKER_PREFIX,
@@ -343,7 +329,8 @@ function morphChildren(
         ((fromChild as Element).tagName === (toChild as Element).tagName &&
           getNodeKey(fromChild) === undefined &&
           toKey === undefined &&
-          protectionTag(fromChild) === protectionTag(toChild)))
+          protectionOf(fromChild as Element) ===
+            protectionOf(toChild as Element)))
     ) {
       matched = fromChild;
       // KF-385: a matched list marker carries its whole row region, so the
@@ -405,7 +392,7 @@ function morphChildren(
         const el = scan as Element;
         if (ownedItems.has(el)) continue;
         if (el.tagName !== toTag || getNodeKey(el) !== undefined) continue;
-        if (protectionTag(el) !== protectionTag(toChild)) continue;
+        if (protectionOf(el) !== protectionOf(toChild as Element)) continue;
         matched = el;
         // Moving a connected same-tag element up to the cursor → state-preserving.
         moveNode(fromParent, el, fromChild);

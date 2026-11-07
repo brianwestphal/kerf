@@ -40,6 +40,7 @@
 
 import { captureFocus, restoreFocus } from './list-reconcile-focus.js';
 import { _morphElement } from './morph.js';
+import { protectionOf } from './utils/morph-protection.js';
 
 /**
  * Element table for one HTML string: element 0 is the mount root, the rest in
@@ -383,7 +384,8 @@ export function morphStaticChange(
     const from = lives[m] as HTMLElement;
     const to = tos[m] as HTMLElement;
     // The full walk pairs these only when their key agrees and, unkeyed,
-    // their protection attributes agree; otherwise it would replace.
+    // their protection attributes agree (the same `protectionOf` the full
+    // walk compares); otherwise it would replace.
     if (
       to.localName !== from.localName ||
       keyOf(from) !== keyOf(to) ||
@@ -404,9 +406,4 @@ function keyOf(el: HTMLElement): string {
     : el.dataset.key !== undefined
       ? `k${el.dataset.key}`
       : '';
-}
-
-function protectionOf(el: HTMLElement): string {
-  const d = el.dataset;
-  return `${d.morphSkip !== undefined}${d.morphSkipChildren !== undefined}${d.morphPreserve !== undefined}`;
 }

@@ -26,6 +26,20 @@
  * (live text node's nodeValue must equal what we extracted from oldHtml)
  * is the final safety net: if anything has drifted, we bail.
  *
+ * `data-morph-preserve` is the one protection attribute the morph treats
+ * differently from the fast paths' point of view (KF-HYAA4T). It never
+ * short-circuits a PAIRED element — `_morphElement` morphs a preserved row
+ * root, and a template-emitted preserved descendant pairs with its live
+ * counterpart and morphs like any other — so the attribute-only path, which
+ * touches nothing but the row root's attributes, is unaffected by it. Its
+ * only effect is on live nodes the template never emitted: the consumer
+ * injected them, so they are absent from both HTML strings, and the
+ * text-content path's HTML-position → nth-live-text-node mapping would count
+ * their text. The nodeValue safety net catches that unless the injected text
+ * coincides with the target's old value, so the text path skips preserved
+ * live elements in its walk and bails when a template itself emits the
+ * attribute (then injected and emitted ones can't be told apart).
+ *
  * Internal to kerf.
  */
 
@@ -42,6 +56,7 @@ import {
   RENDERED_ATTRS,
   type RenderedAttrsHost,
 } from './utils/isUserAgentOwnedAttr.js';
+import { MORPH_PRESERVE_ATTR } from './utils/morph-protection.js';
 import { syncFormProp } from './utils/syncFormProp.js';
 
 const ELEMENT_NODE = 1;
@@ -140,6 +155,15 @@ export function tryTextContentFastPath(
   newHtml: string,
 ): boolean {
   if (containsDataMorphSkip(oldHtml) || containsDataMorphSkip(newHtml))
+    return false;
+  // A template that emits `data-morph-preserve` itself makes an injected
+  // preserved node indistinguishable from an emitted one in the live walk
+  // below (`nthTextNodeDescendant` skips every preserved element), so the
+  // mapping could no longer be trusted — let the morph pair them properly.
+  if (
+    oldHtml.indexOf(MORPH_PRESERVE_ATTR) !== -1 ||
+    newHtml.indexOf(MORPH_PRESERVE_ATTR) !== -1
+  )
     return false;
 
   let p = 0;
@@ -240,6 +264,15 @@ export function tryTextContentFastPath(
   return true;
 }
 
+/**
+ * A raw substring sniff is the right check here: both fast paths work on the
+ * row's HTML strings, not on elements, and `data-morph-skip` is a prefix of
+ * `data-morph-skip-children`, so one scan covers both subtree short-circuits
+ * (`_morphElement` reads them AFTER its attribute pass, so toggling either on
+ * a row root also has to go through the morph). A text-content hit is a false
+ * positive that merely costs the fast path. `data-morph-preserve` needs no
+ * sniff for the attribute-only path — see the module comment.
+ */
 function containsDataMorphSkip(html: string): boolean {
   return html.indexOf('data-morph-skip') !== -1;
 }
@@ -295,6 +328,14 @@ function countTextNodesBefore(html: string, beforePos: number): number {
   return count;
 }
 
+/**
+ * The `n`th text node under `root` in document order, counting the way
+ * `countTextNodesBefore` counts the HTML string. A live element carrying
+ * `data-morph-preserve` is one the consumer injected (the caller has already
+ * bailed when the template emits the attribute), so its subtree is absent from
+ * the string and is neither counted nor entered — otherwise an injected node
+ * whose text coincides with the target's old value would take the patch.
+ */
 function nthTextNodeDescendant(root: Element, n: number): Text | null {
   let count = 0;
   let result: Text | null = null;
@@ -309,7 +350,8 @@ function nthTextNodeDescendant(root: Element, n: number): Text | null {
         count++;
       } else {
         /* c8 ignore next — parsed row descendants here are text or elements. */
-        if (c.nodeType === ELEMENT_NODE) walk(c);
+        if (c.nodeType !== ELEMENT_NODE) continue;
+        if (!(c as Element).hasAttribute(MORPH_PRESERVE_ATTR)) walk(c);
       }
     }
   }

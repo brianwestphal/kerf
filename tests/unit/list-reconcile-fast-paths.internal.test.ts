@@ -263,6 +263,47 @@ describe('fast-paths internal — tryTextContentFastPath bail branches', () => {
     ).toBe(true);
     expect(live.textContent).toBe('2 / ');
   });
+
+  it('bails when the previous template emitted data-morph-preserve (KF-HYAA4T — an injected preserved node could no longer be told apart)', () => {
+    const live = buildLive('<li><span data-morph-preserve>x</span></li>');
+    expect(
+      tryTextContentFastPath(
+        live,
+        '<li><span data-morph-preserve>x</span></li>',
+        '<li><span data-morph-preserve>y</span></li>',
+      ),
+    ).toBe(false);
+    expect(live.textContent).toBe('x');
+  });
+
+  it('bails when only the next template emits data-morph-preserve (KF-HYAA4T)', () => {
+    const live = buildLive('<li><span>x</span></li>');
+    expect(
+      tryTextContentFastPath(
+        live,
+        '<li><span>x</span></li>',
+        '<li><span data-morph-preserve>x</span></li>',
+      ),
+    ).toBe(false);
+    expect(live.textContent).toBe('x');
+  });
+
+  it('skips an injected data-morph-preserve subtree in the live walk so its coincident text cannot take the patch (KF-HYAA4T)', () => {
+    const live = buildLive('<li><span>same</span><span>same</span></li>');
+    const injected = document.createElement('em');
+    injected.setAttribute('data-morph-preserve', '');
+    injected.textContent = 'same';
+    live.insertBefore(injected, live.lastChild);
+    expect(
+      tryTextContentFastPath(
+        live,
+        '<li><span>same</span><span>same</span></li>',
+        '<li><span>same</span><span>changed</span></li>',
+      ),
+    ).toBe(true);
+    expect((live.lastChild as Element).textContent).toBe('changed');
+    expect(injected.textContent).toBe('same');
+  });
 });
 
 describe('fast-paths internal — tryTextContentFastPath walk-and-find', () => {

@@ -590,3 +590,228 @@ describe('granular fast path — URL screen invariant (KF-305)', () => {
     }
   });
 });
+
+/**
+ * KF-HYAA4T: the fast paths sniff only the `data-morph-skip` substring (which
+ * also covers `data-morph-skip-children`) and never look at
+ * `data-morph-preserve`. These probes pin that a fast-path result equals what
+ * the full `_morphElement` route produces for every protection attribute — and
+ * cover the one shape where it did not: a node the consumer injected into the
+ * live row under `data-morph-preserve` (so the row HTML never mentions it)
+ * whose text coincidentally equaled the target text node's old value defeated
+ * the nodeValue safety net, and the fast path patched the injected node.
+ */
+describe('granular update fast paths — morph protection attributes (KF-HYAA4T)', () => {
+  let root: HTMLElement;
+
+  beforeEach(() => {
+    root = document.createElement('div');
+    document.body.appendChild(root);
+  });
+
+  afterEach(() => {
+    document.body.innerHTML = '';
+  });
+
+  /** Fresh render of the same state — the differential oracle. */
+  function fromScratch(render: () => ReturnType<typeof jsx>): string {
+    const scratch = document.createElement('div');
+    document.body.appendChild(scratch);
+    const dispose = mount(scratch, render);
+    const html = scratch.innerHTML;
+    dispose();
+    scratch.remove();
+    return html;
+  }
+
+  it('template-emitted data-morph-preserve on a descendant: text fast path defers to the morph, which pairs and patches the preserved node like any other', () => {
+    type R = { id: number; label: string };
+    const rows = arraySignal<R>([{ id: 1, label: 'first' }]);
+    const render = () =>
+      jsx('ul', {
+        children: each(rows, (r) =>
+          jsx('li', {
+            'data-key': String(r.id),
+            children: jsx('span', {
+              'data-morph-preserve': true,
+              children: r.label,
+            }),
+          }),
+        ),
+      });
+    mount(root, render);
+    const span = root.querySelector('span')!;
+    const text = span.firstChild as Text;
+
+    const spy = spyTemplateInnerHTML();
+    try {
+      rows.update(0, (r) => ({ ...r, label: 'second' }));
+    } finally {
+      spy.restore();
+    }
+
+    // Once a template emits the attribute, the text path can no longer tell an
+    // emitted preserved node from an injected one, so it bails (one parse) and
+    // the morph pairs the template-emitted preserved node with its live
+    // counterpart (same protection on both sides) and morphs it in place —
+    // `data-morph-preserve` only exempts UNMATCHED live nodes from removal.
+    expect(spy.count).toBe(1);
+    expect(span.firstChild).toBe(text);
+    expect(text.nodeValue).toBe('second');
+    expect(root.innerHTML).toBe(fromScratch(render));
+  });
+
+  it('data-morph-preserve on the row root: attribute fast path fires and matches the morph', () => {
+    type R = { id: number; cls: string };
+    const rows = arraySignal<R>([{ id: 1, cls: 'a' }]);
+    const render = () =>
+      jsx('ul', {
+        children: each(rows, (r) =>
+          jsx('li', {
+            'data-key': String(r.id),
+            'data-morph-preserve': true,
+            class: r.cls,
+            children: 'x',
+          }),
+        ),
+      });
+    mount(root, render);
+    const li = root.querySelector('li')!;
+
+    const spy = spyTemplateInnerHTML();
+    try {
+      rows.update(0, (r) => ({ ...r, cls: 'b' }));
+    } finally {
+      spy.restore();
+    }
+
+    expect(spy.count).toBe(0);
+    expect(root.querySelector('li')).toBe(li);
+    expect(li.getAttribute('class')).toBe('b');
+    expect(root.innerHTML).toBe(fromScratch(render));
+  });
+
+  it('data-morph-skip-children toggled on the row root: both fast paths bail and the morph owns the children', () => {
+    type R = { id: number; label: string; skipChildren: boolean };
+    const rows = arraySignal<R>([{ id: 1, label: 'one', skipChildren: true }]);
+    const render = () =>
+      jsx('ul', {
+        children: each(rows, (r) =>
+          jsx('li', {
+            'data-key': String(r.id),
+            'data-morph-skip-children': r.skipChildren ? true : undefined,
+            children: jsx('span', { children: r.label }),
+          }),
+        ),
+      });
+    mount(root, render);
+    const li = root.querySelector('li')!;
+    const span = li.querySelector('span')!;
+
+    // 1. Text change under skip-children: the `data-morph-skip` substring sniff
+    //    also matches `data-morph-skip-children`, so the text fast path bails
+    //    and the morph leaves the children verbatim.
+    let spy = spyTemplateInnerHTML();
+    try {
+      rows.update(0, (r) => ({ ...r, label: 'two' }));
+    } finally {
+      spy.restore();
+    }
+    expect(spy.count).toBe(1);
+    expect(li.querySelector('span')).toBe(span);
+    expect(span.textContent).toBe('one');
+
+    // 2. Attribute removed: the old HTML still carries the substring, so the
+    //    attribute fast path bails; the morph drops the attribute and, reading
+    //    it AFTER the attribute pass, morphs the children — the text catches up.
+    spy = spyTemplateInnerHTML();
+    try {
+      rows.update(0, (r) => ({ ...r, skipChildren: false }));
+    } finally {
+      spy.restore();
+    }
+    expect(spy.count).toBe(1);
+    expect(li.hasAttribute('data-morph-skip-children')).toBe(false);
+    expect(span.textContent).toBe('two');
+    expect(root.innerHTML).toBe(fromScratch(render));
+
+    // 3. Attribute re-added together with a text change: the new HTML carries
+    //    the substring, so the fast paths bail; the morph sets the attribute
+    //    first and then honors it, so the children stay as they were.
+    spy = spyTemplateInnerHTML();
+    try {
+      rows.update(0, (r) => ({ ...r, label: 'three', skipChildren: true }));
+    } finally {
+      spy.restore();
+    }
+    expect(spy.count).toBe(1);
+    expect(li.hasAttribute('data-morph-skip-children')).toBe(true);
+    expect(span.textContent).toBe('two');
+  });
+
+  it('an injected data-morph-preserve node with coincident text does not steal the text patch (the row HTML never mentions it)', () => {
+    type R = { id: number; a: string; b: string };
+    const rows = arraySignal<R>([{ id: 1, a: 'same', b: 'same' }]);
+    mount(root, () =>
+      jsx('ul', {
+        children: each(rows, (r) =>
+          jsx('li', {
+            'data-key': String(r.id),
+            children: [
+              jsx('span', { class: 'a', children: r.a }),
+              jsx('span', { class: 'b', children: r.b }),
+            ],
+          }),
+        ),
+      }),
+    );
+    const li = root.querySelector('li')!;
+    const spanB = li.querySelector('span.b')!;
+    // The consumer injects a preserved node BETWEEN the cells — a tour badge,
+    // say — whose text happens to equal the second cell's current value.
+    const injected = document.createElement('em');
+    injected.setAttribute('data-morph-preserve', '');
+    injected.textContent = 'same';
+    li.insertBefore(injected, spanB);
+
+    rows.update(0, (r) => ({ ...r, b: 'changed' }));
+
+    // The second cell is what changed; the injected node is the consumer's and
+    // keeps its own content — exactly what the full morph produces for the
+    // cells (it never touches an unmatched preserved node's contents).
+    expect(spanB.textContent).toBe('changed');
+    expect(injected.textContent).toBe('same');
+    expect(injected.parentNode).toBe(li);
+    expect(li.querySelector('span.a')!.textContent).toBe('same');
+  });
+
+  it('an injected data-morph-preserve node without coincident text: the nodeValue safety net bails and the morph patches the right cell', () => {
+    type R = { id: number; a: string; b: string };
+    const rows = arraySignal<R>([{ id: 1, a: 'left', b: 'right' }]);
+    mount(root, () =>
+      jsx('ul', {
+        children: each(rows, (r) =>
+          jsx('li', {
+            'data-key': String(r.id),
+            children: [
+              jsx('span', { class: 'a', children: r.a }),
+              jsx('span', { class: 'b', children: r.b }),
+            ],
+          }),
+        ),
+      }),
+    );
+    const li = root.querySelector('li')!;
+    const spanB = li.querySelector('span.b')!;
+    const injected = document.createElement('em');
+    injected.setAttribute('data-morph-preserve', '');
+    injected.textContent = 'badge';
+    li.insertBefore(injected, spanB);
+
+    rows.update(0, (r) => ({ ...r, b: 'changed' }));
+
+    expect(li.querySelector('span.b')!.textContent).toBe('changed');
+    expect(injected.textContent).toBe('badge');
+    expect(injected.parentNode).toBe(li);
+  });
+});
