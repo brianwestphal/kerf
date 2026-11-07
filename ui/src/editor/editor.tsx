@@ -143,6 +143,7 @@ import {
   extractDialog,
   extractSection,
 } from './embed-extract-views.js';
+import { createFieldEditorShell } from './field-editor-shell.js';
 import { createFieldEditorViews } from './field-editor-views.js';
 import type { FieldEditors } from './field-editors.js';
 import { type FieldPlace, type OpenField, placeKey } from './field-place.js';
@@ -1330,63 +1331,11 @@ export function createEditor(options: EditorOptions) {
     fieldEditors: options.fieldEditors,
   });
 
-  /**
-   * The open field editor, when it still belongs to the selected node: a
-   * selection change or an undo that removes the node closes it.
-   */
-  const activeField = (): OpenField | null => {
-    const open = openField.value;
-    return open && open.node === selectedNodeId() ? open : null;
-  };
-
-  /** Every step of a field editor's path, the prop first. */
-  const fieldSteps = (open: FieldPlace): FieldPlace[] =>
-    Array.from({ length: open.path.length + 1 }, (_, index) => ({
-      prop: open.prop,
-      path: open.path.slice(0, index),
-    }));
-
-  /** The pushed Inspector views of a field editor open as a subview. */
-  const fieldViews = () => {
-    const open = activeField();
-    if (open?.container !== 'subview') return [];
-    const node = findNode(doc.value, open.node)!.node;
-    return fieldSteps(open).map((place) => ({
-      key: `field-${placeKey(place)}`,
-      toolbar: { title: stepLabel(node, place) },
-      pane: INSPECTOR_PANE,
-      content: fieldStep(node, place),
-    }));
-  };
-
-  /** The dialog a field editor opens in when it is too big for the rail. */
-  const fieldDialog = () => {
-    const open = activeField();
-    const place = open?.container === 'dialog' ? open : undefined;
-    const node = place && findNode(doc.value, place.node)!.node;
-    return (
-      <DialogSurface
-        id={FIELD_DIALOG}
-        label={place ? stepLabel(node!, place) : 'Field'}
-        size="medium"
-        rootAttributes={{ 'data-key': FIELD_DIALOG }}
-        footer={
-          <>
-            {place?.path.length ? (
-              <Button action={FIELD_BACK_ACTION}>Back</Button>
-            ) : undefined}
-            <Button tone="brand" action={FIELD_DONE_ACTION}>
-              Done
-            </Button>
-          </>
-        }
-      >
-        {node
-          ? fieldStep(node, { prop: place!.prop, path: place!.path })
-          : undefined}
-      </DialogSurface>
-    );
-  };
+  const { activeField, fieldViews, fieldDialog } = createFieldEditorShell(
+    ctx,
+    openField,
+    { stepLabel, fieldStep },
+  );
 
   /**
    * A text-accepting content prop (KF-YR91FA): its text field with Use as
