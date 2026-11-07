@@ -59,10 +59,6 @@ import { List } from '../components/collections/list/list.js';
 import { ListHeader } from '../components/collections/list-header/list-header.js';
 import { ListItem } from '../components/collections/list-item/list-item.js';
 import {
-  TreeList,
-  type TreeListNode,
-} from '../components/collections/tree-list/tree-list.js';
-import {
   treeListExternalDrop,
   wireTreeList,
 } from '../components/collections/tree-list/wiring/wire-tree-list.js';
@@ -273,10 +269,7 @@ import { inspectorSections } from './model/inspector.js';
 import {
   itemSlotRowNode,
   nodeTitle,
-  type OutlineNode,
-  outlineParents,
   outlineRows,
-  outlineTree,
   slotRowAddress,
   slotRowId,
 } from './model/outline.js';
@@ -310,6 +303,7 @@ import {
 } from './model/views.js';
 import { nodeContextMenu } from './node-context-menu.js';
 import { createNodeInspectorViews } from './node-inspector-views.js';
+import { outlineView } from './outline-view.js';
 import { paletteSketch } from './palette-schematics.js';
 import { wirePaletteThumbnails } from './palette-thumbnails.js';
 import { createPlayStage } from './play-stage.js';
@@ -926,68 +920,6 @@ export function createEditor(options: EditorOptions) {
     propsEntryOf,
     resolveView,
     autosave,
-  };
-
-  const outline = (
-    document: ViewDocument,
-    counts: ReadonlyMap<string, number>,
-  ) => {
-    const current = selection.value;
-    const badge = (id: string) => {
-      const count = counts.get(id);
-      return count ? (
-        <Badge
-          tone="danger"
-          label={`${count} ${count === 1 ? 'problem' : 'problems'}`}
-        >
-          {count}
-        </Badge>
-      ) : undefined;
-    };
-    const toTree = (nodes: readonly OutlineNode[]): TreeListNode[] =>
-      nodes.map((node) => ({
-        id: node.id,
-        label: node.label,
-        description: node.detail,
-        trailing: badge(node.id),
-        // KF-WXP6AB, KF-5RKX3W: a node directly in a zone, or a slot,
-        // drags to another place.
-        ...(slotRowAddress(node.id) || isMovable(document, node.id).placed
-          ? { draggable: true }
-          : {}),
-        ...(node.children ? { children: toTree(node.children) } : {}),
-      }));
-    const tree = outlineTree(document, componentNames);
-    const closed = collapsed.value;
-    if (!tree.length)
-      return (
-        <EmptyState
-          title="No components yet"
-          detail="Add the first component on the canvas, or drag one there from the Library."
-        />
-      );
-    return (
-      <TreeList
-        id="editor-outline"
-        label="Document outline"
-        nodes={toTree(tree)}
-        expanded={outlineParents(tree).filter((id) => !closed.has(id))}
-        selected={
-          current?.kind === 'node'
-            ? current.id
-            : current?.kind === 'slot'
-              ? slotRowId(
-                  current.address.parent,
-                  current.address.zone,
-                  current.address.index,
-                )
-              : undefined
-        }
-        action={OUTLINE_ACTION}
-        toggleAction={OUTLINE_TOGGLE_ACTION}
-        density="compact"
-      />
-    );
   };
 
   /**
@@ -2368,7 +2300,16 @@ export function createEditor(options: EditorOptions) {
           name: 'Outline',
           // The tab names the area; the Preview header counts
           // its nodes.
-          panel: <List>{outline(document, problemCounts(problemList))}</List>,
+          panel: (
+            <List>
+              {outlineView(
+                ctx,
+                collapsed,
+                document,
+                problemCounts(problemList),
+              )}
+            </List>
+          ),
         },
         {
           area: 'problems',
