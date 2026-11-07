@@ -997,6 +997,163 @@ Plus, on the `kerfjs/jsx-runtime` subpath (re-exported types for declaration mer
 The JSX runtime is a separate subpath export at `kerfjs/jsx-runtime`. It's referenced by tsconfig (`"jsxImportSource": "kerfjs"`); users do not import from it directly _unless_ they're declaration-merging custom-element types into `JSX.IntrinsicElements` (see `docs/8-api-reference.md` §8.5).
 `kerfjs/jsx-dev-runtime` is an export-map alias to the same runtime declarations and implementation for JSX transforms that request the development-runtime name.
 
+### `@kerfjs/ui` published subpath map
+
+Every key in `ui/package.json` `exports` is listed here. The source column names the authored facade or asset; `dist/` is generated. Import a component from its own subpath to keep browser CSS scoped to that component.
+
+| Published path                            | Source                                | Purpose                                               |
+| ----------------------------------------- | ------------------------------------- | ----------------------------------------------------- |
+| `@kerfjs/ui`                              | `ui/src/index.ts`                     | Main component and helper barrel.                     |
+| `@kerfjs/ui/css-values`                   | `ui/src/css-values.ts`                | Typed CSS value builders.                             |
+| `@kerfjs/ui/catalog-projection`           | `ui/catalog-projection.mjs`           | Projects component catalog data for tools.            |
+| `@kerfjs/ui/view`                         | `ui/view/index.mjs`                   | Compiles and validates declarative UI views.          |
+| `@kerfjs/ui/vite-editor`                  | `ui/vite-editor.mjs`                  | Hosts the local UI editor in Vite.                    |
+| `@kerfjs/ui/vite-ux-review`               | `ui/vite-ux-review.mjs`               | Hosts contextual UX review capture in Vite.           |
+| `@kerfjs/ui/lucide-icon`                  | `ui/src/lucide-icon.tsx`              | Renders or composes Lucide Icon UI.                   |
+| `@kerfjs/ui/disclosure`                   | `ui/src/disclosure.tsx`               | Renders or composes Disclosure UI.                    |
+| `@kerfjs/ui/disclosure-arrow`             | `ui/src/disclosure-arrow.tsx`         | Renders or composes Disclosure Arrow UI.              |
+| `@kerfjs/ui/badge`                        | `ui/src/badge.tsx`                    | Renders or composes Badge UI.                         |
+| `@kerfjs/ui/button`                       | `ui/src/button.tsx`                   | Renders or composes Button UI.                        |
+| `@kerfjs/ui/chip`                         | `ui/src/chip.tsx`                     | Renders or composes Chip UI.                          |
+| `@kerfjs/ui/toolbar`                      | `ui/src/toolbar.tsx`                  | Renders or composes Toolbar UI.                       |
+| `@kerfjs/ui/toolbar-control-group`        | `ui/src/toolbar-control-group.tsx`    | Renders or composes Toolbar Control Group UI.         |
+| `@kerfjs/ui/surface-scaffold`             | `ui/src/surface-scaffold.tsx`         | Renders or composes Surface Scaffold UI.              |
+| `@kerfjs/ui/surface-scaffold/register`    | `ui/src/surface-scaffold-register.ts` | Registers Surface Scaffold custom elements.           |
+| `@kerfjs/ui/floating-toolbar`             | `ui/src/floating-toolbar.tsx`         | Renders or composes Floating Toolbar UI.              |
+| `@kerfjs/ui/toolbar-text`                 | `ui/src/toolbar-text.tsx`             | Renders or composes Toolbar Text UI.                  |
+| `@kerfjs/ui/text`                         | `ui/src/text.tsx`                     | Renders or composes Text UI.                          |
+| `@kerfjs/ui/list`                         | `ui/src/list.tsx`                     | Renders or composes List UI.                          |
+| `@kerfjs/ui/row`                          | `ui/src/row.tsx`                      | Renders or composes Row UI.                           |
+| `@kerfjs/ui/grid`                         | `ui/src/grid.tsx`                     | Renders or composes Grid UI.                          |
+| `@kerfjs/ui/sized-region`                 | `ui/src/sized-region.tsx`             | Renders or composes Sized Region UI.                  |
+| `@kerfjs/ui/spacer`                       | `ui/src/spacer.tsx`                   | Renders or composes Spacer UI.                        |
+| `@kerfjs/ui/list-action-row`              | `ui/src/list-action-row.tsx`          | Renders or composes List Action Row UI.               |
+| `@kerfjs/ui/list-item`                    | `ui/src/list-item.tsx`                | Renders or composes List Item UI.                     |
+| `@kerfjs/ui/list-header`                  | `ui/src/list-header.tsx`              | Renders or composes List Header UI.                   |
+| `@kerfjs/ui/list-inset-control`           | `ui/src/list-inset-control.tsx`       | Renders or composes List Inset Control UI.            |
+| `@kerfjs/ui/list-inset-text`              | `ui/src/list-inset-text.tsx`          | Renders or composes List Inset Text UI.               |
+| `@kerfjs/ui/content-item`                 | `ui/src/content-item.tsx`             | Renders or composes Content Item UI.                  |
+| `@kerfjs/ui/resizable-region`             | `ui/src/resizable-region.tsx`         | Renders or composes Resizable Region UI.              |
+| `@kerfjs/ui/wire-resizable-regions`       | `ui/src/wire-resizable-regions.ts`    | Wires Resizable Regions behavior.                     |
+| `@kerfjs/ui/device-class`                 | `ui/src/device-class.ts`              | Classifies device capability for responsive behavior. |
+| `@kerfjs/ui/tab-bar-item`                 | `ui/src/tab-bar-item.tsx`             | Renders or composes Tab Bar Item UI.                  |
+| `@kerfjs/ui/catalog`                      | `ui/src/catalog.tsx`                  | Renders the component catalog.                        |
+| `@kerfjs/ui/editor`                       | `ui/src/editor.tsx`                   | Renders the local UI editor.                          |
+| `@kerfjs/ui/catalog-resources`            | `ui/src/catalog-resources.ts`         | Supplies catalog assets and metadata.                 |
+| `@kerfjs/ui/analyzer`                     | `ui/analyzer/index.mjs`               | Analyzes UI source against component contracts.       |
+| `@kerfjs/ui/analyzer/report.schema.json`  | `ui/analyzer/report.schema.json`      | Analyzer report JSON schema.                          |
+| `@kerfjs/ui/doctor`                       | `ui/doctor/index.mjs`                 | Checks UI application structure and configuration.    |
+| `@kerfjs/ui/doctor/config.schema.json`    | `ui/doctor/config.schema.json`        | Doctor configuration JSON schema.                     |
+| `@kerfjs/ui/doctor/report.schema.json`    | `ui/doctor/report.schema.json`        | Doctor report JSON schema.                            |
+| `@kerfjs/ui/evaluator`                    | `ui/evaluator/index.mjs`              | Evaluates UI output and evidence.                     |
+| `@kerfjs/ui/evaluator/report.schema.json` | `ui/evaluator/report.schema.json`     | Evaluator report JSON schema.                         |
+| `@kerfjs/ui/wire-catalog`                 | `ui/src/wire-catalog.ts`              | Wires Catalog behavior.                               |
+| `@kerfjs/ui/tab-bar`                      | `ui/src/tab-bar.tsx`                  | Renders or composes Tab Bar UI.                       |
+| `@kerfjs/ui/wire-tab-bars`                | `ui/src/wire-tab-bars.ts`             | Wires Tab Bars behavior.                              |
+| `@kerfjs/ui/tab-panel`                    | `ui/src/tab-panel.tsx`                | Renders or composes Tab Panel UI.                     |
+| `@kerfjs/ui/wire-scroll-dividers`         | `ui/src/wire-scroll-dividers.ts`      | Wires Scroll Dividers behavior.                       |
+| `@kerfjs/ui/wire-overlay-sheets`          | `ui/src/wire-overlay-sheets.ts`       | Wires Overlay Sheets behavior.                        |
+| `@kerfjs/ui/wire-list-reorder`            | `ui/src/wire-list-reorder.ts`         | Wires List Reorder behavior.                          |
+| `@kerfjs/ui/wire-list-focus-scroll`       | `ui/src/wire-list-focus-scroll.ts`    | Wires List Focus Scroll behavior.                     |
+| `@kerfjs/ui/wire-toolbar-visibility`      | `ui/src/wire-toolbar-visibility.ts`   | Wires Toolbar Visibility behavior.                    |
+| `@kerfjs/ui/nav-stack`                    | `ui/src/nav-stack.tsx`                | Renders or composes Nav Stack UI.                     |
+| `@kerfjs/ui/wire-nav-stack`               | `ui/src/wire-nav-stack.ts`            | Wires Nav Stack behavior.                             |
+| `@kerfjs/ui/wire-pane-chrome`             | `ui/src/wire-pane-chrome.ts`          | Wires Pane Chrome behavior.                           |
+| `@kerfjs/ui/wire-summary-rows`            | `ui/src/wire-summary-rows.ts`         | Wires Summary Rows behavior.                          |
+| `@kerfjs/ui/wire-content-items`           | `ui/src/wire-content-items.ts`        | Wires Content Items behavior.                         |
+| `@kerfjs/ui/split-view`                   | `ui/src/split-view.tsx`               | Renders or composes Split View UI.                    |
+| `@kerfjs/ui/list-detail-dialog`           | `ui/src/list-detail-dialog.tsx`       | Renders or composes List Detail Dialog UI.            |
+| `@kerfjs/ui/workbench-dialog`             | `ui/src/workbench-dialog.tsx`         | Renders or composes Workbench Dialog UI.              |
+| `@kerfjs/ui/pane`                         | `ui/src/pane.tsx`                     | Renders or composes Pane UI.                          |
+| `@kerfjs/ui/workbench`                    | `ui/src/workbench.tsx`                | Renders or composes Workbench UI.                     |
+| `@kerfjs/ui/collapsible-panel`            | `ui/src/collapsible-panel.tsx`        | Renders or composes Collapsible Panel UI.             |
+| `@kerfjs/ui/wire-sidebar`                 | `ui/src/wire-sidebar.ts`              | Wires Sidebar behavior.                               |
+| `@kerfjs/ui/tab-navigator`                | `ui/src/tab-navigator.tsx`            | Renders or composes Tab Navigator UI.                 |
+| `@kerfjs/ui/wire-tab-navigator`           | `ui/src/wire-tab-navigator.ts`        | Wires Tab Navigator behavior.                         |
+| `@kerfjs/ui/wire-workbench`               | `ui/src/wire-workbench.ts`            | Wires Workbench behavior.                             |
+| `@kerfjs/ui/progress-bar`                 | `ui/src/progress-bar.tsx`             | Renders or composes Progress Bar UI.                  |
+| `@kerfjs/ui/progress-ring`                | `ui/src/progress-ring.tsx`            | Renders or composes Progress Ring UI.                 |
+| `@kerfjs/ui/gauge`                        | `ui/src/gauge.tsx`                    | Renders or composes Gauge UI.                         |
+| `@kerfjs/ui/loading-spinner`              | `ui/src/loading-spinner.tsx`          | Renders or composes Loading Spinner UI.               |
+| `@kerfjs/ui/select`                       | `ui/src/select.tsx`                   | Renders or composes Select UI.                        |
+| `@kerfjs/ui/skeleton`                     | `ui/src/skeleton.tsx`                 | Renders or composes Skeleton UI.                      |
+| `@kerfjs/ui/sunken-panel`                 | `ui/src/sunken-panel.tsx`             | Renders or composes Sunken Panel UI.                  |
+| `@kerfjs/ui/form`                         | `ui/src/form.tsx`                     | Renders or composes Form UI.                          |
+| `@kerfjs/ui/wire-forms`                   | `ui/src/wire-forms.ts`                | Wires Forms behavior.                                 |
+| `@kerfjs/ui/segmented-control`            | `ui/src/segmented-control.tsx`        | Renders or composes Segmented Control UI.             |
+| `@kerfjs/ui/color-field`                  | `ui/src/color-field.tsx`              | Renders or composes Color Field UI.                   |
+| `@kerfjs/ui/wire-color-fields`            | `ui/src/wire-color-fields.ts`         | Wires Color Fields behavior.                          |
+| `@kerfjs/ui/color-picker`                 | `ui/src/color-picker.tsx`             | Renders or composes Color Picker UI.                  |
+| `@kerfjs/ui/wire-color-pickers`           | `ui/src/wire-color-pickers.ts`        | Wires Color Pickers behavior.                         |
+| `@kerfjs/ui/color-swatches`               | `ui/src/color-swatches.tsx`           | Renders or composes Color Swatches UI.                |
+| `@kerfjs/ui/choice-chips`                 | `ui/src/choice-chips.tsx`             | Renders or composes Choice Chips UI.                  |
+| `@kerfjs/ui/message-composer`             | `ui/src/message-composer.tsx`         | Renders or composes Message Composer UI.              |
+| `@kerfjs/ui/wire-message-composers`       | `ui/src/wire-message-composers.ts`    | Wires Message Composers behavior.                     |
+| `@kerfjs/ui/column-explorer`              | `ui/src/column-explorer.tsx`          | Renders or composes Column Explorer UI.               |
+| `@kerfjs/ui/wire-column-explorer`         | `ui/src/wire-column-explorer.ts`      | Wires Column Explorer behavior.                       |
+| `@kerfjs/ui/paged-view`                   | `ui/src/paged-view.tsx`               | Renders or composes Paged View UI.                    |
+| `@kerfjs/ui/wire-paged-views`             | `ui/src/wire-paged-views.ts`          | Wires Paged Views behavior.                           |
+| `@kerfjs/ui/tree-list`                    | `ui/src/tree-list.tsx`                | Renders or composes Tree List UI.                     |
+| `@kerfjs/ui/wire-tree-list`               | `ui/src/wire-tree-list.ts`            | Wires Tree List behavior.                             |
+| `@kerfjs/ui/tag-field`                    | `ui/src/tag-field.tsx`                | Renders or composes Tag Field UI.                     |
+| `@kerfjs/ui/wire-tag-fields`              | `ui/src/wire-tag-fields.ts`           | Wires Tag Fields behavior.                            |
+| `@kerfjs/ui/search-field`                 | `ui/src/search-field.tsx`             | Renders or composes Search Field UI.                  |
+| `@kerfjs/ui/search-field-model`           | `ui/src/search-field-model.ts`        | Models search field query and state.                  |
+| `@kerfjs/ui/wire-search-fields`           | `ui/src/wire-search-fields.ts`        | Wires Search Fields behavior.                         |
+| `@kerfjs/ui/popup-menu`                   | `ui/src/popup-menu.tsx`               | Renders or composes Popup Menu UI.                    |
+| `@kerfjs/ui/anchored-surface`             | `ui/src/anchored-surface.tsx`         | Renders or composes Anchored Surface UI.              |
+| `@kerfjs/ui/popup-menu/register`          | `ui/src/popup-menu-register.ts`       | Registers Popup Menu custom elements.                 |
+| `@kerfjs/ui/select/register`              | `ui/src/select-register.ts`           | Registers Select custom elements.                     |
+| `@kerfjs/ui/help-tags/register`           | `ui/src/help-tags-register.ts`        | Registers Help Tags custom elements.                  |
+| `@kerfjs/ui/webawesome`                   | `ui/src/webawesome.ts`                | Web Awesome JSX declaration boundary.                 |
+| `@kerfjs/ui/summary-row`                  | `ui/src/summary-row.tsx`              | Renders or composes Summary Row UI.                   |
+| `@kerfjs/ui/framed-list`                  | `ui/src/framed-list.tsx`              | Renders or composes Framed List UI.                   |
+| `@kerfjs/ui/split-button`                 | `ui/src/split-button.tsx`             | Renders or composes Split Button UI.                  |
+| `@kerfjs/ui/edge-activity-indicator`      | `ui/src/edge-activity-indicator.tsx`  | Renders or composes Edge Activity Indicator UI.       |
+| `@kerfjs/ui/combobox`                     | `ui/src/combobox.tsx`                 | Renders or composes Combobox UI.                      |
+| `@kerfjs/ui/wire-comboboxes`              | `ui/src/wire-comboboxes.ts`           | Wires Comboboxes behavior.                            |
+| `@kerfjs/ui/file-picker`                  | `ui/src/file-picker.tsx`              | Renders or composes File Picker UI.                   |
+| `@kerfjs/ui/wire-file-pickers`            | `ui/src/wire-file-pickers.ts`         | Wires File Pickers behavior.                          |
+| `@kerfjs/ui/text-field`                   | `ui/src/text-field.tsx`               | Renders or composes Text Field UI.                    |
+| `@kerfjs/ui/wire-text-fields`             | `ui/src/wire-text-fields.ts`          | Wires Text Fields behavior.                           |
+| `@kerfjs/ui/slider`                       | `ui/src/slider.tsx`                   | Renders or composes Slider UI.                        |
+| `@kerfjs/ui/wire-sliders`                 | `ui/src/wire-sliders.ts`              | Wires Sliders behavior.                               |
+| `@kerfjs/ui/checkbox`                     | `ui/src/checkbox.tsx`                 | Renders or composes Checkbox UI.                      |
+| `@kerfjs/ui/checkbox-group`               | `ui/src/checkbox-group.tsx`           | Renders or composes Checkbox Group UI.                |
+| `@kerfjs/ui/radio-group`                  | `ui/src/radio-group.tsx`              | Renders or composes Radio Group UI.                   |
+| `@kerfjs/ui/switch`                       | `ui/src/switch.tsx`                   | Renders or composes Switch UI.                        |
+| `@kerfjs/ui/wire-checkboxes`              | `ui/src/wire-checkboxes.ts`           | Wires Checkboxes behavior.                            |
+| `@kerfjs/ui/wire-choice-chips`            | `ui/src/wire-choice-chips.ts`         | Wires Choice Chips behavior.                          |
+| `@kerfjs/ui/selection`                    | `ui/src/selection.ts`                 | Selection state and helpers.                          |
+| `@kerfjs/ui/scroll-effect`                | `ui/src/scroll-effect.tsx`            | Renders or composes Scroll Effect UI.                 |
+| `@kerfjs/ui/backdrop-image`               | `ui/src/backdrop-image.tsx`           | Renders or composes Backdrop Image UI.                |
+| `@kerfjs/ui/content-swap`                 | `ui/src/content-swap.tsx`             | Renders or composes Content Swap UI.                  |
+| `@kerfjs/ui/column-track`                 | `ui/src/column-track.tsx`             | Renders or composes Column Track UI.                  |
+| `@kerfjs/ui/corner-status`                | `ui/src/corner-status.tsx`            | Renders or composes Corner Status UI.                 |
+| `@kerfjs/ui/wire-corner-status`           | `ui/src/wire-corner-status.ts`        | Wires Corner Status behavior.                         |
+| `@kerfjs/ui/state-banner`                 | `ui/src/state-banner.tsx`             | Renders or composes State Banner UI.                  |
+| `@kerfjs/ui/empty-state`                  | `ui/src/empty-state.tsx`              | Renders or composes Empty State UI.                   |
+| `@kerfjs/ui/value-table`                  | `ui/src/value-table.tsx`              | Renders or composes Value Table UI.                   |
+| `@kerfjs/ui/value-preview`                | `ui/src/value-preview.tsx`            | Renders or composes Value Preview UI.                 |
+| `@kerfjs/ui/editor-frame`                 | `ui/src/editor-frame.tsx`             | Renders or composes Editor Frame UI.                  |
+| `@kerfjs/ui/unstyled`                     | `ui/src/index.ts`                     | Main component barrel without automatic styles.       |
+| `@kerfjs/ui/ai/*`                         | `ui/ai/*`                             | Published AI guidance and catalog assets.             |
+| `@kerfjs/ui/docs/*`                       | `ui/docs/*`                           | Published component documentation.                    |
+
+CSS exports are grouped below. Each `@kerfjs/ui/<name>.css` maps to `ui/src/<name>.css`; `ui/scripts/build-css.mjs` emits its published `ui/dist/styles/<name>.css`. Foundation, document, overlay, layout, and component styles use the same rule:
+
+- `@kerfjs/ui/foundation.css`, `@kerfjs/ui/document.css`, `@kerfjs/ui/overlay-sheet.css`, `@kerfjs/ui/overlay-toast.css`, `@kerfjs/ui/overlay-tooltip.css`, `@kerfjs/ui/layout.css`, `@kerfjs/ui/webawesome.css`, `@kerfjs/ui/styles.css`
+- `@kerfjs/ui/lucide-icon.css`, `@kerfjs/ui/badge.css`, `@kerfjs/ui/button.css`, `@kerfjs/ui/chip.css`, `@kerfjs/ui/disclosure-arrow.css`, `@kerfjs/ui/disclosure.css`, `@kerfjs/ui/toolbar.css`, `@kerfjs/ui/toolbar-control-group.css`
+- `@kerfjs/ui/surface-scaffold.css`, `@kerfjs/ui/floating-toolbar.css`, `@kerfjs/ui/toolbar-text.css`, `@kerfjs/ui/text.css`, `@kerfjs/ui/list.css`, `@kerfjs/ui/row.css`, `@kerfjs/ui/grid.css`, `@kerfjs/ui/sized-region.css`
+- `@kerfjs/ui/spacer.css`, `@kerfjs/ui/list-action-row.css`, `@kerfjs/ui/list-item.css`, `@kerfjs/ui/list-header.css`, `@kerfjs/ui/list-inset-control.css`, `@kerfjs/ui/list-inset-text.css`, `@kerfjs/ui/content-item.css`, `@kerfjs/ui/resizable-region.css`
+- `@kerfjs/ui/tab-bar-item.css`, `@kerfjs/ui/catalog.css`, `@kerfjs/ui/tab-bar.css`, `@kerfjs/ui/tab-panel.css`, `@kerfjs/ui/nav-stack.css`, `@kerfjs/ui/split-view.css`, `@kerfjs/ui/list-detail-dialog.css`, `@kerfjs/ui/workbench-dialog.css`
+- `@kerfjs/ui/pane.css`, `@kerfjs/ui/workbench.css`, `@kerfjs/ui/collapsible-panel.css`, `@kerfjs/ui/tab-navigator.css`, `@kerfjs/ui/loading-spinner.css`, `@kerfjs/ui/progress-bar.css`, `@kerfjs/ui/progress-ring.css`, `@kerfjs/ui/gauge.css`
+- `@kerfjs/ui/select.css`, `@kerfjs/ui/popup-menu.css`, `@kerfjs/ui/anchored-surface.css`, `@kerfjs/ui/skeleton.css`, `@kerfjs/ui/sunken-panel.css`, `@kerfjs/ui/form.css`, `@kerfjs/ui/segmented-control.css`, `@kerfjs/ui/choice-chips.css`
+- `@kerfjs/ui/color-swatches.css`, `@kerfjs/ui/color-picker.css`, `@kerfjs/ui/color-field.css`, `@kerfjs/ui/message-composer.css`, `@kerfjs/ui/search-field.css`, `@kerfjs/ui/editor.css`, `@kerfjs/ui/column-explorer.css`, `@kerfjs/ui/paged-view.css`
+- `@kerfjs/ui/tree-list.css`, `@kerfjs/ui/tag-field.css`, `@kerfjs/ui/state-banner.css`, `@kerfjs/ui/corner-status.css`, `@kerfjs/ui/column-track.css`, `@kerfjs/ui/content-swap.css`, `@kerfjs/ui/scroll-effect.css`, `@kerfjs/ui/backdrop-image.css`
+- `@kerfjs/ui/file-picker.css`, `@kerfjs/ui/text-field.css`, `@kerfjs/ui/checkbox.css`, `@kerfjs/ui/checkbox-group.css`, `@kerfjs/ui/slider.css`, `@kerfjs/ui/radio-group.css`, `@kerfjs/ui/switch.css`, `@kerfjs/ui/combobox.css`
+- `@kerfjs/ui/edge-activity-indicator.css`, `@kerfjs/ui/split-button.css`, `@kerfjs/ui/framed-list.css`, `@kerfjs/ui/summary-row.css`, `@kerfjs/ui/empty-state.css`, `@kerfjs/ui/value-table.css`, `@kerfjs/ui/value-preview.css`, `@kerfjs/ui/editor-frame.css`
+
 ## Build outputs
 
 `npm run build` → `tsup` → `dist/`. TypeScript is dual-track (KF-375): the native **TypeScript 7** compiler — installed as the `typescript7` npm alias, invoked as `node node_modules/typescript7/bin/tsc` — runs every typecheck gate (`npm run typecheck` and the three `-p` dist-typing gates plus the docs-examples compile), while `typescript@6` (the JS-API bridge; native 7 ships no JS API) remains the resolvable `typescript` package for tsup's `.d.ts` emit and typescript-eslint (whose peer range caps at `<6.1.0`). `tsup.config.ts` sets `dts.compilerOptions.ignoreDeprecations: '6.0'` because tsup hardcodes the TS-7-removed `baseUrl` into its dts build — the waiver lives there, not in tsconfig.json.
