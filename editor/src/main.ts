@@ -8,16 +8,15 @@ import '@kerfjs/ui/select/register';
 import '@kerfjs/ui/surface-scaffold/register';
 
 import { createEditor, devServerStorage } from '@kerfjs/ui/editor';
-import type { ViewDocument } from '@kerfjs/ui/view';
 import { mount } from 'kerfjs';
 
 import { kerfUiCatalog } from './catalog.js';
-import sample from './sample.kui.json';
+import { loadSample } from './sample.js';
 
 const root = document.getElementById('editor')!;
 const editor = createEditor({
   catalog: kerfUiCatalog,
-  document: sample as unknown as ViewDocument,
+  document: loadSample(kerfUiCatalog.viewCatalog),
   storage: devServerStorage(),
 });
 mount(root, editor.render);
