@@ -223,7 +223,7 @@ describe('scroll clearance context', () => {
     ]);
     expect(
       rule(
-        `${floating}[data-body-inset="compact"] > .kui-dialog-surface__body`,
+        `${floating}[data-body-inset="default"] > .kui-dialog-surface__body`,
       ),
     ).toEqual([
       'padding-block-start:calc( var(--kui-surface-inset, remify(8px)) + var(--_kui-dialog-surface-header-clearance) )',
