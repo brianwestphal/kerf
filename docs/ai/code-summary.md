@@ -1272,6 +1272,10 @@ rounded value changes (KF-XFG3FZ). `ui/tests/unit/wire-tab-bars-fit.test.ts`
 covers report, dedupe, mutation, re-render, dispose, and no-ResizeObserver
 paths. `ui/tests/browser/tab-bar-fit.spec.ts` drives the catalog's adaptive
 end-action example through narrow and wide viewports.
+KF-XJPZJ3's transition tests cover a dragged tab replaced during a render,
+`data-tab-bar-id` rename and re-entry, open Select and PopupMenu item removal,
+and editor undo sequences (`ui/tests/unit/editor/undo-sequences.test.ts`);
+the invalid-inspector-draft case is tracked separately in KF-0Y88XZ.
 `ui/src/wiring/wire-scroll-dividers.ts` (`@kerfjs/ui/wire-scroll-dividers`,
 `wireScrollDividers(root, { targets? })`) makes the divider between pinned chrome
 and scrolling content scroll state: it pairs every `.kui-pane` content slot with
