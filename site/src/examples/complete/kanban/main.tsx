@@ -245,6 +245,10 @@ function endDrag(): DragState | null {
   window.removeEventListener('pointerup', onUp);
   window.removeEventListener('pointercancel', onCancel);
   const d = drag.value;
+  // Release the row from morph protection before the signal render removes
+  // its dragging class and transform. Keeping the marker through that render
+  // leaves a visually stuck card after pointercancel.
+  dragEl?.removeAttribute('data-morph-skip');
   dragEl = null;
   drag.value = null;
   return d;

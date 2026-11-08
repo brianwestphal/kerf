@@ -66,6 +66,9 @@ jobs:
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with: { node-version: '${{ env.NODE_VERSION }}', cache: npm }
       - run: npm ci
+      # The complete-example typing gate resolves imports from site/node_modules,
+      # including its local kerfjs link and the marked/dompurify dependencies.
+      - run: npm --prefix site ci
       - name: Run the check:core gates no other job covers
         run: node scripts/run-check-steps.mjs check:core --skip lint,typecheck,test,vitest:dist,vitest:dist-full,check-package-gates
       - name: Audit the published dependency tree (high and critical)

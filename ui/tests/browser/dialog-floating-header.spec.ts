@@ -248,11 +248,11 @@ test('a flowing body reserves the floating header before its own inset', async (
 }) => {
   await page.setViewportSize({ width: 1280, height: 900 });
   await page.goto('/?component=surface-scaffold');
-  // The medium dialog flows its content; give it a compact inset too.
+  // The medium dialog flows its content; give it the default 8px inset too.
   const medium = page.locator('#catalog-medium-dialog');
   await medium.evaluate((element) => {
     element.setAttribute('data-header-presentation', 'floating');
-    element.setAttribute('data-body-inset', 'compact');
+    element.setAttribute('data-body-inset', 'default');
   });
   await page.getByRole('button', { name: 'Open Dialog', exact: true }).click();
   await expect(medium).toHaveAttribute('open', '');
