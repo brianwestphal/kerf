@@ -37,8 +37,10 @@ overrides. `ui/ux-demo/display-preferences.ts` validates and stores the demo's
 theme, background, contrast, and motion choices across reloads.
 The published `setup/` entry (`kerfjs/setup` from `setup/index.mjs` +
 `index.d.mts`, and the `kerfjs setup` bin in `setup/cli.mjs`)
-contains the pure AI-first project planner, bounded/redacted plan formatter,
-transactional applier, CLI, declarations, and versioned state schema. It
+contains the pure AI-first project planner and bounded/redacted plan formatter
+in `index.mjs`; `detect.mjs` owns workspace/package detection, `apply.mjs`
+owns the transactional applier, and `common.mjs` holds shared file/path helpers.
+The package also ships declarations, the CLI, and a versioned state schema. It
 detects core/UI source or dependency use, selects one workspace package,
 evaluates ordered globstar/brace/negated npm/Yarn and pnpm workspace patterns
 with containment and ambiguity checks, performs state-backed three-way

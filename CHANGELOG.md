@@ -287,6 +287,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Changed
 
+- **`kerfjs setup` separates detection and apply from planning (KF-Q0WSWJ).** The public CLI behavior and exports are unchanged; the packed package now includes focused `setup/detect.mjs`, `setup/apply.mjs`, and `setup/common.mjs` modules.
 - **`bindList` virtualization uses a tagged height model (KF-BA1DW8).** Fixed, declared, and measured row heights now dispatch through one normalized model instead of nullable flags and unchecked casts; behavior is unchanged.
 - **`kerfjs/jsx-runtime` no longer exports `listSafeHtml` / `granularListSafeHtml` (KF-JYCRRJ).** They were internal helpers for `each()`; they are now `_`-prefixed.
 - **Router edge cases are defined (KF-EE8EPV).** `navigate()` to the URL already showing replaces the history entry instead of pushing a duplicate, and `navigate()` after `dispose()` does nothing.
