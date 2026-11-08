@@ -361,6 +361,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Fixed
 
+- **Preserved nodes inside an `each()` row keep their text on a granular update (KF-HYAA4T).** The row text fast path skips consumer-injected `data-morph-preserve` nodes, including when their text matches the cell's old value. Morph protection now uses one shared bitmask helper.
 - **Store actions no longer subscribe the code that calls them (KF-1268ZK).** An action's `get()` reads state untracked, so calling a `get()`+`set()` action inside `effect()` or `mount()` no longer throws "Cycle detected" or re-runs the effect in a loop.
 - **`kerf-catalog-demo` runs through its npm bin symlink (KF-88VC6W).** It used to exit 0 without doing anything, so a consumer's `--check` passed vacuously.
 - **TabBar drag state ends when a re-render replaces the dragged tab, and `onFitChange` reports a renamed `data-tab-bar-id` or a bar that returns to the root (KF-XJPZJ3).**
