@@ -754,6 +754,11 @@ keeps the open menu's state out of the morph. Register
 submenus, and dismissal for every PopupMenu in the document. Do not hand-write
 `wa-dropdown` or menu markup for a menu.
 
+When the app changes the items of an open menu, the content key rebuilds its
+root. The register reopens that root and keeps focus on the same command (by
+`data-action`, then label), or moves focus to the first available command if
+the focused one was removed. An open submenu returns to the root level.
+
 ```tsx
 <ToolbarControlGroup single nestedDropdown menuInset="compact">
   <PopupMenu

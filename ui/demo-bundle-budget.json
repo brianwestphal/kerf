@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 164600,
-  "totalJavaScriptGzip": 463000,
-  "measuredLargestJavaScriptGzip": 164548,
-  "measuredTotalJavaScriptGzip": 462947,
+  "totalJavaScriptGzip": 463400,
+  "measuredLargestJavaScriptGzip": 164547,
+  "measuredTotalJavaScriptGzip": 463315,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -7075,6 +7075,22 @@
         "measuredTotalJavaScriptGzip": 462947,
         "largestJavaScriptGzip": 164600,
         "totalJavaScriptGzip": 463000
+      }
+    },
+    {
+      "at": "2026-11-08T04:14:36.562Z",
+      "reason": "preserve open PopupMenu state and keyboard focus across content-key rebuilds (KF-EVZJ11)",
+      "old": {
+        "measuredLargestJavaScriptGzip": 164548,
+        "measuredTotalJavaScriptGzip": 462947,
+        "largestJavaScriptGzip": 164600,
+        "totalJavaScriptGzip": 463000
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 164547,
+        "measuredTotalJavaScriptGzip": 463315,
+        "largestJavaScriptGzip": 164600,
+        "totalJavaScriptGzip": 463400
       }
     }
   ]

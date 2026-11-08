@@ -132,6 +132,7 @@ export function installPopupMenus(doc: Document = document): void {
   installed.add(doc);
   const win = doc.defaultView!;
   const following = new WeakMap<HTMLElement, () => void>();
+  const rebuildWatchers = new WeakMap<HTMLElement, () => void>();
   const pendingClose = new WeakMap<HTMLElement, number>();
   const typeahead = createTypeahead(win);
   // Open root menus, for dismissal by a press outside them.
@@ -181,6 +182,8 @@ export function installPopupMenus(doc: Document = document): void {
   const stopFollowing = (menu: HTMLElement) => {
     following.get(menu)?.();
     following.delete(menu);
+    rebuildWatchers.get(menu)?.();
+    rebuildWatchers.delete(menu);
   };
 
   const placeSubmenu = (item: HTMLElement, submenu: HTMLElement) => {
@@ -213,12 +216,9 @@ export function installPopupMenus(doc: Document = document): void {
 
   const openRoot = (
     root: HTMLElement,
-    {
-      point,
-      placement: pointPlacement,
-      focus,
-    }: PopupMenuOpenDetail & { focus: Focus },
+    detail: PopupMenuOpenDetail & { focus: Focus },
   ) => {
+    const { point, placement: pointPlacement, focus } = detail;
     const opener = rootOpenerOf(root);
     const menu = rootMenuOf(root);
     if (!opener || !menu) return;
@@ -249,6 +249,54 @@ export function installPopupMenus(doc: Document = document): void {
     opener.setAttribute('aria-expanded', 'true');
     follow(menu, anchor, () => positionPopup(anchor, menu, { placement }));
     focusItem(menu, focus);
+    // A document-level open request can only reach an attached root.
+    const parent = root.parentElement!;
+    let focusWithin = menu.contains(doc.activeElement);
+    let focusedItem = doc.activeElement?.closest?.(ITEM) as HTMLElement | null;
+    const onFocus = (event: FocusEvent) => {
+      const target = event.target as Element;
+      focusWithin = menu.contains(target);
+      if (focusWithin) focusedItem = target.closest<HTMLElement>(ITEM);
+    };
+    doc.addEventListener('focusin', onFocus, true);
+    const observer = new win.MutationObserver((records) => {
+      if (root.isConnected) return;
+      const replacements = records.flatMap((record) =>
+        [...record.addedNodes].filter(
+          (node): node is HTMLElement =>
+            node.nodeType === 1 && (node as Element).matches(ROOT),
+        ),
+      );
+      const replacement = replacements.length === 1 ? replacements[0] : null;
+      const identity = focusedItem?.getAttribute('data-action');
+      const label = focusedItem && labelOf(focusedItem);
+      // A detached native popover may already have closed without a toggle.
+      // Clear its owner state even in that case, without returning focus.
+      quiet.add(menu);
+      if (isOpen(menu)) closeMenu(menu, false, true);
+      stopFollowing(menu);
+      openRoots.delete(menu);
+      opener.setAttribute('aria-expanded', 'false');
+      quiet.delete(menu);
+      if (!focusWithin || !replacement) return;
+      openRoot(replacement, { ...detail, focus: 'none' });
+      const next = rootMenuOf(replacement);
+      if (!next || !isOpen(next)) return;
+      const items = levelItems(next);
+      const match =
+        items.find((item) =>
+          identity !== null && identity !== undefined
+            ? item.getAttribute('data-action') === identity
+            : labelOf(item) === label,
+        ) ?? items[0];
+      (match ?? next).focus({ preventScroll: true });
+      if (match) revealInMenu(match, next);
+    });
+    observer.observe(parent, { childList: true });
+    rebuildWatchers.set(menu, () => {
+      observer.disconnect();
+      doc.removeEventListener('focusin', onFocus, true);
+    });
   };
 
   const openSubmenu = (

@@ -178,6 +178,32 @@ test('PopupMenu opens from its toolbar trigger and dispatches the chosen command
   await expect(grouped.getByRole('button', { name: 'Actions' })).toBeFocused();
 });
 
+test('an open PopupMenu keeps its command focus when a content-key rebuild replaces the root', async ({
+  page,
+}) => {
+  await page.goto('/?component=popup-menu');
+  const root = page
+    .locator(
+      '[data-demo="popup-menu"] [data-component="popup-menu"]:not([data-embedded])',
+    )
+    .first();
+  await root.getByRole('button', { name: 'Sort Tickets' }).click();
+  const priority = root.getByRole('menuitem', { name: 'Priority' });
+  await priority.focus();
+  await expect(priority).toBeFocused();
+
+  await root.evaluate((oldRoot) => {
+    const replacement = oldRoot.cloneNode(true) as HTMLElement;
+    replacement.querySelector('[role="menuitem"]')?.remove();
+    replacement
+      .querySelector('.kui-popup-menu__trigger')
+      ?.setAttribute('aria-expanded', 'false');
+    oldRoot.replaceWith(replacement);
+  });
+  await expectOpen(root);
+  await expect(root.getByRole('menuitem', { name: 'Priority' })).toBeFocused();
+});
+
 test('nested checked choices, disabled commands, and context opening work', async ({
   page,
   browserName,

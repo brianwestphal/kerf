@@ -541,7 +541,7 @@ describe('PopupMenu register: keyboard navigation', () => {
     expect(key(document.activeElement!, ' ').defaultPrevented).toBe(false);
   });
 
-  it('keeps an open menu across a same-items re-render and rebuilds it when its items change (KF-XJPZJ3)', async () => {
+  it('keeps an open menu and focused item across a content-key rebuild (KF-EVZJ11)', async () => {
     const items: PopupMenuEntry[] = [
       { label: 'Copy', action: 'copy' },
       { label: 'Cut', action: 'cut' },
@@ -549,17 +549,17 @@ describe('PopupMenu register: keyboard navigation', () => {
     ];
     const { host, trigger, menu, item, root } = setup({ items });
     click(trigger);
-    key(document.activeElement!, 'End');
-    expect(document.activeElement).toBe(item('Paste'));
+    key(document.activeElement!, 'ArrowDown');
+    expect(document.activeElement).toBe(item('Cut'));
     // Same items: the morph skips the menu's children, so the open menu and
     // its focused item survive.
     morph(host, PopupMenu({ text: 'Actions', items } as PopupMenuProps));
     await flush();
     expect(host.firstElementChild).toBe(root);
     expect(isShown(menu)).toBe(true);
-    expect(document.activeElement).toBe(item('Paste'));
-    // Changed items: the content key rebuilds the whole menu (by design), so
-    // the open one goes with its old root and the new one opens and navigates.
+    expect(document.activeElement).toBe(item('Cut'));
+    // Changed items replace the root, while the controller carries its open
+    // state and the focused command to the replacement.
     morph(
       host,
       PopupMenu({
@@ -571,17 +571,145 @@ describe('PopupMenu register: keyboard navigation', () => {
     const rebuilt = host.firstElementChild as HTMLElement;
     expect(rebuilt).not.toBe(root);
     expect(root.isConnected).toBe(false);
-    const nextTrigger = rebuilt.querySelector<HTMLButtonElement>(
-      ':scope > .kui-popup-menu__trigger',
-    )!;
     const nextMenu = rebuilt.querySelector<HTMLElement>(
       ':scope > .kui-popup-menu__menu',
     )!;
-    expect(isShown(nextMenu)).toBe(false);
-    click(nextTrigger);
     expect(isShown(nextMenu)).toBe(true);
-    key(document.activeElement!, 'End');
     expect(document.activeElement?.textContent).toBe('Cut');
+    expect(
+      rebuilt
+        .querySelector('.kui-popup-menu__trigger')
+        ?.getAttribute('aria-expanded'),
+    ).toBe('true');
+  });
+
+  it('focuses the first surviving item when a rebuild removes the focused command', async () => {
+    const items: PopupMenuEntry[] = [
+      { label: 'Copy', action: 'copy' },
+      { label: 'Cut', action: 'cut' },
+    ];
+    const { host, trigger, item } = setup({ items });
+    click(trigger);
+    key(document.activeElement!, 'End');
+    expect(document.activeElement).toBe(item('Cut'));
+    morph(
+      host,
+      PopupMenu({
+        text: 'Actions',
+        items: items.slice(0, 1),
+      } as PopupMenuProps),
+    );
+    await flush();
+    const nextMenu = host.querySelector<HTMLElement>('.kui-popup-menu__menu')!;
+    expect(isShown(nextMenu)).toBe(true);
+    expect(document.activeElement?.textContent).toBe('Copy');
+  });
+
+  it('keeps a context menu open at its rendered anchor across a rebuild', async () => {
+    const items: PopupMenuEntry[] = [{ label: 'Open', action: 'open' }];
+    const props = {
+      context: true,
+      label: 'Row',
+      text: undefined,
+      anchor: { x: 24, y: 35 },
+      items,
+    } as PopupMenuProps;
+    const { host, root } = setup(props);
+    openPopupMenu(root);
+    morph(
+      host,
+      PopupMenu({
+        ...props,
+        items: [...items, { label: 'Rename', action: 'rename' }],
+      }),
+    );
+    await flush();
+    const rebuilt = host.firstElementChild as HTMLElement;
+    const nextMenu = rebuilt.querySelector<HTMLElement>(
+      '.kui-popup-menu__menu',
+    )!;
+    expect(isShown(nextMenu)).toBe(true);
+    expect(document.activeElement?.textContent).toBe('Open');
+    expect(floating.positions.at(-1)?.anchor).toBe(
+      rebuilt.querySelector('.kui-popup-menu__context-anchor'),
+    );
+  });
+
+  it('does not reopen a rebuilt menu after focus has left it or its trigger becomes disabled', async () => {
+    const items: PopupMenuEntry[] = [{ label: 'Copy', action: 'copy' }];
+    const { host, trigger } = setup({ items });
+    const outside = document.createElement('button');
+    document.body.append(outside);
+    click(trigger);
+    outside.focus();
+    morph(
+      host,
+      PopupMenu({
+        text: 'Actions',
+        items: [...items, { label: 'Cut', action: 'cut' }],
+      } as PopupMenuProps),
+    );
+    await flush();
+    expect(isShown(host.querySelector('.kui-popup-menu__menu')!)).toBe(false);
+    expect(document.activeElement).toBe(outside);
+
+    click(host.querySelector('.kui-popup-menu__trigger')!);
+    morph(
+      host,
+      PopupMenu({ text: 'Actions', items, disabled: true } as PopupMenuProps),
+    );
+    await flush();
+    expect(isShown(host.querySelector('.kui-popup-menu__menu')!)).toBe(false);
+  });
+
+  it('matches a label when a direct replacement has no action, and focuses an empty replacement menu', async () => {
+    const items: PopupMenuEntry[] = [{ label: 'Alpha' }];
+    const { host, root, trigger, menu } = setup({ items });
+    click(trigger);
+    host.append(document.createElement('i'));
+    await flush();
+    expect(isShown(menu)).toBe(true);
+
+    const replacement = root.cloneNode(true) as HTMLElement;
+    replacement
+      .querySelector('.kui-popup-menu__menu')
+      ?.insertAdjacentHTML(
+        'beforeend',
+        '<button class="kui-popup-menu__item" role="menuitem"><span class="kui-popup-menu__item-label">Beta</span></button>',
+      );
+    root.replaceWith(replacement);
+    await flush();
+    expect(isShown(replacement.querySelector('.kui-popup-menu__menu')!)).toBe(
+      true,
+    );
+    expect(document.activeElement?.textContent).toBe('Alpha');
+
+    morph(host, PopupMenu({ text: 'Actions', items: [] } as PopupMenuProps));
+    await flush();
+    const empty = host.querySelector<HTMLElement>('.kui-popup-menu__menu')!;
+    expect(isShown(empty)).toBe(true);
+    expect(document.activeElement).toBe(empty);
+  });
+
+  it('cleans up a removed open menu without reopening an unrelated sibling', async () => {
+    const { host, root, trigger, menu } = setup();
+    click(trigger);
+    root.remove();
+    host.append(document.createElement('div'));
+    await flush();
+    expect(floating.stops).toBeGreaterThan(0);
+    expect(isShown(menu)).toBe(false);
+  });
+
+  it('leaves focus in an open submenu when its parent menu mutates', async () => {
+    const { trigger, item, menu, submenu } = setup();
+    click(trigger);
+    click(item('Share'), 0);
+    expect(isShown(submenu!)).toBe(true);
+    const focused = document.activeElement;
+    menu.append(document.createElement('span'));
+    await flush();
+    expect(document.activeElement).toBe(focused);
   });
 
   it('refocuses the menu when only its focused item is removed (KF-XJPZJ3)', async () => {
