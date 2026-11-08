@@ -817,6 +817,7 @@ describe('consumer bundle boundaries', { timeout: 30_000 }, () => {
     expect(pkg.sideEffects).toEqual([
       '**/*.css',
       './dist/browser/*.js',
+      './src/components/actions/popup-menu/register/popup-menu-register.ts',
       './dist/select-register.js',
       './dist/popup-menu-register.js',
       './dist/help-tags-register.js',
