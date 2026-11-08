@@ -364,6 +364,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Fixed
 
+- **Editor undo and redo discard refused Inspector drafts (KF-0Y88XZ).** When history restores the document, an invalid field value is reset alongside its error so the field displays the document's value.
 - **Release pre-flight refuses stale lockfiles offline (KF-F1CPCK).** Before tagging, it checks each lockstep package's manifest against its `package-lock.json` and prints the packages that need an updated lockfile.
 - **`bindList` snapshot render failures recover before later patches (KF-1267Y6).** A row-render throw during `replace()` or another snapshot pass latches a full reconcile for the next valid source notification.
 - **Virtualized `bindList` freezes a rejected duplicate-key source until a valid update (KF-7HV0MF).** Scroll and measurement frames keep the last accepted window and measured-height baseline instead of re-rendering the invalid array.
