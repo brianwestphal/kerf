@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 164600,
-  "totalJavaScriptGzip": 463400,
-  "measuredLargestJavaScriptGzip": 164547,
-  "measuredTotalJavaScriptGzip": 463315,
+  "totalJavaScriptGzip": 463500,
+  "measuredLargestJavaScriptGzip": 164546,
+  "measuredTotalJavaScriptGzip": 463454,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -7091,6 +7091,22 @@
         "measuredTotalJavaScriptGzip": 463315,
         "largestJavaScriptGzip": 164600,
         "totalJavaScriptGzip": 463400
+      }
+    },
+    {
+      "at": "2026-11-08T07:04:47.131Z",
+      "reason": "KF-70DQG4 helper extraction and KF-8G51WR model import preserve behavior while changing demo chunk compression by 135 bytes",
+      "old": {
+        "measuredLargestJavaScriptGzip": 164547,
+        "measuredTotalJavaScriptGzip": 463315,
+        "largestJavaScriptGzip": 164600,
+        "totalJavaScriptGzip": 463400
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 164546,
+        "measuredTotalJavaScriptGzip": 463454,
+        "largestJavaScriptGzip": 164600,
+        "totalJavaScriptGzip": 463500
       }
     }
   ]

@@ -1377,11 +1377,17 @@ describe('wireScrollDividers — overlay Pane headers', () => {
     await settle();
     await new Promise((resolve) => globalThis.requestAnimationFrame(resolve));
     expect(scrollbarInset(pane)).toBe('15px');
+    // A nonstructural change schedules a frame without rebuilding pairings.
+    box.client = 290;
+    content.querySelector('p')!.classList.add('changed');
+    await settle();
+    await new Promise((resolve) => globalThis.requestAnimationFrame(resolve));
+    expect(scrollbarInset(pane)).toBe('10px');
     // A frame with no change leaves it alone.
     content.append(document.createElement('p'));
     await settle();
     await new Promise((resolve) => globalThis.requestAnimationFrame(resolve));
-    expect(scrollbarInset(pane)).toBe('15px');
+    expect(scrollbarInset(pane)).toBe('10px');
     dispose();
   });
 });

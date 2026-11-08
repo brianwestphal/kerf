@@ -321,12 +321,6 @@ function placeCaretAfterToken(editor: HTMLElement, chip: HTMLElement): void {
   editor.focus({ preventScroll: true });
 }
 
-/**
- * Wire every SearchField under `root`: submit on Enter, preserve the caret across
- * controlled token deletion, and (by default) manage the collapsible field's transient
- * expand/collapse/focus. Returns a {@link SearchFieldsHandle} — a disposer that also
- * exposes the managed `expanded` state per field id.
- */
 /** Position suggestion popups and restore live placeholder state after renders. */
 function watchSearchFieldPresentation(
   root: HTMLElement,
@@ -961,6 +955,12 @@ function createCollapseController(
   };
 }
 
+/**
+ * Wire every SearchField under `root`: submit on Enter, preserve the caret across
+ * controlled token deletion, and (by default) manage the collapsible field's transient
+ * expand/collapse/focus. Returns a {@link SearchFieldsHandle} — a disposer that also
+ * exposes the managed `expanded` state per field id.
+ */
 export function wireSearchFields(
   root: HTMLElement,
   {
