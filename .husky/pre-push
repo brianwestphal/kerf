@@ -1,1 +1,5 @@
+if [ "$(uname -s)" = Darwin ]; then
+  exec /bin/zsh -ic 'node scripts/ticket-timing.mjs pre-push "$@" --skip-if-verified -- npm run check' kerf-pre-push "$@"
+fi
+
 node scripts/ticket-timing.mjs pre-push "$@" --skip-if-verified -- npm run check
