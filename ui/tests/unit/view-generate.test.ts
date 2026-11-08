@@ -4,6 +4,7 @@ import { resolve } from 'node:path';
 import { mount, raw } from 'kerfjs';
 import { describe, expect, it, vi } from 'vitest';
 
+import { printDoc } from '../../view/generate.mjs';
 import {
   canonicalJson,
   contractDigest,
@@ -16,7 +17,6 @@ import {
   viewDigest,
   viewModulePath,
 } from '../../view/index.mjs';
-import { printDoc } from '../../view/generate.mjs';
 import {
   inboxContract,
   inboxRefs,
