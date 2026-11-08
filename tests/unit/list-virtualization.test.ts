@@ -65,9 +65,9 @@ describe('bindList() — virtualization', () => {
     const sizer = parent.firstElementChild as HTMLElement;
     const originalRows = Array.from(sizer.children);
 
-    expect(() => items.update(2, () => ({ id: 1, label: 'duplicate' }))).toThrow(
-      'bindList: duplicate key 1 at indices 0 and 2',
-    );
+    expect(() =>
+      items.update(2, () => ({ id: 1, label: 'duplicate' })),
+    ).toThrow('bindList: duplicate key 1 at indices 0 and 2');
     parent.dispatchEvent(new Event('scroll'));
     expect(flushAnimationFrame()).toBe(1);
     expect(Array.from(sizer.children)).toEqual(originalRows);
@@ -106,9 +106,9 @@ describe('bindList() — virtualization', () => {
     parent.dispatchEvent(new Event('scroll'));
     flushAnimationFrame();
 
-    expect(() => items.update(2, () => ({ id: 1, label: 'duplicate' }))).toThrow(
-      'bindList: duplicate key 1 at indices 0 and 2',
-    );
+    expect(() =>
+      items.update(2, () => ({ id: 1, label: 'duplicate' })),
+    ).toThrow('bindList: duplicate key 1 at indices 0 and 2');
     dispose.setHeight(3, 35);
     expect(flushAnimationFrame()).toBe(1);
     expect(parent.scrollTop).toBe(80);

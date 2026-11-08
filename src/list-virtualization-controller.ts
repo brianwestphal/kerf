@@ -351,5 +351,13 @@ export function createListVirtualizationController<T>(
     renderSubscribers.clear();
   };
 
-  return { contentVisibility, render, reject, start, setHeight, onRender, dispose };
+  return {
+    contentVisibility,
+    render,
+    reject,
+    start,
+    setHeight,
+    onRender,
+    dispose,
+  };
 }

@@ -311,7 +311,10 @@ const BUDGETS = [
     // delegate snapshot records its path (+0.03), and both list reconcilers
     // share one bulk row parse and offender diagnosis (parseRows), each() one
     // renderRow helper, and mount() a shorter nested-mount walk.
-    budgetKb: 15.8,
+    // KF-1267Y6 + KF-7HV0MF (+0.06 KB): snapshot recovery after a row-render
+    // throw and frozen virtualized frames after rejected arraySignal keys.
+    // Measured list entry: 15.83 KB min+gzip; retain ~0.07 KB headroom.
+    budgetKb: 15.9,
     description:
       'the bindList subpath (keyed per-row mount + virtualization) — includes shared core',
     entry: `
