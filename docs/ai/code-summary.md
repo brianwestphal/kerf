@@ -1790,7 +1790,7 @@ zone groups, the standard keyed toggle) and the work area's
 `mainToolbar` / `mainBottomToolbar`, moving a closed panel's marked groups
 and toggle into the work area or a corner `FloatingToolbar`
 (`ui/tests/unit/workbench-toolbars.test.tsx`).
-`ui/src/components/layout/workbench/internal/workbench-resize.ts` holds the shared panel
+`ui/src/components/layout/workbench/model/workbench-resize.ts` holds the shared panel
 region-id convention, default limits, and default work-area minimums, and `ui/src/components/layout/resizable-region/internal/resize-grip.tsx` the
 separator grip both handles render (`ui/tests/unit/wire-workbench.test.ts`,
 `ui/tests/unit/workbench.test.tsx`, `ui/tests/browser/workbench-catalog.spec.ts`).
