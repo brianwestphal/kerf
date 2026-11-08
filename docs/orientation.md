@@ -34,7 +34,7 @@ kerf is **signals + DOM-string rendering + a morph diff**. There is no virtual D
 
 ## Conventions
 
-One concern and primary export per file; ESM-only. Mutable module state is limited to `store.ts:REGISTRY`, `each.ts:context`/`renderingRow`, `dev-hooks.ts:devHooks`, and `bindings.ts:context`/`rowSink`/`rowCounter` (see AGENTS.md rule 5; enforced by `npm run check:design-rule-5`). `npm run check` covers lint, types, tests, build, and dist; `check:full` adds Playwright. Coverage: 100% lines/functions, 99.5% statements, 98.5% branches. `KF-NN` tickets are local-only; include a self-contained summary.
+One concern and primary export per file; ESM-only. Mutable module state is limited to `store.ts:REGISTRY`, `each.ts:context`/`renderingRow`, `dev-hooks.ts:devHooks`, and `bindings.ts:context`/`rowSink`/`rowCounter` (see AGENTS.md rule 5; enforced by `npm run check:design-rule-5`). `npm run check` covers lint, types, tests, build, and dist; `check:full` adds Playwright. Coverage: 100% lines, functions, statements, and branches. `KF-NN` tickets are local-only; include a self-contained summary.
 
 ## Deeper reading
 

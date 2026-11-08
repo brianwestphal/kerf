@@ -516,6 +516,7 @@ function morphNode(
     morphElement(fromNode as Element, toNode as Element, ownedItems);
     return;
   }
+  /* c8 ignore next — morphable children are elements, text, or comments. */
   if (fromNode.nodeType === TEXT_NODE || fromNode.nodeType === COMMENT_NODE) {
     const fromText = fromNode as CharacterData;
     const toText = toNode as CharacterData;
@@ -605,6 +606,7 @@ function morphAttributes(fromEl: Element, toEl: Element): void {
     const name = attr.localName;
     const value = attr.value;
     if (ns !== null) {
+      /* c8 ignore next — unchanged namespaced attributes are skipped earlier. */
       if (fromEl.getAttributeNS(ns, name) !== value) {
         fromEl.setAttributeNS(ns, attr.name, value);
       }

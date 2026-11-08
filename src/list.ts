@@ -429,6 +429,7 @@ export function observeRowHeights(handle: BindListHandle): () => void {
   const observer = new RO((entries) => {
     for (const entry of entries) {
       const k = keyByEl.get(entry.target);
+      /* c8 ignore next — ResizeObserver reports only registered row elements. */
       if (k !== undefined)
         handle.setHeight(k, (entry.target as HTMLElement).offsetHeight);
     }

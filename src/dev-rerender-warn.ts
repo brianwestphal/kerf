@@ -61,13 +61,13 @@ export function _isValueOnlyDiff(a: Node, b: Node): boolean {
       if (!_isValueOnlyDiff(x, y)) return false;
     } else if (x.nodeType === COMMENT_NODE) {
       if ((x as Comment).data !== (y as Comment).data) return false;
-    } else if (x.nodeType !== TEXT_NODE) {
+    } else {
       // Defensive: HTML parsing via template.innerHTML only produces
       // element/text/comment children (no CDATA; PIs parse as bogus
       // comments), so this arm is unreachable by construction — kept so an
       // exotic caller-supplied tree bails structural rather than guessing.
-      /* c8 ignore next 2 */
-      return false;
+      /* c8 ignore next — template.innerHTML yields only elements, comments, and text. */
+      if (x.nodeType !== TEXT_NODE) return false;
     }
     // TEXT_NODE: data may differ freely — that's the value change.
   }

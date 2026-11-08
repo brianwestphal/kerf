@@ -124,6 +124,7 @@ export function reconcileGranular(
       i += 1;
       continue;
     }
+    /* c8 ignore next — insert/remove/update returned above; move is the only remaining patch. */
     if (patch.type === 'move') {
       const moved = items[patch.from];
       // Compute the anchor BEFORE we splice, so the index references the

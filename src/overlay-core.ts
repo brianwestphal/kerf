@@ -862,6 +862,7 @@ export function overlay(
       // document's capture phase, so this never fires for that opening click.
       const onDocClick = (event: Event): void => {
         const target = event.target as Node | null;
+        /* c8 ignore next — a document click always has an EventTarget node. */
         if (target === null) return;
         if (wrapper.contains(target)) return;
         if (ignore.some((el) => el === target || el.contains(target))) return;

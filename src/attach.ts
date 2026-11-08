@@ -72,6 +72,7 @@ export function attach(node: Element, setup: AttachSetup): () => void {
   };
 
   const observer = new MutationObserver((records) => {
+    /* c8 ignore next — finish() disconnects this observer when done becomes true. */
     if (done) return;
 
     if (!hasConnected) {
@@ -114,6 +115,7 @@ export function attach(node: Element, setup: AttachSetup): () => void {
 
   const watchForConnection = (): void => {
     connectionFrame = globalThis.requestAnimationFrame(() => {
+      /* c8 ignore next — disposal cancels the frame; an attached node stops this watch. */
       if (done || hasConnected) return;
       if (node.isConnected) {
         hasConnected = true;

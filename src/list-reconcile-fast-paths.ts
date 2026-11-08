@@ -84,6 +84,7 @@ export function tryAttributeOnlyFastPath(
   const oldTag = parseOpeningTag(oldHtml, oldGt);
   const newTag = parseOpeningTag(newHtml, newGt);
   if (oldTag === null || newTag === null) return false;
+  /* c8 ignore next — the equal prefix includes the opening tag name. */
   if (oldTag.tagName !== newTag.tagName) return false;
 
   // Pre-validate: no namespaced attribute names on either side. Setting via
@@ -93,6 +94,7 @@ export function tryAttributeOnlyFastPath(
     if (name.indexOf(':') !== -1) return false;
   }
   for (const name of newTag.attrs.keys()) {
+    /* c8 ignore next — a namespaced new attribute already fails the old-tag preflight. */
     if (name.indexOf(':') !== -1) return false;
   }
 
@@ -166,6 +168,7 @@ export function tryTextContentFastPath(
   // The char just before the equal-prefix boundary must be either '>'
   // (text node starts here) or another text-content char (we're mid-text).
   // '<' / '"' / "'" / '=' / '&' would mean we're inside a tag or entity.
+  /* c8 ignore next — a text-only diff cannot begin before the opening tag. */
   if (p === 0) return false;
   const boundaryCc = oldHtml.charCodeAt(p - 1);
   if (
@@ -185,6 +188,7 @@ export function tryTextContentFastPath(
   const textEnd = oldHtml.indexOf('<', p);
   if (textEnd === -1) return false;
   // The diff window in oldHtml must lie entirely within this text node.
+  /* c8 ignore next — the equal suffix boundary keeps the window inside this text node. */
   if (textEnd < oldWinEnd) return false;
   // newHtml's corresponding `<` position is shifted by the length delta
   // (the diff window is entirely inside this text node, so everything after
@@ -284,6 +288,7 @@ function countTextNodesBefore(html: string, beforePos: number): number {
     } else {
       const start = i;
       while (i < beforePos && html.charCodeAt(i) !== LT) i++;
+      /* c8 ignore next — this branch starts on a non-'<' character and advances. */
       if (i > start) count++;
     }
   }
@@ -302,8 +307,9 @@ function nthTextNodeDescendant(root: Element, n: number): Text | null {
           return;
         }
         count++;
-      } else if (c.nodeType === ELEMENT_NODE) {
-        walk(c);
+      } else {
+        /* c8 ignore next — parsed row descendants here are text or elements. */
+        if (c.nodeType === ELEMENT_NODE) walk(c);
       }
     }
   }
@@ -319,6 +325,7 @@ function nthTextNodeDescendant(root: Element, n: number): Text | null {
  * double-quoted attribute values, so the success path is the common one.
  */
 function parseOpeningTag(html: string, gtPos: number): ParsedTag | null {
+  /* c8 ignore next — callers pass row HTML beginning with an opening tag. */
   if (html.charCodeAt(0) !== LT) return null;
   let i = 1;
   let end = gtPos;

@@ -8,7 +8,7 @@
 
 ## Why this exists
 
-kerf enforces **100% line/function, 99.5% statement, and 98.5% branch coverage** on `src/`
+kerf enforces **100% line, function, statement, and branch coverage** on `src/`
 (`vitest.config.ts`). That is necessary but **not sufficient**, and treating it as
 sufficient shipped two basic, critical bugs back-to-back:
 

@@ -55,64 +55,13 @@ export default defineConfig({
         'src/jsx-types.ts',
       ],
       thresholds: {
-        // Lines and functions stay at 100 and are the load-bearing pair: they
-        // are what catches genuinely unexercised code, and neither moved when
-        // the coverage provider changed.
+        // All four axes are 100% after KF-08XCMP tested seven reachable arms
+        // and KF-STDHB7 annotated eighteen unreachable defensive arms with
+        // local c8 ignore reasons. A new untested path now fails the gate.
         lines: 100,
         functions: 100,
-        // Branches and statements sit below 100 for a small, enumerated set
-        // of defensive arms that cannot be exercised by construction. Seven
-        // reachable arms in attach, bindList, snapshot reconcile, overlay,
-        // and tooltip gained behavioral tests in KF-08XCMP.
-        //
-        // Both numbers moved when vitest 4 replaced `v8-to-istanbul` with
-        // `ast-v8-to-istanbul`. The new provider maps V8's counters onto the
-        // AST instead of onto transpiled line ranges, so it can see that a
-        // `return` sharing a line with its `if` never ran. Coverage did not
-        // get worse — the instrument got sharper, and it now resolves guards
-        // the old line-range mapping silently credited as covered. Same
-        // source, same tests: branches 99.41 -> 98.71, statements 100 -> 99.75.
-        //
-        // The seventeen it newly resolved, all of the same shape, named as
-        // `file › function › guard shape` so the list survives edits (line
-        // numbers drifted within weeks of the switch):
-        //
-        //   mount-list-bindings.ts › bindListsFromMarkers › the
-        //     `parentElement?.` arm on a stale row it just found contained
-        //     (counted twice when the guard lived in mount.ts)
-        //   morph.ts › morphChildren / morphElement › nodeType
-        //     discriminators; morph.ts › morphAttributes › the
-        //     attribute-equality arm
-        //   list-reconcile-fast-paths.ts (seven) › tryAttributeOnlyFastPath,
-        //     tryTextContentFastPath, isPureTextWindow, lastIndexOfChar,
-        //     countTextNodesBefore › short-circuit bails and
-        //     loop-completion branches
-        //   list-reconcile-snapshot.ts › removeOldNodes ›
-        //     `parentElement === liveParent`
-        //   list-reconcile-granular.ts › reconcileGranular › the final
-        //     patch-type discriminator
-        //   each.ts › _hasGranularIndexShift › patch-type `switch`
-        //   dev-rerender-warn.ts › _isValueOnlyDiff › nodeType discriminator
-        //   utils/url-screen.ts › isDangerousDataUrl › `?? ''` after a regex
-        //     that always matches for a `data:` scheme (a TypeScript-only
-        //     guard)
-        //
-        // Each guard was re-read in source on 2026-11-07 when line numbers
-        // gave way to function names; KF-2Q54E4 (reconcile this list with a
-        // fresh coverage run) confirms which arms are still the uncovered ones.
-        //
-        // KF-08XCMP measured 99.32% branches and 99.80% statements on the
-        // 2026-11-08 root coverage run. Set a little under that floor so an
-        // ordinary new defensive guard doesn't fail the build, but far enough above it that a real
-        // gap — an untested function or an unexercised path — still does:
-        // those move these numbers by whole points, not hundredths.
-        //
-        // Raise these back toward 100 by annotating the arms with
-        // `c8 ignore`, which the provider still honors. Do NOT lower them
-        // further to make a build pass; if they need to move, name the
-        // branches that moved them, the way this comment does.
-        branches: 99.1,
-        statements: 99.7,
+        branches: 100,
+        statements: 100,
       },
     },
   },

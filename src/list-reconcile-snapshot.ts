@@ -254,6 +254,7 @@ function buildFreshNodes(
 function removeOldNodes(liveParent: Element, removedItems: BoundItem[]): void {
   for (const item of removedItems) {
     disposeRowBindings(item.bindingDisposers);
+    /* c8 ignore next — removedItems are bound nodes from this live parent. */
     if (item.node.parentElement === liveParent)
       liveParent.removeChild(item.node);
   }

@@ -132,6 +132,7 @@ function schemeOf(normalized: string): string | null {
  * / plain text pass.
  */
 function isDangerousDataUrl(normalized: string, imageSink: boolean): boolean {
+  /* c8 ignore next 2 — a normalized data: URL always matches this prefix regex. */
   const media =
     /^data:([^;,]*)/.exec(normalized.toLowerCase())?.[1].trim() ?? '';
   if (media === '' || media === 'text/plain' || media === 'text/css')

@@ -77,6 +77,7 @@ export function remountOn<K>(
       onMountCleanup();
       onMountCleanup = undefined;
     }
+    /* c8 ignore next — owning a subtree means its mount disposer was installed. */
     if (disposeMount !== undefined) {
       disposeMount();
       disposeMount = undefined;
