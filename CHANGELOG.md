@@ -287,6 +287,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Changed
 
+- **Five long UI functions now have named phases (KF-70DQG4).** Search-field wiring, scroll-divider control, editor play wiring, project analysis, and UI doctor were split into focused helpers without changing their public behavior.
 - **Workbench resize contract moved to its model folder (KF-8G51WR).** The editor and Workbench now import the shared contract without crossing a component's private `internal/` boundary; the source organization check has no allowlisted edge.
 - **The basic site examples follow the Kerf lint rules (KF-4SA1SM).** They use `attr()` selectors and explicit page-lifetime delegates, and site lint now covers all examples.
 - **CI exercises the published Node 18 floor (KF-Q1S54S).** It installs the packed package into a Node 18 consumer, runs the setup dry run, and checks a server render from `dist/`.

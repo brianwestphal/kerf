@@ -719,7 +719,7 @@ function createFocusController(
         placeSearchFieldCaret(target);
       else target.focus();
     };
-    const observer = new MutationObserver(restore);
+    const observer = new (realmOf(root).MutationObserver)(restore);
     observer.observe(root, { childList: true, subtree: true });
     focusing.set(id, stop);
     view().queueMicrotask(restore);
