@@ -36,6 +36,7 @@ editor/pw-local.config.ts
 # Editor build samples, written by editor/tests/browser/demo-builds/*.spec.ts in
 # the editor's own two-space Save format.
 editor/samples/
+editor/pw-documents/
 /ai/
 .pr-notes/
 bench/results.json
