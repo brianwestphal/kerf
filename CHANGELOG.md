@@ -8,6 +8,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Removed
 
+- **`@kerfjs/ui/view` generator internals (KF-V5DPD1).** `printDoc` and `moduleSpecifier` are no longer exported by the public view subpath; repository tests import them from the generator module. The view subpath has only shipped in the 5.0.0 beta line.
 - **Pinned TabBarItem support.** Removed `pinned` and its sticky/backdrop tokens and RTL compensation. Put fixed controls in TabBar's existing `leading`, `trailing`, or `end` zones outside the scrolling tablist. Ordinary tabs retain keyboard navigation, selection reveal, reordering, scroll dividers, and optional whole-tab snapping (`KF-K6GKN3`).
 
 ### Added
