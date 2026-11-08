@@ -14,6 +14,8 @@ playwright-report/
 test-results/
 # Kerf UI editor autosave drafts (gitignored by their own nested .gitignore).
 **/.kerf-ui-editor/
+# Local Playwright configuration is user-owned and not part of the repository gate.
+editor/pw-local.config.ts
 .astro/
 .agents/
 **/.claude/
