@@ -100,7 +100,7 @@ describe('demo-capture configs', () => {
     expect(configNames).toEqual([...apps, ...capturePages].sort());
 
     for (const app of apps) {
-      expect(captureReadme).toContain(`| \`${app}\` |`);
+      expect(captureReadme).toMatch(new RegExp('\\| `' + app + '` +\\|'));
       expect(siteSources).toContain(`/demos/${app}.svg`);
       expect(browserSpec).toContain(`test.describe('${app}'`);
     }
