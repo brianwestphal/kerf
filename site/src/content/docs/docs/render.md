@@ -264,7 +264,7 @@ v.src = card.videoUrl;
 card.appendChild(v);
 ```
 
-On the next render kerf's template still emits just `<article class="card">…</article>` (no `<video>`). Without the attribute, the diff's trailing-removal pass would remove the `<video>` because nothing in the new template matched it. With `data-morph-preserve`, kerf skips it in that pass and the imperatively-added element survives.
+On the next render kerf's template still emits just `<article class="card">…</article>` (no `<video>`). Without the attribute, a full diff removes the `<video>` because nothing in the new template matched it. A text-only `arraySignal.update()` may take a faster path before that full diff; an unmarked injected node whose text happens to match a template text node can receive the text patch instead. Mark injected elements when adding them. With `data-morph-preserve`, kerf skips the node in the fast-path text mapping and the full diff's trailing-removal pass, so it survives without diverting a template update.
 
 Scope is deliberately narrow — it's an **end-of-list-discard opt-out**, nothing more:
 
