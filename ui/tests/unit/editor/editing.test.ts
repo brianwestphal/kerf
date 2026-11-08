@@ -82,6 +82,14 @@ describe('editing the selected node', () => {
     expect(value.querySelector('textarea')).not.toBeNull();
     type(value, 'First line\nSecond line');
     expect(props(PREVIEW)?.value).toBe('First line\nSecond line');
+    // Undo also discards a live textarea draft that was never committed.
+    value.querySelector('textarea')!.value = 'Uncommitted draft';
+    click(root, 'editor-undo');
+    expect(
+      field(root, '[data-editor-prop="value"]').querySelector('textarea')!
+        .value,
+    ).toBe('One line');
+    click(root, 'editor-redo');
     // An optional one keeps its Not set toggle, at the field's top end.
     editor.selection.value = { kind: 'node', id: EMPTY };
     const detail = field(root, '[data-editor-prop="detail"]');
