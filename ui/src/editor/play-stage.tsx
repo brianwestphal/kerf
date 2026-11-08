@@ -22,6 +22,7 @@ import { Select } from '../components/forms/select/select.js';
 import { TextField } from '../components/forms/text-field/text-field.js';
 import { LucideIcon } from '../components/media/lucide-icon/lucide-icon.js';
 import { Text } from '../components/typography/text/text.js';
+import { realmOf } from '../shared/dom/realm.js';
 import { HOOK, hook } from './dom-hooks.js';
 import {
   type ActionLogEntry,
@@ -548,7 +549,7 @@ export function createPlayStage({ presets, doneAction }: PlayStageOptions) {
         onEnvironment();
       }
     });
-    const observer = new ResizeObserver(apply);
+    const observer = new (realmOf(stageEl).ResizeObserver)(apply);
     observer.observe(stageEl);
 
     /** A handle drag: the pointer's travel, unscaled, resizes the viewport. */

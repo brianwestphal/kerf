@@ -1,3 +1,5 @@
+import { realmOf } from '../../../../shared/dom/realm.js';
+
 const CARD = '[data-component="content-item"][data-media-state]';
 const LEAD = '.kui-content-item__media .kui-backdrop-image__media';
 const BLURRED = '.kui-content-item__media .kui-backdrop-image__blurred';
@@ -67,7 +69,7 @@ export function wireContentItemMedia(root: HTMLElement): () => void {
   };
   // Morph can restore template attributes without changing an image node or
   // firing a second load/error event. Reconcile its writes against native state.
-  const observer = new MutationObserver((records) => {
+  const observer = new (realmOf(root).MutationObserver)((records) => {
     if (records.some((record) => record.type === 'childList')) {
       all();
       return;

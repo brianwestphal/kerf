@@ -137,6 +137,30 @@ export default [
     },
   },
   {
+    files: ['src/**/*.ts', 'src/**/*.tsx'],
+    rules: {
+      'no-restricted-syntax': [
+        'error',
+        {
+          selector:
+            'NewExpression[callee.name=/^(MutationObserver|ResizeObserver|IntersectionObserver)$/]',
+          message:
+            'Construct observers from realmOf(node), not the global realm.',
+        },
+        {
+          selector:
+            'CallExpression[callee.name=/^(setTimeout|clearTimeout|requestAnimationFrame|cancelAnimationFrame)$/]',
+          message: 'Schedule timers on the window that owns the wired node.',
+        },
+        {
+          selector:
+            'CallExpression[callee.object.name=/^(window|globalThis)$/][callee.property.name=/^(setTimeout|clearTimeout|requestAnimationFrame|cancelAnimationFrame)$/]',
+          message: 'Schedule timers on realmOf(node), not the global window.',
+        },
+      ],
+    },
+  },
+  {
     ignores: ['dist/**', 'dist-demo/**', 'node_modules/**', 'test-results/**'],
   },
 ];

@@ -1,5 +1,7 @@
 import { delegate } from 'kerfjs';
 
+import { realmOf } from '../../../../shared/dom/realm.js';
+
 /** On an overlay-bar TabNavigator: the wiring has measured its live bar. */
 const BAR_OVERLAY = 'data-bar-overlay';
 /** The measured bar's border-box block size, published on the root. */
@@ -149,14 +151,14 @@ function wireBarOverlay(section: HTMLElement): () => void {
     }
     publish();
   };
-  const mutationObserver = new MutationObserver(sync);
+  const mutationObserver = new (realmOf(section).MutationObserver)(sync);
   mutationObserver.observe(section, {
     childList: true,
     attributes: true,
     attributeFilter: ['data-bar-presentation', BAR_OVERLAY, 'style'],
   });
   // Scene switches and nested stack transitions below the root.
-  const sceneObserver = new MutationObserver(sync);
+  const sceneObserver = new (realmOf(section).MutationObserver)(sync);
   const scenes = section.querySelector(':scope > .kui-tab-scaffold__scenes');
   if (scenes)
     sceneObserver.observe(scenes, {

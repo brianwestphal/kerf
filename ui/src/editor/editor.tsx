@@ -113,6 +113,7 @@ import {
   wirePinnablePopover,
 } from '../components/surfaces/surface-scaffold/surface-scaffold.js';
 import { Text } from '../components/typography/text/text.js';
+import { realmOf } from '../shared/dom/realm.js';
 import { isApplePlatform } from '../shared/selection/selection.js';
 import { px } from '../shared/styles/css-values.js';
 import {
@@ -849,7 +850,10 @@ export function createEditor(options: EditorOptions) {
   // document stays the only state and undo/redo restores whole documents.
   const history = new History();
   const historyVersion = signal(0);
-  const autosave = options.storage && createAutosave(options.storage);
+  let wired: HTMLElement | undefined;
+  const autosave =
+    options.storage &&
+    createAutosave(options.storage, 400, () => realmOf(wired ?? document));
   const documentArea = signal<DocumentArea>('outline');
   const inspectorArea = signal<InspectorArea>('properties');
   const saveAsError = signal('');
@@ -3178,7 +3182,7 @@ export function createEditor(options: EditorOptions) {
   const springTabs = (): CanvasDropSurface => {
     let pending: { tab: string; timer: number } | undefined;
     const clear = () => {
-      if (pending) window.clearTimeout(pending.timer);
+      if (pending) realmOf(wired!).clearTimeout(pending.timer);
       pending = undefined;
     };
     return {
@@ -3192,7 +3196,7 @@ export function createEditor(options: EditorOptions) {
         if (tab && tab !== documentArea.value)
           pending = {
             tab,
-            timer: window.setTimeout(() => {
+            timer: realmOf(wired!).setTimeout(() => {
               documentArea.value = tab;
               pending = undefined;
             }, SPRING_MS),
@@ -3419,7 +3423,7 @@ export function createEditor(options: EditorOptions) {
     dropChoices.value = choices;
     library.asked = true;
     // The menu renders its new entries first.
-    window.requestAnimationFrame(() =>
+    realmOf(root).requestAnimationFrame(() =>
       openPopupMenuAt(
         root.querySelector<HTMLElement>(`[${DROP_MENU}]`)!,
         point.x,
@@ -5709,7 +5713,7 @@ export function createEditor(options: EditorOptions) {
     inspectorArea.value = 'properties';
     // The new node's form opens at its top; take keyboard focus there too,
     // so it does not stay on the Add button at the bottom of the old form.
-    window.requestAnimationFrame(() =>
+    realmOf(wired!).requestAnimationFrame(() =>
       wired
         ?.querySelector<HTMLInputElement>('[data-editor-name] input')
         ?.focus(),
@@ -5955,7 +5959,6 @@ export function createEditor(options: EditorOptions) {
   };
 
   /** The element the editor is wired to, for focus after an edit. */
-  let wired: HTMLElement | undefined;
 
   /**
    * Reopens the last document this browser had open, then saves every change
@@ -7231,7 +7234,7 @@ export function createEditor(options: EditorOptions) {
       // KF-WKABP2: a replacing drop of authored content asks first.
       effect(() => {
         if (!pendingReplace.value) return;
-        window.requestAnimationFrame(() => {
+        realmOf(root).requestAnimationFrame(() => {
           const dialog = root.querySelector<HTMLDialogElement>(
             `#${REPLACE_DIALOG}`,
           )!;
@@ -7352,7 +7355,7 @@ export function createEditor(options: EditorOptions) {
       effect(() => {
         void selection.value;
         void doc.value;
-        window.requestAnimationFrame(() => placeHighlight(root));
+        realmOf(root).requestAnimationFrame(() => placeHighlight(root));
       }),
       // KF-JWD51N: a different selection opens the Inspector at its top; an
       // edit to the same node keeps the place the author was working at.
@@ -7362,13 +7365,15 @@ export function createEditor(options: EditorOptions) {
           const key = selectionKey(selection.value);
           if (key === shown) return;
           shown = key;
-          window.requestAnimationFrame(() => resetInspectorScroll(root));
+          realmOf(root).requestAnimationFrame(() => resetInspectorScroll(root));
         });
       })(),
     ];
     if (autosave) stops.push(...wireAutosave(root));
     stops.push(wirePlay(root), wireLibrary(root));
-    const observer = new ResizeObserver(() => placeHighlight(root));
+    const observer = new (realmOf(root).ResizeObserver)(() =>
+      placeHighlight(root),
+    );
     observer.observe(root.querySelector(hook(HOOK.canvas))!);
     return () => {
       observer.disconnect();

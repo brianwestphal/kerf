@@ -1,5 +1,7 @@
 import { delegate } from 'kerfjs';
 
+import { realmOf } from '../../../../shared/dom/realm.js';
+
 export interface WireNavStackOptions {
   /** Invoked when the back control is activated. The app pops its own stack. */
   onBack?: () => void;
@@ -422,7 +424,7 @@ export function wireNavStack(
     }
     publishOverlay();
   };
-  const overlayObserver = new MutationObserver(syncOverlay);
+  const overlayObserver = new (realmOf(section).MutationObserver)(syncOverlay);
   overlayObserver.observe(section, {
     childList: true,
     attributes: true,
@@ -486,7 +488,7 @@ export function wireNavStack(
     });
   };
 
-  const observer = new MutationObserver((records) => {
+  const observer = new (realmOf(root).MutationObserver)((records) => {
     const removed: HTMLElement[] = [];
     for (const record of records) {
       if (record.target !== viewport) continue;

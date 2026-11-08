@@ -1,5 +1,6 @@
 import { delegate } from 'kerfjs';
 
+import { realmOf } from '../../../../shared/dom/realm.js';
 import {
   clampRegionSize,
   type ResizableRegionAxis,
@@ -216,6 +217,7 @@ export function wireResizeHandles(
   regionSelector: string,
   limit?: ResizeLimit,
 ) {
+  const view = realmOf(root);
   const REGION_SELECTOR = regionSelector;
   let stopPointer: (() => void) | undefined;
   // The handle announces its visible maximum in aria-valuemax, which hides the
@@ -347,8 +349,8 @@ export function wireResizeHandles(
   // microtask, never per frame.
   const observed = new Set<Element>();
   const resizeObserver =
-    typeof ResizeObserver === 'function'
-      ? new ResizeObserver((entries) => {
+    typeof view.ResizeObserver === 'function'
+      ? new view.ResizeObserver((entries) => {
           const regions = new Set<HTMLElement>();
           for (const { target } of entries) {
             if (target.matches(REGION_SELECTOR))
@@ -382,7 +384,7 @@ export function wireResizeHandles(
       }
   }
 
-  const mutationObserver = new MutationObserver((records) => {
+  const mutationObserver = new view.MutationObserver((records) => {
     const regions = new Set<HTMLElement>();
     let structural = false;
     for (const record of records) {

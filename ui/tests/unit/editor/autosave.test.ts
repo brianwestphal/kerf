@@ -38,6 +38,33 @@ beforeEach(() => vi.useFakeTimers());
 afterEach(() => vi.useRealTimers());
 
 describe('createAutosave', () => {
+  it('schedules and cancels on the same owning window when the editor view changes', async () => {
+    const { files, storage } = memory();
+    const first = {
+      setTimeout: vi.fn((run: () => void, ms: number) =>
+        window.setTimeout(run, ms),
+      ),
+      clearTimeout: vi.fn((id: number) => window.clearTimeout(id)),
+    };
+    const second = {
+      setTimeout: vi.fn((run: () => void, ms: number) =>
+        window.setTimeout(run, ms),
+      ),
+      clearTimeout: vi.fn((id: number) => window.clearTimeout(id)),
+    };
+    let owner = first;
+    const saver = createAutosave(storage, 400, () => owner);
+    saver.adopt('a.kui.json', 'one');
+    saver.change('two');
+    owner = second;
+    saver.change('three');
+    expect(first.clearTimeout).toHaveBeenCalledOnce();
+    expect(second.setTimeout).toHaveBeenCalledOnce();
+    await vi.advanceTimersByTimeAsync(400);
+    expect(files.get('a.kui.json')).toBe('three');
+    saver.dispose();
+  });
+
   it('saves a change after the pause, once, and only when it differs', async () => {
     const { files, storage } = memory();
     const saver = createAutosave(storage, 400);

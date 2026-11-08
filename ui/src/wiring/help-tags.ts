@@ -28,6 +28,7 @@
 // `title`, or a Web Awesome tooltip `for` it, keeps that and gets no second
 // tag.
 
+import { realmOf } from '../shared/dom/realm.js';
 import { followAnchor, positionPopup } from '../shared/popup/position-popup.js';
 
 /** Hover delay before a help tag appears. */
@@ -233,6 +234,7 @@ export function installHelpTags(
   if (installed.has(doc)) return;
   installed.add(doc);
   adoptStyles(doc);
+  const view = realmOf(doc);
   let hovered: HelpTagHost | null = null;
   let focused: HelpTagHost | null = null;
   // The trigger whose tag is open, and how to stop following it.
@@ -289,7 +291,7 @@ export function installHelpTags(
   };
 
   const show = (host: HelpTagHost) => {
-    window.clearTimeout(timer);
+    view.clearTimeout(timer);
     timer = undefined;
     if (popupOpen(host) || dismissed === host || !host.isConnected) return;
     const anchor = anchorOf(host);
@@ -300,7 +302,7 @@ export function installHelpTags(
     layerRoot().append(current);
     // The tag takes its trigger's light or dark scheme, which a subtree
     // theme (`.wa-dark`) may set below the document root.
-    current.style.colorScheme = window.getComputedStyle(anchor).colorScheme;
+    current.style.colorScheme = view.getComputedStyle(anchor).colorScheme;
     current.textContent = text;
     // Without the Popover API (a test DOM), the fixed tag still shows, just
     // outside the top layer.
@@ -331,7 +333,7 @@ export function installHelpTags(
   // the pointer or keyboard focus is still on its trigger.
   const leave = (host: HelpTagHost) => {
     if (hovered !== host) {
-      window.clearTimeout(timer);
+      view.clearTimeout(timer);
       timer = undefined;
     }
     if (hovered !== host && focused !== host) hide(host);
@@ -362,9 +364,9 @@ export function installHelpTags(
         shown?.host === host
       )
         return;
-      window.clearTimeout(timer);
+      view.clearTimeout(timer);
       if (Date.now() < warmUntil) show(host);
-      else timer = window.setTimeout(() => show(host), HELP_TAG_SHOW_DELAY);
+      else timer = view.setTimeout(() => show(host), HELP_TAG_SHOW_DELAY);
     },
     true,
   );

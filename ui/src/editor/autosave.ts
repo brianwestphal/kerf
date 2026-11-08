@@ -91,7 +91,11 @@ export interface Autosave {
 }
 
 /** Saves the document's text to `storage`, `delay` ms after it changes. */
-export function createAutosave(storage: EditorStorage, delay = 400): Autosave {
+export function createAutosave(
+  storage: EditorStorage,
+  delay = 400,
+  viewOf: () => Pick<Window, 'setTimeout' | 'clearTimeout'> = () => window,
+): Autosave {
   const path = signal('');
   const status = signal<SaveStatus>('saved');
   const error = signal('');
@@ -100,7 +104,8 @@ export function createAutosave(storage: EditorStorage, delay = 400): Autosave {
   let queued: string | undefined;
   let pending: string | undefined;
   let active = 0;
-  let timer: ReturnType<typeof globalThis.setTimeout> | undefined;
+  let timer: number | undefined;
+  let timerView: Pick<Window, 'setTimeout' | 'clearTimeout'> | undefined;
   let writing = Promise.resolve();
 
   const settle = () => {
@@ -129,8 +134,9 @@ export function createAutosave(storage: EditorStorage, delay = 400): Autosave {
     return writing;
   };
   const cancel = () => {
-    globalThis.clearTimeout(timer);
+    if (timer !== undefined) timerView!.clearTimeout(timer);
     timer = undefined;
+    timerView = undefined;
   };
   const flush = () => {
     cancel();
@@ -161,7 +167,8 @@ export function createAutosave(storage: EditorStorage, delay = 400): Autosave {
       pending = text;
       status.value = 'saving';
       cancel();
-      timer = globalThis.setTimeout(() => void flush(), delay);
+      timerView = viewOf();
+      timer = timerView.setTimeout(() => void flush(), delay);
     },
     create(next, text) {
       cancel();

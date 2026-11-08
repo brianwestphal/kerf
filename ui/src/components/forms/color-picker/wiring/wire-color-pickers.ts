@@ -1,3 +1,4 @@
+import { realmOf } from '../../../../shared/dom/realm.js';
 import {
   COLOR_PICKER_CHANNELS,
   COLOR_PICKER_SWATCH_ACTION,
@@ -479,7 +480,7 @@ export function wireColorPickers(
     state.value = value;
     paint(picker);
   };
-  const observer = new MutationObserver((records) => {
+  const observer = new (realmOf(root).MutationObserver)((records) => {
     revealSamplers();
     for (const record of records) {
       if (record.type !== 'attributes') continue;

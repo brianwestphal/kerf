@@ -4,6 +4,8 @@
 // `page`, and this wiring scrolls the viewport to whatever page it renders.
 import { delegate } from 'kerfjs';
 
+import { realmOf } from '../../../../shared/dom/realm.js';
+
 const VIEW = '[data-component="paged-view"]';
 const VIEWPORT = 'kui-paged-view__viewport';
 const DOT = `${VIEW} > .kui-paged-view__dots > .kui-paged-view__dot`;
@@ -220,7 +222,7 @@ export function wirePagedViews(
     if (viewport) resizes?.observe(viewport);
   };
 
-  const observer = new MutationObserver((records) => {
+  const observer = new (realmOf(root).MutationObserver)((records) => {
     for (const record of records) {
       if (record.type === 'attributes') {
         const view = record.target as HTMLElement;

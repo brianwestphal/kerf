@@ -72,6 +72,26 @@ describe('wireCornerStatus', () => {
     };
   }
 
+  it('constructs the observer from the wired document realm', async () => {
+    const foreign = document.implementation.createHTMLDocument('foreign');
+    const constructed = vi.fn();
+    class OwningObserver extends MutationObserver {
+      constructor(callback: MutationCallback) {
+        super(callback);
+        constructed();
+      }
+    }
+    Object.defineProperty(foreign, 'defaultView', {
+      configurable: true,
+      value: { MutationObserver: OwningObserver },
+    });
+    const dispose = wireCornerStatus(foreign);
+    expect(constructed).toHaveBeenCalledOnce();
+    foreign.body.append(foreign.createElement('div'));
+    await Promise.resolve();
+    dispose();
+  });
+
   it('opens existing and inserted overlay hosts once, and stops after disposal', async () => {
     const { show, restore } = stubPopover();
     try {

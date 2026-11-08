@@ -1,3 +1,4 @@
+import { realmOf } from '../../../../shared/dom/realm.js';
 import {
   followAnchor,
   positionPopup,
@@ -267,7 +268,7 @@ export function wireComboboxes(
   };
   // A render that changes the focused field's Combobox (new suggestions, or
   // the rendered closed state written back) restores the open list.
-  const observer = new MutationObserver((records) => {
+  const observer = new (realmOf(root).MutationObserver)((records) => {
     // A Document's ownerDocument is null; an element's is its document.
     const focused = (root.ownerDocument ?? (root as Document)).activeElement;
     if (!(focused instanceof HTMLInputElement) || !focused.matches(INPUT))

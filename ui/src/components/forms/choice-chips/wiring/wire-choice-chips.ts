@@ -1,3 +1,4 @@
+import { realmOf } from '../../../../shared/dom/realm.js';
 import {
   applySelection,
   isApplePlatform,
@@ -47,7 +48,7 @@ function revealChecked(group: HTMLElement): void {
  */
 function wireScrollingGroups(root: HTMLElement | Document): () => void {
   const shown = new WeakMap<Element, string>();
-  const view = (root.ownerDocument ?? (root as Document)).defaultView!;
+  const view = realmOf(root);
   let frame: number | undefined;
   const scan = () => {
     frame = undefined;
@@ -63,7 +64,7 @@ function wireScrollingGroups(root: HTMLElement | Document): () => void {
   const pass = () => {
     frame ??= view.requestAnimationFrame(scan);
   };
-  const observer = new MutationObserver(pass);
+  const observer = new view.MutationObserver(pass);
   observer.observe(root, {
     subtree: true,
     childList: true,

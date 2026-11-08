@@ -6,6 +6,7 @@
 
 import { effect, type Signal } from 'kerfjs';
 
+import { realmOf } from '../../../../shared/dom/realm.js';
 import type { WorkbenchPanelKey } from './workbench-resize.js';
 
 /** A Workbench panel whose app-owned `collapsed` signal the wiring may write. */
@@ -94,6 +95,7 @@ export function wireWorkbenchOverlays(
   exclusive = false,
 ): () => void {
   const ownerDocument = root.ownerDocument;
+  const view = realmOf(root);
   const disposers: Array<() => void> = [];
   // Open panels, most recently opened last, and each one's opener: the
   // control that had focus when it opened.
@@ -368,7 +370,7 @@ export function wireWorkbenchOverlays(
     for (const node of nodes) if (isPanel(node)) return true;
     return false;
   };
-  const mutationObserver = new MutationObserver((records) => {
+  const mutationObserver = new view.MutationObserver((records) => {
     let relevant = track();
     for (const record of records) {
       if (record.type === 'attributes') {
@@ -470,7 +472,7 @@ export function wireWorkbenchOverlays(
             if (panel.collapsed.peek()) return;
             if (toggle.isConnected) {
               if (toggle === focused && frames > 0)
-                globalThis.requestAnimationFrame(() => handOff(frames - 1));
+                view.requestAnimationFrame(() => handOff(frames - 1));
               return;
             }
             if (focused !== null && focused !== ownerDocument.body) return;
@@ -514,12 +516,11 @@ export function wireWorkbenchOverlays(
             return;
           focusables(current)[0]?.focus({ preventScroll: true });
           if (current.contains(ownerDocument.activeElement)) return;
-          if (frames > 0)
-            globalThis.requestAnimationFrame(() => focusIn(frames - 1));
+          if (frames > 0) view.requestAnimationFrame(() => focusIn(frames - 1));
           else current.focus({ preventScroll: true });
         };
         if (!element.contains(ownerDocument.activeElement))
-          globalThis.requestAnimationFrame(() => focusIn(8));
+          view.requestAnimationFrame(() => focusIn(8));
       }),
     );
   }
@@ -629,8 +630,8 @@ export function wireWorkbenchOverlays(
     activated = control;
     // The collapse effect may run after the click's dispatch (the app can
     // batch its write), so keep the control for a couple of frames.
-    globalThis.requestAnimationFrame(() =>
-      globalThis.requestAnimationFrame(() => {
+    view.requestAnimationFrame(() =>
+      view.requestAnimationFrame(() => {
         if (activated === control) activated = undefined;
       }),
     );

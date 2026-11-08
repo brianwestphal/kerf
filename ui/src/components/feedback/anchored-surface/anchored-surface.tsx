@@ -1,6 +1,8 @@
 import type { OverlayContent, OverlayHandle } from 'kerfjs/overlay';
 import { popover, type PopoverOptions } from 'kerfjs/overlay';
 
+import { realmOf } from '../../../shared/dom/realm.js';
+
 /** App-facing options for a non-modal, arbitrary-content help surface. */
 export interface AnchoredSurfaceOptions extends Pick<
   PopoverOptions,
@@ -51,11 +53,12 @@ export type AnchoredSurfaceTone = 'default' | 'dark';
 // The color scheme `light-dark()` resolves to at `element`: an explicit single
 // scheme wins; `light dark` follows the user's preference, like the browser.
 function usedColorScheme(element: Element): 'light' | 'dark' {
-  const keywords = window.getComputedStyle(element).colorScheme.split(/\s+/);
+  const view = realmOf(element);
+  const keywords = view.getComputedStyle(element).colorScheme.split(/\s+/);
   const light = keywords.includes('light');
   const dark = keywords.includes('dark');
   if (light && dark)
-    return window.matchMedia('(prefers-color-scheme: dark)').matches
+    return view.matchMedia('(prefers-color-scheme: dark)').matches
       ? 'dark'
       : 'light';
   return dark ? 'dark' : 'light';
@@ -96,9 +99,10 @@ function followScheme(
     );
     current = next;
   };
-  const media = window.matchMedia('(prefers-color-scheme: dark)');
+  const view = realmOf(source);
+  const media = view.matchMedia('(prefers-color-scheme: dark)');
   media.addEventListener?.('change', sync);
-  const observer = new MutationObserver(sync);
+  const observer = new view.MutationObserver(sync);
   for (let node: Element | null = source; node; node = composedParent(node))
     observer.observe(node, { attributes: true });
   void closed.then(() => {

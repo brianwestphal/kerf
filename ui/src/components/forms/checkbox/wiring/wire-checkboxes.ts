@@ -1,3 +1,5 @@
+import { realmOf } from '../../../../shared/dom/realm.js';
+
 type Root = HTMLElement | Document;
 
 const MIXED = 'input[type="checkbox"][data-indeterminate]';
@@ -15,7 +17,7 @@ function sync(input: HTMLInputElement) {
 export function wireCheckboxes(root: Root): () => void {
   for (const input of root.querySelectorAll<HTMLInputElement>(MIXED))
     sync(input);
-  const observer = new MutationObserver((records) => {
+  const observer = new (realmOf(root).MutationObserver)((records) => {
     for (const record of records) {
       if (record.type === 'attributes') {
         const target = record.target as Element;

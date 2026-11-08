@@ -1,5 +1,6 @@
 import { delegate, effect, type ReadonlySignal, type Signal } from 'kerfjs';
 
+import { realmOf } from '../../../../shared/dom/realm.js';
 import type { DeviceClass } from '../../../../shared/environment/device-class.js';
 
 /** Minimal `localStorage`-shaped store, so the persistence hook is testable. */
@@ -229,7 +230,7 @@ export function wireSidebar(
           const retry = (frames: number): void => {
             if (!panel.collapsed.peek() || restoreFocus(panel) || frames === 0)
               return;
-            globalThis.requestAnimationFrame(() => retry(frames - 1));
+            realmOf(root).requestAnimationFrame(() => retry(frames - 1));
           };
           globalThis.queueMicrotask(() => retry(3));
         }
@@ -314,7 +315,7 @@ export function wireSidebar(
         syncHost();
       }),
     );
-    const observer = new MutationObserver(syncHost);
+    const observer = new (realmOf(root).MutationObserver)(syncHost);
     observer.observe(root, {
       attributes: true,
       attributeFilter: [

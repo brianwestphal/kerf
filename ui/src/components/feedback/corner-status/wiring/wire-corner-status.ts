@@ -1,3 +1,5 @@
+import { realmOf } from '../../../../shared/dom/realm.js';
+
 type Root = HTMLElement | Document;
 
 const HOST = '[data-component="corner-status"][popover]';
@@ -28,7 +30,7 @@ function openWithin(node: Node) {
  */
 export function wireCornerStatus(root: Root): () => void {
   openWithin(root.nodeType === 9 ? (root as Document).documentElement : root);
-  const observer = new MutationObserver((records) => {
+  const observer = new (realmOf(root).MutationObserver)((records) => {
     for (const record of records)
       for (const node of record.addedNodes) openWithin(node);
   });
