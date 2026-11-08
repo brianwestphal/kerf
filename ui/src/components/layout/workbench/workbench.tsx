@@ -22,13 +22,6 @@ import {
   type ResizableRegionSeparator,
 } from '../resizable-region/resizable-region.js';
 import {
-  WORKBENCH_MAIN_MIN_HEIGHT,
-  WORKBENCH_MAIN_MIN_SIZE,
-  WORKBENCH_RESIZE_DEFAULTS,
-  type WorkbenchPanelKey,
-  workbenchRegionId,
-} from './model/workbench-resize.js';
-import {
   floatingRestore,
   mainBody,
   panelBody,
@@ -38,6 +31,13 @@ import {
   type WorkbenchPanelBottomToolbar,
   type WorkbenchPanelToolbar,
 } from './internal/workbench-toolbars.js';
+import {
+  WORKBENCH_MAIN_MIN_HEIGHT,
+  WORKBENCH_MAIN_MIN_SIZE,
+  WORKBENCH_RESIZE_DEFAULTS,
+  type WorkbenchPanelKey,
+  workbenchRegionId,
+} from './model/workbench-resize.js';
 
 export type {
   WorkbenchChromePlacement,
