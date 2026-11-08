@@ -52,6 +52,7 @@ beforeAll(() => {
     'create-kerf-component/package.json',
     'create-kerf-component/index.js',
     'create-kerf-component/catalog.js',
+    'create-kerf-component/catalog',
     'create-kerf-component/component-metadata.schema.json',
     'create-kerf-component/component-composition.schema.json',
     'create-kerf-component/component-catalog-extension.schema.json',
@@ -181,6 +182,9 @@ describe(
       expect(template.devDependencies.kerfjs).toBe(`^${betaVersion}`);
       expect(template.devDependencies['@kerfjs/ui']).toBe(`^${betaVersion}`);
       expect(packedText(createTarball, 'catalog.js')).toContain(
+        'runCatalogCommand',
+      );
+      expect(packedText(createTarball, 'catalog/generate.js')).toContain(
         'runCatalogCommand',
       );
       expect(
