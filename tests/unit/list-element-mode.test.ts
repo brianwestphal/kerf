@@ -191,6 +191,37 @@ describe('bindList() — element mode (render returns the row element)', () => {
     dispose();
   });
 
+  it('element mode calls update for a same-reference arraySignal mutation', () => {
+    const parent = host();
+    const items = arraySignal([{ id: 1, v: 'old' }]);
+    const updates: string[] = [];
+    const dispose = bindList(parent, items, {
+      key: (item) => item.id,
+      render: (item) => {
+        const el = document.createElement('div');
+        el.textContent = item.v;
+        return {
+          el,
+          update: (next: typeof item) => {
+            updates.push(next.v);
+            el.textContent = next.v;
+          },
+        };
+      },
+    });
+    const row = parent.firstElementChild;
+
+    items.update(0, (item) => {
+      item.v = 'new';
+      return item;
+    });
+
+    expect(updates).toEqual(['new']);
+    expect(parent.firstElementChild).toBe(row);
+    expect(parent.textContent).toBe('new');
+    dispose();
+  });
+
   it('element mode: a granular update that CHANGES the key re-keys the row map (reuse survives a later snapshot)', () => {
     const parent = host();
     const disposed: number[] = [];

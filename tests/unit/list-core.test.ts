@@ -304,6 +304,32 @@ describe('bindList() — arraySignal granular patch path (KF-478)', () => {
     dispose();
   });
 
+  it('a same-reference arraySignal update refreshes content in every bindList consumer', () => {
+    const first = host();
+    const second = host();
+    const items = arraySignal([{ id: 1, label: 'old' }]);
+    const options = {
+      key: (item: Item) => item.id,
+      render: (item: Item) => item.label,
+    };
+    const stopFirst = bindList(first, items, options);
+    const stopSecond = bindList(second, items, options);
+    const firstRow = first.firstElementChild;
+    const secondRow = second.firstElementChild;
+
+    items.update(0, (item) => {
+      item.label = 'new';
+      return item;
+    });
+
+    expect(texts(first)).toEqual(['new']);
+    expect(texts(second)).toEqual(['new']);
+    expect(first.firstElementChild).toBe(firstRow);
+    expect(second.firstElementChild).toBe(secondRow);
+    stopFirst();
+    stopSecond();
+  });
+
   it('a replace() patch falls back to the keyed diff (snapshot)', () => {
     const parent = host();
     const items = arraySignal<Item>([

@@ -1,4 +1,5 @@
 import type { ArrayPatch } from './array-signal.js';
+import { itemVersion } from './item-version.js';
 import type { BindListOptions, ListKey, RowElement } from './list.js';
 import { captureFocus, restoreFocus } from './list-reconcile-focus.js';
 import { mount, type MountResult } from './mount.js';
@@ -7,6 +8,7 @@ import { moveNode } from './utils/moveNode.js';
 interface ListRow<T> {
   el: HTMLElement;
   item: T;
+  version: number;
   dispose: () => void;
   elementMode: boolean;
   update?: (item: T) => void;
@@ -64,11 +66,13 @@ export function createListRowController<T>(
   };
 
   const makeRow = (item: T): ListRow<T> => {
+    const version = itemVersion(item as object);
     const elementRow = asElementRow(render(item));
     if (elementRow !== null) {
       return {
         el: elementRow.el,
         item,
+        version,
         dispose: elementRow.dispose,
         elementMode: true,
         update: elementRow.update,
@@ -76,23 +80,31 @@ export function createListRowController<T>(
     }
     const el = document.createElement(tag);
     const dispose = mount(el, () => render(item) as MountResult);
-    return { el, item, dispose, elementMode: false };
+    return { el, item, version, dispose, elementMode: false };
   };
 
   // The single item-replacement contract used by snapshot and granular paths.
   // Element-mode rows keep their caller-owned element and are re-keyed; content
   // rows replace their mount. DOM placement remains the caller's responsibility.
   const reconcileItem = (row: ListRow<T>, item: T): ListRow<T> => {
-    if (row.item === item) return row;
+    const version = itemVersion(item as object);
+    if (row.item === item && row.version === version) return row;
     const oldKey = key(row.item);
     const newKey = key(item);
     if (row.elementMode) {
       row.item = item;
+      row.version = version;
       if (newKey !== oldKey) {
         rows.delete(oldKey);
         rows.set(newKey, row);
       }
       row.update?.(item);
+      return row;
+    }
+    if (row.item === item) {
+      row.dispose();
+      row.dispose = mount(row.el, () => render(item) as MountResult);
+      row.version = version;
       return row;
     }
     row.dispose();

@@ -221,12 +221,8 @@ function genOne(
     if (rng.bool(0.15)) m.bad = true;
     return m;
   }
-  // `mutate` (a same-reference `arraySignal.update()`) is deliberately NOT
-  // generated: `bindList` reconciles rows by item identity and documents that
-  // item objects must stay stable, so a same-reference change is invisible to
-  // it — unlike `each()`, which honors the per-item version stamp. The
-  // alphabet keeps the mutation for hand-written reproductions; the gap itself
-  // is tracked separately (see the KF-YVMSEK report).
+  if (op < 0.88 && spec.source === 'granular')
+    return { k: 'mutate', at: rng.int(len), t: `T${rng.int(1000)}` };
   // A duplicate key sometimes — the rejection + latched recovery shape.
   const at = rng.int(len);
   const other = sim.items.filter((_, i) => i !== at);

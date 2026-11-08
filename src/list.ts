@@ -31,7 +31,10 @@
  * `render` reads signals for reactivity (external state like a `selectedId`, or
  * signals the item carries) — keep the item OBJECTS stable across renders and
  * drive structure (add/remove/move) through `itemsSignal`. A row whose item
- * object identity changes is rebuilt (same rule as `each()`'s memo). `bindList`
+ * object identity changes is rebuilt (same rule as `each()`'s memo). A
+ * same-reference `arraySignal.update()` refreshes that row in every consumer:
+ * content mode remounts inside the same row element; element mode calls `update`.
+ * `bindList`
  * OWNS `parent`'s children by default (append/move to the end) — to share
  * `parent` with fixed trailing siblings (an "add" button, an indicator), pass
  * `before` so the rows end just before that node. It reads `itemsSignal.value`,
