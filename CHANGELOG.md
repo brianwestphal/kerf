@@ -12,6 +12,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Added
 
+- **Differential `bindList` and morph transition fuzzing (KF-YVMSEK).** Seeded mutations now compare incremental output with a fresh render across snapshot, granular, virtualized, and live-DOM protection states; directed tests cover recovery, refill, measured heights, and paired lists.
 - **Kerf UI size, density, and inset prop vocabulary (KF-XQJECP).** Control sizes and row densities use `default` / `compact`; surface inset props use `none`, `compact`, `default`, or `comfortable` where applicable. Legacy literals remain accepted for this major version, with `KUI-L026` analyzer review findings and canonical DOM attributes. The component catalog records aliases and semantic exceptions, and its check rejects new divergent literals. `DialogSurface`'s legacy `compact` inset keeps its 8px geometry; new callers use `default` for 8px.
 
 - **`debouncedSignal()` can be disposed (KF-EE8EPV).** It returns a `DebouncedSignal<T>`: the same read-only signal plus an idempotent `dispose()` that unsubscribes from the source and drops any pending write.
@@ -362,6 +363,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Fixed
 
+- **`bindList` snapshot render failures recover before later patches (KF-1267Y6).** A row-render throw during `replace()` or another snapshot pass latches a full reconcile for the next valid source notification.
+- **Virtualized `bindList` freezes a rejected duplicate-key source until a valid update (KF-7HV0MF).** Scroll and measurement frames keep the last accepted window and measured-height baseline instead of re-rendering the invalid array.
 - **Preserved nodes inside an `each()` row keep their text on a granular update (KF-HYAA4T).** The row text fast path skips consumer-injected `data-morph-preserve` nodes, including when their text matches the cell's old value. Morph protection now uses one shared bitmask helper.
 - **Store actions no longer subscribe the code that calls them (KF-1268ZK).** An action's `get()` reads state untracked, so calling a `get()`+`set()` action inside `effect()` or `mount()` no longer throws "Cycle detected" or re-runs the effect in a loop.
 - **`kerf-catalog-demo` runs through its npm bin symlink (KF-88VC6W).** It used to exit 0 without doing anything, so a consumer's `--check` passed vacuously.

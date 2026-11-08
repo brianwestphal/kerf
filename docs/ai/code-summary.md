@@ -320,11 +320,12 @@ kerf/
 │   │   ├── overlay-toast.test.ts ← toast stacking, replacement, timers, animation classes, and dismissal
 │   │   ├── overlay-tooltip.test.ts ← tooltip pointer/focus timing, independent mixed-modality presence, content, and teardown
 │   │   ├── overlay-test-helpers.ts ← shared overlay DOM/setup helpers used by the focused overlay suites
-│   │   ├── list-core.test.ts ← bindList keyed reconciliation, granular render-failure recovery, source updates, and core disposal
-│   │   ├── list-transition-matrix.test.ts ← bindList adversarial empty/refill, granular↔snapshot, mixed-batch, and node-identity transitions
+│   │   ├── list-core.test.ts ← bindList keyed reconciliation, granular and snapshot render-failure recovery (KF-1267Y6), source updates, and core disposal
+│   │   ├── list-transition-matrix.test.ts ← bindList adversarial empty/refill, granular↔snapshot, mixed-batch, measured same-frame, and node-identity transitions (KF-YVMSEK)
+│   │   ├── bindlist-fuzz.test.ts ← KF-YVMSEK seeded differential fuzz of bindList snapshot, granular, virtualized, and recovery transitions; its model and generator live in `fuzz/bindlist.ts`
 │   │   ├── list-element-mode.test.ts ← app-owned row elements, keyed reuse, update, and disposal
 │   │   ├── list-measured-virtualization.test.ts ← measured heights, anchoring, and ResizeObserver integration
-│   │   ├── list-virtualization.test.ts ← fixed and declared-height windowing with deterministic rAF scheduling
+│   │   ├── list-virtualization.test.ts ← fixed and declared-height windowing with deterministic rAF scheduling; KF-7HV0MF pins rejected-key frame freeze and accepted measured-height baselines
 │   │   ├── list-virtualization-options.test.ts ← minRows, content-visibility, container, resize, and disposal options
 │   │   ├── mount-rendering.test.ts ← mount rendering, signal tracking, stateful attributes, and raw content
 │   │   ├── static-subtree-morph.internal.test.ts ← KF-HA8R27 the change-scoped list-free morph — scoped cases (row flip keeps sibling identity, text climbs, root-level, table rows/cells, sensitive-ancestor climb over p/li/a/b/svg, comments/raw text/void/quotes/literal `<`, uppercase end tags, keyed children, scan-cache reuse, table-box root) and every decline (unmodelable markup, structural edits, live-tree disagreement, morph-skip/focused path, parser-repaired child, key/protection change), plus mount()-level imperative-state, binding, and focused-input behavior, and KF-03KWNV keyed-`each()` renders (a change beside the list keeps row identity and sibling state, a change in the rows' container or after the rows declines to the full walk, empty → filled → emptied list transitions, a list appearing and leaving inside the changed subtree)
