@@ -174,6 +174,20 @@ describe('attach()', () => {
     expect(torn).toEqual(['down']);
   });
 
+  it('tears down a shadow-root node whose host connects and disconnects in one batch', async () => {
+    const shadowHost = document.createElement('section');
+    const shadow = shadowHost.attachShadow({ mode: 'closed' });
+    const node = document.createElement('div');
+    shadow.appendChild(node);
+    const torn: string[] = [];
+    attach(node, () => () => torn.push('down'));
+
+    document.body.appendChild(shadowHost);
+    shadowHost.remove();
+    await microtask();
+    expect(torn).toEqual(['down']);
+  });
+
   it('detects a disconnected node inserted directly into an already-connected shadow root', async () => {
     const shadowHost = document.createElement('section');
     const shadow = shadowHost.attachShadow({ mode: 'closed' });

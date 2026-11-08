@@ -50,6 +50,26 @@ describe('snapshot in-place content-update fast path', () => {
     document.body.innerHTML = '';
   });
 
+  it('does not reuse an ambiguous old DOM key when two rows shared it', () => {
+    const first = { id: 1, label: 'first' };
+    const second = { id: 2, label: 'second' };
+    const items = signal([first, second]);
+    mount(root, () =>
+      jsx('ul', {
+        children: each(items.value, (item) =>
+          jsx('li', { 'data-key': 'same', children: item.label }),
+        ),
+      }),
+    );
+    const oldRows = Array.from(root.querySelectorAll('li'));
+
+    items.value = [{ id: 3, label: 'replacement' }];
+    const next = root.querySelector('li');
+    expect(next?.textContent).toBe('replacement');
+    expect(oldRows).not.toContain(next);
+    expect(root.querySelectorAll('li')).toHaveLength(1);
+  });
+
   it('class flip (attribute-only) updates in place — node identity preserved, no parse', () => {
     const items = [{ id: 1 }, { id: 2 }, { id: 3 }];
     const selected = signal<number>(-1);

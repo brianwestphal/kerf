@@ -60,10 +60,10 @@ export default defineConfig({
         // the coverage provider changed.
         lines: 100,
         functions: 100,
-        // Branches and statements sit below 100 for one reason — a small,
-        // enumerated set of defensive arms that cannot be exercised by
-        // construction. These are NOT untested behavior; each is the unused
-        // side of a guard on an invariant the caller already established.
+        // Branches and statements sit below 100 for a small, enumerated set
+        // of defensive arms that cannot be exercised by construction. Seven
+        // reachable arms in attach, bindList, snapshot reconcile, overlay,
+        // and tooltip gained behavioral tests in KF-08XCMP.
         //
         // Both numbers moved when vitest 4 replaced `v8-to-istanbul` with
         // `ast-v8-to-istanbul`. The new provider maps V8's counters onto the
@@ -101,8 +101,9 @@ export default defineConfig({
         // gave way to function names; KF-2Q54E4 (reconcile this list with a
         // fresh coverage run) confirms which arms are still the uncovered ones.
         //
-        // Set a little under the measured floor so an ordinary new defensive
-        // guard doesn't fail the build, but far enough above it that a real
+        // KF-08XCMP measured 99.32% branches and 99.80% statements on the
+        // 2026-11-08 root coverage run. Set a little under that floor so an
+        // ordinary new defensive guard doesn't fail the build, but far enough above it that a real
         // gap — an untested function or an unexercised path — still does:
         // those move these numbers by whole points, not hundredths.
         //
@@ -110,8 +111,8 @@ export default defineConfig({
         // `c8 ignore`, which the provider still honors. Do NOT lower them
         // further to make a build pass; if they need to move, name the
         // branches that moved them, the way this comment does.
-        branches: 98.5,
-        statements: 99.5,
+        branches: 99.1,
+        statements: 99.7,
       },
     },
   },

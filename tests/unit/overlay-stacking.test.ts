@@ -227,6 +227,20 @@ describe('overlay stacking — focus restoration', () => {
     expect(document.activeElement?.isConnected).toBe(true);
   });
 
+  it('restores B focus if closing A causes the browser to shift focus', () => {
+    const { opener, a } = setup();
+    const focused = byId('b1');
+    const remove = a.el.remove.bind(a.el);
+    const removeSpy = vi.spyOn(a.el, 'remove').mockImplementation(() => {
+      opener.focus();
+      remove();
+    });
+
+    a.close();
+    expect(removeSpy).toHaveBeenCalledOnce();
+    expect(document.activeElement).toBe(focused);
+  });
+
   it('dismissing B with Escape restores focus into A', () => {
     const { a } = setup();
     key(document, 'Escape');

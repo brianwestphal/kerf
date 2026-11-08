@@ -258,6 +258,13 @@ describe('overlay()', () => {
       expect(document.activeElement).toBe(get('a'));
     });
 
+    it('Shift+Tab while focus is outside the overlay wraps to the last', () => {
+      const { get } = setup();
+      document.body.focus();
+      tab(true);
+      expect(document.activeElement).toBe(get('c'));
+    });
+
     it('Tab in the middle is left to the browser (no wrap, no throw)', () => {
       const { get } = setup();
       get('b').focus();

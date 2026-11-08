@@ -260,6 +260,27 @@ describe('a slot-hosted surface whose anchor left the dialog', () => {
   // the open-order stack instead of lingering there.
   const flush = () => new Promise<void>((resolve) => setTimeout(resolve, 0));
 
+  it('forgets a tooltip whose explicit dialog container closes while its anchor stays outside', async () => {
+    const dialog = openAppDialog(
+      '<div data-kerf-overlay-host data-morph-skip></div>',
+    );
+    const anchor = document.createElement('button');
+    document.body.appendChild(anchor);
+    const container = dialog.querySelector(HOST) as HTMLElement;
+    cleanups.unshift(tooltip(anchor, 'tip', { container, delay: 0 }));
+    anchor.dispatchEvent(new Event('pointerenter'));
+    await flush();
+    expect(container.querySelector('.kerf-tooltip')).not.toBeNull();
+
+    dialog.close();
+    await flush();
+    expect(container.querySelector('.kerf-tooltip')).toBeNull();
+    anchor.dispatchEvent(new Event('pointerleave'));
+    anchor.dispatchEvent(new Event('pointerenter'));
+    await flush();
+    expect(container.querySelector('.kerf-tooltip')).not.toBeNull();
+  });
+
   it('a popover closes (no onDismiss) and leaves the stack when the dialog is removed', async () => {
     const dialog = openAppDialog(
       '<button id="anchor">a</button><div data-kerf-overlay-host data-morph-skip></div>',

@@ -77,6 +77,28 @@ describe('bindList() — keyed reconcile', () => {
     dispose();
   });
 
+  it('preserves focus in a row descendant while keyed rows move', () => {
+    const parent = host();
+    const a = { id: 1, label: 'a' };
+    const b = { id: 2, label: 'b' };
+    const items = signal<Item[]>([a, b]);
+    const dispose = bindList(parent, items, {
+      key: (item) => item.id,
+      render: (item) => {
+        const input = document.createElement('input');
+        input.value = item.label;
+        return input;
+      },
+    });
+    const focused = parent.querySelectorAll('input')[0];
+    focused.focus();
+
+    items.value = [b, a];
+    expect(parent.querySelectorAll('input')[1]).toBe(focused);
+    expect(document.activeElement).toBe(focused);
+    dispose();
+  });
+
   it('rejects duplicate keys from a plain signal before mutating the DOM', () => {
     const parent = host();
     const a = { id: 1, label: 'a' };
@@ -99,6 +121,20 @@ describe('bindList() — keyed reconcile', () => {
     items.value = [a, b];
     expect(Array.from(parent.children)).toEqual(originalRows);
     dispose();
+  });
+
+  it('quotes a duplicate string key in the preflight error', () => {
+    const parent = host();
+    const items = signal([{ id: 'same' }, { id: 'same' }]);
+    expect(() =>
+      bindList(parent, items, {
+        key: (item) => item.id,
+        render: (item) => item.id,
+      }),
+    ).toThrow(
+      'bindList: duplicate key "same" at indices 0 and 1 — every row key must be unique.',
+    );
+    expect(parent.childNodes).toHaveLength(0);
   });
 
   it('rejects initial duplicate keys before attaching a virtualized container', () => {
