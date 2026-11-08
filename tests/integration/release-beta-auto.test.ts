@@ -85,6 +85,10 @@ function writeReleaseFixture(root: string): void {
     join(repoRoot, 'scripts/lib/release-beta-plan.mjs'),
     join(root, 'scripts/lib/release-beta-plan.mjs'),
   );
+  cpSync(
+    join(repoRoot, 'scripts/lib/release-common.sh'),
+    join(root, 'scripts/lib/release-common.sh'),
+  );
   writeFileSync(
     join(root, 'package.json'),
     JSON.stringify({ name: 'release-fixture', version: '4.4.1' }),
