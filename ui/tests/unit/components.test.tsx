@@ -969,6 +969,18 @@ describe('production UI primitives', () => {
     expect(asHtml(group)).toContain(
       'data-size="compact" data-density="compact" data-content="mixed" data-focus-ring="outline" data-selected-chrome="outline" data-selected-tone="pop" data-nested-dropdown="true" data-menu-inset="compact" data-overflow="scroll" data-visibility="compact-only" data-sizing="content" data-placement="start" data-scrim="true"',
     );
+    const legacyGroup = asHtml(
+      ToolbarControlGroup({
+        children: icon,
+        density: 'comfortable',
+        menuInset: 'standard',
+      }),
+    );
+    expect(legacyGroup).toContain('data-density="default"');
+    expect(legacyGroup).toContain('data-menu-inset="default"');
+    expect(
+      asHtml(ToolbarControlGroup({ children: icon, menuInset: 'list-zero' })),
+    ).toContain('data-menu-inset="none"');
     expect(
       asHtml(ToolbarControlGroup({ children: icon, overflow: 'wrap' })),
     ).toContain('data-overflow="wrap"');
