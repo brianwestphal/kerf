@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 164600,
-  "totalJavaScriptGzip": 462700,
-  "measuredLargestJavaScriptGzip": 164544,
-  "measuredTotalJavaScriptGzip": 462615,
+  "totalJavaScriptGzip": 463000,
+  "measuredLargestJavaScriptGzip": 164548,
+  "measuredTotalJavaScriptGzip": 462947,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -7059,6 +7059,22 @@
         "measuredTotalJavaScriptGzip": 462615,
         "largestJavaScriptGzip": 164600,
         "totalJavaScriptGzip": 462700
+      }
+    },
+    {
+      "at": "2026-11-08T02:29:15.692Z",
+      "reason": "Approved size, density, and inset aliases add 332 bytes gzip to the UX demo",
+      "old": {
+        "measuredLargestJavaScriptGzip": 164544,
+        "measuredTotalJavaScriptGzip": 462615,
+        "largestJavaScriptGzip": 164600,
+        "totalJavaScriptGzip": 462700
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 164548,
+        "measuredTotalJavaScriptGzip": 462947,
+        "largestJavaScriptGzip": 164600,
+        "totalJavaScriptGzip": 463000
       }
     }
   ]
