@@ -768,12 +768,15 @@ It is tested by `ui/tests/unit/component-props-package.test.ts` over
 template wires it as `props:generate` / `props:check`. For components in app source (no package export) it reads the composition entry's `source` with the app's tsconfig and records root-relative imports that `generateView`'s `importFrom` rewrites per document (KF-7JP509; tests: `ui/tests/unit/component-props-app.test.ts` over `ui/tests/fixtures/component-props-app/`).
 
 `ui/view/` is the published `@kerfjs/ui/view` subpath (KF-FB9340: view-document
-validator for the Kerf UI editor, `docs/26-ui-editor.md`). `validate.mjs`
-(`createViewCatalog`, `validateView`, `isAssignable`, `isLiteralOf`,
-`parseCssCall`, `channelOf`, and `composedViewPath`, where a nested `#view`'s
-`src` points from the top document's folder, the `path` every
-`resolveView(src, path)` gets; KF-3X7MFF) is re-exported by `index.mjs` and typed by
-`index.d.mts`. The shape schema is `ui/ai/view-document.schema.json`, and the
+validator for the Kerf UI editor, `docs/26-ui-editor.md`). `catalog.mjs` owns
+`createViewCatalog`, field zones, and `channelOf`; `types.mjs` owns
+`isAssignable` and `isLiteralOf`; `css-grammar.mjs` owns `parseCssCall` and
+`parseCssTree`. `validate.mjs` owns `validateView` and `composedViewPath`, where
+a nested `#view`'s `src` points from the top document's folder, the `path` every
+`resolveView(src, path)` gets (KF-3X7MFF). `child-kind.mjs` gives view and editor
+walkers one `childKind`/`classifyChild` dispatch. `index.mjs` re-exports the
+public helpers, typed by `index.d.mts`. The shape schema is
+`ui/ai/view-document.schema.json`, and the
 `KUI-V001`–`V017` ids are registered in
 `ui/ai/application-ui-diagnostic-ids-v1.json` (`KUI-V017`, KF-PK3GVY: a
 document with no root, which the schema allows so an editor's empty draft
