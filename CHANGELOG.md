@@ -287,6 +287,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Changed
 
+- **The Kerf UI editor's view and wiring regions are separate modules (KF-YF1PDR, KF-N0CSVT).** Inspector controls, field editors, Library drag and drop, dialogs, and event handlers now receive typed state from `createEditor`; behavior and public entry points are unchanged.
 - **UI source registration survives tree shaking (KF-TA779Y).** The source PopupMenu registration module is listed as side effectful, so Select's public registration import remains in source-built demos.
 - **Browser waits follow UI state (KF-BG83G7).** Browser suites wait for navigation, animation, and rendered state instead of fixed sleeps, with bounded transition-settling checks.
 - **Five long UI functions now have named phases (KF-70DQG4).** Search-field wiring, scroll-divider control, editor play wiring, project analysis, and UI doctor were split into focused helpers without changing their public behavior.

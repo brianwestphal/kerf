@@ -4,7 +4,7 @@ import type { ViewDocument } from '@kerfjs/ui/view';
 import { batch, type Signal } from 'kerfjs';
 
 import { closeDialog } from '../components/surfaces/surface-scaffold/surface-scaffold.js';
-import { type EditorStorage,isDraft } from './autosave.js';
+import { type EditorStorage, isDraft } from './autosave.js';
 import { HOOK, hook } from './dom-hooks.js';
 import type { EditorContext } from './editor-context.js';
 import { newNodeId } from './model/edits.js';

@@ -79,6 +79,7 @@ export interface LibraryDragDeps {
   readonly seededNode: (key: string) => ViewNode;
   readonly showDocument: (path: string, document: ViewDocument) => void;
   readonly sourceProblem: (sourceId: string) => string | undefined;
+  readonly view: () => Window & typeof globalThis;
   readonly zonesOf: (node: ViewNode, wanted?: string) => ZoneOption[];
 }
 
@@ -99,6 +100,7 @@ export function createLibraryDrag(ctx: EditorContext, deps: LibraryDragDeps) {
     seededNode,
     showDocument,
     sourceProblem,
+    view,
     zonesOf,
   } = deps;
 
@@ -320,7 +322,7 @@ export function createLibraryDrag(ctx: EditorContext, deps: LibraryDragDeps) {
   const springTabs = (): CanvasDropSurface => {
     let pending: { tab: string; timer: number } | undefined;
     const clear = () => {
-      if (pending) window.clearTimeout(pending.timer);
+      if (pending) view().clearTimeout(pending.timer);
       pending = undefined;
     };
     return {
@@ -334,7 +336,7 @@ export function createLibraryDrag(ctx: EditorContext, deps: LibraryDragDeps) {
         if (tab && tab !== documentArea.value)
           pending = {
             tab,
-            timer: window.setTimeout(() => {
+            timer: view().setTimeout(() => {
               documentArea.value = tab;
               pending = undefined;
             }, SPRING_MS),
@@ -561,7 +563,7 @@ export function createLibraryDrag(ctx: EditorContext, deps: LibraryDragDeps) {
     dropChoices.value = choices;
     library.asked = true;
     // The menu renders its new entries first.
-    window.requestAnimationFrame(() =>
+    view().requestAnimationFrame(() =>
       openPopupMenuAt(
         root.querySelector<HTMLElement>(`[${DROP_MENU}]`)!,
         point.x,

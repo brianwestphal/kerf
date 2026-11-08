@@ -666,6 +666,17 @@ kerf/
 └── README.md
 ```
 
+The editor shell in `ui/src/editor/editor.tsx` delegates its large view and
+wiring regions through `editor-context.ts`: `inspector-controls.tsx`,
+`field-editor-views.tsx`, `field-editor-shell.tsx`,
+`inspector-bind-section.tsx`, `node-inspector-views.tsx`, and
+`data-attributes-section.tsx` own Inspector views; `library-drag.tsx`,
+`drop-menu.tsx`, `library-popover.tsx`, and `outline-view.tsx` own Library and
+drop presentation; `embed-extract-views.tsx`, `extract-operation.ts`,
+`icon-dialog.tsx`, and `node-context-menu.tsx` own dialogs and actions.
+`dom-hooks.ts` names the shared editor DOM hooks. These modules receive typed
+state and callbacks from `createEditor`; the host app remains in `editor/`.
+
 `ui/src/components/forms/choice-chips/choice-chips.css` owns the selected-pill
 forced-colors treatment for radio, checkbox, and listbox modes. Its system
 color and focus contract is checked in `ui/tests/unit/choice-chips.test.tsx`;

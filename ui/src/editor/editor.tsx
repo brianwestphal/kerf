@@ -1419,6 +1419,7 @@ export function createEditor(options: EditorOptions) {
     seededNode: (...args) => seededNode(...args),
     showDocument,
     sourceProblem,
+    view: () => realmOf(wired ?? document),
     zonesOf: (...args) => zonesOf(...args),
   });
   const { dropMenu, replaceDialog } = createDropViews({
