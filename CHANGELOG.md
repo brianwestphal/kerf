@@ -287,6 +287,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Changed
 
+- **UI source registration survives tree shaking (KF-TA779Y).** The source PopupMenu registration module is listed as side effectful, so Select's public registration import remains in source-built demos.
+- **Browser waits follow UI state (KF-BG83G7).** Browser suites wait for navigation, animation, and rendered state instead of fixed sleeps, with bounded transition-settling checks.
 - **Five long UI functions now have named phases (KF-70DQG4).** Search-field wiring, scroll-divider control, editor play wiring, project analysis, and UI doctor were split into focused helpers without changing their public behavior.
 - **Workbench resize contract moved to its model folder (KF-8G51WR).** The editor and Workbench now import the shared contract without crossing a component's private `internal/` boundary; the source organization check has no allowlisted edge.
 - **The basic site examples follow the Kerf lint rules (KF-4SA1SM).** They use `attr()` selectors and explicit page-lifetime delegates, and site lint now covers all examples.
@@ -589,6 +591,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Documentation
 
+- **Nested removal observers use per-root containment (KF-6E8Y2C).** The scope API reference explains that an inner observer disposes a node moved outside its own root, even when it remains inside an outer observed root.
 - **New consumer guides and references.** `ui/docs/view.md` covers `@kerfjs/ui/view` and the `kerf-ui-view` CLI (KF-ABHABR); the doctor, analyzer and evaluator guides gain CLI-option and Node-API tables (KF-GD1BDC); the API reference documents the tooling-facing JSX, brand and dev-hook exports and the `clearDevHooks` / `installDevHooks` signatures (KF-QGKQ0M, KF-FJQP4X); the htmx cart and counter-store apps get their own example pages (KF-GHSA8D).
 - The `@kerfjs/ui` UX catalog's Structured Ticket Search help is lighter: a short title and line, then grouped filter chips (action `Chip`s) that insert their filter into the field, instead of a key/value table. The SearchField examples' notes are shorter too (`KF-XP8742`).
 
