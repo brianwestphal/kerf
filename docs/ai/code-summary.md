@@ -1540,7 +1540,7 @@ re-renders, and publishes `--_kui-overlay-sheet-height` on the wrapper.
 
 Pinnable popover (KF-C57ZX0, a non-modal panel the person can pin and move):
 `PinnablePopoverSurface` in
-`ui/src/components/surfaces/surface-scaffold/surface-scaffold.tsx` renders a
+`ui/src/components/surfaces/surface-scaffold/internal/pinnable-popover-surface.tsx` renders a
 `popover="manual"` `role="dialog"` with a component-owned header (the title as
 a focusable move-handle button, `headerActions`, a Pin toggle with
 `aria-pressed`, Close). Its controller,
@@ -1554,6 +1554,17 @@ resize, restores owned state after a morph, and reports `onChange`. Demo: the
 Surface Scaffolds catalog's Pinnable Popover example. Tests:
 `ui/tests/unit/pinnable-popover-surface.test.tsx`,
 `ui/tests/browser/pinnable-popover.spec.ts`.
+
+Surface Scaffold's `surface-scaffold.tsx` is a facade: its four renderers live in
+`internal/dialog-surface.tsx`, `internal/popover-dialog-surface.tsx`,
+`internal/pinnable-popover-surface.tsx`, and `internal/popup-surface.tsx`.
+`internal/surface-presentation.ts` defines the shared `SurfacePresentation`
+type; the older popover presentation names are aliases. Owned inline-style
+restoration is shared in `ui/src/shared/dom/owned-styles.ts`, and
+`ui/src/shared/dom/realm.ts` selects the owning window for observers and timers
+(see `ui/docs/component-contract.md`). Design-template sample data and static
+renderers live in `ui/scripts/design-templates/specs.mjs`; the
+`build-design-templates.mjs` script orchestrates the build.
 
 Media Detail recipe (KF-HZM8BT, the backgrounds family composed):
 `ui/ux-demo/recipes/media-detail.tsx` (`recipe-media-detail`, eleventh in
