@@ -32,6 +32,9 @@ jobs:
           set -euo pipefail
           package_path="$PACKAGE"
           if [[ "$package_path" == root ]]; then package_path=.; fi
+          if [[ "$PACKAGE" == site || "$PACKAGE" == examples/reactivity-demo ]]; then
+            npm ci --no-audit --no-fund
+          fi
           cd "$package_path"
           echo "package=$PACKAGE platform=$(uname -sm) node=$(node --version) npm=$(npm --version) bun=$(bun --version)"
           npm_start=$(date +%s%N)
