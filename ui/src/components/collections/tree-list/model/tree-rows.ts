@@ -3,6 +3,7 @@
 import type { SafeHtml } from 'kerfjs';
 
 import type { KerfUiContent } from '../../../../shared/content/semantic-content.js';
+import type { RootDataAttributes } from '../../../../shared/dom/extension-attributes.js';
 
 /** One node of a hierarchy the application owns. */
 export interface TreeListNode {
@@ -17,6 +18,8 @@ export interface TreeListNode {
   readonly disabled?: boolean;
   /** Drags with `wireTreeList`'s `onMove` (KF-WXP6AB). */
   readonly draggable?: boolean;
+  /** Safe data attributes carried by this row in either tree presentation. */
+  readonly rootAttributes?: RootDataAttributes;
   /** Child nodes. An empty array is an expandable node with no children yet. */
   readonly children?: readonly TreeListNode[];
   /**

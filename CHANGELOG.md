@@ -13,6 +13,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Added
 
+- **Editor Documents folder layouts (KF-D4XZXG).** The Library's Documents mode now offers a folder TreeList and a paged ColumnExplorer with a remembered layout choice, keyboard navigation, and a visible parent-folder action. File rows retain click and drag insertion.
 - **Differential `bindList` and morph transition fuzzing (KF-YVMSEK).** Seeded mutations now compare incremental output with a fresh render across snapshot, granular, virtualized, and live-DOM protection states; directed tests cover recovery, refill, measured heights, and paired lists.
 - **Kerf UI size, density, and inset prop vocabulary (KF-XQJECP).** Control sizes and row densities use `default` / `compact`; surface inset props use `none`, `compact`, `default`, or `comfortable` where applicable. Legacy literals remain accepted for this major version, with `KUI-L026` analyzer review findings and canonical DOM attributes. The component catalog records aliases and semantic exceptions, and its check rejects new divergent literals. `DialogSurface`'s legacy `compact` inset keeps its 8px geometry; new callers use `default` for 8px.
 

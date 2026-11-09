@@ -15,7 +15,6 @@ export const PALETTE_CLEAR_ACTION = 'editor-clear-palette-filter';
  * KF-FXACB5: a Library document, which a click inserts as a `#view` and a
  * drag (source `document:<path>`) drops like a component.
  */
-export const PALETTE_DOCUMENT_ACTION = 'editor-insert-library-document';
 export const PROBLEM_ACTION = 'editor-select-problem';
 export const NEW_ACTION = 'editor-new';
 // KF-60BEEJ: play mode's Play (Canvas toolbar) and Done (play bar).

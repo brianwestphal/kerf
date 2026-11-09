@@ -12,6 +12,7 @@ import {
   type EditorStorage,
   rememberPath,
 } from '../../../src/editor/autosave.js';
+import { libraryDocumentTree } from '../../../src/editor/model/library-document-tree.js';
 import { resetPopovers } from '../helpers/popover.js';
 import { ROW_PATH, rowDocument } from './fixtures-views.js';
 import { createEditor } from './kerf-catalog.js';
@@ -152,27 +153,83 @@ async function showLibrary(
 }
 
 describe('the Library’s documents', () => {
-  it('lists the project’s other documents in their own mode, by file name under folder', async () => {
+  it('switches between a folder tree and columns, and remembers the choice', async () => {
+    const { editor, library } = open();
+    await showLibrary(editor, library);
+    expect(
+      library.querySelector('#editor-library-documents-tree'),
+    ).not.toBeNull();
+    click(
+      library.querySelector<HTMLElement>(
+        '[data-segmented-control-id="editor-document-view"] [data-segment-value="columns"]',
+      )!,
+    );
+    expect(window.localStorage.getItem('kerf-ui-editor:document-view')).toBe(
+      'columns',
+    );
+    expect(
+      library.querySelector('#editor-library-documents-columns'),
+    ).not.toBeNull();
+    expect(documents(library)).toEqual(['app.kui.json']);
+    click(
+      library.querySelector<HTMLElement>('[data-item-id="folder:views/"]')!,
+    );
+    expect(documents(library)).toContain(ROW_PATH);
+    click(
+      library.querySelector<HTMLElement>(
+        '[data-action="editor-document-back"]',
+      )!,
+    );
+    expect(documents(library)).toEqual(['app.kui.json']);
+  });
+
+  it('collapses and expands a folder without losing its file paths', async () => {
+    const { editor, library } = open();
+    await showLibrary(editor, library);
+    const disclosure = () =>
+      library.querySelector<HTMLElement>(
+        '[data-item-id="folder:views/"] .kui-list-item__disclosure',
+      )!;
+    click(disclosure());
+    expect(documents(library)).toEqual(['app.kui.json']);
+    click(disclosure());
+    expect(documents(library)).toContain(ROW_PATH);
+  });
+
+  it('keeps sibling folders sorted and preserves their file paths', () => {
+    const nodes = libraryDocumentTree([
+      'zeta/b.kui.json',
+      'alpha/a.kui.json',
+      '/alpha/c.kui.json',
+    ]);
+    expect(nodes.map((node) => node.label)).toEqual(['alpha', 'zeta']);
+    expect(nodes[0]?.children?.map((node) => node.id)).toEqual([
+      'alpha/a.kui.json',
+      '/alpha/c.kui.json',
+    ]);
+  });
+
+  it('lists the project’s other documents in a folder tree', async () => {
     const { editor, library } = open();
     await showLibrary(editor, library);
     expect(documents(library)).toEqual([
-      'app.kui.json',
       BROKEN,
       ROW_PATH,
       'views/missing.kui.json',
       'views/offline.kui.json',
       SLOTTED,
+      'app.kui.json',
     ]);
-    const headers = [...library.querySelectorAll('.kui-list-header')].map(
-      (header) => header.textContent,
-    );
-    expect(headers.at(-1)).toContain('Documents');
+    const tree = library.querySelector('[data-component="tree-list"]')!;
+    expect(tree.getAttribute('aria-label')).toBe('Documents');
+    expect(tree.querySelector('[data-item-id="folder:views/"]')).not.toBeNull();
     expect(library.querySelector('[data-editor-palette]')).toBeNull();
     const row = documentRow(library, ROW_PATH);
     expect(row.textContent).toContain('message-row.kui.json');
-    expect(row.textContent).toContain('views/');
-    expect(row.getAttribute('title')).toBe(ROW_PATH);
-    expect(documentRow(library, 'app.kui.json').textContent).toContain('./');
+    expect(row.getAttribute('aria-level')).toBe('2');
+    expect(
+      documentRow(library, 'app.kui.json').getAttribute('aria-level'),
+    ).toBe('1');
   });
 
   it('filters documents separately, and a match on Documents keeps them all', async () => {
@@ -219,7 +276,7 @@ describe('the Library’s documents', () => {
     const tile = documentRow(again.library, ROW_PATH);
     expect(tile.classList.contains('kui-list-item')).toBe(true);
     expect(tile.textContent).toContain('message-row.kui.json');
-    expect(tile.textContent).toContain('views/');
+    expect(tile.getAttribute('aria-level')).toBe('2');
     click(tile);
     await vi.waitFor(() =>
       expect(children(again.editor.document.value)).toHaveLength(1),

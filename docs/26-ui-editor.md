@@ -702,18 +702,20 @@ show a simplified `currentColor` sketch instead (`palette-schematics.ts`);
 a component that draws nothing recognizable shows an icon. Tiles select,
 filter, and drag like rows.
 
-**Documents in the Library** (KF-FXACB5: Library documents). With a storage
-whose optional `list()` exists (§3.7), the Library lists the project's
-documents after its component groups, under a **Documents** `ListHeader`:
-the same documents Insert Document offers (every `.kui.json` path but the
-current document's own file and drafts, sorted), listed again each time the
-Library opens. A row leads with the file name over its folder (`./` at the
-project root), the whole path as its name and tooltip; in the grid view a
-tile shows a file icon (no live thumbnail) over the file name. The filter
-keeps the documents whose path holds every word of its text, or all of them
-when "Documents" holds it, as a category match keeps its group. Without
-storage, without `list()`, while the listing loads, or when it fails, there
-is no Documents group.
+**Documents in the Library** (KF-FXACB5, KF-BBES58, KF-D4XZXG). The Library
+has separate Components and Documents modes. With a storage whose optional
+`list()` exists (§3.7), Documents shows the same project files Insert Document
+offers (every `.kui.json` path except the current file and drafts), refreshed
+each time the Library opens. Folder hierarchy is shown either as an expanded
+`TreeList` or a paged `ColumnExplorer`. A **Document View** segmented control
+switches the layouts; the choice persists per browser under
+`kerf-ui-editor:document-view`. In columns, selecting a folder opens its
+children and the parent-folder button returns one level. Arrow keys navigate
+both layouts. A file row still clicks or drags to insert it. The filter keeps
+files whose path holds every word of the query, retaining their ancestor
+folders, or all files when "Documents" holds the query. Without storage or
+`list()`, while listing loads, or after a listing failure, the mode shows its
+empty state.
 
 - **A click inserts it.** A component's click shows its documentation; a
   document has none, so its click reads the document (`storage.read`) and

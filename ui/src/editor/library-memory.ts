@@ -14,7 +14,13 @@ import type { PinnablePopoverChange } from '../components/surfaces/surface-scaff
 /** KF-JC7WTW: the Library shows a list or a grid of thumbnails. */
 export const PALETTE_VIEW_ACTION = 'editor-palette-view';
 export const LIBRARY_MODE_ACTION = 'editor-library-mode';
+export const DOCUMENT_VIEW_ACTION = 'editor-document-view';
+export const DOCUMENT_ROW_ACTION = 'editor-document-row';
+export const DOCUMENT_TOGGLE_ACTION = 'editor-document-toggle';
+export const DOCUMENT_BACK_ACTION = 'editor-document-back';
 export type LibraryMode = 'components' | 'documents';
+export type DocumentView = 'columns' | 'tree';
+const DOCUMENT_VIEW_KEY = 'kerf-ui-editor:document-view';
 const PALETTE_VIEW_KEY = 'kerf-ui-editor:palette-view';
 export type PaletteView = 'list' | 'grid';
 /**
@@ -44,6 +50,24 @@ export function rememberedPaletteView(): PaletteView {
 export function rememberPaletteView(view: PaletteView): void {
   try {
     globalThis.localStorage?.setItem(PALETTE_VIEW_KEY, view);
+  } catch {
+    // Without storage the choice lasts until the editor reloads.
+  }
+}
+
+export function rememberedDocumentView(): DocumentView {
+  try {
+    return globalThis.localStorage?.getItem(DOCUMENT_VIEW_KEY) === 'columns'
+      ? 'columns'
+      : 'tree';
+  } catch {
+    return 'tree';
+  }
+}
+
+export function rememberDocumentView(view: DocumentView): void {
+  try {
+    globalThis.localStorage?.setItem(DOCUMENT_VIEW_KEY, view);
   } catch {
     // Without storage the choice lasts until the editor reloads.
   }

@@ -174,15 +174,15 @@ async function libraryDocument(page: Page, folder: string) {
     )
     .click();
   await library.getByRole('searchbox').fill(folder);
-  const row = library.getByRole('button', {
-    name: `${folder}/message-row.kui.json`,
-  });
+  const row = library.locator(
+    `[data-editor-palette-document="${folder}/message-row.kui.json"]`,
+  );
   await expect(row).toBeVisible();
   await expect(
-    library.getByRole('heading', { name: 'Documents' }),
+    library.getByRole('tree', { name: 'Documents' }),
   ).toBeVisible();
   await expect(
-    library.getByRole('button', { name: `${folder}/inbox.kui.json` }),
+    library.locator(`[data-editor-palette-document="${folder}/inbox.kui.json"]`),
   ).toHaveCount(0);
   return { library, row };
 }
@@ -226,6 +226,33 @@ test('inserts a Library document by click and by drag', async ({
     });
 });
 
+test('navigates document columns by pointer and keyboard and remembers the layout', async ({
+  page,
+}, info) => {
+  const folder = await openMain(page, `columns-${info.project.name}`);
+  const { library } = await libraryDocument(page, folder);
+  await library
+    .locator('[data-segmented-control-id="editor-document-view"] [data-segment-value="columns"]')
+    .click();
+  await library.locator('[data-item-id="folder:pw-documents/"]').click();
+  await library.locator(`[data-item-id="folder:${folder}/"]`).click();
+  const file = library.locator(
+    `[data-editor-palette-document="${folder}/message-row.kui.json"]`,
+  );
+  await expect(file).toBeVisible();
+  await library.getByRole('button', { name: 'Parent folder' }).click();
+  const folderRow = library.locator(`[data-item-id="folder:${folder}/"]`);
+  await folderRow.focus();
+  await folderRow.press('ArrowRight');
+  await expect(file).toBeFocused();
+  await page.reload();
+  await openLibrary(page);
+  await library
+    .locator('[data-segmented-control-id="editor-library-mode"] [data-segment-value="documents"]')
+    .click();
+  await expect(library.locator('#editor-library-documents-columns')).toBeVisible();
+});
+
 for (const width of [2048, 390]) {
   test(`captures the Library's documents at ${width}`, async ({
     page,
@@ -238,7 +265,7 @@ for (const width of [2048, 390]) {
     // Wide to the capture width before the Library opens over it.
     await page.setViewportSize({ width, height: width === 390 ? 900 : 1128 });
     const { library } = await libraryDocument(page, folder);
-    await library.getByRole('searchbox').fill('');
+    await library.getByRole('searchbox').fill(folder);
     await expect(
       library.locator('[data-editor-palette-document]').first(),
     ).toBeVisible();
@@ -252,8 +279,31 @@ for (const width of [2048, 390]) {
       path: info.outputPath(`kf-bbes58-library-documents-editor-${width}.png`),
     });
     await library.screenshot({
-      path: info.outputPath(`kf-bbes58-library-documents-${width}.png`),
+      path: info.outputPath(`kf-d4xzxg-library-tree-${width}.png`),
     });
+    await library
+      .locator('[data-segmented-control-id="editor-document-view"] [data-segment-value="columns"]')
+      .click();
+    await expect(library.getByRole('region', { name: 'Documents' })).toBeVisible();
+    await library.locator('[data-item-id="folder:pw-documents/"]').click();
+    await library.locator(`[data-item-id="folder:${folder}/"]`).click();
+    await expect(
+      library.locator(`[data-editor-palette-document="${folder}/message-row.kui.json"]`),
+    ).toBeVisible();
+    await library.screenshot({
+      path: info.outputPath(`kf-d4xzxg-library-columns-${width}.png`),
+    });
+    await library.getByRole('button', { name: 'Parent folder' }).click();
+    const folderRow = library.locator(`[data-item-id="folder:${folder}/"]`);
+    await expect(folderRow).toBeVisible();
+    await folderRow.focus();
+    await folderRow.press('ArrowRight');
+    await expect(
+      library.locator(`[data-editor-palette-document="${folder}/message-row.kui.json"]`),
+    ).toBeFocused();
+    await library
+      .locator('[data-segmented-control-id="editor-document-view"] [data-segment-value="tree"]')
+      .click();
     await expect(library.locator('[data-editor-palette]')).toHaveCount(0);
     await expect(
       library.locator('[data-segmented-control-id="editor-palette-view"]'),

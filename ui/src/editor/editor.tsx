@@ -50,9 +50,11 @@ import {
 import { Toolbar } from '../components/actions/toolbar/toolbar.js';
 import { ToolbarControlGroup } from '../components/actions/toolbar-control-group/toolbar-control-group.js';
 import { ToolbarText } from '../components/actions/toolbar-text/toolbar-text.js';
+import { wireColumnExplorer } from '../components/collections/column-explorer/wiring/wire-column-explorer.js';
 import { List } from '../components/collections/list/list.js';
 import { ListHeader } from '../components/collections/list-header/list-header.js';
 import { ListItem } from '../components/collections/list-item/list-item.js';
+import { treeListPath } from '../components/collections/tree-list/tree-list.js';
 import {
   treeListExternalDrop,
   wireTreeList,
@@ -142,11 +144,18 @@ import {
 import { createInspectorControls } from './inspector-controls.js';
 import { createLibraryDrag, type LibraryRead } from './library-drag.js';
 import {
+  DOCUMENT_BACK_ACTION,
+  DOCUMENT_ROW_ACTION,
+  DOCUMENT_TOGGLE_ACTION,
+  DOCUMENT_VIEW_ACTION,
+  type DocumentView,
   LIBRARY_ID,
   LIBRARY_MODE_ACTION,
   type LibraryMode,
   PALETTE_VIEW_ACTION,
   type PaletteView,
+  rememberDocumentView,
+  rememberedDocumentView,
   rememberedLibrary,
   rememberedPaletteView,
   rememberLibrary,
@@ -259,8 +268,13 @@ import {
   insertableDocuments,
   insertedView,
   insertProblem,
+  libraryDocuments,
 } from './model/insert-view.js';
 import { inspectorSections } from './model/inspector.js';
+import {
+  isDocumentFolderId,
+  libraryDocumentTree,
+} from './model/library-document-tree.js';
 import {
   itemSlotRowNode,
   nodeTitle,
@@ -386,7 +400,6 @@ import {
   OUTLINE_TOGGLE_ACTION,
   PALETTE_ACTION,
   PALETTE_CLEAR_ACTION,
-  PALETTE_DOCUMENT_ACTION,
   PLAY_ACTION,
   PLAY_DONE_ACTION,
   PROBLEM_ACTION,
@@ -847,6 +860,9 @@ export function createEditor(options: EditorOptions) {
   const paletteFilterRevision = signal(0);
   const paletteView = signal<PaletteView>(rememberedPaletteView());
   const libraryMode = signal<LibraryMode>('components');
+  const documentView = signal<DocumentView>(rememberedDocumentView());
+  const documentLibraryPath = signal<readonly string[]>([]);
+  const collapsedDocumentFolders = signal<ReadonlySet<string>>(new Set());
   /**
    * KF-FXACB5: the project's documents the Library offers, as its last
    * listing answered (none while one loads, or when it failed), and why the
@@ -1981,6 +1997,9 @@ export function createEditor(options: EditorOptions) {
     paletteFilterRevision,
     paletteView,
     libraryMode,
+    documentView,
+    documentPath: documentLibraryPath,
+    collapsedDocumentFolders,
     libraryFiles,
     libraryError,
   });
@@ -4067,6 +4086,7 @@ export function createEditor(options: EditorOptions) {
       hook(HOOK.paletteFilter),
       (_event, editor) => {
         paletteFilter.value = readSearchField(editor).query;
+        documentLibraryPath.value = [];
       },
     ),
   ];
@@ -4082,6 +4102,35 @@ export function createEditor(options: EditorOptions) {
       paletteFilter.value = '';
       paletteFilterRevision.value += 1;
     },
+    [DOCUMENT_VIEW_ACTION]: (_event, target) => {
+      const view: DocumentView =
+        target.dataset.segmentValue === 'tree' ? 'tree' : 'columns';
+      documentView.value = view;
+      rememberDocumentView(view);
+    },
+    [DOCUMENT_ROW_ACTION]: (event, target) => {
+      const id = target.dataset.itemId!;
+      const path = treeListPath(
+        libraryDocumentTree(
+          libraryDocuments(libraryFiles.peek(), paletteFilter.peek()),
+        ),
+        id,
+      );
+      documentLibraryPath.value = isDocumentFolderId(id)
+        ? path
+        : path.slice(0, -1);
+      if (!isDocumentFolderId(id))
+        void insertFromLibrary(root, id, (event as MouseEvent).altKey);
+    },
+    [DOCUMENT_BACK_ACTION]: () => {
+      documentLibraryPath.value = documentLibraryPath.peek().slice(0, -1);
+    },
+    [DOCUMENT_TOGGLE_ACTION]: (_event, target) => {
+      const id = target.dataset.itemId!;
+      const next = new Set(collapsedDocumentFolders.peek());
+      if (!next.delete(id)) next.add(id);
+      collapsedDocumentFolders.value = next;
+    },
     [PALETTE_VIEW_ACTION]: (_event, target) => {
       const view: PaletteView =
         target.dataset.segmentValue === 'grid' ? 'grid' : 'list';
@@ -4090,6 +4139,7 @@ export function createEditor(options: EditorOptions) {
     },
     [PALETTE_CLEAR_ACTION]: () => {
       paletteFilter.value = '';
+      documentLibraryPath.value = [];
       paletteFilterRevision.value += 1;
       root.querySelector<HTMLElement>(hook(HOOK.paletteFilter))?.focus();
     },
@@ -4440,9 +4490,10 @@ export function createEditor(options: EditorOptions) {
       ),
   });
 
-  const outlineAndDocumentActions = (
-    root: HTMLElement,
-  ): Record<string, ActionHandler<HTMLElement>> => ({
+  const outlineAndDocumentActions = (): Record<
+    string,
+    ActionHandler<HTMLElement>
+  > => ({
     [OUTLINE_ACTION]: (_event, target) => {
       leaveFieldEditor(target);
       const id = target.dataset.itemId!;
@@ -4464,12 +4515,6 @@ export function createEditor(options: EditorOptions) {
       select({ kind: 'node', id: target.dataset.itemId! }),
     [PALETTE_ACTION]: (_event, target) =>
       select({ kind: 'component', key: target.dataset.itemId! }),
-    [PALETTE_DOCUMENT_ACTION]: (event, target) =>
-      void insertFromLibrary(
-        root,
-        target.dataset.editorPaletteDocument!,
-        (event as MouseEvent).altKey,
-      ),
     [EXPORT_MODULE_ACTION]: () => exportAs('module'),
     [EXPORT_DECLARATIONS_ACTION]: () => exportAs('declarations'),
     // KF-QSSTMX: a new empty document; with storage it is a new draft,
@@ -4583,7 +4628,7 @@ export function createEditor(options: EditorOptions) {
       ...inspectorFieldActions(),
       ...dialogActions(root),
       ...inspectorFlowActions(),
-      ...outlineAndDocumentActions(root),
+      ...outlineAndDocumentActions(),
       ...documentDialogActions(root),
     });
 
@@ -4888,6 +4933,7 @@ export function createEditor(options: EditorOptions) {
         // KF-WKABP2: an inside drop with several places asks where.
         onMove: (move) => moveOrAsk(root, move),
       }),
+      wireColumnExplorer(root),
       // KF-WKABP2: a replacing drop of authored content asks first.
       effect(() => {
         if (!pendingReplace.value) return;

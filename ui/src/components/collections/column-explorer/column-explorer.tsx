@@ -134,9 +134,11 @@ export function ColumnExplorer({
                   }
                   selected={node.id === column.chosen}
                   disabled={node.disabled}
+                  draggable={node.draggable}
                   density={density}
                   tabIndex={node.id === stop ? 0 : -1}
                   rootAttributes={{
+                    ...node.rootAttributes,
                     'data-key': node.id,
                     'data-column-explorer-level': String(column.level),
                     'data-expandable': isExpandable(node) ? 'true' : undefined,

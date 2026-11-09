@@ -5,6 +5,10 @@
 import type { SafeHtml } from 'kerfjs';
 
 import type { KerfUiContent } from '../../../../shared/content/semantic-content.js';
+import {
+  filterDataAttributes,
+  type RootDataAttributes,
+} from '../../../../shared/dom/extension-attributes.js';
 import { remify } from '../../../../shared/styles/css-values.js';
 import { DisclosureArrow } from '../../../navigation/disclosure-arrow/disclosure-arrow.js';
 import { listItemContent } from '../internal/list-item-content.js';
@@ -26,6 +30,7 @@ export interface ListTreeItemProps {
   readonly disabled?: boolean;
   /** A native drag source for TreeList drag-and-drop. */
   readonly draggable?: boolean;
+  readonly rootAttributes?: RootDataAttributes;
   readonly density: 'default' | 'compact' | 'standard';
   /** Delegated action for choosing the row. */
   readonly action: string;
@@ -52,12 +57,17 @@ export function ListTreeItem({
   focusable,
   disabled = false,
   draggable,
+  rootAttributes = {},
   density,
   action,
   toggleAction,
 }: ListTreeItemProps) {
   return (
     <button
+      {...filterDataAttributes(
+        rootAttributes,
+        new Set(['data-component', 'data-key', 'data-action', 'data-item-id']),
+      )}
       type="button"
       role="treeitem"
       class="kui-list-item"

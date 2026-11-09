@@ -104,6 +104,7 @@ export function TreeList({
           focusable={row.node.id === focusId}
           disabled={row.node.disabled}
           draggable={row.node.draggable}
+          rootAttributes={row.node.rootAttributes}
           density={density}
           action={action}
           toggleAction={toggleAction}

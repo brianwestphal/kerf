@@ -1,10 +1,20 @@
 // The editor's component and document Library popover and its palette views.
 import { raw, type Signal } from 'kerfjs';
-import { Component, LayoutGrid, List as ListIcon } from 'lucide';
+import {
+  ArrowLeft,
+  Columns3,
+  Component,
+  LayoutGrid,
+  List as ListIcon,
+  ListTree,
+} from 'lucide';
 
+import { Button } from '../components/actions/button/button.js';
+import { ColumnExplorer } from '../components/collections/column-explorer/column-explorer.js';
 import { List } from '../components/collections/list/list.js';
 import { ListHeader } from '../components/collections/list-header/list-header.js';
 import { ListItem } from '../components/collections/list-item/list-item.js';
+import { TreeList } from '../components/collections/tree-list/tree-list.js';
 import { EmptyState } from '../components/feedback/empty-state/empty-state.js';
 import { StateBanner } from '../components/feedback/state-banner/state-banner.js';
 import { SearchField } from '../components/forms/search-field/search-field.js';
@@ -18,6 +28,11 @@ import { px } from '../shared/styles/css-values.js';
 import { HOOK } from './dom-hooks.js';
 import type { EditorContext } from './editor-context.js';
 import {
+  DOCUMENT_BACK_ACTION,
+  DOCUMENT_ROW_ACTION,
+  DOCUMENT_TOGGLE_ACTION,
+  DOCUMENT_VIEW_ACTION,
+  type DocumentView,
   LIBRARY_ID,
   LIBRARY_MODE_ACTION,
   type LibraryMode,
@@ -25,24 +40,22 @@ import {
   PALETTE_VIEW_ACTION,
   type PaletteView,
 } from './library-memory.js';
+import { LIBRARY_DOCUMENTS, libraryDocuments } from './model/insert-view.js';
 import {
-  documentFolder,
-  documentName,
-  LIBRARY_DOCUMENTS,
-  libraryDocuments,
-} from './model/insert-view.js';
+  documentFolderId,
+  libraryDocumentTree,
+} from './model/library-document-tree.js';
 import { paletteSketch } from './palette-schematics.js';
-import {
-  PALETTE_ACTION,
-  PALETTE_CLEAR_ACTION,
-  PALETTE_DOCUMENT_ACTION,
-} from './shell-names.js';
+import { PALETTE_ACTION, PALETTE_CLEAR_ACTION } from './shell-names.js';
 
 export interface LibraryPopoverState {
   readonly paletteFilter: Signal<string>;
   readonly paletteFilterRevision: Signal<number>;
   readonly paletteView: Signal<PaletteView>;
   readonly libraryMode: Signal<LibraryMode>;
+  readonly documentView: Signal<DocumentView>;
+  readonly documentPath: Signal<readonly string[]>;
+  readonly collapsedDocumentFolders: Signal<ReadonlySet<string>>;
   readonly libraryFiles: Signal<readonly string[]>;
   readonly libraryError: Signal<string>;
 }
@@ -57,6 +70,9 @@ export function createLibraryPopover(
     paletteFilterRevision,
     paletteView,
     libraryMode,
+    documentView,
+    documentPath,
+    collapsedDocumentFolders,
     libraryFiles,
     libraryError,
   } = state;
@@ -154,27 +170,61 @@ export function createLibraryPopover(
     </List>
   );
 
-  /**
-   * KF-FXACB5: the Library's Documents group, after the components: each
-   * project document as a row led by its file name over its folder (as
-   * Insert Document lists them). A click inserts it as a `#view`; it drags
-   * like a component.
-   */
-  const libraryDocumentGroup = (documents: readonly string[]) => (
-    <List>
-      <ListHeader label={LIBRARY_DOCUMENTS} />
-      {documents.map((path) => (
-        <ListItem
-          action={PALETTE_DOCUMENT_ACTION}
-          label={documentName(path)}
-          description={documentFolder(path)}
-          accessibleLabel={path}
-          title={path}
-          rootAttributes={{ [HOOK.paletteDocument]: path }}
+  const libraryDocumentGroup = (documents: readonly string[]) => {
+    const nodes = libraryDocumentTree(documents);
+    return documentView.value === 'columns' ? (
+      <div class="kui-editor__document-columns">
+        <div class="kui-editor__document-location">
+          {documentPath.value.length ? (
+            <Button
+              icon={<LucideIcon icon={ArrowLeft} name="back" />}
+              ariaLabel="Parent folder"
+              action={DOCUMENT_BACK_ACTION}
+              size="compact"
+            />
+          ) : undefined}
+          <Text variant="span" size="compact" wrap="truncate">
+            {documentPath.value.length
+              ? `Project / ${documentPath.value.at(-1)!.slice('folder:'.length)}`
+              : 'Project'}
+          </Text>
+        </div>
+        <ColumnExplorer
+          id="editor-library-documents-columns"
+          label={LIBRARY_DOCUMENTS}
+          nodes={nodes}
+          path={documentPath.value}
+          action={DOCUMENT_ROW_ACTION}
+          layout="paged"
+          className="kui-editor__document-explorer"
         />
-      ))}
-    </List>
-  );
+      </div>
+    ) : (
+      <TreeList
+        id="editor-library-documents-tree"
+        label={LIBRARY_DOCUMENTS}
+        nodes={nodes}
+        expanded={
+          new Set(
+            documents
+              .flatMap((path) => {
+                const parts = path.split('/').filter(Boolean);
+                return parts
+                  .slice(0, -1)
+                  .map((_, index) =>
+                    documentFolderId(`${parts.slice(0, index + 1).join('/')}/`),
+                  );
+              })
+              .filter((id) => !collapsedDocumentFolders.value.has(id)),
+          )
+        }
+        selected={documentPath.value.at(-1)}
+        action={DOCUMENT_ROW_ACTION}
+        toggleAction={DOCUMENT_TOGGLE_ACTION}
+        density="compact"
+      />
+    );
+  };
 
   /**
    * KF-Z54E4H: the component Library, Xcode style: a popover below the
@@ -218,7 +268,28 @@ export function createLibraryPopover(
                 },
               ]}
             />
-          ) : undefined
+          ) : (
+            <SegmentedControl
+              id="editor-document-view"
+              label="Document View"
+              value={documentView.value}
+              action={DOCUMENT_VIEW_ACTION}
+              choices={[
+                {
+                  value: 'columns',
+                  label: 'Columns',
+                  title: 'Columns',
+                  content: <LucideIcon icon={Columns3} name="columns" />,
+                },
+                {
+                  value: 'tree',
+                  label: 'Tree',
+                  title: 'Tree',
+                  content: <LucideIcon icon={ListTree} name="list-tree" />,
+                },
+              ]}
+            />
+          )
         }
         rootAttributes={{ [HOOK.library]: '' }}
       >
@@ -253,7 +324,11 @@ export function createLibraryPopover(
             />
           ) : undefined}
         </List>
-        <List scrollable flex>
+        <List
+          scrollable
+          flex
+          rootAttributes={{ 'data-editor-library-results': '' }}
+        >
           {componentsMode ? (
             groups.length ? (
               palette(groups)

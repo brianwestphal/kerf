@@ -28895,6 +28895,16 @@
           "description": "Drags with `wireTreeList`'s `onMove` (KF-WXP6AB)."
         },
         {
+          "name": "rootAttributes",
+          "type": {
+            "kind": "record",
+            "text": "Readonly<Record<`data-${string}`, string | undefined>>",
+            "nullable": true
+          },
+          "required": false,
+          "description": "Safe data attributes carried by this row in either tree presentation."
+        },
+        {
           "name": "children",
           "type": {
             "kind": "array",
