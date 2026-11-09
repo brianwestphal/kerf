@@ -1,0 +1,57 @@
+name: Bun Linux install trial
+
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  compare-installs:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        package:
+          - root
+          - ui
+          - site
+          - editor
+          - eslint-plugin
+          - create-kerf-component
+          - examples/reactivity-demo
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: '22'
+      - name: Install Bun 1.4.4
+        run: npm install --global bun@1.4.4
+      - name: Compare frozen installations
+        env:
+          PACKAGE: ${{ matrix.package }}
+        run: |
+          set -euo pipefail
+          package_path="$PACKAGE"
+          if [[ "$package_path" == root ]]; then package_path=.; fi
+          cd "$package_path"
+          echo "package=$PACKAGE platform=$(uname -sm) node=$(node --version) npm=$(npm --version) bun=$(bun --version)"
+          npm_start=$(date +%s%N)
+          npm ci --no-audit --no-fund
+          npm_end=$(date +%s%N)
+          echo "npm_ms=$(((npm_end - npm_start) / 1000000))"
+          echo "npm_modules_kib=$(du -sk node_modules | cut -f1)"
+          if [[ -d node_modules/kerfjs ]]; then echo "npm_local_kerf_kib=$(du -sk node_modules/kerfjs | cut -f1)"; fi
+          echo 'npm optional WASM packages:'
+          find node_modules -type f \( -path '*/@emnapi/core/package.json' -o -path '*/@emnapi/wasi-threads/package.json' \) -print | sort | while read -r manifest; do
+            echo "$manifest $(node -p "require('./$manifest').version")"
+          done
+          rm -rf node_modules
+          bun_start=$(date +%s%N)
+          BUN_INSTALL_CACHE_DIR="${RUNNER_TEMP}/bun-cache" bun install --frozen-lockfile
+          bun_end=$(date +%s%N)
+          echo "bun_ms=$(((bun_end - bun_start) / 1000000))"
+          echo "bun_modules_kib=$(du -sk node_modules | cut -f1)"
+          if [[ -d node_modules/kerfjs ]]; then echo "bun_local_kerf_kib=$(du -sk node_modules/kerfjs | cut -f1)"; fi
+          echo 'bun optional WASM packages:'
+          find node_modules -type f \( -path '*/@emnapi/core/package.json' -o -path '*/@emnapi/wasi-threads/package.json' \) -print | sort | while read -r manifest; do
+            echo "$manifest $(node -p "require('./$manifest').version")"
+          done
