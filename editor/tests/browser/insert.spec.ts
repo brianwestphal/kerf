@@ -178,11 +178,11 @@ async function libraryDocument(page: Page, folder: string) {
     `[data-editor-palette-document="${folder}/message-row.kui.json"]`,
   );
   await expect(row).toBeVisible();
+  await expect(library.getByRole('tree', { name: 'Documents' })).toBeVisible();
   await expect(
-    library.getByRole('tree', { name: 'Documents' }),
-  ).toBeVisible();
-  await expect(
-    library.locator(`[data-editor-palette-document="${folder}/inbox.kui.json"]`),
+    library.locator(
+      `[data-editor-palette-document="${folder}/inbox.kui.json"]`,
+    ),
   ).toHaveCount(0);
   return { library, row };
 }
@@ -232,7 +232,9 @@ test('navigates document columns by pointer and keyboard and remembers the layou
   const folder = await openMain(page, `columns-${info.project.name}`);
   const { library } = await libraryDocument(page, folder);
   await library
-    .locator('[data-segmented-control-id="editor-document-view"] [data-segment-value="columns"]')
+    .locator(
+      '[data-segmented-control-id="editor-document-view"] [data-segment-value="columns"]',
+    )
     .click();
   await library.locator('[data-item-id="folder:pw-documents/"]').click();
   await library.locator(`[data-item-id="folder:${folder}/"]`).click();
@@ -248,9 +250,13 @@ test('navigates document columns by pointer and keyboard and remembers the layou
   await page.reload();
   await openLibrary(page);
   await library
-    .locator('[data-segmented-control-id="editor-library-mode"] [data-segment-value="documents"]')
+    .locator(
+      '[data-segmented-control-id="editor-library-mode"] [data-segment-value="documents"]',
+    )
     .click();
-  await expect(library.locator('#editor-library-documents-columns')).toBeVisible();
+  await expect(
+    library.locator('#editor-library-documents-columns'),
+  ).toBeVisible();
 });
 
 for (const width of [2048, 390]) {
@@ -282,13 +288,19 @@ for (const width of [2048, 390]) {
       path: info.outputPath(`kf-d4xzxg-library-tree-${width}.png`),
     });
     await library
-      .locator('[data-segmented-control-id="editor-document-view"] [data-segment-value="columns"]')
+      .locator(
+        '[data-segmented-control-id="editor-document-view"] [data-segment-value="columns"]',
+      )
       .click();
-    await expect(library.getByRole('region', { name: 'Documents' })).toBeVisible();
+    await expect(
+      library.getByRole('region', { name: 'Documents' }),
+    ).toBeVisible();
     await library.locator('[data-item-id="folder:pw-documents/"]').click();
     await library.locator(`[data-item-id="folder:${folder}/"]`).click();
     await expect(
-      library.locator(`[data-editor-palette-document="${folder}/message-row.kui.json"]`),
+      library.locator(
+        `[data-editor-palette-document="${folder}/message-row.kui.json"]`,
+      ),
     ).toBeVisible();
     await library.screenshot({
       path: info.outputPath(`kf-d4xzxg-library-columns-${width}.png`),
@@ -299,10 +311,14 @@ for (const width of [2048, 390]) {
     await folderRow.focus();
     await folderRow.press('ArrowRight');
     await expect(
-      library.locator(`[data-editor-palette-document="${folder}/message-row.kui.json"]`),
+      library.locator(
+        `[data-editor-palette-document="${folder}/message-row.kui.json"]`,
+      ),
     ).toBeFocused();
     await library
-      .locator('[data-segmented-control-id="editor-document-view"] [data-segment-value="tree"]')
+      .locator(
+        '[data-segmented-control-id="editor-document-view"] [data-segment-value="tree"]',
+      )
       .click();
     await expect(library.locator('[data-editor-palette]')).toHaveCount(0);
     await expect(
