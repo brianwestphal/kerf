@@ -57,6 +57,11 @@ const hasStableRecipeMarker = (source, id) =>
   source.includes(`data-recipe="${id}"`) ||
   source.includes(`'data-recipe': '${id}'`) ||
   source.includes(`recipe="${id}"`);
+const hasDocumentRecipeMarker = (node, id) =>
+  node?.props?.rootAttributes?.['data-recipe'] === id ||
+  Object.values(node?.zones ?? {}).some((children) =>
+    children.some((child) => hasDocumentRecipeMarker(child, id)),
+  );
 for (const entry of recipes) {
   const stem = entry.id.replace(/^recipe-/, '');
   const sourcePath = resolve(root, `ux-demo/recipes/${stem}.tsx`);
@@ -69,7 +74,22 @@ for (const entry of recipes) {
   }
   if (!loaders.includes(`'${entry.id}': () => import('./${stem}.js')`))
     fail(`${entry.id} is not a literal dynamic import`);
-  if (!hasStableRecipeMarker(source, entry.id))
+  const viewImports = [
+    ...source.matchAll(/from '\.\.\/views\/([a-z0-9-]+)\.view\.js'/g),
+  ];
+  const viewDocuments = await Promise.all(
+    viewImports.map(async ([, name]) =>
+      JSON.parse(
+        await readFile(resolve(root, `ux-demo/views/${name}.kui.json`), 'utf8'),
+      ),
+    ),
+  );
+  if (
+    !hasStableRecipeMarker(source, entry.id) &&
+    !viewDocuments.some((document) =>
+      hasDocumentRecipeMarker(document.root, entry.id),
+    )
+  )
     fail(`${entry.id} source is missing its stable marker`);
   if (!/^export const presentation: RecipePresentation = \{/m.test(source))
     fail(
@@ -91,7 +111,14 @@ for (const entry of recipes) {
     fail(`${entry.id} must import the semantic layout layer`);
   if (
     entry.id === 'recipe-navigation-sidebar' &&
-    !(source.includes('<Pane') && source.includes('footer={'))
+    !(source.includes('<Pane') && source.includes('footer={')) &&
+    !viewDocuments.some(
+      (document) =>
+        document.root?.type === '@kerfjs/ui:pane' &&
+        document.root.zones?.footer?.some(
+          (child) => child.type === '@kerfjs/ui:toolbar',
+        ),
+    )
   )
     fail(
       'recipe-navigation-sidebar must place its footer toolbar in the shared pane footer',

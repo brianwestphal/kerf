@@ -135,13 +135,12 @@ for (const width of [1280, 390]) {
       (await geometry()).popupRect.right - (await geometry()).popupRect.left,
     ).toBeLessThanOrEqual(480.5);
 
-    await page.screenshot({
-      path: testInfo.outputPath(`anchored-request-open-${width}.png`),
-    });
-
     // The dock is at the bottom of an app-height frame. Bring that part of
     // the page into view before pressing its action button.
     await frame.evaluate((el) => el.scrollIntoView({ block: 'end' }));
+    await page.screenshot({
+      path: testInfo.outputPath(`anchored-request-open-${width}.png`),
+    });
     await popup.getByRole('button', { name: 'Deny' }).click();
     await expect(popup).toBeHidden();
   });
