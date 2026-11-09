@@ -27,6 +27,7 @@
 }
 
 .kui-editor-frame[data-mode="source"] > .kui-editor-frame__surface {
+  padding: 0;
   overflow: hidden;
 }
 
@@ -40,7 +41,7 @@
   min-width: 0;
   min-height: 0;
   box-sizing: border-box;
-  padding: 0;
+  padding: remify(16px);
   overflow: auto;
   border: 0;
   outline: 0;
@@ -53,6 +54,12 @@
 }
 
 .kui-editor-frame[data-inset="none"] > .kui-editor-frame__surface {
+  padding: 0;
+}
+
+.kui-editor-frame[data-mode="source"][data-inset="none"]
+  > .kui-editor-frame__surface
+  > textarea {
   padding: 0;
 }
 

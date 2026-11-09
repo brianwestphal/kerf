@@ -18,8 +18,8 @@ test('EditorFrame keeps one scroll owner below a fixed toolbar in source and pre
     name: 'Restored Markdown Editor',
   });
 
-  for (const width of [1100, 390]) {
-    await page.setViewportSize({ width, height: 800 });
+  for (const width of [2560, 1100, 390]) {
+    await page.setViewportSize({ width, height: width === 2560 ? 1410 : 800 });
     await source.scrollIntoViewIfNeeded();
     const field = source.getByRole('textbox', { name: 'Markdown Source' });
     await expect(field).toHaveValue(/Project Notes/);
@@ -34,6 +34,10 @@ test('EditorFrame keeps one scroll owner below a fixed toolbar in source and pre
       return {
         width: frame.getBoundingClientRect().width,
         height: frame.getBoundingClientRect().height,
+        frameBottom: frame.getBoundingClientRect().bottom,
+        surfaceBottom: surface.getBoundingClientRect().bottom,
+        fieldBottom: textarea.getBoundingClientRect().bottom,
+        fieldPadding: globalThis.getComputedStyle(textarea).paddingLeft,
         surfaceOverflow: globalThis.getComputedStyle(surface).overflowY,
         fieldOverflow: globalThis.getComputedStyle(textarea).overflowY,
         fieldScrollable: textarea.scrollHeight > textarea.clientHeight,
@@ -43,6 +47,15 @@ test('EditorFrame keeps one scroll owner below a fixed toolbar in source and pre
     });
     expect(sourceGeometry.width).toBeLessThanOrEqual(672);
     expect(sourceGeometry.height).toBeCloseTo(320, 0);
+    expect(sourceGeometry.surfaceBottom).toBeCloseTo(
+      sourceGeometry.frameBottom - 1,
+      0,
+    );
+    expect(sourceGeometry.fieldBottom).toBeCloseTo(
+      sourceGeometry.surfaceBottom,
+      0,
+    );
+    expect(sourceGeometry.fieldPadding).toBe('16px');
     expect(sourceGeometry.surfaceOverflow).toBe('hidden');
     expect(sourceGeometry.fieldOverflow).toBe('auto');
     expect(sourceGeometry.fieldScrollable).toBe(true);
@@ -108,9 +121,18 @@ test('EditorFrame keeps one scroll owner below a fixed toolbar in source and pre
     expect(restoredStyle.resize).toBe('vertical');
 
     if (browserName === 'chromium') {
-      await source.screenshot({
-        path: testInfo.outputPath(`editor-frame-source-${width}.png`),
+      await field.evaluate((node: HTMLTextAreaElement) => {
+        node.scrollTop = Math.round(node.scrollHeight / 2);
       });
+      await source.screenshot({
+        path: testInfo.outputPath(
+          `editor-frame-source-mid-scroll-${width}.png`,
+        ),
+      });
+      if (width === 2560)
+        await page.screenshot({
+          path: testInfo.outputPath('editor-frame-catalog-2560.png'),
+        });
       await preview.screenshot({
         path: testInfo.outputPath(`editor-frame-preview-${width}.png`),
       });
