@@ -44,9 +44,7 @@ jobs:
           echo "npm_modules_kib=$(du -sk node_modules | cut -f1)"
           if [[ -d node_modules/kerfjs ]]; then echo "npm_local_kerf_kib=$(du -sk node_modules/kerfjs | cut -f1)"; fi
           echo 'npm optional WASM packages:'
-          find node_modules -type f \( -path '*/@emnapi/core/package.json' -o -path '*/@emnapi/wasi-threads/package.json' \) -print | sort | while read -r manifest; do
-            echo "$manifest $(node -p "require('./$manifest').version")"
-          done
+          node "$GITHUB_WORKSPACE/scripts/bun-linux-deps.cjs"
           rm -rf node_modules
           bun_start=$(date +%s%N)
           BUN_INSTALL_CACHE_DIR="${RUNNER_TEMP}/bun-cache" bun install --frozen-lockfile
@@ -55,6 +53,4 @@ jobs:
           echo "bun_modules_kib=$(du -sk node_modules | cut -f1)"
           if [[ -d node_modules/kerfjs ]]; then echo "bun_local_kerf_kib=$(du -sk node_modules/kerfjs | cut -f1)"; fi
           echo 'bun optional WASM packages:'
-          find node_modules -type f \( -path '*/@emnapi/core/package.json' -o -path '*/@emnapi/wasi-threads/package.json' \) -print | sort | while read -r manifest; do
-            echo "$manifest $(node -p "require('./$manifest').version")"
-          done
+          node "$GITHUB_WORKSPACE/scripts/bun-linux-deps.cjs"
