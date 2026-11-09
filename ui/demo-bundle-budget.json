@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 164600,
-  "totalJavaScriptGzip": 469300,
-  "measuredLargestJavaScriptGzip": 164545,
-  "measuredTotalJavaScriptGzip": 469248,
+  "totalJavaScriptGzip": 469400,
+  "measuredLargestJavaScriptGzip": 164546,
+  "measuredTotalJavaScriptGzip": 469388,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -7171,6 +7171,22 @@
         "measuredTotalJavaScriptGzip": 469248,
         "largestJavaScriptGzip": 164600,
         "totalJavaScriptGzip": 469300
+      }
+    },
+    {
+      "at": "2026-11-09T06:46:40.182Z",
+      "reason": "KF-8RHHGF splits the anchored request popup and tab items into editable view documents while preserving focus and click behavior",
+      "old": {
+        "measuredLargestJavaScriptGzip": 164545,
+        "measuredTotalJavaScriptGzip": 469248,
+        "largestJavaScriptGzip": 164600,
+        "totalJavaScriptGzip": 469300
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 164546,
+        "measuredTotalJavaScriptGzip": 469388,
+        "largestJavaScriptGzip": 164600,
+        "totalJavaScriptGzip": 469400
       }
     }
   ]
