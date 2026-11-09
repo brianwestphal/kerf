@@ -89,8 +89,40 @@ test('catalog composes ValuePreview inside SunkenPanel', async ({
   const values = demo.locator('[data-component="value-preview"]');
   await expect(values).toHaveCount(4);
   for (const width of [1200, 390]) {
-    await page.setViewportSize({ width, height: 850 });
+    await page.setViewportSize({ width, height: 1400 });
     await demo.scrollIntoViewIfNeeded();
+    const alignment = await demo.evaluate((root) => {
+      const textX = (element: Element) => {
+        const range = document.createRange();
+        range.selectNodeContents(element);
+        return range.getClientRects()[0]!.x;
+      };
+      return Array.from(
+        root.querySelectorAll('[data-catalog-example]'),
+      ).flatMap((example) => {
+        const label = textX(
+          example.querySelector('[data-catalog-example-label] .kui-text')!,
+        );
+        const note = example.querySelector(
+          '[data-catalog-example-note] .kui-text',
+        );
+        return Array.from(
+          example.querySelectorAll('[data-component="value-preview"]'),
+          (value) => ({
+            label: Math.abs(value.getBoundingClientRect().x - label),
+            note:
+              note === null
+                ? null
+                : Math.abs(value.getBoundingClientRect().x - textX(note)),
+          }),
+        );
+      });
+    });
+    expect(alignment).toHaveLength(4);
+    for (const offset of alignment) {
+      expect(offset.label).toBeLessThanOrEqual(1);
+      if (offset.note !== null) expect(offset.note).toBeLessThanOrEqual(1);
+    }
     const remote = values.first();
     await expect(remote).toHaveAttribute('aria-label', 'Their Latest Version');
     await expect(remote).toHaveText(

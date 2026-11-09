@@ -16,7 +16,7 @@ export function ValuePreviewDemo() {
       <CatalogExample
         label="Two Read-Only Versions"
         note="Each value keeps literal newlines and wraps long tokens inside its own bounded scroll area. SunkenPanel owns the lowered frame."
-        align="none"
+        align="inline-control"
       >
         <SunkenPanel>
           <ValuePreview label="Their Latest Version" value={LONG_VALUE} />
@@ -31,7 +31,7 @@ export function ValuePreviewDemo() {
       <CatalogExample
         label="Custom Bounds"
         note="Typed minHeight and maxHeight adjust the scroll window without adding another frame."
-        align="none"
+        align="inline-control"
       >
         <SunkenPanel>
           <ValuePreview
@@ -42,7 +42,7 @@ export function ValuePreviewDemo() {
           />
         </SunkenPanel>
       </CatalogExample>
-      <CatalogExample label="Empty Value" align="none">
+      <CatalogExample label="Empty Value" align="inline-control">
         <SunkenPanel>
           <ValuePreview label="Empty Version" value="" />
         </SunkenPanel>

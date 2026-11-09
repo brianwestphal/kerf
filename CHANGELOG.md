@@ -372,6 +372,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Fixed
 
+- **The ValuePreview catalog examples share the page text guide (KF-WY8VWR).** Their panel content now aligns with the example headings and descriptions at wide and narrow widths.
 - **`bindList` honors same-reference `arraySignal.update()` (KF-TMYJ4G).** Content rows refresh inside their existing row element, and element rows receive `update(item)`; all consumers see the new content.
 - **Editor undo and redo discard refused Inspector drafts (KF-0Y88XZ).** When history restores the document, an invalid field value is reset alongside its error so the field displays the document's value.
 - **Release pre-flight refuses stale lockfiles offline (KF-F1CPCK).** Before tagging, it checks each lockstep package's manifest against its `package-lock.json` and prints the packages that need an updated lockfile.
