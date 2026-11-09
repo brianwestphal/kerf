@@ -187,8 +187,7 @@ test('a narrow sidebar keeps its page across resizes', async ({
 
 // KF-QV9149: a real touch swipe. Playwright has no cross-engine touch-drag
 // API, so this drives Chromium's input pipeline over the DevTools protocol
-// (`Input.dispatchTouchEvent` and `Input.synthesizeScrollGesture` in a
-// `hasTouch` context): the browser's own
+// (`Input.dispatchTouchEvent` in a `hasTouch` context): the browser's own
 // gesture, fling, and scroll snapping run, as on a phone. iOS Safari and
 // Android Chrome are covered by the manual plan in docs/paged-view.md.
 test.describe('touch', () => {
@@ -245,25 +244,41 @@ test.describe('touch', () => {
     await session.detach();
   }
 
-  /** Let Chromium generate a timed touch fling in its input pipeline, rather
-   * than relying on back-to-back touch events with synthetic timestamps. */
+  /** Pace the hard fling in real time. Linux Chromium can acknowledge a CDP
+   * synthesized gesture or back-to-back timestamped moves without scrolling. */
   async function hardFling(page: Page, viewport: Locator) {
     const box = (await viewport.boundingBox())!;
     const before = await viewport.evaluate((element) => element.scrollLeft);
-    // Aim below the page's controls so a child cannot claim the gesture.
-    // Headless Chromium can acknowledge a synthetic gesture without scrolling;
-    // retry only that input no-op, never a gesture that moved to the wrong page.
+    const y = Math.round(box.y + box.height * 0.75);
+    const point = (fraction: number) => [
+      { x: Math.round(box.x + box.width * fraction), y, id: 1 },
+    ];
+    const pace = () =>
+      new Promise<void>((resolve) => globalThis.setTimeout(resolve, 8));
+    // Aim below page controls. Retry only an input no-op, never a gesture that
+    // moved to the wrong page; the caller checks that snap contract separately.
     for (let attempt = 0; attempt < 3; attempt += 1) {
       const session = await page.context().newCDPSession(page);
       try {
-        await session.send('Input.synthesizeScrollGesture', {
-          x: Math.round(box.x + box.width * 0.7),
-          y: Math.round(box.y + box.height * 0.75),
-          xDistance: -Math.round(box.width * 0.3),
-          yDistance: 0,
-          speed: 3000,
-          gestureSourceType: 'touch',
-          preventFling: false,
+        const start = Date.now() / 1000;
+        await session.send('Input.dispatchTouchEvent', {
+          type: 'touchStart',
+          touchPoints: point(0.75),
+          timestamp: start,
+        });
+        for (let step = 1; step <= 4; step += 1) {
+          await pace();
+          await session.send('Input.dispatchTouchEvent', {
+            type: 'touchMove',
+            touchPoints: point(0.75 - (0.55 * step) / 4),
+            timestamp: start + (step * 8) / 1000,
+          });
+        }
+        await pace();
+        await session.send('Input.dispatchTouchEvent', {
+          type: 'touchEnd',
+          touchPoints: [],
+          timestamp: start + (5 * 8) / 1000,
         });
       } finally {
         await session.detach();
