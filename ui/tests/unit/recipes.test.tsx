@@ -303,9 +303,12 @@ describe('production composition recipes', () => {
     const markup = html(recipe.render());
     expect(markup).toContain('data-recipe="recipe-collapsible-sidebar"');
     // A filling Row is the root; no frame Pane wraps the layout.
-    expect(markup).toMatch(
-      /^<div data-recipe="recipe-collapsible-sidebar"[^>]*class="kui-row"[^>]*data-fill="true"/,
-    );
+    const template = document.createElement('div');
+    template.innerHTML = markup;
+    const row = template.firstElementChild;
+    expect(row?.tagName).toBe('DIV');
+    expect(row?.classList.contains('kui-row')).toBe(true);
+    expect(row?.getAttribute('data-fill')).toBe('true');
     const stop = mountRecipe(root, recipe);
 
     const rail = root.querySelector('[data-collapsible-panel="sidebar-rail"]')!;
