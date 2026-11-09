@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 164600,
-  "totalJavaScriptGzip": 464400,
-  "measuredLargestJavaScriptGzip": 164547,
-  "measuredTotalJavaScriptGzip": 464319,
+  "totalJavaScriptGzip": 469300,
+  "measuredLargestJavaScriptGzip": 164545,
+  "measuredTotalJavaScriptGzip": 469248,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -7155,6 +7155,22 @@
         "measuredTotalJavaScriptGzip": 464319,
         "largestJavaScriptGzip": 164600,
         "totalJavaScriptGzip": 464400
+      }
+    },
+    {
+      "at": "2026-11-09T06:13:44.242Z",
+      "reason": "Migrate seven compositions and ten recipes to 58 checked editable view modules; generated metadata adds about 4.9 KB gzip to the catalog while preserving behavior",
+      "old": {
+        "measuredLargestJavaScriptGzip": 164547,
+        "measuredTotalJavaScriptGzip": 464319,
+        "largestJavaScriptGzip": 164600,
+        "totalJavaScriptGzip": 464400
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 164545,
+        "measuredTotalJavaScriptGzip": 469248,
+        "largestJavaScriptGzip": 164600,
+        "totalJavaScriptGzip": 469300
       }
     }
   ]

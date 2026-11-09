@@ -831,7 +831,7 @@ Kerf ships no compiler and requires no build step beyond the consumer's own.
 The editor respects that:
 
 - The generated module is **ordinary TypeScript** (or `.js` plus `.d.ts`). It
-  calls component functions directly, uses no JSX, needs no `jsxImportSource`,
+  invokes component functions through a small typed helper, uses no JSX, needs no `jsxImportSource`,
   and is checked in like any other source file. A consumer's build treats it
   as hand-written code.
 - Generation is an **authoring step** (the editor's Export command, or the
@@ -1634,8 +1634,10 @@ so the git diff of a regeneration is meaningful:
   `.view.d.ts`) to `.prettierignore`, because reformatting a module changes its
   body digest. This repository does the same for its golden fixture.
 
-Output is plain `.ts` calling component functions: `Pane({ header: [...],
-children: [...] })`. In no-build mode (`--target js`), it is `.view.js` with a
+Output is plain `.ts` calling component functions through `kuiComponent`, for
+example `kuiComponent(Pane)({ header: [...], children: [...] })`. The helper
+keeps bundlers from recursively analyzing large nested component-call trees;
+it changes neither the component nor its props. In no-build mode (`--target js`), it is `.view.js` with a
 sibling `.view.d.ts` carrying the same contract, importing from the same bare
 specifiers an importmap resolves.
 

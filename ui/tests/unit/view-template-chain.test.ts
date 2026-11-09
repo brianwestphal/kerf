@@ -278,7 +278,9 @@ describe('the contract of an $if-chain template', () => {
 
   it('leaves a single-node template document unchanged', () => {
     const single = generateView(rowsDocument(item()) as never, catalog);
-    expect(single.code).toContain(`each(inputs.rows, (row) => ListItem(`);
+    expect(single.code).toContain(
+      `each(inputs.rows, (row) => kuiComponent(ListItem)(`,
+    );
     expect(single.code).toContain(`{ key: ${JSON.stringify(id(3))} })`);
   });
 });
@@ -290,7 +292,7 @@ describe('generating an $if-chain template', () => {
       catalog,
     );
     expect(code).toContain('each(inputs.rows, (row) => (row.header');
-    expect(code).toContain('? ListHeader(');
+    expect(code).toContain('? kuiComponent(ListHeader)(');
     expect(code).toContain(': (row.muted');
     // The first branch's node keys the list.
     expect(code).toContain(`{ key: ${JSON.stringify(id(2))} })`);

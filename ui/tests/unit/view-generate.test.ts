@@ -333,6 +333,8 @@ describe('generateView: targets and node kinds', () => {
     expect(code).toContain(
       'export function renderInbox(inputs, slots, rowKey)',
     );
+    expect(code).toContain('function kuiComponent(component)');
+    expect(code).toContain('kuiComponent(Pane)({');
     expect(declarations).toContain('export interface InboxInputs');
     expect(declarations).toContain(
       'export declare function renderInbox(inputs: InboxInputs, slots: InboxSlots, rowKey?: string): SafeHtml;',
@@ -344,6 +346,7 @@ describe('generateView: targets and node kinds', () => {
   it('omits render for declarations-only modules', () => {
     const { code } = generate(inbox(), { declarationsOnly: true });
     expect(code).not.toContain('renderInbox');
+    expect(code).not.toContain('function kuiComponent(');
     expect(code).not.toContain("from '@kerfjs/ui/button'");
     expect(code).toContain('export function wireInbox');
     const js = generate(inbox(), { declarationsOnly: true, target: 'js' });
@@ -407,7 +410,7 @@ describe('generateView: targets and node kinds', () => {
     };
     const { code } = generateView(document, catalog);
     expect(code).toContain(`jsx('span', { slot: "start", children: ">" })`);
-    expect(code).toMatch(/Badge\(\{[^)]*slot: "start"/s);
+    expect(code).toMatch(/kuiComponent\(Badge\)\(\{[^)]*slot: "start"/s);
   });
 
   it('composes a #view through its generated render function', () => {

@@ -194,7 +194,7 @@ describe('field zones: rendering', () => {
     const { code } = generateView(document as never, catalog, {
       source: 'shell.kui.json',
     });
-    expect(code).toMatch(/leftRail: \{\s*content: Text\(/);
+    expect(code).toMatch(/leftRail: \{\s*content: kuiComponent\(Text\)\(/);
     expect(code).toContain('label: "Folders"');
     expect(code).not.toContain("'leftRail.content'");
   });

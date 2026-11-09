@@ -1,7 +1,8 @@
 // generateView: turns a valid view document into its read-only view module
 // (docs/26-ui-editor.md §4). Output is plain TypeScript (or JavaScript plus a
-// .d.ts) that calls component functions directly — no JSX, no compiler in the
-// consumer's build. Same document and catalogs in, byte-identical code out.
+// .d.ts) that invokes component functions through a small typed call boundary
+// — no JSX compiler in the consumer's build. Same document and catalogs in,
+// byte-identical code out.
 import {
   canonicalJson,
   contractDigest,
@@ -208,6 +209,7 @@ function createImports() {
 }
 
 function createEmitter(document, catalog, imports, importFrom) {
+  let usesKerfComponent = false;
   const value = (input, scope) => {
     // A field zone's children, in the content field it fills (KF-PD6QC5).
     if (input instanceof ZoneFill) return children(input.children, scope);
@@ -454,10 +456,17 @@ function createEmitter(document, catalog, imports, importFrom) {
       moduleSpecifier(definition.import, importFrom),
       definition.export,
     );
-    return call(`${definition.export}(`, obj(entries));
+    // Rollup's effect analysis recursively walks direct component calls in
+    // large generated trees. A curried typed boundary preserves the exact
+    // call while keeping that analysis linear for the catalog bundle.
+    usesKerfComponent = true;
+    return call(`kuiComponent(${definition.export})(`, obj(entries));
   };
 
-  return { root: (node) => nodeExpr(node, new Map(), ROOT_KEY, undefined) };
+  return {
+    root: (node) => nodeExpr(node, new Map(), ROOT_KEY, undefined),
+    usesKerfComponent: () => usesKerfComponent,
+  };
 }
 
 function typesBlock(name, contract, inputType = (input) => input.type) {
@@ -660,16 +669,16 @@ export function generateView(document, catalog, options = {}) {
   collectViews(document.root);
 
   let rootExpr;
+  let usesKerfComponent = false;
   if (!options.declarationsOnly) {
-    rootExpr = printDoc(
-      createEmitter(
-        { ...document, views },
-        catalog,
-        imports,
-        options.importFrom,
-      ).root(document.root),
-      2,
+    const emitter = createEmitter(
+      { ...document, views },
+      catalog,
+      imports,
+      options.importFrom,
     );
+    rootExpr = printDoc(emitter.root(document.root), 2);
+    usesKerfComponent = emitter.usesKerfComponent();
   }
   const digest = contractDigest(contract);
   const sourceDigest = viewDigest(canonicalJson(document));
@@ -686,6 +695,11 @@ export function generateView(document, catalog, options = {}) {
     return `Parameters<typeof ${owner.export}>[0][${literal(input.shape.prop)}]`;
   });
   const contractLine = `export const ${camel}Contract = ${literal(digest)};`;
+  const componentHelper = usesKerfComponent
+    ? target === 'ts'
+      ? 'function kuiComponent<P>(component: (props: P) => SafeHtml): (props: P) => SafeHtml {\n  return (props) => component(props);\n}'
+      : 'function kuiComponent(component) {\n  return (props) => component(props);\n}'
+    : undefined;
 
   const assemble = (body) =>
     `${header(sourceName, contract, sourceDigest, body)}\n${body}`;
@@ -694,15 +708,21 @@ export function generateView(document, catalog, options = {}) {
       imports.render(true),
       types,
       contractLine,
+      componentHelper,
       functionsBlock(name, contract, rootExpr, true),
-    ].join('\n\n');
+    ]
+      .filter(Boolean)
+      .join('\n\n');
     return { code: assemble(`${body}\n`), contract, digest };
   }
   const code = [
     imports.render(false),
     contractLine,
+    componentHelper,
     functionsBlock(name, contract, rootExpr, false),
-  ].join('\n\n');
+  ]
+    .filter(Boolean)
+    .join('\n\n');
   const dts = [
     `import type { SafeHtml } from 'kerfjs';`,
     types,
