@@ -130,7 +130,7 @@ export function createLibraryPopover(
                       <LucideIcon icon={Component} name="component" />
                     </div>
                   )}
-                  <Text variant="span" size="compact" maxLines={1}>
+                  <Text variant="span" size="compact" wrap="truncate">
                     {item.name}
                   </Text>
                 </ContentItem>
@@ -181,7 +181,7 @@ export function createLibraryPopover(
               <div class="kui-editor__palette-thumb" aria-hidden="true">
                 <LucideIcon icon={FileText} name="file-text" />
               </div>
-              <Text variant="span" size="compact" maxLines={1}>
+              <Text variant="span" size="compact" wrap="truncate">
                 {documentName(path)}
               </Text>
             </ContentItem>

@@ -372,6 +372,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Fixed
 
+- **Library grid names show an ellipsis when a tile is too narrow (KF-CTVDFT).** Component and document tile labels keep their full accessible names and tooltips while using the Text component's explicit single-line truncation.
 - **The editor Library marks scrolled content with a separator (KF-3T9H48).** Its fixed filter row gains a line only while the results List is scrolled, without moving either row.
 - **The editor Library's scrolling results reach the dialog bottom edge (KF-EHEQVX).** In the fill-last popover layout, the scrollport uses the visible bottom edge while its content retains the normal horizontal inset.
 - **EditorFrame source text now scrolls to the frame edge (KF-4HRCHP).** The framed textarea fills its surface while keeping the 16px text inset, so scrolled source content clips at the visible frame boundary like preview content.

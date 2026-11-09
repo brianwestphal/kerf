@@ -249,3 +249,43 @@ test('Library shows a fixed-row divider only after results scroll', async ({
     await library(page).evaluate((node: HTMLElement) => node.hidePopover());
   }
 });
+
+test('Library grid names truncate visibly without losing the full name', async ({
+  page,
+}, info) => {
+  for (const [width, height] of [
+    [2560, 1410],
+    [390, 844],
+  ]) {
+    await page.setViewportSize({ width, height });
+    await openLibrary(page);
+    await library(page)
+      .locator(
+        '[data-segmented-control-id="editor-palette-view"] [data-segment-value="grid"]',
+      )
+      .click();
+    const tile = library(page).locator('[title="DisclosureArrow"]');
+    const name = tile.locator('.kui-text');
+    await expect(name).toHaveText('DisclosureArrow');
+    await expect(tile).toHaveAttribute('aria-label', 'DisclosureArrow');
+    const treatment = await name.evaluate((node) => ({
+      overflow: getComputedStyle(node).overflow,
+      textOverflow: getComputedStyle(node).textOverflow,
+      whiteSpace: getComputedStyle(node).whiteSpace,
+      clientWidth: node.clientWidth,
+      scrollWidth: node.scrollWidth,
+    }));
+    expect(treatment).toMatchObject({
+      overflow: 'hidden',
+      textOverflow: 'ellipsis',
+      whiteSpace: 'nowrap',
+    });
+    expect(treatment.scrollWidth).toBeGreaterThan(treatment.clientWidth);
+    await tile.focus();
+    await expect(tile).toBeFocused();
+    await library(page).screenshot({
+      path: info.outputPath(`library-readable-names-${width}.png`),
+    });
+    await library(page).evaluate((node: HTMLElement) => node.hidePopover());
+  }
+});
