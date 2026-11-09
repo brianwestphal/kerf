@@ -187,7 +187,8 @@ test('a narrow sidebar keeps its page across resizes', async ({
 
 // KF-QV9149: a real touch swipe. Playwright has no cross-engine touch-drag
 // API, so this drives Chromium's input pipeline over the DevTools protocol
-// (`Input.dispatchTouchEvent` in a `hasTouch` context): the browser's own
+// (`Input.dispatchTouchEvent` and `Input.synthesizeScrollGesture` in a
+// `hasTouch` context): the browser's own
 // gesture, fling, and scroll snapping run, as on a phone. iOS Safari and
 // Android Chrome are covered by the manual plan in docs/paged-view.md.
 test.describe('touch', () => {
@@ -248,20 +249,37 @@ test.describe('touch', () => {
    * than relying on back-to-back touch events with synthetic timestamps. */
   async function hardFling(page: Page, viewport: Locator) {
     const box = (await viewport.boundingBox())!;
-    const session = await page.context().newCDPSession(page);
-    try {
-      await session.send('Input.synthesizeScrollGesture', {
-        x: Math.round(box.x + box.width * 0.7),
-        y: Math.round(box.y + box.height / 2),
-        xDistance: -Math.round(box.width * 0.3),
-        yDistance: 0,
-        speed: 3000,
-        gestureSourceType: 'touch',
-        preventFling: false,
-      });
-    } finally {
-      await session.detach();
+    const before = await viewport.evaluate((element) => element.scrollLeft);
+    // Aim below the page's controls so a child cannot claim the gesture.
+    // Headless Chromium can acknowledge a synthetic gesture without scrolling;
+    // retry only that input no-op, never a gesture that moved to the wrong page.
+    for (let attempt = 0; attempt < 3; attempt += 1) {
+      const session = await page.context().newCDPSession(page);
+      try {
+        await session.send('Input.synthesizeScrollGesture', {
+          x: Math.round(box.x + box.width * 0.7),
+          y: Math.round(box.y + box.height * 0.75),
+          xDistance: -Math.round(box.width * 0.3),
+          yDistance: 0,
+          speed: 3000,
+          gestureSourceType: 'touch',
+          preventFling: false,
+        });
+      } finally {
+        await session.detach();
+      }
+      try {
+        await expect
+          .poll(() => viewport.evaluate((element) => element.scrollLeft), {
+            timeout: 750,
+          })
+          .toBeGreaterThan(before + 1);
+        return;
+      } catch {
+        // No horizontal input reached the viewport; try another touch gesture.
+      }
     }
+    throw new Error('Chromium touch gesture did not scroll the viewport');
   }
 
   /** Resolves once the viewport has had no scroll event for a while longer
@@ -290,7 +308,7 @@ test.describe('touch', () => {
   }) => {
     test.skip(
       browserName !== 'chromium',
-      'touch drags need the Chromium DevTools protocol (Input.dispatchTouchEvent); iOS Safari and Android Chrome are in the manual plan',
+      'touch drags need the Chromium DevTools protocol; iOS Safari and Android Chrome are in the manual plan',
     );
     await page.setViewportSize({ width: 1280, height: 900 });
     await page.goto('/?component=paged-view');
@@ -317,7 +335,7 @@ test.describe('touch', () => {
   }) => {
     test.skip(
       browserName !== 'chromium',
-      'touch drags need the Chromium DevTools protocol (Input.dispatchTouchEvent); iOS Safari and Android Chrome are in the manual plan',
+      'touch drags need the Chromium DevTools protocol; iOS Safari and Android Chrome are in the manual plan',
     );
     await page.setViewportSize({ width: 1280, height: 900 });
     await page.goto('/?component=paged-view');
@@ -345,7 +363,7 @@ test.describe('touch', () => {
   }) => {
     test.skip(
       browserName !== 'chromium',
-      'touch drags need the Chromium DevTools protocol (Input.dispatchTouchEvent); iOS Safari and Android Chrome are in the manual plan',
+      'touch drags need the Chromium DevTools protocol; iOS Safari and Android Chrome are in the manual plan',
     );
     await page.setViewportSize({ width: 1280, height: 900 });
     await page.goto('/?component=paged-view');
