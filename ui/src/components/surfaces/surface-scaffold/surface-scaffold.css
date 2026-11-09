@@ -1067,6 +1067,12 @@ h2.kui-dialog-surface__title {
   flex: 1 1 0;
   min-block-size: 0;
 }
+.kui-pinnable-popover-surface[data-body-layout="fill-last"][data-scrolled]
+  > .kui-pinnable-popover-surface__body
+  > :nth-last-child(2) {
+  /* The fixed row marks the start of scrolled content without shifting it. */
+  box-shadow: inset 0 -1px var(--kui-color-neutral-border-normal);
+}
 .kui-popup-surface {
   display: inline-flex;
 }

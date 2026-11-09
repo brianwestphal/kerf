@@ -255,8 +255,25 @@ export function wirePinnablePopover(
     // Laid out by the next frame, placed before it paints.
     frame = view.requestAnimationFrame(layout);
   };
+  const scrollOwner = () =>
+    surface.querySelector<HTMLElement>(
+      ':scope > .kui-pinnable-popover-surface__body > :last-child',
+    );
+  const syncScrollDivider = () => {
+    surface.toggleAttribute(
+      'data-scrolled',
+      surface.dataset.bodyLayout === 'fill-last' &&
+        (scrollOwner()?.scrollTop ?? 0) > 1,
+    );
+  };
   const onToggle = (event: Event) => {
-    if ((event as ToggleEvent).newState === 'open') layout();
+    if ((event as ToggleEvent).newState === 'open') {
+      layout();
+      syncScrollDivider();
+    }
+  };
+  const onSurfaceScroll = (event: Event) => {
+    if (event.target === scrollOwner()) syncScrollDivider();
   };
 
   const onClick = (event: MouseEvent) => {
@@ -401,19 +418,27 @@ export function wirePinnablePopover(
   };
 
   if (pinned) syncAttributes();
+  syncScrollDivider();
   if (isOpen()) {
     applySize();
     layout();
   }
   const restore = watchOwnedStyles(surface, owned, {
-    attributes: ['data-pinned', 'data-placed', 'aria-pressed'],
+    attributes: ['data-pinned', 'data-placed', 'data-scrolled', 'aria-pressed'],
     childList: true,
     subtree: true,
     beforeRestore: adoptResize,
-    afterRestore: syncAttributes,
+    afterRestore: () => {
+      syncAttributes();
+      syncScrollDivider();
+    },
   });
   surface.addEventListener('beforetoggle', onBeforeToggle);
   surface.addEventListener('toggle', onToggle);
+  surface.addEventListener('scroll', onSurfaceScroll, {
+    capture: true,
+    passive: true,
+  });
   surface.addEventListener('click', onClick);
   surface.addEventListener('keydown', onKeyDown);
   surface.addEventListener('pointerdown', onPointerDown);
@@ -430,6 +455,7 @@ export function wirePinnablePopover(
     restore.disconnect();
     surface.removeEventListener('beforetoggle', onBeforeToggle);
     surface.removeEventListener('toggle', onToggle);
+    surface.removeEventListener('scroll', onSurfaceScroll, { capture: true });
     surface.removeEventListener('click', onClick);
     surface.removeEventListener('keydown', onKeyDown);
     surface.removeEventListener('pointerdown', onPointerDown);
@@ -443,6 +469,7 @@ export function wirePinnablePopover(
     for (const property of owned.keys()) surface.style.removeProperty(property);
     owned.clear();
     surface.removeAttribute('data-placed');
+    surface.removeAttribute('data-scrolled');
     if (controllers.get(surface) === controller) controllers.delete(surface);
   };
 }

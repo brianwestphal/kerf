@@ -197,3 +197,55 @@ test('Library results scroll to the visible bottom edge', async ({
     await library(page).evaluate((node: HTMLElement) => node.hidePopover());
   }
 });
+
+test('Library shows a fixed-row divider only after results scroll', async ({
+  page,
+}, info) => {
+  for (const [width, height] of [
+    [2560, 1410],
+    [390, 844],
+  ]) {
+    await page.setViewportSize({ width, height });
+    await openLibrary(page);
+    await library(page)
+      .locator(
+        '[data-segmented-control-id="editor-palette-view"] [data-segment-value="grid"]',
+      )
+      .click();
+    const results = library(page).locator(
+      '.kui-pinnable-popover-surface__body > .kui-list:last-child',
+    );
+    const fixedRow = library(page).locator(
+      '.kui-pinnable-popover-surface__body > :nth-last-child(2)',
+    );
+    await results.evaluate((node) => {
+      node.scrollTop = 0;
+    });
+    await expect(library(page)).not.toHaveAttribute('data-scrolled', '');
+    const restingShadow = await fixedRow.evaluate(
+      (node) => getComputedStyle(node).boxShadow,
+    );
+    await results.evaluate((node) => {
+      node.scrollTop = 100;
+    });
+    await expect(library(page)).toHaveAttribute('data-scrolled', '');
+    expect(
+      await fixedRow.evaluate((node) => getComputedStyle(node).boxShadow),
+    ).not.toBe(restingShadow);
+    await library(page).screenshot({
+      path: info.outputPath(`library-scroll-divider-${width}.png`),
+    });
+    if (width === 2560)
+      await page.screenshot({
+        path: info.outputPath('library-scroll-divider-editor-2560.png'),
+      });
+    await results.evaluate((node) => {
+      node.scrollTop = 0;
+    });
+    await expect(library(page)).not.toHaveAttribute('data-scrolled', '');
+    expect(
+      await fixedRow.evaluate((node) => getComputedStyle(node).boxShadow),
+    ).toBe(restingShadow);
+    await library(page).evaluate((node: HTMLElement) => node.hidePopover());
+  }
+});
