@@ -41,10 +41,10 @@ test('opens below its button with focus in the filter, and closes back to it', a
   page,
 }, info) => {
   await page.setViewportSize({ width: 1440, height: 900 });
-  // The Document rail keeps Outline and Problems only.
+  // Document params live between Outline and Problems.
   await expect(
     page.locator('[role="tab"][data-tab-id^="editor-document-areas-"]'),
-  ).toHaveText(['Outline', /^Problems/]);
+  ).toHaveText(['Outline', 'Params', /^Problems/]);
   await button(page).click();
   await expect(library(page)).toBeVisible();
   await expect(page.locator('[data-editor-palette-filter]')).toBeFocused();
