@@ -356,3 +356,54 @@ test('Library resizes vertically from its bottom edge', async ({
     await surface.evaluate((node: HTMLElement) => node.hidePopover());
   }
 });
+
+test('Library header drag follows pointer without repeated layout reads', async ({
+  page,
+}, info) => {
+  await page.setViewportSize({ width: 2048, height: 1128 });
+  await openLibrary(page);
+  const surface = library(page);
+  const title = surface.locator('.kui-pinnable-popover-surface__handle');
+  const before = (await surface.boundingBox())!;
+  const handleBox = (await title.boundingBox())!;
+  await page.evaluate(() => {
+    const node = document.querySelector<HTMLElement>('#editor-library')!;
+    const original = node.getBoundingClientRect.bind(node);
+    const probe = { reads: 0, restore: () => {} };
+    node.getBoundingClientRect = () => {
+      probe.reads += 1;
+      return original();
+    };
+    probe.restore = () => {
+      node.getBoundingClientRect = original;
+    };
+    (
+      window as Window & { __libraryDragProbe?: typeof probe }
+    ).__libraryDragProbe = probe;
+  });
+  await page.mouse.move(
+    handleBox.x + handleBox.width / 2,
+    handleBox.y + handleBox.height / 2,
+  );
+  await page.mouse.down();
+  await page.mouse.move(
+    handleBox.x + handleBox.width / 2 + 200,
+    handleBox.y + handleBox.height / 2 + 150,
+    { steps: 20 },
+  );
+  await page.mouse.up();
+  const reads = await page.evaluate(() => {
+    const probe = (
+      window as Window & {
+        __libraryDragProbe?: { reads: number; restore(): void };
+      }
+    ).__libraryDragProbe!;
+    probe.restore();
+    return probe.reads;
+  });
+  const after = (await surface.boundingBox())!;
+  expect(after.x - before.x).toBeGreaterThan(100);
+  expect(after.y - before.y).toBeGreaterThan(100);
+  expect(reads).toBeLessThanOrEqual(6);
+  await page.screenshot({ path: info.outputPath('library-drag-2048.png') });
+});

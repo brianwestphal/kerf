@@ -340,6 +340,7 @@ export function wirePinnablePopover(
         left: number;
         top: number;
         moving: boolean;
+        bounds?: { min: number; maxX: number; maxY: number };
       }
     | undefined;
   let resizeDrag:
@@ -403,9 +404,23 @@ export function wirePinnablePopover(
     const dx = event.clientX - drag.startX;
     const dy = event.clientY - drag.startY;
     if (!drag.moving && Math.hypot(dx, dy) < DRAG_THRESHOLD) return;
-    drag.moving = true;
-    setPinned(true);
-    place(drag.left + dx, drag.top + dy);
+    const firstMove = !drag.bounds;
+    if (!drag.bounds) {
+      drag.moving = true;
+      setPinned(true);
+      const box = surface.getBoundingClientRect();
+      const min = gutter();
+      const viewSize = viewport();
+      drag.bounds = {
+        min,
+        maxX: viewSize.width - min - box.width,
+        maxY: viewSize.height - min - box.height,
+      };
+    }
+    const { min, maxX, maxY } = drag.bounds;
+    own(X_PROPERTY, `${Math.max(min, Math.min(drag.left + dx, maxX))}px`);
+    own(Y_PROPERTY, `${Math.max(min, Math.min(drag.top + dy, maxY))}px`);
+    if (firstMove) syncAttributes();
   };
   const onPointerEnd = (event: PointerEvent) => {
     if (resizeDrag && event.pointerId === resizeDrag.id) {
@@ -428,7 +443,7 @@ export function wirePinnablePopover(
       header.releasePointerCapture(event.pointerId);
     if (!moving) return;
     const box = surface.getBoundingClientRect();
-    settle({ x: box.left, y: box.top });
+    settle(place(box.left, box.top));
     report('move');
   };
 
@@ -464,7 +479,13 @@ export function wirePinnablePopover(
     surface.hidePopover();
   };
 
-  const onResize = () => layout();
+  const onResize = () => {
+    if (drag?.moving) {
+      drag.bounds = undefined;
+      return;
+    }
+    layout();
+  };
   const onScroll = () => {
     if (!pinned) layout();
   };

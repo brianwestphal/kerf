@@ -372,6 +372,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Fixed
 
+- **Dragging the editor Library avoids repeated layout reads (KF-382S3P).** The header drag caches its active clamp and writes only position variables on pointer moves, then settles against the live viewport at release.
 - **The editor Library resizes from its bottom edge (KF-K662KK).** A visible bottom grip pins the dialog and changes its height within the viewport, while its results remain scrollable.
 - **Library grid names show an ellipsis when a tile is too narrow (KF-CTVDFT).** Component and document tile labels keep their full accessible names and tooltips while using the Text component's explicit single-line truncation.
 - **The editor Library marks scrolled content with a separator (KF-3T9H48).** Its fixed filter row gains a line only while the results List is scrolled, without moving either row.

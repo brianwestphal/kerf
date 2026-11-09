@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 164600,
-  "totalJavaScriptGzip": 464000,
-  "measuredLargestJavaScriptGzip": 164547,
-  "measuredTotalJavaScriptGzip": 463919,
+  "totalJavaScriptGzip": 464100,
+  "measuredLargestJavaScriptGzip": 164546,
+  "measuredTotalJavaScriptGzip": 464023,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -7123,6 +7123,22 @@
         "measuredTotalJavaScriptGzip": 463919,
         "largestJavaScriptGzip": 164600,
         "totalJavaScriptGzip": 464000
+      }
+    },
+    {
+      "at": "2026-11-09T02:36:42.121Z",
+      "reason": "Library header drag caches viewport bounds instead of forcing layout on each pointer move",
+      "old": {
+        "measuredLargestJavaScriptGzip": 164547,
+        "measuredTotalJavaScriptGzip": 463919,
+        "largestJavaScriptGzip": 164600,
+        "totalJavaScriptGzip": 464000
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 164546,
+        "measuredTotalJavaScriptGzip": 464023,
+        "largestJavaScriptGzip": 164600,
+        "totalJavaScriptGzip": 464100
       }
     }
   ]

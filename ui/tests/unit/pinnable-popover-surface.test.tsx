@@ -568,6 +568,7 @@ describe('wirePinnablePopover', () => {
     pointer(bar, 'pointermove', 200, 100, { pointerId: 2 });
     expect(changes).toEqual([]);
     pointer(bar, 'pointermove', 250, 300);
+    pointer(bar, 'pointermove', 250, 300);
     expect(changes.map((change) => change.reason)).toEqual(['pin']);
     expect(position(surface)).toEqual({ x: 200, y: 284 });
     pointer(bar, 'pointerup', 250, 300, { pointerId: 2 });
@@ -587,6 +588,22 @@ describe('wirePinnablePopover', () => {
       y: 16,
     });
     expect(changes.at(-1)!.reason).toBe('move');
+  });
+
+  it('keeps an active header drag in place across a viewport resize', () => {
+    const { surface } = mount();
+    const { changes } = wire(surface);
+    surface.showPopover();
+    const bar = header(surface);
+    pointer(handle(surface), 'pointerdown', 150, 100);
+    pointer(bar, 'pointermove', 200, 200);
+    expect(position(surface)).toEqual({ x: 150, y: 184 });
+    window.dispatchEvent(new Event('resize'));
+    expect(position(surface)).toEqual({ x: 150, y: 184 });
+    pointer(bar, 'pointermove', 220, 220);
+    pointer(bar, 'pointerup', 220, 220);
+    expect(position(surface)).toEqual({ x: 170, y: 204 });
+    expect(changes.at(-1)!.placement).toEqual({ x: 170, y: 204 });
   });
 
   it('ignores presses that are not a header drag', () => {
