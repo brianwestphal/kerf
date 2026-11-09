@@ -1426,18 +1426,24 @@ export type ActionRowSpec = FieldSpec & {
 };
 
 /**
- * Gives the `index`th ListActionRow its trailing button's icon; the
- * palette's row seeds a trailing menu, which the button replaces.
+ * Replaces the palette's trailing menu with a button icon on the `index`th
+ * ListActionRow. Clear the menu first so the row remains on a valid variant
+ * throughout the edit and wait for the editor to commit that change.
  */
 export async function trailingButton(page: Page, index: number, glyph: string) {
   await select(page, /^ListActionRow/, index);
-  await addIcon(page, 'trailingActionIcon', glyph);
-  await select(page, /^ListActionRow/, index);
   await openConfigure(page, 'Configure trailing menu');
-  await page
+  const reset = page
     .locator('[data-action="editor-reset-field"]')
-    .filter({ visible: true })
-    .click();
+    .filter({ visible: true });
+  await expect(reset).toHaveAttribute(
+    'data-editor-step',
+    JSON.stringify({ prop: 'trailingMenu', path: [] }),
+  );
+  await reset.click();
+  await expect(reset).toBeDisabled();
+  await back(page);
+  await addIcon(page, 'trailingActionIcon', glyph);
 }
 
 /** A List of ListActionRows, each set up by its spec. */
