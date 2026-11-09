@@ -43,6 +43,10 @@ it uses ship from `@kerfjs/ui/view`, so tools and applications work without it.
 - **Bind** a prop to a document param or a field of an enclosing `$each` item
   in the Inspector's Bind section; it offers only the sources the validator
   accepts for that prop, and Not bound clears a binding.
+- **Branch and repeat** in the Inspector's Control flow section. Show wraps a
+  node in `$if` using a boolean param or item field; Repeat for each wraps it
+  in keyed `$each` using a list param or item field. Row designs choose
+  different templates by condition, and slots leave app-owned content holes.
 - **Add, move, and delete** nodes. Add a child picks one of the node's legal
   zones (a full zone is disabled with its reason) and a component that zone
   accepts, seeded with the props it needs to be valid. The Inspector toolbar
@@ -52,8 +56,26 @@ it uses ship from `@kerfjs/ui/view`, so tools and applications work without it.
   Shift+Cmd/Ctrl+Z (text fields keep their own undo). Opening a document
   clears the history.
 
-Drag-and-drop placement, non-literal `$css` editing, and adding control flow
-come later.
+Arbitrary CSS and code-defined behavior remain application-owned.
+
+## Reusable views and app components
+
+Start a new document, add a root and its children, then promote literal props
+to document params in the Inspector. Bind repeated rows to a list param and
+conditional nodes to boolean params. Export the generated `.view.ts`: its
+`render<Name>` takes typed inputs and slots, and `wire<Name>` takes typed
+action handlers. Keep application state, computations, data loading, and
+styles in a separate wrapper that calls the generated renderer.
+
+A ticket row illustrates the boundary. A view document can compose
+`SummaryRow`, badges, and tag chips; use `$if` for optional status/claim
+indicators and `$each` for tags. The app wrapper computes priority and category
+presentation, supplies the ticket and selection as inputs, handles actions,
+and owns any custom CSS or components the catalog cannot express. The editor
+can build a reusable view from existing catalog components; it does not create
+a new styled primitive or translate an arbitrary TSX component back into a
+document. See [`ui/docs/view.md`](../ui/docs/view.md) for the document forms
+and generated module contract.
 
 ## Demo build samples
 
