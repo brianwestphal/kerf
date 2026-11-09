@@ -1,6 +1,7 @@
 import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
 
 import { renderLayoutAnchoredRequest } from '../views/layout-anchored-request.view.js';
+import { renderLayoutAnchoredRequestPopup } from '../views/layout-anchored-request-popup.view.js';
 import { renderLayoutPane } from '../views/layout-pane.view.js';
 
 /** The named anchor the request popup docks to through its catalog frame. */
@@ -31,6 +32,7 @@ export function LayoutDemo() {
         rootAttributes={{ 'data-layout-anchor-example': '' }}
       >
         {renderLayoutAnchoredRequest()}
+        {renderLayoutAnchoredRequestPopup()}
       </CatalogExample>
     </CatalogExampleStack>
   );

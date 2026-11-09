@@ -1,5 +1,6 @@
 import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
 
+import { renderApplicationTabItem } from '../views/application-tab-item.view.js';
 import { renderApplicationTabsDisabled } from '../views/application-tabs-disabled.view.js';
 import { renderApplicationTabsReorderable } from '../views/application-tabs-reorderable.view.js';
 import { reportTabActive, tabBarActive, tabBarTabs } from './state.js';
@@ -18,20 +19,35 @@ export function ApplicationTabsDemo() {
         label="Reorderable Application Tabs"
         viewport={{ width: 'medium', frame: 'solid' }}
       >
-        {renderApplicationTabsReorderable({
-          tabs: tabBarTabs.value.map((tab) => ({
-            id: tab.id,
-            tabId: `catalog-tab-${tab.id}`,
-            name: tab.name,
-            selected: activeName === tab.id,
-            pending: tab.pending ?? false,
-          })),
-          activeTabId: `catalog-tab-${activeName}`,
-          activeBusy: activeTab?.pending ?? false,
-          activeName,
-          loadingLabel: `Loading ${activeTab?.name ?? activeName}…`,
-          orderLabel: tabBarTabs.value.map((tab) => tab.name).join(' · '),
-        })}
+        {renderApplicationTabsReorderable(
+          {
+            activeTabId: `catalog-tab-${activeName}`,
+            activeBusy: activeTab?.pending ?? false,
+            activeName,
+            loadingLabel: `Loading ${activeTab?.name ?? activeName}…`,
+            orderLabel: tabBarTabs.value.map((tab) => tab.name).join(' · '),
+          },
+          {
+            tabItems: () => (
+              <>
+                {tabBarTabs.value.map((tab) =>
+                  renderApplicationTabItem(
+                    {
+                      id: tab.id,
+                      tabId: `catalog-tab-${tab.id}`,
+                      name: tab.name,
+                      selected: activeName === tab.id,
+                      pending: tab.pending ?? false,
+                    },
+                    {},
+                    tab.id,
+                  ),
+                )}
+              </>
+            ),
+          },
+          'application-tabs',
+        )}
       </CatalogExample>
       <CatalogExample
         label="Named Disabled Tab"

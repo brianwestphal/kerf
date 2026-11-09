@@ -139,6 +139,9 @@ for (const width of [1280, 390]) {
       path: testInfo.outputPath(`anchored-request-open-${width}.png`),
     });
 
+    // The dock is at the bottom of an app-height frame. Bring that part of
+    // the page into view before pressing its action button.
+    await frame.evaluate((el) => el.scrollIntoView({ block: 'end' }));
     await popup.getByRole('button', { name: 'Deny' }).click();
     await expect(popup).toBeHidden();
   });

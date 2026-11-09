@@ -1,0 +1,84 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "ApplicationTabItem",
+  "catalogs": ["@kerfjs/ui"],
+  "root": {
+    "id": "01M6Z9ABC00000000000000077",
+    "type": "@kerfjs/ui:tabs",
+    "props": {
+      "id": {
+        "$param": "id"
+      },
+      "tabId": {
+        "$param": "tabId"
+      },
+      "panelId": "catalog-active-panel",
+      "name": {
+        "$param": "name"
+      },
+      "selected": {
+        "$param": "selected"
+      },
+      "pending": {
+        "$param": "pending"
+      },
+      "draggable": true,
+      "selectAction": {
+        "$action": "select-reorder-tab"
+      },
+      "closeAction": {
+        "$action": "close-reorder-tab"
+      },
+      "rootAttributes": {
+        "data-demo-tab-id": {
+          "$param": "id"
+        }
+      }
+    },
+    "zones": {
+      "trailing-decoration": [
+        {
+          "$if": {
+            "$param": "pending"
+          },
+          "then": {
+            "id": "01M6Z9ABC00000000000000076",
+            "type": "@kerfjs/ui:loading-spinner"
+          }
+        }
+      ]
+    }
+  },
+  "params": {
+    "id": {
+      "type": {
+        "kind": "string"
+      },
+      "default": "example"
+    },
+    "tabId": {
+      "type": {
+        "kind": "string"
+      },
+      "default": "catalog-tab-example"
+    },
+    "name": {
+      "type": {
+        "kind": "string"
+      },
+      "default": "Example"
+    },
+    "selected": {
+      "type": {
+        "kind": "boolean"
+      },
+      "default": false
+    },
+    "pending": {
+      "type": {
+        "kind": "boolean"
+      },
+      "default": false
+    }
+  }
+}

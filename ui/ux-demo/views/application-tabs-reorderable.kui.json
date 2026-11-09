@@ -98,58 +98,7 @@
             ],
             "tabs": [
               {
-                "$each": {
-                  "$param": "tabs"
-                },
-                "as": "tab",
-                "key": "tab.id",
-                "template": {
-                  "id": "01M6Z9ABC00000000000000077",
-                  "type": "@kerfjs/ui:tabs",
-                  "props": {
-                    "id": {
-                      "$bind": "tab.id"
-                    },
-                    "tabId": {
-                      "$bind": "tab.tabId"
-                    },
-                    "panelId": "catalog-active-panel",
-                    "name": {
-                      "$bind": "tab.name"
-                    },
-                    "selected": {
-                      "$bind": "tab.selected"
-                    },
-                    "pending": {
-                      "$bind": "tab.pending"
-                    },
-                    "draggable": true,
-                    "selectAction": {
-                      "$action": "select-reorder-tab"
-                    },
-                    "closeAction": {
-                      "$action": "close-reorder-tab"
-                    },
-                    "rootAttributes": {
-                      "data-demo-tab-id": {
-                        "$bind": "tab.id"
-                      }
-                    }
-                  },
-                  "zones": {
-                    "trailing-decoration": [
-                      {
-                        "$if": {
-                          "$bind": "tab.pending"
-                        },
-                        "then": {
-                          "id": "01M6Z9ABC00000000000000076",
-                          "type": "@kerfjs/ui:loading-spinner"
-                        }
-                      }
-                    ]
-                  }
-                }
+                "$slot": "tabItems"
               }
             ]
           }
@@ -261,52 +210,6 @@
     }
   },
   "params": {
-    "tabs": {
-      "type": {
-        "kind": "array",
-        "items": {
-          "kind": "object",
-          "props": [
-            {
-              "name": "id",
-              "type": {
-                "kind": "string"
-              },
-              "required": true
-            },
-            {
-              "name": "tabId",
-              "type": {
-                "kind": "string"
-              },
-              "required": true
-            },
-            {
-              "name": "name",
-              "type": {
-                "kind": "string"
-              },
-              "required": true
-            },
-            {
-              "name": "selected",
-              "type": {
-                "kind": "boolean"
-              },
-              "required": true
-            },
-            {
-              "name": "pending",
-              "type": {
-                "kind": "boolean"
-              },
-              "required": true
-            }
-          ]
-        }
-      },
-      "default": []
-    },
     "activeTabId": {
       "type": {
         "kind": "string"
