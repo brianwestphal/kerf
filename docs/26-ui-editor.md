@@ -854,6 +854,26 @@ published layers, never the only one. Consumers read
 [`ui/docs/view.md`](../ui/docs/view.md) for the view layer and
 [`ui/docs/editor-host.md`](../ui/docs/editor-host.md) for the editor.
 
+### 1.3 Catalog composition and recipe authoring
+
+The UX catalog can use view documents as the source for the component tree of
+composition and recipe specimens. The editor opens and previews a `*.kui.json`
+document, and the catalog renders its checked generated view module. The
+catalog host still owns `CatalogExample` framing, recipe presentation metadata,
+signals, handlers, component wiring, and tests for interaction. A view document
+describes components, literals, params, actions, slots, `$if`, and `$each`; it
+does not contain arbitrary expressions or application behavior. A dynamic
+recipe can therefore pass state through typed inputs and slots and handle its
+actions in the host, while its editable layout stays in the document.
+
+The existing `editor/samples/` documents are editor build-test outputs, one per
+supported component configuration. They are not currently the live source of
+the catalog's TSX demos. Adoption should start with one composition and one
+recipe whose component trees validate against the view catalog, compare their
+editor previews with the live catalog, and check generated modules for drift in
+the UI gate. Once the boundary works, migrate other representable specimens
+without moving application state or recipe control flow into the document.
+
 ## 2. Files and naming
 
 ```
