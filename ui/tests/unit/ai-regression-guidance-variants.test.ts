@@ -57,6 +57,7 @@ describe(
       );
       expect(navigation.sourcePaths).not.toContain('ai/component-catalog.json');
       expect(navigation.sourcePaths).toContain('ai/components/README.md');
+      expect(navigation.sourcePaths).toContain('ai/components/value-table.md');
       expect(
         navigation.sourcePaths.filter(
           (path) => !path.startsWith('ai/components/'),
@@ -75,6 +76,8 @@ describe(
         'ai/components/toolbar.md',
         'ai/components/toolbar-control-group.md',
         'ai/components/toolbar-text.md',
+        'ai/components/row.md',
+        'ai/components/list.md',
         'ai/components/list-item.md',
         'ai/components/button.md',
         'ai/components/state-banner.md',

@@ -3,7 +3,7 @@
 // feedback policy. The first variant swaps the JSON selection catalog for the
 // generated markdown component reference (index + referenced pages).
 import { access, readFile } from 'node:fs/promises';
-import { posix, resolve } from 'node:path';
+import { dirname, posix, resolve } from 'node:path';
 
 export const AI_REGRESSION_GUIDANCE_VARIANTS_V3 =
   'ai-regressions/guidance-variants-v3.json';
@@ -47,6 +47,37 @@ const NAMED_IMPORT =
 const WEB_AWESOME_TAG = /<(wa-[a-z0-9-]+)/g;
 const WEB_AWESOME_COMPONENT =
   /^@awesome\.me\/webawesome\/dist\/components\/([a-z0-9-]+)\//;
+const GENERATED_VIEW_IMPORT = /^\.\.?\/[^'"\s]+\.view\.js$/;
+
+// A case owns the generated views its declared application files import.
+// Follow only that one checked generation boundary: other source imports can
+// lead to shared catalog infrastructure or to files outside the case.
+async function readCaseApplicationSources(root, contextFiles) {
+  const files = await Promise.all(
+    contextFiles.map(async (path) => ({
+      path,
+      source: await readFile(resolve(root, path), 'utf8'),
+    })),
+  );
+  const generated = new Set();
+  for (const { path, source } of files) {
+    for (const [, specifier] of source.matchAll(IMPORT_SPECIFIER)) {
+      if (!GENERATED_VIEW_IMPORT.test(specifier)) continue;
+      generated.add(
+        resolve(
+          dirname(resolve(root, path)),
+          specifier.replace(/\.js$/, '.ts'),
+        ),
+      );
+    }
+  }
+  return [
+    ...files.map(({ source }) => source),
+    ...(await Promise.all(
+      [...generated].map((path) => readFile(path, 'utf8')),
+    )),
+  ];
+}
 
 // Everything the application source already references: import specifiers,
 // names imported from @kerfjs/ui, and Web Awesome tags or registrations.
@@ -118,11 +149,9 @@ export async function resolveAiRegressionVariantGuidanceV3(
     throw new Error(
       `${variant.id} replaces ${variant.replaces}, which is not a v3 guidance source`,
     );
-  const [catalog, ...sources] = await Promise.all([
+  const [catalog, sources] = await Promise.all([
     readFile(resolve(root, variant.replaces), 'utf8').then(JSON.parse),
-    ...caseDefinition.contextFiles.map((path) =>
-      readFile(resolve(root, path), 'utf8'),
-    ),
+    readCaseApplicationSources(root, caseDefinition.contextFiles),
   ]);
   const pages = selectAiRegressionReferencePages(
     catalog,
