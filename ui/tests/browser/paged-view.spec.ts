@@ -244,6 +244,26 @@ test.describe('touch', () => {
     await session.detach();
   }
 
+  /** Let Chromium generate a timed touch fling in its input pipeline, rather
+   * than relying on back-to-back touch events with synthetic timestamps. */
+  async function hardFling(page: Page, viewport: Locator) {
+    const box = (await viewport.boundingBox())!;
+    const session = await page.context().newCDPSession(page);
+    try {
+      await session.send('Input.synthesizeScrollGesture', {
+        x: Math.round(box.x + box.width * 0.7),
+        y: Math.round(box.y + box.height / 2),
+        xDistance: -Math.round(box.width * 0.3),
+        yDistance: 0,
+        speed: 3000,
+        gestureSourceType: 'touch',
+        preventFling: false,
+      });
+    } finally {
+      await session.detach();
+    }
+  }
+
   /** Resolves once the viewport has had no scroll event for a while longer
    * than the wiring's settle fallback: the fling, the snap, and any late
    * settle report are over. */
@@ -308,12 +328,12 @@ test.describe('touch', () => {
     // A fast flick of under a page. Its momentum alone would carry past
     // Token Rate to Triage (it does with `scroll-snap-stop: normal`); the
     // stop holds it on the next page.
-    await swipe(page, viewport, { from: 0.7, to: 0.4, steps: 3, stepMs: 8 });
+    await hardFling(page, viewport);
     await expectShowing(three, 'rates');
     await scrollQuiet(viewport);
     expect(await recordedPages(three)).toEqual(['rates']);
     // The same flick again moves one more page, reported once more.
-    await swipe(page, viewport, { from: 0.7, to: 0.4, steps: 3, stepMs: 8 });
+    await hardFling(page, viewport);
     await expectShowing(three, 'triage');
     await scrollQuiet(viewport);
     expect(await recordedPages(three)).toEqual(['rates', 'triage']);

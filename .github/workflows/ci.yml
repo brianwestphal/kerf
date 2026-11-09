@@ -399,6 +399,17 @@ jobs:
       - run: npm run build
       - name: Run the UI unit and Chromium suites against the newest Web Awesome 3.x
         run: npm run test:webawesome-latest
+      - name: Upload Web Awesome browser failure evidence
+        if: failure()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: ui-webawesome-latest-failure
+          path: |
+            ui/test-results/**/trace.zip
+            ui/test-results/**/test-failed-*.png
+            ui/test-results/**/error-context.md
+          if-no-files-found: warn
+          retention-days: 14
 
   design-templates:
     runs-on: macos-latest
