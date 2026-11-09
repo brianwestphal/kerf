@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 164600,
-  "totalJavaScriptGzip": 463500,
-  "measuredLargestJavaScriptGzip": 164546,
-  "measuredTotalJavaScriptGzip": 463454,
+  "totalJavaScriptGzip": 464000,
+  "measuredLargestJavaScriptGzip": 164547,
+  "measuredTotalJavaScriptGzip": 463919,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -7107,6 +7107,22 @@
         "measuredTotalJavaScriptGzip": 463454,
         "largestJavaScriptGzip": 164600,
         "totalJavaScriptGzip": 463500
+      }
+    },
+    {
+      "at": "2026-11-09T02:13:06.774Z",
+      "reason": "Library scroll divider, visible tile labels, and bottom-edge resize behavior reviewed in browser",
+      "old": {
+        "measuredLargestJavaScriptGzip": 164546,
+        "measuredTotalJavaScriptGzip": 463454,
+        "largestJavaScriptGzip": 164600,
+        "totalJavaScriptGzip": 463500
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 164547,
+        "measuredTotalJavaScriptGzip": 463919,
+        "largestJavaScriptGzip": 164600,
+        "totalJavaScriptGzip": 464000
       }
     }
   ]

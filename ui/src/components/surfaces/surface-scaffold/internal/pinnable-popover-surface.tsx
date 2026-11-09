@@ -68,6 +68,8 @@ export interface PinnablePopoverSurfaceProps {
    * `fill-last` stacks fixed rows above one filling last child.
    */
   bodyLayout?: DialogSurfaceBodyLayout;
+  /** Add a bottom-edge handle that pins and resizes an overlay by drag or arrow key. */
+  resizeFromBottom?: boolean;
   /** The Pin toggle's accessible name (default `Pin`). */
   pinLabel?: string;
   /** The close button's accessible name (default `Close`). */
@@ -89,6 +91,8 @@ const PINNABLE_POPOVER_PROTECTED = new Set([
   'data-body-layout',
   'data-pinned',
   'data-placed',
+  'data-scrolled',
+  'data-resize-from-bottom',
 ]);
 
 const DEFAULT_MOVE_DESCRIPTION =
@@ -119,6 +123,7 @@ export function PinnablePopoverSurface({
   maxHeight,
   viewportGutter,
   bodyLayout = 'flow',
+  resizeFromBottom = false,
   pinLabel = 'Pin',
   closeLabel = 'Close',
   moveDescription = DEFAULT_MOVE_DESCRIPTION,
@@ -154,6 +159,7 @@ export function PinnablePopoverSurface({
       data-height={height === undefined ? undefined : ''}
       data-max-height={maxHeight === undefined ? undefined : ''}
       data-body-layout={bodyLayout === 'flow' ? undefined : bodyLayout}
+      data-resize-from-bottom={resizeFromBottom ? '' : undefined}
       data-pinned={pinned ? '' : undefined}
       popover={overlay ? 'manual' : undefined}
       role="dialog"
@@ -198,6 +204,14 @@ export function PinnablePopoverSurface({
         </div>
       </header>
       <div class="kui-pinnable-popover-surface__body">{children}</div>
+      {resizeFromBottom && overlay ? (
+        <button
+          type="button"
+          class="kui-pinnable-popover-surface__bottom-resize"
+          aria-label={`Resize ${label} vertically`}
+          title={`Resize ${label} vertically`}
+        />
+      ) : undefined}
     </section>
   );
 }

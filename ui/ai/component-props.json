@@ -13466,6 +13466,16 @@
           "description": "Body layout (default `flow`); `fill` lets one child own the body and\n`fill-last` stacks fixed rows above one filling last child."
         },
         {
+          "name": "resizeFromBottom",
+          "type": {
+            "kind": "boolean",
+            "text": "boolean | undefined",
+            "nullable": true
+          },
+          "required": false,
+          "description": "Add a bottom-edge handle that pins and resizes an overlay by drag or arrow key."
+        },
+        {
           "name": "pinLabel",
           "type": { "kind": "string", "text": "string", "nullable": true },
           "required": false,

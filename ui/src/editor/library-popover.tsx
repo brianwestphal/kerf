@@ -217,6 +217,7 @@ export function createLibraryPopover(
         size="small"
         height={px(560)}
         bodyLayout="fill-last"
+        resizeFromBottom
         headerActions={
           // KF-JC7WTW: a list of names, or a grid of thumbnails.
           <SegmentedControl

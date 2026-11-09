@@ -289,3 +289,70 @@ test('Library grid names truncate visibly without losing the full name', async (
     await library(page).evaluate((node: HTMLElement) => node.hidePopover());
   }
 });
+
+test('Library resizes vertically from its bottom edge', async ({
+  page,
+}, info) => {
+  for (const [width, height] of [
+    [2048, 1128],
+    [390, 844],
+  ]) {
+    await page.setViewportSize({ width, height });
+    await openLibrary(page);
+    const surface = library(page);
+    if ((await surface.getAttribute('data-pinned')) !== null)
+      await surface.locator('[data-pinnable-popover-pin]').click();
+    const grip = surface.locator(
+      '.kui-pinnable-popover-surface__bottom-resize',
+    );
+    const before = (await surface.boundingBox())!;
+    const edge = (await grip.boundingBox())!;
+    await page.mouse.move(edge.x + edge.width / 2, edge.y + edge.height / 2);
+    await page.mouse.down();
+    await page.mouse.move(edge.x + edge.width / 2, edge.y - 100, {
+      steps: 8,
+    });
+    await page.mouse.up();
+    const after = (await surface.boundingBox())!;
+    expect(after.height).toBeLessThan(before.height - 80);
+    await expect(surface).toHaveAttribute('data-pinned', '');
+    const results = surface.locator(
+      '.kui-pinnable-popover-surface__body > .kui-list:last-child',
+    );
+    await results.evaluate((node) => {
+      node.scrollTop = 100;
+    });
+    expect(await results.evaluate((node) => node.scrollTop)).toBeGreaterThan(0);
+    await surface.screenshot({
+      path: info.outputPath(`library-bottom-resize-${width}.png`),
+    });
+    const lowerEdge = (await grip.boundingBox())!;
+    await page.mouse.move(
+      lowerEdge.x + lowerEdge.width / 2,
+      lowerEdge.y + lowerEdge.height / 2,
+    );
+    await page.mouse.down();
+    await page.mouse.move(lowerEdge.x + lowerEdge.width / 2, height - 1, {
+      steps: 8,
+    });
+    await page.mouse.up();
+    const expanded = (await surface.boundingBox())!;
+    expect(expanded.y + expanded.height).toBeLessThanOrEqual(height - 15);
+    const expandedEdge = (await grip.boundingBox())!;
+    await page.mouse.move(
+      expandedEdge.x + expandedEdge.width / 2,
+      expandedEdge.y + expandedEdge.height / 2,
+    );
+    await page.mouse.down();
+    await page.mouse.move(expandedEdge.x + expandedEdge.width / 2, 1, {
+      steps: 8,
+    });
+    await page.mouse.up();
+    expect((await surface.boundingBox())!.height).toBeGreaterThanOrEqual(159);
+    expect((await surface.boundingBox())!.height).toBeLessThanOrEqual(161);
+    await grip.focus();
+    await page.keyboard.press('ArrowDown');
+    expect((await surface.boundingBox())!.height).toBeGreaterThan(160);
+    await surface.evaluate((node: HTMLElement) => node.hidePopover());
+  }
+});

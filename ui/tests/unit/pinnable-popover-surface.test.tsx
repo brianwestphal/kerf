@@ -107,6 +107,10 @@ const handle = (surface: HTMLElement) =>
   )!;
 const header = (surface: HTMLElement) =>
   surface.querySelector<HTMLElement>('.kui-pinnable-popover-surface__header')!;
+const bottomResize = (surface: HTMLElement) =>
+  surface.querySelector<HTMLButtonElement>(
+    '.kui-pinnable-popover-surface__bottom-resize',
+  )!;
 const flush = () => new Promise((resolve) => globalThis.setTimeout(resolve, 0));
 const key = (target: Element, init: KeyboardEventInit) => {
   const event = new KeyboardEvent('keydown', {
@@ -210,6 +214,15 @@ describe('PinnablePopoverSurface', () => {
     expect(html).toContain('data-height="" data-max-height=""');
     expect(html.slice(0, html.indexOf('>'))).not.toContain('style=');
   });
+
+  it('renders an opt-in bottom resize handle only on overlays', () => {
+    expect(render({ resizeFromBottom: true })).toContain(
+      'class="kui-pinnable-popover-surface__bottom-resize" aria-label="Resize Library vertically"',
+    );
+    expect(
+      render({ presentation: 'embedded', resizeFromBottom: true }),
+    ).not.toContain('kui-pinnable-popover-surface__bottom-resize');
+  });
 });
 
 describe('wirePinnablePopover', () => {
@@ -256,6 +269,82 @@ describe('wirePinnablePopover', () => {
     await new Promise((resolve) => globalThis.requestAnimationFrame(resolve));
     expect(position(surface)).toEqual({ x: 100, y: 84 });
     surface.hidePopover();
+  });
+
+  it('marks a fill-last body only while its results are scrolled', () => {
+    const { surface } = mount({ bodyLayout: 'fill-last' });
+    const { dispose } = wire(surface);
+    surface.showPopover();
+    const results = surface.querySelector(
+      '.kui-pinnable-popover-surface__body > p',
+    )!;
+    expect(surface.hasAttribute('data-scrolled')).toBe(false);
+    results.scrollTop = 5;
+    results.dispatchEvent(new Event('scroll', { bubbles: false }));
+    expect(surface.hasAttribute('data-scrolled')).toBe(true);
+    results.scrollTop = 0;
+    results.dispatchEvent(new Event('scroll', { bubbles: false }));
+    expect(surface.hasAttribute('data-scrolled')).toBe(false);
+    header(surface).dispatchEvent(new Event('scroll', { bubbles: false }));
+    results.remove();
+    surface.hidePopover();
+    surface.showPopover();
+    expect(surface.hasAttribute('data-scrolled')).toBe(false);
+    dispose();
+  });
+
+  it('pins and resizes from the bottom by pointer and arrow keys', () => {
+    const { surface } = mount({ resizeFromBottom: true });
+    const { changes } = wire(surface);
+    surface.showPopover();
+    const grip = bottomResize(surface);
+    grip.setPointerCapture = vi.fn();
+    grip.hasPointerCapture = () => true;
+    grip.releasePointerCapture = vi.fn();
+    pointer(grip, 'pointerdown', 200, 284);
+    expect(grip.setPointerCapture).toHaveBeenCalledWith(1);
+    pointer(grip, 'pointermove', 200, 350);
+    expect(surface.style.height).toBe('266px');
+    pointer(grip, 'pointerup', 200, 350);
+    expect(grip.releasePointerCapture).toHaveBeenCalledWith(1);
+    expect(changes.map((change) => change.reason)).toEqual(['pin', 'resize']);
+    expect(changes.at(-1)!.placement).toEqual({ x: 100, y: 84, height: 266 });
+    expect(key(grip, { key: 'ArrowUp' }).defaultPrevented).toBe(true);
+    expect(surface.style.height).toBe('258px');
+    expect(
+      key(grip, { key: 'ArrowDown', shiftKey: true }).defaultPrevented,
+    ).toBe(true);
+    expect(surface.style.height).toBe('298px');
+    expect(
+      key(grip, { key: 'ArrowDown', metaKey: true }).defaultPrevented,
+    ).toBe(false);
+    expect(changes.at(-1)!.placement?.height).toBe(298);
+    grip.hasPointerCapture = () => false;
+    pointer(grip, 'pointerdown', 200, 382);
+    pointer(grip, 'pointerup', 200, 382);
+    expect(changes.at(-1)!.reason).toBe('resize');
+  });
+
+  it('can size a closed surface before it has a saved placement', () => {
+    const { surface } = mount({ resizeFromBottom: true });
+    const { changes } = wire(surface);
+    const grip = bottomResize(surface);
+    key(grip, { key: 'ArrowDown' });
+    expect(changes.at(-1)!.placement).toEqual({
+      x: CENTER.x,
+      y: CENTER.y,
+      height: 208,
+    });
+    const second = mount({ resizeFromBottom: true }).surface;
+    const secondChanges = wire(second).changes;
+    const secondGrip = bottomResize(second);
+    pointer(secondGrip, 'pointerdown', 400, 484);
+    pointer(secondGrip, 'pointerup', 400, 484);
+    expect(secondChanges.at(-1)!.placement).toEqual({
+      x: CENTER.x,
+      y: CENTER.y,
+      height: SIZE.height,
+    });
   });
 
   it('flips above an anchor with no room below, and aligns end in RTL', () => {

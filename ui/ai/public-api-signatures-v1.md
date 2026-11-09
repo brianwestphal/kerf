@@ -5499,6 +5499,8 @@ interface PinnablePopoverSurfaceProps {
      * `fill-last` stacks fixed rows above one filling last child.
      */
     bodyLayout?: DialogSurfaceBodyLayout;
+    /** Add a bottom-edge handle that pins and resizes an overlay by drag or arrow key. */
+    resizeFromBottom?: boolean;
     /** The Pin toggle's accessible name (default `Pin`). */
     pinLabel?: string;
     /** The close button's accessible name (default `Close`). */
@@ -5521,7 +5523,7 @@ interface PinnablePopoverSurfaceProps {
  * what `onChange` reports. Use `PopoverDialogSurface` for a dialog that only
  * ever light-dismisses.
  */
-declare function PinnablePopoverSurface({ id, label, describedBy, children, headerActions, presentation, pinned, size, preferredWidth, height, maxHeight, viewportGutter, bodyLayout, pinLabel, closeLabel, moveDescription, rootAttributes, className, slot, }: PinnablePopoverSurfaceProps): kerfjs.SafeHtml;
+declare function PinnablePopoverSurface({ id, label, describedBy, children, headerActions, presentation, pinned, size, preferredWidth, height, maxHeight, viewportGutter, bodyLayout, resizeFromBottom, pinLabel, closeLabel, moveDescription, rootAttributes, className, slot, }: PinnablePopoverSurfaceProps): kerfjs.SafeHtml;
 
 type PopupSurfaceInset = 'none' | 'compact' | 'default' | /** @deprecated Use default. */ 'standard' | /** @deprecated Use none. */ 'list-zero';
 interface PopupSurfaceProps {

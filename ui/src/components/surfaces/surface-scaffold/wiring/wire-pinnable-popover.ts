@@ -61,6 +61,7 @@ const DEFAULT_GUTTER = 16;
 const ANCHOR_GAP = 4;
 /** Pointer travel, in px, before a press on the header becomes a drag. */
 const DRAG_THRESHOLD = 3;
+const MIN_RESIZE_HEIGHT = 160;
 
 const ARROWS: Readonly<Record<string, readonly [number, number]>> = {
   ArrowLeft: [-1, 0],
@@ -284,6 +285,36 @@ export function wirePinnablePopover(
   };
 
   const onKeyDown = (event: KeyboardEvent) => {
+    const resizeHandle = (event.target as Element).closest(
+      '.kui-pinnable-popover-surface__bottom-resize',
+    );
+    if (
+      resizeHandle?.parentElement === surface &&
+      (event.key === 'ArrowUp' || event.key === 'ArrowDown') &&
+      !event.altKey &&
+      !event.ctrlKey &&
+      !event.metaKey
+    ) {
+      event.preventDefault();
+      setPinned(true);
+      const box = surface.getBoundingClientRect();
+      const distance = event.shiftKey ? largeStep : step;
+      const maxHeight = Math.max(0, viewport().height - gutter() - box.top);
+      const height = Math.min(
+        Math.max(
+          MIN_RESIZE_HEIGHT,
+          box.height + (event.key === 'ArrowDown' ? distance : -distance),
+        ),
+        maxHeight,
+      );
+      own('height', `${Math.round(height)}px`);
+      requested = {
+        ...(requested ?? { x: box.left, y: box.top }),
+        height: Math.round(height),
+      };
+      report('resize');
+      return;
+    }
     const handle = (event.target as Element).closest(
       '.kui-pinnable-popover-surface__handle',
     );
@@ -311,8 +342,27 @@ export function wirePinnablePopover(
         moving: boolean;
       }
     | undefined;
+  let resizeDrag:
+    | { id: number; handle: HTMLElement; startY: number; height: number }
+    | undefined;
   const onPointerDown = (event: PointerEvent) => {
     const target = event.target as Element;
+    const resizeHandle = target.closest<HTMLElement>(
+      '.kui-pinnable-popover-surface__bottom-resize',
+    );
+    if (resizeHandle?.parentElement === surface && event.button === 0) {
+      const box = surface.getBoundingClientRect();
+      setPinned(true);
+      resizeDrag = {
+        id: event.pointerId,
+        handle: resizeHandle,
+        startY: event.clientY,
+        height: box.height,
+      };
+      resizeHandle.setPointerCapture?.(event.pointerId);
+      event.preventDefault();
+      return;
+    }
     const header = target.closest<HTMLElement>(
       '.kui-pinnable-popover-surface__header',
     );
@@ -336,6 +386,19 @@ export function wirePinnablePopover(
     header.setPointerCapture?.(event.pointerId);
   };
   const onPointerMove = (event: PointerEvent) => {
+    if (resizeDrag && event.pointerId === resizeDrag.id) {
+      const box = surface.getBoundingClientRect();
+      const maxHeight = Math.max(0, viewport().height - gutter() - box.top);
+      const height = Math.min(
+        Math.max(
+          MIN_RESIZE_HEIGHT,
+          resizeDrag.height + event.clientY - resizeDrag.startY,
+        ),
+        maxHeight,
+      );
+      own('height', `${Math.round(height)}px`);
+      return;
+    }
     if (!drag || event.pointerId !== drag.id) return;
     const dx = event.clientX - drag.startX;
     const dy = event.clientY - drag.startY;
@@ -345,6 +408,19 @@ export function wirePinnablePopover(
     place(drag.left + dx, drag.top + dy);
   };
   const onPointerEnd = (event: PointerEvent) => {
+    if (resizeDrag && event.pointerId === resizeDrag.id) {
+      const { handle } = resizeDrag;
+      resizeDrag = undefined;
+      if (handle.hasPointerCapture?.(event.pointerId))
+        handle.releasePointerCapture(event.pointerId);
+      const box = surface.getBoundingClientRect();
+      requested = {
+        ...(requested ?? { x: box.left, y: box.top }),
+        height: Math.round(box.height),
+      };
+      report('resize');
+      return;
+    }
     if (!drag || event.pointerId !== drag.id) return;
     const { header, moving } = drag;
     drag = undefined;

@@ -922,6 +922,31 @@ h2.kui-dialog-surface__title {
   min-height: min(remify(160px), 100%);
   resize: both;
 }
+.kui-pinnable-popover-surface__bottom-resize {
+  position: absolute;
+  z-index: 1;
+  inset-inline: 0;
+  inset-block-end: 0;
+  block-size: remify(12px);
+  border: 0;
+  padding: 0;
+  background: transparent;
+  cursor: ns-resize;
+  touch-action: none;
+}
+.kui-pinnable-popover-surface__bottom-resize::after {
+  content: "";
+  display: block;
+  inline-size: remify(32px);
+  block-size: remify(3px);
+  margin-inline: auto;
+  border-radius: 999px;
+  background: var(--kui-color-neutral-border-normal);
+}
+.kui-pinnable-popover-surface__bottom-resize:focus-visible {
+  outline: var(--kui-focus-ring);
+  outline-offset: -2px;
+}
 .kui-pinnable-popover-surface[data-presentation="embedded"] {
   position: relative;
   inset: auto;
