@@ -4,7 +4,6 @@ import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
 import { LucideIcon } from '@kerfjs/ui/lucide-icon';
 import { SegmentedControl } from '@kerfjs/ui/segmented-control';
 import { Text } from '@kerfjs/ui/text';
-import { Toolbar } from '@kerfjs/ui/toolbar';
 import { ToolbarControlGroup } from '@kerfjs/ui/toolbar-control-group';
 import { Bell, Bot, Columns3, Folder, List, Settings } from 'lucide';
 
@@ -61,62 +60,52 @@ export function SegmentedControlDemo() {
         note="Pill controls share a toolbar group’s chrome."
         align="inline-control"
       >
-        <Toolbar
-          label="Toolbar"
-          leading={
-            <ToolbarControlGroup>
-              <SegmentedControl
-                id="standalone-toolbar-view"
-                label="Toolbar View Mode"
-                value={toolbarChoice.value}
-                action="select-segment-demo"
-                appearance="toolbar"
-                shape="pill"
-                size="compact"
-                choices={[
-                  {
-                    value: 'list',
-                    label: 'List View',
-                    content: <LucideIcon icon={List} name="list" />,
-                  },
-                  {
-                    value: 'columns',
-                    label: 'Columns View',
-                    content: <LucideIcon icon={Columns3} name="columns-3" />,
-                  },
-                  {
-                    value: 'settings',
-                    label: 'Settings View',
-                    content: <LucideIcon icon={Settings} name="settings" />,
-                  },
-                ]}
-              />
-            </ToolbarControlGroup>
-          }
-        />
+        <ToolbarControlGroup>
+          <SegmentedControl
+            id="standalone-toolbar-view"
+            label="Toolbar View Mode"
+            value={toolbarChoice.value}
+            action="select-segment-demo"
+            appearance="toolbar"
+            shape="pill"
+            size="compact"
+            choices={[
+              {
+                value: 'list',
+                label: 'List View',
+                content: <LucideIcon icon={List} name="list" />,
+              },
+              {
+                value: 'columns',
+                label: 'Columns View',
+                content: <LucideIcon icon={Columns3} name="columns-3" />,
+              },
+              {
+                value: 'settings',
+                label: 'Settings View',
+                content: <LucideIcon icon={Settings} name="settings" />,
+              },
+            ]}
+          />
+        </ToolbarControlGroup>
       </CatalogExample>
       <CatalogExample
         label="Corner Count"
         note="A choice's badge is a count, short text, or a dot over its icon: hidden at 0, 99+ past badgeMax, and decorative, so the choice's label and title carry the count. It stays inside its segment, so neither a toolbar nor a filled track clips it."
         align="inline-control"
       >
-        <Toolbar
-          label="Corner Count Toolbar"
-          leading={
-            <ToolbarControlGroup>
-              <SegmentedControl
-                id="corner-count-toolbar"
-                label="Workspace View"
-                value={cornerCountView.value}
-                action="select-segment-demo"
-                appearance="toolbar"
-                shape="pill"
-                size="compact"
-                choices={cornerCountChoices()}
-              />
-            </ToolbarControlGroup>
-          }
-        />
+        <ToolbarControlGroup>
+          <SegmentedControl
+            id="corner-count-toolbar"
+            label="Workspace View"
+            value={cornerCountView.value}
+            action="select-segment-demo"
+            appearance="toolbar"
+            shape="pill"
+            size="compact"
+            choices={cornerCountChoices()}
+          />
+        </ToolbarControlGroup>
         <SegmentedControl
           id="corner-count-track"
           label="Workspace View, Filled Track"

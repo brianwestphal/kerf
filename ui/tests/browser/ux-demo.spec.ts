@@ -8658,8 +8658,8 @@ test('communicates preferred Kerf patterns on ecosystem alternatives', async ({
 test('renders controlled toolbar, rounded, and pill SegmentedControl Variants', async ({
   page,
   browserName,
-}) => {
-  await page.setViewportSize({ width: 1440, height: 900 });
+}, testInfo) => {
+  await page.setViewportSize({ width: 1511, height: 2029 });
   await page.goto('/?component=segmented-control');
   const demo = page.locator('[data-demo="segmented-control"]');
   const controls = demo.locator(
@@ -8689,6 +8689,27 @@ test('renders controlled toolbar, rounded, and pill SegmentedControl Variants', 
   await expect(pill).toHaveAttribute('data-appearance', 'outlined');
   await expect(pill).toHaveAttribute('data-shape', 'pill');
   await expect(demo.getByRole('button', { name: 'Roomy' })).toBeDisabled();
+  const leftEdges = await demo.evaluate((root) =>
+    [
+      'standalone-toolbar-view',
+      'corner-count-toolbar',
+      'corner-count-track',
+      'inspector-section',
+      'display-density',
+      'segmented-placeholder',
+      'segmented-disabled',
+    ].map((id) => {
+      const control = root.querySelector(
+        `[data-segmented-control-id="${id}"]`,
+      )!;
+      return (
+        control.closest('.kui-toolbar-control-group') ?? control
+      ).getBoundingClientRect().x;
+    }),
+  );
+  expect(Math.max(...leftEdges) - Math.min(...leftEdges)).toBeLessThanOrEqual(
+    1,
+  );
 
   const radii = await Promise.all(
     [rounded, pill].map((control) =>
@@ -8749,11 +8770,15 @@ test('renders controlled toolbar, rounded, and pill SegmentedControl Variants', 
   await summary.focus();
   await page.keyboard.press('Space');
   await expect(summary).toHaveAttribute('aria-pressed', 'true');
-  if (browserName === 'chromium')
+  if (browserName === 'chromium') {
     await page.screenshot({
       path: 'test-results/segmented-control-wide.png',
       fullPage: true,
     });
+    await demo.screenshot({
+      path: testInfo.outputPath('segmented-control-demo-wide.png'),
+    });
+  }
 
   await page.locator('[data-action="toggle-theme"]').click();
   await expect(summary).toHaveCSS('background-color', 'rgb(28, 28, 30)');
@@ -8764,7 +8789,7 @@ test('renders controlled toolbar, rounded, and pill SegmentedControl Variants', 
     });
   await page.locator('[data-action="toggle-theme"]').click();
 
-  await page.setViewportSize({ width: 390, height: 844 });
+  await page.setViewportSize({ width: 390, height: 2400 });
   await expect
     .poll(() =>
       page.evaluate(
@@ -8773,11 +8798,15 @@ test('renders controlled toolbar, rounded, and pill SegmentedControl Variants', 
     )
     .toBe(true);
   await expect(controls.last()).toBeVisible();
-  if (browserName === 'chromium')
+  if (browserName === 'chromium') {
     await page.screenshot({
       path: 'test-results/segmented-control-narrow.png',
       fullPage: true,
     });
+    await demo.screenshot({
+      path: testInfo.outputPath('segmented-control-demo-narrow.png'),
+    });
+  }
 });
 
 test('ships semantic banner palettes with scoped overrides', async ({

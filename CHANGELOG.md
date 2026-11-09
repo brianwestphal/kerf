@@ -372,6 +372,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Fixed
 
+- **The SegmentedControl catalog variants share one inset (KF-WHB4W7).** The two pill groups no longer receive a second Toolbar inset, so their outer edges line up with the rounded, filled, and standalone examples.
 - **The ValuePreview catalog examples share the page text guide (KF-WY8VWR).** Their panel content now aligns with the example headings and descriptions at wide and narrow widths.
 - **`bindList` honors same-reference `arraySignal.update()` (KF-TMYJ4G).** Content rows refresh inside their existing row element, and element rows receive `update(item)`; all consumers see the new content.
 - **Editor undo and redo discard refused Inspector drafts (KF-0Y88XZ).** When history restores the document, an invalid field value is reset alongside its error so the field displays the document's value.
