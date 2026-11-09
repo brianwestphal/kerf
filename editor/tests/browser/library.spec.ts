@@ -155,3 +155,45 @@ test('fits a phone’s gutter', async ({ page }, info) => {
     animations: 'disabled',
   });
 });
+
+test('Library results scroll to the visible bottom edge', async ({
+  page,
+}, info) => {
+  for (const [width, height] of [
+    [2560, 1410],
+    [390, 844],
+  ]) {
+    await page.setViewportSize({ width, height });
+    await openLibrary(page);
+    await library(page)
+      .locator(
+        '[data-segmented-control-id="editor-palette-view"] [data-segment-value="grid"]',
+      )
+      .click();
+    const results = library(page).locator(
+      '.kui-pinnable-popover-surface__body > .kui-list:last-child',
+    );
+    const edges = await results.evaluate((list) => {
+      const frame = list.closest('.kui-pinnable-popover-surface')!;
+      const body = list.parentElement!;
+      list.scrollTop = 100;
+      return {
+        frameBottom: frame.getBoundingClientRect().bottom,
+        bodyBottom: body.getBoundingClientRect().bottom,
+        listBottom: list.getBoundingClientRect().bottom,
+        scrollTop: list.scrollTop,
+      };
+    });
+    expect(edges.scrollTop).toBeGreaterThan(0);
+    expect(edges.bodyBottom).toBeCloseTo(edges.frameBottom - 1, 0);
+    expect(edges.listBottom).toBeCloseTo(edges.bodyBottom, 0);
+    await library(page).screenshot({
+      path: info.outputPath(`library-bottom-edge-${width}.png`),
+    });
+    if (width === 2560)
+      await page.screenshot({
+        path: info.outputPath('library-bottom-edge-editor-2560.png'),
+      });
+    await library(page).evaluate((node: HTMLElement) => node.hidePopover());
+  }
+});

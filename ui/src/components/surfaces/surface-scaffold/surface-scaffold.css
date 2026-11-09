@@ -1053,6 +1053,7 @@ h2.kui-dialog-surface__title {
   > .kui-pinnable-popover-surface__body {
   display: flex;
   flex-direction: column;
+  padding-block-end: 0;
   overflow: hidden;
 }
 .kui-pinnable-popover-surface[data-body-layout="fill-last"]
