@@ -178,7 +178,9 @@ async function libraryDocument(page: Page, folder: string) {
     name: `${folder}/message-row.kui.json`,
   });
   await expect(row).toBeVisible();
-  await expect(library.getByRole('heading', { name: 'Documents' })).toBeVisible();
+  await expect(
+    library.getByRole('heading', { name: 'Documents' }),
+  ).toBeVisible();
   await expect(
     library.getByRole('button', { name: `${folder}/inbox.kui.json` }),
   ).toHaveCount(0);
@@ -237,7 +239,9 @@ for (const width of [2048, 390]) {
     await page.setViewportSize({ width, height: width === 390 ? 900 : 1128 });
     const { library } = await libraryDocument(page, folder);
     await library.getByRole('searchbox').fill('');
-    await expect(library.locator('[data-editor-palette-document]').first()).toBeVisible();
+    await expect(
+      library.locator('[data-editor-palette-document]').first(),
+    ).toBeVisible();
     await expect
       .poll(() => page.evaluate(() => document.getAnimations().length))
       .toBe(0);
@@ -251,7 +255,9 @@ for (const width of [2048, 390]) {
       path: info.outputPath(`kf-bbes58-library-documents-${width}.png`),
     });
     await expect(library.locator('[data-editor-palette]')).toHaveCount(0);
-    await expect(library.locator('[data-segmented-control-id="editor-palette-view"]')).toHaveCount(0);
+    await expect(
+      library.locator('[data-segmented-control-id="editor-palette-view"]'),
+    ).toHaveCount(0);
     await library.getByRole('searchbox').fill(folder);
     await library.locator('[data-editor-palette-document]').click();
     await expect(canvas(page)).toContainText('Composed from a document');
