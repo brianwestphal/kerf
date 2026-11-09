@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 164600,
-  "totalJavaScriptGzip": 464100,
-  "measuredLargestJavaScriptGzip": 164546,
-  "measuredTotalJavaScriptGzip": 464023,
+  "totalJavaScriptGzip": 464400,
+  "measuredLargestJavaScriptGzip": 164547,
+  "measuredTotalJavaScriptGzip": 464319,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -7139,6 +7139,22 @@
         "measuredTotalJavaScriptGzip": 464023,
         "largestJavaScriptGzip": 164600,
         "totalJavaScriptGzip": 464100
+      }
+    },
+    {
+      "at": "2026-11-09T03:05:30.677Z",
+      "reason": "Two checked catalog view modules add editor node markers and generated action contracts",
+      "old": {
+        "measuredLargestJavaScriptGzip": 164546,
+        "measuredTotalJavaScriptGzip": 464023,
+        "largestJavaScriptGzip": 164600,
+        "totalJavaScriptGzip": 464100
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 164547,
+        "measuredTotalJavaScriptGzip": 464319,
+        "largestJavaScriptGzip": 164600,
+        "totalJavaScriptGzip": 464400
       }
     }
   ]

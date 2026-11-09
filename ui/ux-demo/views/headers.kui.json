@@ -1,0 +1,144 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "Headers",
+  "catalogs": ["@kerfjs/ui"],
+  "root": {
+    "id": "01JB8Z1M6Q8E1X9V4S7K2R3T5A",
+    "type": "@kerfjs/ui:list",
+    "props": { "gap": "none" },
+    "zones": {
+      "children": [
+        {
+          "id": "01JB8Z1M6Q8E1X9V4S7K2R3T5B",
+          "type": "@kerfjs/ui:toolbar",
+          "props": { "label": "UI Foundations" },
+          "zones": {
+            "leading": [
+              {
+                "id": "01JB8Z1M6Q8E1X9V4S7K2R3T5C",
+                "type": "@kerfjs/ui:toolbar-text",
+                "props": {
+                  "text": "UI Foundations",
+                  "size": "xlarge",
+                  "id": "headers-page-title",
+                  "headingLevel": 1
+                }
+              }
+            ],
+            "trailing": [
+              {
+                "id": "01JB8Z1M6Q8E1X9V4S7K2R3T5D",
+                "type": "@kerfjs/ui:toolbar-control-group",
+                "props": { "appearance": "borderless", "single": true },
+                "zones": {
+                  "children": [
+                    {
+                      "id": "01JB8Z1M6Q8E1X9V4S7K2R3T5E",
+                      "type": "@kerfjs/ui:toolbar-control-group#ToolbarButton",
+                      "props": {
+                        "action": { "$action": "log-add" },
+                        "children": "New Pattern"
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "01JB8Z1M6Q8E1X9V4S7K2R3T5F",
+          "type": "@kerfjs/ui:toolbar",
+          "props": { "label": "Package Details" },
+          "zones": {
+            "leading": [
+              {
+                "id": "01JB8Z1M6Q8E1X9V4S7K2R3T5G",
+                "type": "@kerfjs/ui:toolbar-control-group",
+                "props": { "appearance": "borderless", "single": true },
+                "zones": {
+                  "children": [
+                    {
+                      "id": "01JB8Z1M6Q8E1X9V4S7K2R3T5H",
+                      "type": "@kerfjs/ui:lucide-icon",
+                      "props": {
+                        "icon": { "$icon": "wrench" },
+                        "name": "wrench"
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "01JB8Z1M6Q8E1X9V4S7K2R3T5J",
+                "type": "@kerfjs/ui:toolbar-text",
+                "props": {
+                  "text": "Package Details",
+                  "size": "xlarge",
+                  "id": "headers-panel-title"
+                }
+              }
+            ],
+            "trailing": [
+              {
+                "id": "01JB8Z1M6Q8E1X9V4S7K2R3T5K",
+                "type": "@kerfjs/ui:toolbar-control-group",
+                "props": { "appearance": "borderless", "single": true },
+                "zones": {
+                  "children": [
+                    {
+                      "id": "01JB8Z1M6Q8E1X9V4S7K2R3T5M",
+                      "type": "@kerfjs/ui:toolbar-control-group#ToolbarButton",
+                      "props": {
+                        "action": { "$action": "log-done" },
+                        "children": "Done"
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "01JB8Z1M6Q8E1X9V4S7K2R3T5N",
+          "type": "@kerfjs/ui:list-inset-text",
+          "props": { "sides": "rl" },
+          "zones": {
+            "children": [
+              {
+                "id": "01JB8Z1M6Q8E1X9V4S7K2R3T5P",
+                "type": "#text",
+                "value": "Production-backed primitives with explicit contracts."
+              }
+            ]
+          }
+        },
+        {
+          "id": "01JB8Z1M6Q8E1X9V4S7K2R3T5Q",
+          "type": "@kerfjs/ui:value-table",
+          "props": { "label": "Package Metadata" },
+          "zones": {
+            "children": [
+              {
+                "id": "01JB8Z1M6Q8E1X9V4S7K2R3T5R",
+                "type": "@kerfjs/ui:value-table#ValueTableRow",
+                "props": { "label": "Package", "value": "@kerfjs/ui" }
+              },
+              {
+                "id": "01JB8Z1M6Q8E1X9V4S7K2R3T5S",
+                "type": "@kerfjs/ui:value-table#ValueTableRow",
+                "props": { "label": "Rendering", "value": "Kerf SafeHtml" }
+              },
+              {
+                "id": "01JB8Z1M6Q8E1X9V4S7K2R3T5T",
+                "type": "@kerfjs/ui:value-table#ValueTableRow",
+                "props": { "label": "Styles", "value": "Explicit CSS subpaths" }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}

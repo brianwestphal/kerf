@@ -1,72 +1,15 @@
 import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
-import { List } from '@kerfjs/ui/list';
-import { ListInsetText } from '@kerfjs/ui/list-inset-text';
-import { LucideIcon } from '@kerfjs/ui/lucide-icon';
-import { Toolbar } from '@kerfjs/ui/toolbar';
-import {
-  ToolbarButton,
-  ToolbarControlGroup,
-} from '@kerfjs/ui/toolbar-control-group';
-import { ToolbarText } from '@kerfjs/ui/toolbar-text';
-import { ValueTable, ValueTableRow } from '@kerfjs/ui/value-table';
-import { Wrench } from 'lucide';
+
+import { renderHeaders } from '../views/headers.view.js';
 
 export function HeadersDemo() {
-  // Page and panel headings are direct Toolbar compositions: identity in the
-  // leading zone, actions in the trailing zone, and optional supporting copy
-  // as ordinary content below the toolbar.
   return (
     <CatalogExampleStack
       label="Heading Compositions"
       rootAttributes={{ 'data-demo': 'headers' }}
     >
       <CatalogExample label="Page and Panel Headings">
-        <List gap="none">
-          <Toolbar
-            label="UI Foundations"
-            leading={
-              <ToolbarText
-                text="UI Foundations"
-                size="xlarge"
-                id="headers-page-title"
-                headingLevel={1}
-              />
-            }
-            trailing={
-              <ToolbarControlGroup appearance="borderless" single>
-                <ToolbarButton action="log-add">New Pattern</ToolbarButton>
-              </ToolbarControlGroup>
-            }
-          />
-          <Toolbar
-            label="Package Details"
-            leading={
-              <>
-                <ToolbarControlGroup appearance="borderless" single>
-                  <LucideIcon icon={Wrench} name="wrench" />
-                </ToolbarControlGroup>
-                <ToolbarText
-                  text="Package Details"
-                  size="xlarge"
-                  id="headers-panel-title"
-                />
-              </>
-            }
-            trailing={
-              <ToolbarControlGroup appearance="borderless" single>
-                <ToolbarButton action="log-done">Done</ToolbarButton>
-              </ToolbarControlGroup>
-            }
-          />
-          <ListInsetText sides="rl">
-            Production-backed primitives with explicit contracts.
-          </ListInsetText>
-          <ValueTable label="Package Metadata">
-            <ValueTableRow label="Package" value="@kerfjs/ui" />
-            <ValueTableRow label="Rendering" value="Kerf SafeHtml" />
-            <ValueTableRow label="Styles" value="Explicit CSS subpaths" />
-          </ValueTable>
-        </List>
+        {renderHeaders()}
       </CatalogExample>
     </CatalogExampleStack>
   );

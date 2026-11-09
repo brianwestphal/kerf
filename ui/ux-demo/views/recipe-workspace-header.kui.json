@@ -1,0 +1,131 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "RecipeWorkspaceHeader",
+  "catalogs": ["@kerfjs/ui"],
+  "root": {
+    "id": "01JB8Z1M6Q8E1X9V4S7K2R3T5A",
+    "type": "@kerfjs/ui:list",
+    "props": { "gap": "l", "controlInsets": "tb" },
+    "zones": {
+      "children": [
+        {
+          "id": "01JB8Z1M6Q8E1X9V4S7K2R3T5B",
+          "type": "@kerfjs/ui:list",
+          "zones": {
+            "children": [
+              {
+                "id": "01JB8Z1M6Q8E1X9V4S7K2R3T5C",
+                "type": "@kerfjs/ui:list-inset-text",
+                "props": { "sides": "rl" },
+                "zones": {
+                  "children": [
+                    {
+                      "id": "01JB8Z1M6Q8E1X9V4S7K2R3T5D",
+                      "type": "@kerfjs/ui:text",
+                      "props": {
+                        "variant": "span",
+                        "tone": "quiet",
+                        "size": "compact"
+                      },
+                      "zones": {
+                        "children": [
+                          {
+                            "id": "01JB8Z1M6Q8E1X9V4S7K2R3T5E",
+                            "type": "#text",
+                            "value": "Northstar workspace · Product planning"
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "01JB8Z1M6Q8E1X9V4S7K2R3T5F",
+                "type": "@kerfjs/ui:toolbar",
+                "props": {
+                  "label": "Workspace Heading",
+                  "responsive": "stack",
+                  "responsiveAt": "compact"
+                },
+                "zones": {
+                  "leading": [
+                    {
+                      "id": "01JB8Z1M6Q8E1X9V4S7K2R3T5G",
+                      "type": "@kerfjs/ui:toolbar-text",
+                      "props": {
+                        "text": "Accessibility Readiness and Responsive Navigation Rollout",
+                        "size": "xlarge",
+                        "id": "recipe-workspace-title",
+                        "headingLevel": 1,
+                        "wrap": true,
+                        "maxLines": 2
+                      }
+                    }
+                  ],
+                  "trailing": [
+                    {
+                      "id": "01JB8Z1M6Q8E1X9V4S7K2R3T5H",
+                      "type": "@kerfjs/ui:toolbar-control-group",
+                      "props": {
+                        "appearance": "borderless",
+                        "buttonAppearance": "push",
+                        "content": "text"
+                      },
+                      "zones": {
+                        "children": [
+                          {
+                            "id": "01JB8Z1M6Q8E1X9V4S7K2R3T5J",
+                            "type": "@kerfjs/ui:toolbar-control-group#ToolbarButton",
+                            "props": {
+                              "action": { "$action": "recipe-action" },
+                              "rootAttributes": {
+                                "data-recipe-command": "share"
+                              },
+                              "children": "Share"
+                            }
+                          },
+                          {
+                            "id": "01JB8Z1M6Q8E1X9V4S7K2R3T5K",
+                            "type": "@kerfjs/ui:toolbar-control-group#ToolbarButton",
+                            "props": {
+                              "action": { "$action": "recipe-action" },
+                              "rootAttributes": {
+                                "data-recipe-command": "more"
+                              },
+                              "children": "More Actions"
+                            }
+                          },
+                          {
+                            "id": "01JB8Z1M6Q8E1X9V4S7K2R3T5M",
+                            "type": "@kerfjs/ui:toolbar-control-group#ToolbarButton",
+                            "props": {
+                              "action": { "$action": "recipe-action" },
+                              "rootAttributes": {
+                                "data-recipe-command": "publish"
+                              },
+                              "children": "Publish Update"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "01JB8Z1M6Q8E1X9V4S7K2R3T5N",
+          "type": "@kerfjs/ui:state-banner",
+          "props": {
+            "title": "Ready for Review",
+            "detail": "All required checks passed 18 minutes ago.",
+            "tone": "success"
+          }
+        }
+      ]
+    }
+  }
+}
