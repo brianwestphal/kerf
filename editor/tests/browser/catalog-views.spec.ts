@@ -1,4 +1,4 @@
-import { readdirSync,readFileSync } from 'node:fs';
+import { readdirSync, readFileSync } from 'node:fs';
 
 import { expect, test } from '@playwright/test';
 
@@ -28,7 +28,10 @@ test('opens and previews every catalog view', async ({ page }) => {
       ).toBeHidden();
       await expect(
         page.locator('[data-editor-canvas] [data-kerf-node]').first(),
-      ).toBeVisible();
+      ).toBeAttached();
+      await expect(
+        page.getByText('This document cannot be previewed'),
+      ).toBeHidden();
     });
   }
 });

@@ -340,30 +340,39 @@
     "loading": {
       "type": {
         "kind": "boolean"
-      }
+      },
+      "default": false
     },
     "loadingText": {
       "type": {
         "kind": "string"
-      }
+      },
+      "default": "false"
     },
     "toggleLabel": {
       "type": {
         "kind": "string"
-      }
+      },
+      "default": "Show Loading"
     },
     "bannerTone": {
       "type": {
         "kind": "enum",
         "values": ["info", "success"]
-      }
+      },
+      "default": "success"
     },
     "viewChoices": {
       "type": {
         "kind": "prop",
         "component": "@kerfjs/ui:segmented-control",
         "prop": "choices"
-      }
+      },
+      "default": [
+        { "value": "details", "label": "Details" },
+        { "value": "activity", "label": "Activity" },
+        { "value": "files", "label": "Files" }
+      ]
     }
   }
 }

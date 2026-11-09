@@ -19,7 +19,8 @@
         "kind": "prop",
         "component": "@kerfjs/ui:nav-stack",
         "prop": "views"
-      }
+      },
+      "default": []
     }
   }
 }
