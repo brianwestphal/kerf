@@ -77,6 +77,9 @@ describe('AI-first setup planner', () => {
       'CREATE .claude/skills/kerf-ui/SKILL.md',
     );
     expect(formatSetupPlan(plan)).toContain(
+      'CREATE .agents/skills/kerf-ui-design-mock/SKILL.md',
+    );
+    expect(formatSetupPlan(plan)).toContain(
       'Read first: node_modules/@kerfjs/ui/llms.txt',
     );
     await applyKerfSetup(plan, { install: false });
@@ -86,6 +89,18 @@ describe('AI-first setup planner', () => {
     );
     expect(skill).toContain('node_modules/@kerfjs/ui/llms.txt');
     expect(skill).toContain('node_modules/@kerfjs/ui/ai/skill.md');
+    expect(
+      await readFile(
+        join(root, '.claude/skills/kerf-ui-design-mock/SKILL.md'),
+        'utf8',
+      ),
+    ).toContain('node_modules/@kerfjs/ui/ai/design-mock/SKILL.md');
+    expect(
+      await readFile(
+        join(root, '.agents/skills/kerf-ui-design-mock/SKILL.md'),
+        'utf8',
+      ),
+    ).toContain('node_modules/@kerfjs/ui/ai/design-mock/SKILL.md');
     expect((await planKerfSetup({ root, version: '4.4.1' })).actions).toEqual(
       [],
     );

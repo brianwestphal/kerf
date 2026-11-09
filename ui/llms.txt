@@ -8,6 +8,8 @@
 Read the [consumer house grammar](./docs/interaction-conventions.md) before
 composing an application screen. It states the default interaction and layout
 decisions; a project records compelling deviations in its own conventions doc.
+For pre-implementation screen concepts and rendered design review, use the
+[design-mock skill](./ai/design-mock/SKILL.md) from this installed package.
 
 ```bash
 npm install kerfjs @kerfjs/ui # kerfjs is a peer; Web Awesome is an optional peer

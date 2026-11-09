@@ -499,6 +499,32 @@ async function planAiFiles(plan, aiManifest, guidanceSource) {
       };
     }
   }
+  if (mode === 'ui') {
+    const content = `---\nname: kerf-ui-design-mock\ndescription: Plan and review rendered Kerf UI screen concepts before implementation, using the installed package's design-mock workflow.\n---\n\nRead the selected project's installed \`node_modules/@kerfjs/ui/ai/design-mock/SKILL.md\` and follow it. Resolve that path from the selected package in a workspace. Read the same installed package's \`llms.txt\` and \`ai/skill.md\` as directed there so the design uses its actual component version.\n`;
+    for (const provider of ['.claude', '.agents']) {
+      const path = `${provider}/skills/kerf-ui-design-mock/SKILL.md`;
+      const destination = resolve(root, path);
+      const current = await readText(destination);
+      plan.knownResolutionIds.add(path);
+      if (current !== null && current !== content && !resolutions[path]) {
+        plan.activeConflictIds.add(path);
+        plan.conflicts.push({
+          id: path,
+          message:
+            'design-mock skill entry differs from installed guidance pointer',
+        });
+      } else if (
+        current === null ||
+        current === content ||
+        resolutions[path] === 'kerf'
+      ) {
+        await plan.addAction(destination, content, 'canonical');
+        managedAfter[path] = { sha256: sha256(content) };
+      } else {
+        plan.activeConflictIds.add(path);
+      }
+    }
+  }
 }
 
 /**
@@ -1186,6 +1212,9 @@ export function formatSetupPlan(plan) {
   lines.push('AI guidance: .claude/skills/kerf-app/SKILL.md');
   if (plan.mode === 'ui') {
     lines.push('AI UI guidance: .claude/skills/kerf-ui/SKILL.md');
+    lines.push(
+      'AI design mocks: .claude/skills/kerf-ui-design-mock/SKILL.md and .agents/skills/kerf-ui-design-mock/SKILL.md',
+    );
     lines.push(
       `Read first: ${portable(plan.root, resolve(plan.packageRoot, 'node_modules/@kerfjs/ui/llms.txt'))}`,
     );

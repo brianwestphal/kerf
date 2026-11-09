@@ -630,7 +630,10 @@ growth, finite CSS keywords, or a branded `CssFlex` from `flex()`; raw flex
 strings and length-only values are rejected.
 
 AI-oriented entry points ship with the package at `ui/ai/skill.md` and
-`ui/llms.txt`. They route tools to the component contract, accessibility rules,
+`ui/llms.txt`. The design-planning workflow ships at
+`ui/ai/design-mock/SKILL.md` with a worked example; `kerfjs setup` in UI mode
+installs Claude and Codex pointers to the selected project's installed copy.
+These entry points route tools to the component contract, accessibility rules,
 catalog, and the need-first `ui/docs/component-selection.md` decision matrix
 rather than asking an assistant to infer behavior from CSS. The UI package
 check verifies that every public runtime value and supported Web Awesome

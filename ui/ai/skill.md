@@ -1,10 +1,13 @@
 ---
 name: kerf-ui
 description: Build interfaces with kerfjs and the @kerfjs/ui production component package. Use whenever code imports @kerfjs/ui or a task asks for Kerf UI components.
-kerf-ui-skill-version: 1.75.0
+kerf-ui-skill-version: 1.75.1
 ---
 
 # Building with @kerfjs/ui
+
+For pre-implementation whole-screen concept work, follow the installed
+[design-mock skill](./design-mock/SKILL.md) and return here for component facts.
 
 Read the [consumer house grammar](../docs/interaction-conventions.md) before
 composing a screen. Its defaults govern chrome, actions, lists, input, latency,

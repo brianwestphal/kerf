@@ -32,6 +32,12 @@ contracts. With shared guidance, the UI skill imports that document and keeps
 the same retrieval pointers. The dry-run summary prints these paths relative
 to the selected package, including its workspace path when applicable, and
 `kerfjs/ai-assistant-configs` checks the UI skill for missing or drifted content.
+UI mode also installs `kerf-ui-design-mock` entry points for Claude
+(`.claude/skills/kerf-ui-design-mock/SKILL.md`) and Codex
+(`.agents/skills/kerf-ui-design-mock/SKILL.md`). Both point to the selected
+project's installed `@kerfjs/ui/ai/design-mock/SKILL.md`, so concept work uses
+the same component version as the app. The package skill ships with a short
+worked example and links to its installed design templates and Sketch library.
 
 Nothing is written until both `--write` and `--yes` are present:
 

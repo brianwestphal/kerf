@@ -808,7 +808,7 @@
     "ai:regressions:record-v3": "node scripts/record-ai-regression-run-v3.mjs",
     "ai:regressions:replay-v3": "node scripts/replay-ai-regression-run-v3.mjs",
     "ai:regressions:score": "node scripts/score-ai-regression.mjs",
-    "check:guidance": "node scripts/check-decision-guidance.mjs",
+    "check:guidance": "node scripts/check-decision-guidance.mjs && node scripts/check-design-mock-skill.mjs",
     "lint:eslint": "eslint src tests ux-demo docs/examples scripts ai analyzer doctor evaluator view props catalog-projection.mjs catalog-projection-cli.mjs vite-editor.mjs vite-ux-review.mjs traversal-exclusions.mjs eslint.config.mjs --max-warnings 0",
     "lint": "npm run lint:eslint && npm run check:format",
     "typecheck": "node node_modules/typescript7/bin/tsc --noEmit",
