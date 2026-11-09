@@ -131,6 +131,8 @@ import { createInspectorControls } from './inspector-controls.js';
 import { createLibraryDrag, type LibraryRead } from './library-drag.js';
 import {
   LIBRARY_ID,
+  LIBRARY_MODE_ACTION,
+  type LibraryMode,
   PALETTE_VIEW_ACTION,
   type PaletteView,
   rememberedLibrary,
@@ -823,6 +825,7 @@ export function createEditor(options: EditorOptions) {
   const paletteFilter = signal('');
   const paletteFilterRevision = signal(0);
   const paletteView = signal<PaletteView>(rememberedPaletteView());
+  const libraryMode = signal<LibraryMode>('components');
   /**
    * KF-FXACB5: the project's documents the Library offers, as its last
    * listing answered (none while one loads, or when it failed), and why the
@@ -1746,6 +1749,7 @@ export function createEditor(options: EditorOptions) {
     paletteFilter,
     paletteFilterRevision,
     paletteView,
+    libraryMode,
     libraryFiles,
     libraryError,
   });
@@ -3808,6 +3812,14 @@ export function createEditor(options: EditorOptions) {
   const paletteAndShellActions = (
     root: HTMLElement,
   ): Record<string, ActionHandler<HTMLElement>> => ({
+    [LIBRARY_MODE_ACTION]: (_event, target) => {
+      libraryMode.value =
+        target.dataset.segmentValue === 'documents'
+          ? 'documents'
+          : 'components';
+      paletteFilter.value = '';
+      paletteFilterRevision.value += 1;
+    },
     [PALETTE_VIEW_ACTION]: (_event, target) => {
       const view: PaletteView =
         target.dataset.segmentValue === 'grid' ? 'grid' : 'list';

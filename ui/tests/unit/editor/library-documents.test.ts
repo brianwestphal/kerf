@@ -1,5 +1,5 @@
-// KF-FXACB5: the Library offers the project's documents after its component
-// groups. A click inserts one as a `#view` (inside the selection, else after
+// KF-FXACB5 / KF-BBES58: the Library offers the project's documents in a
+// dedicated mode. A click inserts one as a `#view` (inside the selection, else after
 // it; inside the root with nothing selected; as the root of an empty
 // document); a drag drops it like a component. Either way the `#view` has its
 // required params seeded, renders at once, and is one undoable edit.
@@ -143,11 +143,16 @@ async function showLibrary(
 ) {
   await vi.waitFor(() => expect(editor.document.value.name).toBe('Main'));
   library.showPopover();
+  click(
+    library.querySelector<HTMLElement>(
+      '[data-segmented-control-id="editor-library-mode"] [data-segment-value="documents"]',
+    )!,
+  );
   await vi.waitFor(() => expect(documents(library).length).toBeGreaterThan(0));
 }
 
 describe('the Library’s documents', () => {
-  it('lists the project’s other documents after the components, by file name under its folder', async () => {
+  it('lists the project’s other documents in their own mode, by file name under folder', async () => {
     const { editor, library } = open();
     await showLibrary(editor, library);
     expect(documents(library)).toEqual([
@@ -162,6 +167,7 @@ describe('the Library’s documents', () => {
       (header) => header.textContent,
     );
     expect(headers.at(-1)).toContain('Documents');
+    expect(library.querySelector('[data-editor-palette]')).toBeNull();
     const row = documentRow(library, ROW_PATH);
     expect(row.textContent).toContain('message-row.kui.json');
     expect(row.textContent).toContain('views/');
@@ -169,7 +175,7 @@ describe('the Library’s documents', () => {
     expect(documentRow(library, 'app.kui.json').textContent).toContain('./');
   });
 
-  it('filters documents with the components, and a match on Documents keeps them all', async () => {
+  it('filters documents separately, and a match on Documents keeps them all', async () => {
     const { editor, library } = open();
     await showLibrary(editor, library);
     filter(library, 'row');
@@ -178,20 +184,42 @@ describe('the Library’s documents', () => {
     expect(documents(library)).toHaveLength(6);
     filter(library, 'button');
     expect(documents(library)).toEqual([]);
-    expect(library.querySelector('[data-editor-palette]')).not.toBeNull();
+    expect(library.querySelector('[data-editor-palette]')).toBeNull();
     filter(library, 'nothing-matches-this');
-    expect(library.textContent).toContain('No matching components');
+    expect(library.textContent).toContain('No matching documents');
   });
 
-  it('shows tiles with a file icon in the grid view', async () => {
+  it('switches component and document modes without carrying a hidden filter', async () => {
+    const { editor, library } = open();
+    await showLibrary(editor, library);
+    filter(library, 'row');
+    expect(documents(library)).toEqual([ROW_PATH]);
+    click(
+      library.querySelector<HTMLElement>(
+        '[data-segmented-control-id="editor-library-mode"] [data-segment-value="components"]',
+      )!,
+    );
+    expect(documents(library)).toEqual([]);
+    expect(library.querySelector('[data-editor-palette]')).not.toBeNull();
+    expect(
+      library.querySelector('[data-editor-palette-filter]')?.textContent,
+    ).toBe('');
+    click(
+      library.querySelector<HTMLElement>(
+        '[data-segmented-control-id="editor-library-mode"] [data-segment-value="documents"]',
+      )!,
+    );
+    expect(documents(library)).toHaveLength(6);
+  });
+
+  it('keeps document rows when the component view uses a grid', async () => {
     window.localStorage.setItem('kerf-ui-editor:palette-view', 'grid');
     const again = open();
     await showLibrary(again.editor, again.library);
     const tile = documentRow(again.library, ROW_PATH);
-    expect(tile.classList.contains('kui-content-item')).toBe(true);
-    expect(tile.querySelector('[data-lucide="file-text"], svg')).not.toBeNull();
+    expect(tile.classList.contains('kui-list-item')).toBe(true);
     expect(tile.textContent).toContain('message-row.kui.json');
-    expect(tile.textContent).not.toContain('views/');
+    expect(tile.textContent).toContain('views/');
     click(tile);
     await vi.waitFor(() =>
       expect(children(again.editor.document.value)).toHaveLength(1),
@@ -201,6 +229,11 @@ describe('the Library’s documents', () => {
   it('shows no documents without storage, without a listing, or when listing fails', async () => {
     const none = open({ storage: false });
     none.library.showPopover();
+    click(
+      none.library.querySelector<HTMLElement>(
+        '[data-segmented-control-id="editor-library-mode"] [data-segment-value="documents"]',
+      )!,
+    );
     expect(documents(none.library)).toEqual([]);
     cleanup!();
     const unlisted = open({ list: false });
@@ -208,8 +241,13 @@ describe('the Library’s documents', () => {
       expect(unlisted.editor.document.value.name).toBe('Main'),
     );
     unlisted.library.showPopover();
+    click(
+      unlisted.library.querySelector<HTMLElement>(
+        '[data-segmented-control-id="editor-library-mode"] [data-segment-value="documents"]',
+      )!,
+    );
     expect(documents(unlisted.library)).toEqual([]);
-    expect(unlisted.library.textContent).not.toContain('Documents');
+    expect(unlisted.library.textContent).toContain('No matching documents');
     cleanup!();
     let fail!: (error: unknown) => void;
     const failing = open({

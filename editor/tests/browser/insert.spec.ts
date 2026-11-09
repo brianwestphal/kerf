@@ -162,18 +162,23 @@ for (const width of [1440, 390]) {
   });
 }
 
-// KF-FXACB5: the Library offers the project's documents after its component
-// groups; a click inserts one as a `#view` inside the selection, a drag drops
+// KF-FXACB5 / KF-BBES58: the Library offers project documents in a dedicated
+// mode; a click inserts one as a `#view` inside the selection, a drag drops
 // it like a component, and either renders at once.
 async function libraryDocument(page: Page, folder: string) {
   await openLibrary(page);
   const library = page.locator('#editor-library');
+  await library
+    .locator(
+      '[data-segmented-control-id="editor-library-mode"] [data-segment-value="documents"]',
+    )
+    .click();
   await library.getByRole('searchbox').fill(folder);
   const row = library.getByRole('button', {
     name: `${folder}/message-row.kui.json`,
   });
   await expect(row).toBeVisible();
-  await expect(library.getByText('Documents', { exact: true })).toBeVisible();
+  await expect(library.getByRole('heading', { name: 'Documents' })).toBeVisible();
   await expect(
     library.getByRole('button', { name: `${folder}/inbox.kui.json` }),
   ).toHaveCount(0);
@@ -219,18 +224,20 @@ test('inserts a Library document by click and by drag', async ({
     });
 });
 
-for (const width of [1440, 390]) {
+for (const width of [2048, 390]) {
   test(`captures the Library's documents at ${width}`, async ({
     page,
   }, info) => {
     test.skip(info.project.name !== 'chromium', 'visual QA capture');
     await page.emulateMedia({ reducedMotion: 'reduce' });
-    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.setViewportSize({ width: 2048, height: 1128 });
     const folder = await openMain(page, `library-capture-${width}`);
     await select(page, 'messages');
     // Wide to the capture width before the Library opens over it.
-    await page.setViewportSize({ width, height: 900 });
+    await page.setViewportSize({ width, height: width === 390 ? 900 : 1128 });
     const { library } = await libraryDocument(page, folder);
+    await library.getByRole('searchbox').fill('');
+    await expect(library.locator('[data-editor-palette-document]').first()).toBeVisible();
     await expect
       .poll(() => page.evaluate(() => document.getAnimations().length))
       .toBe(0);
@@ -238,16 +245,15 @@ for (const width of [1440, 390]) {
     expect(box.width).toBeGreaterThan(0);
     expect(box.x + box.width).toBeLessThanOrEqual(width);
     await page.screenshot({
-      path: info.outputPath(`kf-fxacb5-library-documents-${width}.png`),
+      path: info.outputPath(`kf-bbes58-library-documents-editor-${width}.png`),
     });
-    // The grid view shows a document as a tile with a file icon.
-    await library.getByRole('button', { name: 'Grid' }).click();
-    const tile = library.locator('[data-editor-palette-document]');
-    await expect(tile).toHaveText('message-row.kui.json');
-    await page.screenshot({
-      path: info.outputPath(`kf-fxacb5-library-documents-grid-${width}.png`),
+    await library.screenshot({
+      path: info.outputPath(`kf-bbes58-library-documents-${width}.png`),
     });
-    await tile.click();
+    await expect(library.locator('[data-editor-palette]')).toHaveCount(0);
+    await expect(library.locator('[data-segmented-control-id="editor-palette-view"]')).toHaveCount(0);
+    await library.getByRole('searchbox').fill(folder);
+    await library.locator('[data-editor-palette-document]').click();
     await expect(canvas(page)).toContainText('Composed from a document');
   });
 }

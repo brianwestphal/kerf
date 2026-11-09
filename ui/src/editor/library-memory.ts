@@ -13,6 +13,8 @@ import type { PinnablePopoverChange } from '../components/surfaces/surface-scaff
 
 /** KF-JC7WTW: the Library shows a list or a grid of thumbnails. */
 export const PALETTE_VIEW_ACTION = 'editor-palette-view';
+export const LIBRARY_MODE_ACTION = 'editor-library-mode';
+export type LibraryMode = 'components' | 'documents';
 const PALETTE_VIEW_KEY = 'kerf-ui-editor:palette-view';
 export type PaletteView = 'list' | 'grid';
 /**

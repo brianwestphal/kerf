@@ -1,6 +1,6 @@
 // The editor's component and document Library popover and its palette views.
 import { raw, type Signal } from 'kerfjs';
-import { Component, FileText, LayoutGrid, List as ListIcon } from 'lucide';
+import { Component, LayoutGrid, List as ListIcon } from 'lucide';
 
 import { List } from '../components/collections/list/list.js';
 import { ListHeader } from '../components/collections/list-header/list-header.js';
@@ -19,6 +19,8 @@ import { HOOK } from './dom-hooks.js';
 import type { EditorContext } from './editor-context.js';
 import {
   LIBRARY_ID,
+  LIBRARY_MODE_ACTION,
+  type LibraryMode,
   PALETTE_ICONS,
   PALETTE_VIEW_ACTION,
   type PaletteView,
@@ -40,6 +42,7 @@ export interface LibraryPopoverState {
   readonly paletteFilter: Signal<string>;
   readonly paletteFilterRevision: Signal<number>;
   readonly paletteView: Signal<PaletteView>;
+  readonly libraryMode: Signal<LibraryMode>;
   readonly libraryFiles: Signal<readonly string[]>;
   readonly libraryError: Signal<string>;
 }
@@ -53,6 +56,7 @@ export function createLibraryPopover(
     paletteFilter,
     paletteFilterRevision,
     paletteView,
+    libraryMode,
     libraryFiles,
     libraryError,
   } = state;
@@ -82,10 +86,7 @@ export function createLibraryPopover(
   // KF-JC7WTW: in the grid view each category's components are tiles, each
   // showing its component as added (`wirePaletteThumbnails` draws them),
   // or its icon when it shows nothing until opened.
-  const palette = (
-    groups: ReturnType<typeof paletteMatches>,
-    documents: readonly string[],
-  ) => (
+  const palette = (groups: ReturnType<typeof paletteMatches>) => (
     <List gap="m">
       {groups.map((group) => (
         <List>
@@ -150,55 +151,28 @@ export function createLibraryPopover(
           )}
         </List>
       ))}
-      {documents.length ? libraryDocumentGroup(documents) : undefined}
     </List>
   );
 
   /**
    * KF-FXACB5: the Library's Documents group, after the components: each
    * project document as a row led by its file name over its folder (as
-   * Insert Document lists them), or as a tile with a file icon (no live
-   * thumbnail). A click inserts it as a `#view`; it drags like a component.
+   * Insert Document lists them). A click inserts it as a `#view`; it drags
+   * like a component.
    */
   const libraryDocumentGroup = (documents: readonly string[]) => (
     <List>
       <ListHeader label={LIBRARY_DOCUMENTS} />
-      {paletteView.value === 'grid' ? (
-        <Grid minColumnWidth={px(96)} autoFill gap="xs">
-          {documents.map((path) => (
-            <ContentItem
-              interactive
-              action={PALETTE_DOCUMENT_ACTION}
-              itemId={path}
-              ariaLabel={path}
-              title={path}
-              frame="framed"
-              rootAttributes={{
-                [HOOK.paletteDocument]: path,
-                'data-key': `document:${path}`,
-              }}
-            >
-              <div class="kui-editor__palette-thumb" aria-hidden="true">
-                <LucideIcon icon={FileText} name="file-text" />
-              </div>
-              <Text variant="span" size="compact" wrap="truncate">
-                {documentName(path)}
-              </Text>
-            </ContentItem>
-          ))}
-        </Grid>
-      ) : (
-        documents.map((path) => (
-          <ListItem
-            action={PALETTE_DOCUMENT_ACTION}
-            label={documentName(path)}
-            description={documentFolder(path)}
-            accessibleLabel={path}
-            title={path}
-            rootAttributes={{ [HOOK.paletteDocument]: path }}
-          />
-        ))
-      )}
+      {documents.map((path) => (
+        <ListItem
+          action={PALETTE_DOCUMENT_ACTION}
+          label={documentName(path)}
+          description={documentFolder(path)}
+          accessibleLabel={path}
+          title={path}
+          rootAttributes={{ [HOOK.paletteDocument]: path }}
+        />
+      ))}
     </List>
   );
 
@@ -208,8 +182,11 @@ export function createLibraryPopover(
    * or Option is held. Its filter stays above the scrolling palette.
    */
   const libraryPopover = () => {
-    const groups = paletteMatches();
-    const documents = libraryDocuments(libraryFiles.value, paletteFilter.value);
+    const componentsMode = libraryMode.value === 'components';
+    const groups = componentsMode ? paletteMatches() : [];
+    const documents = componentsMode
+      ? []
+      : libraryDocuments(libraryFiles.value, paletteFilter.value);
     return (
       <PinnablePopoverSurface
         id={LIBRARY_ID}
@@ -219,34 +196,47 @@ export function createLibraryPopover(
         bodyLayout="fill-last"
         resizeFromBottom
         headerActions={
-          // KF-JC7WTW: a list of names, or a grid of thumbnails.
-          <SegmentedControl
-            id="editor-palette-view"
-            label="Component View"
-            value={paletteView.value}
-            action={PALETTE_VIEW_ACTION}
-            choices={[
-              {
-                value: 'list',
-                label: 'List',
-                title: 'List',
-                content: <LucideIcon icon={ListIcon} name="list" />,
-              },
-              {
-                value: 'grid',
-                label: 'Grid',
-                title: 'Grid',
-                content: <LucideIcon icon={LayoutGrid} name="layout-grid" />,
-              },
-            ]}
-          />
+          componentsMode ? (
+            // KF-JC7WTW: a list of names, or a grid of thumbnails.
+            <SegmentedControl
+              id="editor-palette-view"
+              label="Component View"
+              value={paletteView.value}
+              action={PALETTE_VIEW_ACTION}
+              choices={[
+                {
+                  value: 'list',
+                  label: 'List',
+                  title: 'List',
+                  content: <LucideIcon icon={ListIcon} name="list" />,
+                },
+                {
+                  value: 'grid',
+                  label: 'Grid',
+                  title: 'Grid',
+                  content: <LucideIcon icon={LayoutGrid} name="layout-grid" />,
+                },
+              ]}
+            />
+          ) : undefined
         }
         rootAttributes={{ [HOOK.library]: '' }}
       >
         <List controlInsets="trbl" gap>
+          <SegmentedControl
+            id="editor-library-mode"
+            label="Library Content"
+            layout="equal"
+            value={libraryMode.value}
+            action={LIBRARY_MODE_ACTION}
+            choices={[
+              { value: 'components', label: 'Components' },
+              { value: 'documents', label: 'Documents' },
+            ]}
+          />
           <SearchField
             id="editor-palette-filter"
-            label="Filter Components"
+            label={componentsMode ? 'Filter Components' : 'Filter Documents'}
             placeholder="Filter"
             query={paletteFilter.value}
             revision={paletteFilterRevision.value}
@@ -264,12 +254,21 @@ export function createLibraryPopover(
           ) : undefined}
         </List>
         <List scrollable flex>
-          {groups.length || documents.length ? (
-            palette(groups, documents)
+          {componentsMode ? (
+            groups.length ? (
+              palette(groups)
+            ) : (
+              <EmptyState
+                title="No matching components"
+                detail="No component name or category holds that text."
+              />
+            )
+          ) : documents.length ? (
+            libraryDocumentGroup(documents)
           ) : (
             <EmptyState
-              title="No matching components"
-              detail="No component name or category holds that text."
+              title="No matching documents"
+              detail="No project document name or folder holds that text."
             />
           )}
         </List>
