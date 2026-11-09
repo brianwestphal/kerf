@@ -191,6 +191,14 @@ describe('inspector areas', () => {
       new KeyboardEvent('keydown', { key: 'ArrowRight', bubbles: true }),
     );
     expect(
+      tab(root, 'editor-document-areas', 'params').getAttribute(
+        'aria-selected',
+      ),
+    ).toBe('true');
+    tab(root, 'editor-document-areas', 'params').dispatchEvent(
+      new KeyboardEvent('keydown', { key: 'ArrowRight', bubbles: true }),
+    );
+    expect(
       tab(root, 'editor-document-areas', 'problems').getAttribute(
         'aria-selected',
       ),
@@ -212,6 +220,6 @@ describe('inspector areas', () => {
           '[role="tab"][data-tab-id^="editor-document-areas-"]',
         ),
       ].map((item) => item.textContent),
-    ).toEqual(['Outline', 'Problems']);
+    ).toEqual(['Outline', 'Params', 'Problems']);
   });
 });

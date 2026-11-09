@@ -113,6 +113,18 @@ import {
   REMOVE_ROW_DESIGN_ACTION,
   slotEditor,
 } from './control-flow-section.js';
+import {
+  ADD_PARAM_FIELD_ACTION,
+  CREATE_PARAM_ACTION,
+  documentParamsPanel,
+  PARAM_EDIT,
+  PARAM_FIELD,
+  PARAM_NEW,
+  PARAM_REMOVE,
+  type ParamEdit,
+  REMOVE_PARAM_ACTION,
+  REMOVE_PARAM_FIELD_ACTION,
+} from './document-params-panel.js';
 import { HOOK, hook } from './dom-hooks.js';
 import { createDropViews } from './drop-menu.js';
 import type { EditorContext, Selection } from './editor-context.js';
@@ -256,6 +268,12 @@ import {
   slotRowAddress,
   slotRowId,
 } from './model/outline.js';
+import {
+  changeParam,
+  checkedParamEdit,
+  createParam,
+  removeParam,
+} from './model/params.js';
 import type { ActionLogEntry, PlayHandlers } from './model/play-actions.js';
 import {
   type DevicePresetsOption,
@@ -276,6 +294,7 @@ import {
   setRowCondition,
   setRowKind,
 } from './model/row-designs.js';
+import { sampleValue } from './model/sample-inputs.js';
 import {
   composedDocuments,
   explainViewLoads,
@@ -776,6 +795,8 @@ export function createEditor(options: EditorOptions) {
     options.storage &&
     createAutosave(options.storage, 400, () => realmOf(wired ?? document));
   const documentArea = signal<DocumentArea>('outline');
+  const newParamName = signal('');
+  const newParamKind = signal('string');
   const inspectorArea = signal<InspectorArea>('properties');
   const saveAsError = signal('');
   /** KF-D9P3NP: the Extract dialog's suggested path, and why it failed. */
@@ -841,6 +862,216 @@ export function createEditor(options: EditorOptions) {
     fieldErrors.value = {};
     editNotice.value = null;
     historyVersion.value += 1;
+  };
+
+  const paramError = (name: string, message: string) => {
+    fieldErrors.value = {
+      ...fieldErrors.value,
+      [`#doc-param:${name}`]: message,
+    };
+  };
+
+  const paramType = (kind: string): ViewType => {
+    switch (kind) {
+      case 'array':
+        return { kind, items: { kind: 'object', props: [] } };
+      case 'object':
+        return { kind, props: [] };
+      case 'enum':
+        return { kind, values: ['choice'] };
+      case 'literal':
+        return { kind, value: '' };
+      default:
+        return { kind };
+    }
+  };
+
+  const applyParam = (
+    name: string,
+    param: NonNullable<ViewDocument['params']>[string],
+  ) => {
+    const result = changeParam(doc.value, viewCatalog, name, param);
+    if ('error' in result) paramError(name, result.error);
+    else commit(result.document);
+  };
+
+  const editParam = (at: ParamEdit, raw: string | boolean) => {
+    const param = doc.value.params?.[at.name];
+    if (!param) return;
+    if (at.part === 'name') {
+      const renamed = renameParam(doc.value, at.name, String(raw).trim());
+      const result =
+        'error' in renamed
+          ? renamed
+          : checkedParamEdit(doc.value, renamed.document, viewCatalog);
+      if ('error' in result) paramError(at.name, result.error);
+      else commit(result.document);
+      return;
+    }
+    let next: typeof param = param;
+    const type = param.type;
+    switch (at.part) {
+      case 'type':
+        next = { ...param, type: paramType(String(raw)) };
+        break;
+      case 'itemType':
+        if (type.kind !== 'array') return;
+        next = { ...param, type: { ...type, items: paramType(String(raw)) } };
+        break;
+      case 'defaultEnabled':
+        if (raw === false) {
+          next = Object.fromEntries(
+            Object.entries(param).filter(([key]) => key !== 'default'),
+          ) as typeof param;
+        } else {
+          const value = sampleValue(type, at.name, (label) => label);
+          if (value === undefined) {
+            paramError(at.name, 'This type has no editable example default.');
+            return;
+          }
+          next = { ...param, default: value };
+        }
+        break;
+      case 'default': {
+        let value: unknown = raw;
+        if (type.kind === 'number') {
+          value = Number(raw);
+          if (!String(raw).trim() || !Number.isFinite(value)) {
+            paramError(at.name, 'Enter a finite number.');
+            return;
+          }
+        } else if (type.kind === 'boolean') {
+          value = raw === 'true';
+        } else if (!['string', 'content'].includes(type.kind)) {
+          try {
+            value = JSON.parse(String(raw));
+          } catch {
+            paramError(at.name, 'Enter a valid JSON value.');
+            return;
+          }
+        }
+        next = { ...param, default: value };
+        break;
+      }
+      case 'enumValues': {
+        let values: unknown;
+        try {
+          values = JSON.parse(String(raw));
+        } catch {
+          paramError(at.name, 'Enter a JSON array of choices.');
+          return;
+        }
+        if (
+          !Array.isArray(values) ||
+          values.length === 0 ||
+          !values.every((value) =>
+            ['string', 'number', 'boolean'].includes(typeof value),
+          )
+        ) {
+          paramError(at.name, 'Enter a non-empty JSON array of choices.');
+          return;
+        }
+        next = { ...param, type: { ...type, values } };
+        break;
+      }
+      case 'literalValue': {
+        let value: unknown;
+        try {
+          value = JSON.parse(String(raw));
+        } catch {
+          paramError(at.name, 'Enter a JSON string, number, or boolean.');
+          return;
+        }
+        if (!['string', 'number', 'boolean'].includes(typeof value)) {
+          paramError(at.name, 'Enter a JSON string, number, or boolean.');
+          return;
+        }
+        next = {
+          ...param,
+          type: { ...type, value: value as string | number | boolean },
+        };
+        break;
+      }
+      case 'fieldName':
+      case 'fieldType':
+      case 'fieldRequired': {
+        const item = type.kind === 'array' ? type.items : type;
+        if (item?.kind !== 'object' || at.index === undefined) return;
+        const fields = [...(item.props ?? [])];
+        const field = fields[at.index];
+        if (!field) return;
+        if (at.part === 'fieldName') {
+          const name = String(raw).trim();
+          if (
+            !/^[a-z][A-Za-z0-9]*$/.test(name) ||
+            fields.some(
+              (other, index) => index !== at.index && other.name === name,
+            )
+          ) {
+            paramError(
+              at.name,
+              'Field names must be unique camelCase identifiers.',
+            );
+            return;
+          }
+          fields[at.index] = { ...field, name };
+        } else if (at.part === 'fieldType') {
+          fields[at.index] = { ...field, type: paramType(String(raw)) };
+        } else {
+          fields[at.index] = { ...field, required: raw === true };
+        }
+        const changed = { ...item, props: fields };
+        next = {
+          ...param,
+          type: type.kind === 'array' ? { ...type, items: changed } : changed,
+        };
+        break;
+      }
+    }
+    applyParam(at.name, next);
+  };
+
+  const addParamField = (name: string) => {
+    const param = doc.value.params?.[name];
+    if (!param) return;
+    const type = param.type;
+    const item = type.kind === 'array' ? type.items : type;
+    if (item?.kind !== 'object') return;
+    const fields = item.props ?? [];
+    let fieldName = 'field';
+    for (
+      let index = 2;
+      fields.some((field) => field.name === fieldName);
+      index += 1
+    )
+      fieldName = `field${index}`;
+    const changed = {
+      ...item,
+      props: [
+        ...fields,
+        { name: fieldName, type: { kind: 'string' }, required: true },
+      ],
+    };
+    applyParam(name, {
+      ...param,
+      type: type.kind === 'array' ? { ...type, items: changed } : changed,
+    });
+  };
+
+  const removeParamField = (name: string, index: number) => {
+    const param = doc.value.params?.[name];
+    if (!param) return;
+    const type = param.type;
+    const item = type.kind === 'array' ? type.items : type;
+    if (item?.kind !== 'object' || !item.props?.[index]) return;
+    const changed = {
+      ...item,
+      props: item.props.filter((_, at) => at !== index),
+    };
+    applyParam(name, {
+      ...param,
+      type: type.kind === 'array' ? { ...type, items: changed } : changed,
+    });
   };
 
   /**
@@ -1767,6 +1998,8 @@ export function createEditor(options: EditorOptions) {
       historyVersion.value += 1;
       selection.value = null;
       loadError.value = null;
+      newParamName.value = '';
+      newParamKind.value = 'string';
       // KF-5N26H6: composed documents load again for this one, and a
       // document opened any other way leaves the Open document trail.
       viewLoads.value = new Map();
@@ -2068,6 +2301,19 @@ export function createEditor(options: EditorOptions) {
               )}
             </List>
           ),
+        },
+        {
+          area: 'params',
+          name: 'Params',
+          panel:
+            documentArea.value === 'params'
+              ? documentParamsPanel(
+                  document,
+                  newParamName.value,
+                  newParamKind.value,
+                  fieldErrors.value,
+                )
+              : '',
         },
         {
           area: 'problems',
@@ -2393,6 +2639,8 @@ export function createEditor(options: EditorOptions) {
   const discardInspectorDrafts = () => {
     const stack = wired?.querySelector(`#${INSPECTOR_STACK}`);
     if (stack) discardDrafts(stack);
+    const params = wired?.querySelector('[data-editor-document-params]');
+    if (params) discardDrafts(params);
   };
   const undo = () => {
     if (!history.canUndo) return;
@@ -3608,6 +3856,20 @@ export function createEditor(options: EditorOptions) {
   };
 
   const wireInspectorChanges = (root: HTMLElement) => [
+    delegate<HTMLElement>(root, 'change', `[${PARAM_NEW}]`, (_event, field) => {
+      const value = String(controlValue(field));
+      if (field.getAttribute(PARAM_NEW) === 'name') newParamName.value = value;
+      else newParamKind.value = value;
+    }),
+    delegate<HTMLElement>(
+      root,
+      'change',
+      `[${PARAM_EDIT}]`,
+      (_event, field) => {
+        const at = JSON.parse(field.getAttribute(PARAM_EDIT)!) as ParamEdit;
+        editParam(at, controlValue(field));
+      },
+    ),
     delegate<HTMLElement>(
       root,
       'change',
@@ -4213,6 +4475,40 @@ export function createEditor(options: EditorOptions) {
     // KF-QSSTMX: a new empty document; with storage it is a new draft,
     // and the previous document stays in its file.
     [NEW_ACTION]: () => load(emptyDocument()),
+    [CREATE_PARAM_ACTION]: () => {
+      const result = createParam(
+        doc.value,
+        viewCatalog,
+        newParamName.value.trim(),
+        paramType(newParamKind.value),
+      );
+      if ('error' in result)
+        fieldErrors.value = { '#doc-param-new': result.error };
+      else {
+        commit(result.document);
+        newParamName.value = '';
+      }
+    },
+    [REMOVE_PARAM_ACTION]: (_event, target) => {
+      const name = target.getAttribute(PARAM_REMOVE);
+      if (!name) return;
+      const result = removeParam(doc.value, viewCatalog, name);
+      if ('error' in result) paramError(name, result.error);
+      else commit(result.document);
+    },
+    [ADD_PARAM_FIELD_ACTION]: (_event, target) => {
+      const field = target.getAttribute(PARAM_FIELD);
+      if (field) addParamField((JSON.parse(field) as { name: string }).name);
+    },
+    [REMOVE_PARAM_FIELD_ACTION]: (_event, target) => {
+      const field = target.getAttribute(PARAM_FIELD);
+      if (!field) return;
+      const { name, index } = JSON.parse(field) as {
+        name: string;
+        index: number;
+      };
+      removeParamField(name, index);
+    },
     [DOCUMENT_TAB_ACTION]: (_event, target) => {
       documentArea.value = target.dataset.tabId!.slice(
         DOCUMENT_AREAS.length + 1,

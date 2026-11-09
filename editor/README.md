@@ -23,6 +23,10 @@ it uses ship from `@kerfjs/ui/view`, so tools and applications work without it.
   problem-count badge. A document with problems still previews: each node a
   problem is about renders as a selectable "cannot render" placeholder through
   `previewView`, and the rest renders normally.
+- **Params:** create and edit document inputs in the Document rail. Choose a
+  type, optional default, and fields for object or list items. Changes are
+  checked against the document validator; renaming updates references, while
+  removal requires clearing references first. These edits share undo and redo.
 
 - **Export** the generated view module from the Export menu, either the full
   `.view.ts` or the declarations-only form for apps that render with

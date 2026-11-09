@@ -28,7 +28,7 @@ export const INSPECTOR_TAB_ACTION = 'editor-inspector-tab';
 export const DOCUMENT_AREAS = 'editor-document-areas';
 /** How long a drag rests on a tab before it opens. */
 export const SPRING_MS = 500;
-export type DocumentArea = 'outline' | 'problems';
+export type DocumentArea = 'outline' | 'params' | 'problems';
 export type InspectorArea = 'properties' | 'flow' | 'children';
 export const SAVE_ACTION = 'editor-save';
 export const SAVE_AS_ACTION = 'editor-save-as';

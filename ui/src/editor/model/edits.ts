@@ -751,6 +751,8 @@ export function renameParam(
     if (value === null || typeof value !== 'object') return value;
     const record = value as Record<string, unknown>;
     if (record.$param === from) return { ...record, $param: to };
+    if (typeof record.$bind === 'string' && record.$bind.split('.')[0] === from)
+      return { ...record, $bind: `${to}${record.$bind.slice(from.length)}` };
     return Object.fromEntries(
       Object.entries(record).map(([key, item]) => [key, follow(item)]),
     );
