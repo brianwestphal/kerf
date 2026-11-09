@@ -1,0 +1,335 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "ApplicationTabsReorderable",
+  "catalogs": ["@kerfjs/ui"],
+  "root": {
+    "id": "01M6Z9ABC00000000000000088",
+    "type": "@kerfjs/ui:pane",
+    "props": {
+      "rootAttributes": {
+        "data-demo-application-tabs-frame": ""
+      }
+    },
+    "zones": {
+      "header": [
+        {
+          "id": "01M6Z9ABC00000000000000078",
+          "type": "@kerfjs/ui:tab-bar",
+          "props": {
+            "id": "catalog-tabs",
+            "label": "Open Catalog Pages"
+          },
+          "zones": {
+            "leading": [
+              {
+                "id": "01M6Z9ABC00000000000000072",
+                "type": "@kerfjs/ui:toolbar-control-group",
+                "props": {
+                  "appearance": "borderless",
+                  "single": true
+                },
+                "zones": {
+                  "children": [
+                    {
+                      "id": "01M6Z9ABC00000000000000071",
+                      "type": "@kerfjs/ui:toolbar-control-group#ToolbarButton",
+                      "props": {
+                        "ariaLabel": "Show Navigation",
+                        "action": {
+                          "$action": "log-sidebar"
+                        }
+                      },
+                      "zones": {
+                        "icon": [
+                          {
+                            "id": "01M6Z9ABC00000000000000070",
+                            "type": "@kerfjs/ui:lucide-icon",
+                            "props": {
+                              "icon": {
+                                "$icon": "panel-left"
+                              },
+                              "name": "panel-left"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              }
+            ],
+            "trailing": [
+              {
+                "id": "01M6Z9ABC00000000000000075",
+                "type": "@kerfjs/ui:toolbar-control-group",
+                "props": {
+                  "appearance": "borderless",
+                  "single": true
+                },
+                "zones": {
+                  "children": [
+                    {
+                      "id": "01M6Z9ABC00000000000000074",
+                      "type": "@kerfjs/ui:toolbar-control-group#ToolbarButton",
+                      "props": {
+                        "ariaLabel": "Add Tab",
+                        "action": {
+                          "$action": "add-demo-tab"
+                        }
+                      },
+                      "zones": {
+                        "icon": [
+                          {
+                            "id": "01M6Z9ABC00000000000000073",
+                            "type": "@kerfjs/ui:lucide-icon",
+                            "props": {
+                              "icon": {
+                                "$icon": "plus"
+                              },
+                              "name": "plus"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              }
+            ],
+            "tabs": [
+              {
+                "$each": {
+                  "$param": "tabs"
+                },
+                "as": "tab",
+                "key": "tab.id",
+                "template": {
+                  "id": "01M6Z9ABC00000000000000077",
+                  "type": "@kerfjs/ui:tabs",
+                  "props": {
+                    "id": {
+                      "$bind": "tab.id"
+                    },
+                    "tabId": {
+                      "$bind": "tab.tabId"
+                    },
+                    "panelId": "catalog-active-panel",
+                    "name": {
+                      "$bind": "tab.name"
+                    },
+                    "selected": {
+                      "$bind": "tab.selected"
+                    },
+                    "pending": {
+                      "$bind": "tab.pending"
+                    },
+                    "draggable": true,
+                    "selectAction": {
+                      "$action": "select-reorder-tab"
+                    },
+                    "closeAction": {
+                      "$action": "close-reorder-tab"
+                    },
+                    "rootAttributes": {
+                      "data-demo-tab-id": {
+                        "$bind": "tab.id"
+                      }
+                    }
+                  },
+                  "zones": {
+                    "trailing-decoration": [
+                      {
+                        "$if": {
+                          "$bind": "tab.pending"
+                        },
+                        "then": {
+                          "id": "01M6Z9ABC00000000000000076",
+                          "type": "@kerfjs/ui:loading-spinner"
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "footer": [
+        {
+          "id": "01M6Z9ABC00000000000000087",
+          "type": "@kerfjs/ui:list-inset-text",
+          "zones": {
+            "children": [
+              {
+                "id": "01M6Z9ABC00000000000000086",
+                "type": "@kerfjs/ui:text",
+                "props": {
+                  "tone": "quiet",
+                  "size": "compact"
+                },
+                "zones": {
+                  "children": [
+                    {
+                      "id": "01M6Z9ABC00000000000000084",
+                      "type": "#text",
+                      "value": "Order: "
+                    },
+                    {
+                      "id": "01M6Z9ABC00000000000000085",
+                      "type": "@kerfjs/ui:text",
+                      "props": {
+                        "variant": "span",
+                        "weight": "strong",
+                        "rootAttributes": {
+                          "data-tab-order": ""
+                        },
+                        "children": {
+                          "$param": "orderLabel"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "content": [
+        {
+          "id": "01M6Z9ABC00000000000000083",
+          "type": "@kerfjs/ui:tab-panel",
+          "props": {
+            "id": "catalog-active-panel",
+            "tabId": {
+              "$param": "activeTabId"
+            },
+            "busy": {
+              "$param": "activeBusy"
+            }
+          },
+          "zones": {
+            "children": [
+              {
+                "id": "01M6Z9ABC00000000000000082",
+                "type": "@kerfjs/ui:list-inset-text",
+                "zones": {
+                  "children": [
+                    {
+                      "id": "01M6Z9ABC00000000000000081",
+                      "type": "@kerfjs/ui:text",
+                      "props": {
+                        "variant": "h3"
+                      },
+                      "zones": {
+                        "children": [
+                          {
+                            "$if": {
+                              "$param": "activeBusy"
+                            },
+                            "then": {
+                              "id": "01M6Z9ABC00000000000000079",
+                              "type": "@kerfjs/ui:skeleton",
+                              "props": {
+                                "width": {
+                                  "$css": "em(6)"
+                                },
+                                "label": {
+                                  "$param": "loadingLabel"
+                                }
+                              }
+                            },
+                            "else": {
+                              "id": "01M6Z9ABC00000000000000080",
+                              "type": "#text",
+                              "value": {
+                                "$param": "activeName"
+                              }
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  },
+  "params": {
+    "tabs": {
+      "type": {
+        "kind": "array",
+        "items": {
+          "kind": "object",
+          "props": [
+            {
+              "name": "id",
+              "type": {
+                "kind": "string"
+              },
+              "required": true
+            },
+            {
+              "name": "tabId",
+              "type": {
+                "kind": "string"
+              },
+              "required": true
+            },
+            {
+              "name": "name",
+              "type": {
+                "kind": "string"
+              },
+              "required": true
+            },
+            {
+              "name": "selected",
+              "type": {
+                "kind": "boolean"
+              },
+              "required": true
+            },
+            {
+              "name": "pending",
+              "type": {
+                "kind": "boolean"
+              },
+              "required": true
+            }
+          ]
+        }
+      }
+    },
+    "activeTabId": {
+      "type": {
+        "kind": "string"
+      }
+    },
+    "activeBusy": {
+      "type": {
+        "kind": "boolean"
+      }
+    },
+    "activeName": {
+      "type": {
+        "kind": "string"
+      }
+    },
+    "loadingLabel": {
+      "type": {
+        "kind": "string"
+      }
+    },
+    "orderLabel": {
+      "type": {
+        "kind": "string"
+      }
+    }
+  }
+}

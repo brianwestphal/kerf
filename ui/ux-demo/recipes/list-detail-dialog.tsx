@@ -4,20 +4,15 @@ import '@kerfjs/ui/nav-stack.css';
 import '@kerfjs/ui/split-view.css';
 import '@kerfjs/ui/webawesome.css';
 
-import { Button } from '@kerfjs/ui/button';
-import { remify } from '@kerfjs/ui/css-values';
 import { deviceClass } from '@kerfjs/ui/device-class';
-import { List } from '@kerfjs/ui/list';
-import { ListDetailDialog } from '@kerfjs/ui/list-detail-dialog';
-import { ListItem } from '@kerfjs/ui/list-item';
-import { LucideIcon } from '@kerfjs/ui/lucide-icon';
-import { Row } from '@kerfjs/ui/row';
-import { Spacer } from '@kerfjs/ui/spacer';
 import { openDialog } from '@kerfjs/ui/surface-scaffold';
-import { ValueTable, ValueTableRow } from '@kerfjs/ui/value-table';
 import { signal } from 'kerfjs';
-import { ChevronRight, FileText } from 'lucide';
 
+import { renderRecipeListDetailActions } from '../views/recipe-list-detail-actions.view.js';
+import { renderRecipeListDetailDialog } from '../views/recipe-list-detail-dialog.view.js';
+import { renderRecipeListDetailLauncher } from '../views/recipe-list-detail-launcher.view.js';
+import { renderRecipeListDetailRows } from '../views/recipe-list-detail-rows.view.js';
+import { renderRecipeListDetailValues } from '../views/recipe-list-detail-values.view.js';
 import type { RecipeFactory, RecipePresentation } from './types.js';
 
 const records = {
@@ -57,44 +52,20 @@ export const createRecipe: RecipeFactory = (announce) => {
 
   const projectRows = (compact: boolean) => (
     <section aria-label="Projects">
-      {Object.entries(records).map(([id, record]) => (
-        <ListItem
-          action="recipe-action"
-          itemId={id}
-          label={record.name}
-          description={`${record.owner} · ${record.state}`}
-          icon={<LucideIcon icon={FileText} name="file-text" />}
-          trailing={
-            compact ? (
-              <LucideIcon icon={ChevronRight} name="chevron-right" />
-            ) : undefined
-          }
-          selected={!compact && selected.value === id}
-          multiline
-        />
-      ))}
+      {renderRecipeListDetailRows({
+        records: Object.entries(records).map(([id, record]) => ({
+          id,
+          name: record.name,
+          description: `${record.owner} · ${record.state}`,
+          selected: !compact && selected.value === id,
+        })),
+        compact,
+        controlInsets: compact ? undefined : 'tb',
+      })}
     </section>
   );
 
-  const recordActions = () => (
-    <Row gap="xs" wrap controlInsets="trbl">
-      <Spacer flex />
-      <Button
-        emphasis="secondary"
-        action="recipe-action"
-        rootAttributes={{ 'data-recipe-command': 'archive' }}
-      >
-        Archive
-      </Button>
-      <Button
-        tone="brand"
-        action="recipe-action"
-        rootAttributes={{ 'data-recipe-command': 'open-record' }}
-      >
-        Open Project
-      </Button>
-    </Row>
-  );
+  const recordActions = renderRecipeListDetailActions;
 
   const render = () => {
     const compact = device.value.compact;
@@ -104,46 +75,29 @@ export const createRecipe: RecipeFactory = (announce) => {
         data-recipe="recipe-list-detail-dialog"
         aria-label="Project Details Dialog"
       >
-        <Row hAlign="center">
-          <Button
-            tone="brand"
-            action="recipe-action"
-            rootAttributes={{ 'data-recipe-command': 'open' }}
-          >
-            Open Project Details
-          </Button>
-          {/* One dialog in both layouts, so crossing the compact breakpoint
-              while it is open morphs it in place and it stays open. */}
-          <ListDetailDialog
-            id="recipe-projects"
-            label="Project Details"
-            compact={compact}
-            detailActive={detailOpen.value}
-            backLabel="Back to Projects"
-            viewportGutter={remify(16)}
-            list={{
-              title: 'Recent Projects',
-              content: (
-                <List controlInsets={compact ? undefined : 'tb'}>
-                  {projectRows(compact)}
-                </List>
+        {renderRecipeListDetailLauncher(
+          {},
+          {
+            dialog: () =>
+              renderRecipeListDetailDialog(
+                {
+                  compact,
+                  detailActive: detailOpen.value,
+                  name: record.name,
+                },
+                {
+                  listContent: () => projectRows(compact),
+                  detailContent: () =>
+                    renderRecipeListDetailValues({
+                      owner: record.owner,
+                      state: record.state,
+                      updated: record.updated,
+                    }),
+                  footer: recordActions,
+                },
               ),
-            }}
-            detail={{
-              title: record.name,
-              content: (
-                <List controlInsets="tb">
-                  <ValueTable label="Project Details">
-                    <ValueTableRow label="Owner" value={record.owner} />
-                    <ValueTableRow label="Status" value={record.state} />
-                    <ValueTableRow label="Updated" value={record.updated} />
-                  </ValueTable>
-                </List>
-              ),
-              footer: recordActions(),
-            }}
-          />
-        </Row>
+          },
+        )}
       </section>
     );
   };

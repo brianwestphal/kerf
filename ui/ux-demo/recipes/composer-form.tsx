@@ -2,20 +2,9 @@ import '@kerfjs/ui/layout.css';
 import '@kerfjs/ui/select/register';
 import '@kerfjs/ui/webawesome.css';
 
-import { Spacer } from '@kerfjs/ui';
-import { Button } from '@kerfjs/ui/button';
-import { Form } from '@kerfjs/ui/form';
-import { List } from '@kerfjs/ui/list';
-import { ListInsetText } from '@kerfjs/ui/list-inset-text';
-import { Row } from '@kerfjs/ui/row';
-import { Select } from '@kerfjs/ui/select';
-import { StateBanner } from '@kerfjs/ui/state-banner';
-import { Text } from '@kerfjs/ui/text';
-import { TextField } from '@kerfjs/ui/text-field';
-import { Toolbar } from '@kerfjs/ui/toolbar';
-import { ToolbarText } from '@kerfjs/ui/toolbar-text';
 import { signal } from 'kerfjs';
 
+import { renderRecipeComposerForm } from '../views/recipe-composer-form.view.js';
 import type { RecipeFactory, RecipePresentation } from './types.js';
 
 export const presentation: RecipePresentation = {
@@ -50,98 +39,16 @@ export const createRecipe: RecipeFactory = (announce) => {
   const body = signal(
     'The tablet layout now keeps navigation, content, and inspector focus order aligned.',
   );
-  const audience = signal('team');
+  const audience = signal<'team' | 'reviewers' | 'organization'>('team');
   const status = signal<'idle' | 'error' | 'saved'>('idle');
-  const render = () => (
-    <Form
-      rootAttributes={{ 'data-recipe': 'recipe-composer-form' }}
-      labelledBy="recipe-composer-title"
-      describedBy="recipe-composer-summary"
-      noValidate
-    >
-      <List gap="l" controlInsets="tb">
-        {/* The title and its supporting line are one heading unit. */}
-        <List>
-          <Toolbar
-            label="Publish Workspace Update"
-            leading={
-              <ToolbarText
-                text="Publish Workspace Update"
-                size="xlarge"
-                id="recipe-composer-title"
-              />
-            }
-          />
-          <ListInsetText sides="rl">
-            <Text variant="span" tone="quiet" id="recipe-composer-summary">
-              Share a concise, actionable update with collaborators.
-            </Text>
-          </ListInsetText>
-        </List>
-        {status.value === 'error' && (
-          <StateBanner
-            title="Add a Title Before Publishing"
-            detail="The update body and audience are preserved."
-            tone="danger"
-            urgency="alert"
-          />
-        )}
-        {status.value === 'saved' && (
-          <StateBanner
-            title="Update Published"
-            detail="The team audience can now read it."
-            tone="success"
-          />
-        )}
-        <List gap="xs" controlInsets="rl">
-          <TextField
-            name="recipe-title"
-            label="Update Title"
-            hint="Summarize the outcome in one line."
-            required
-            value={title.value}
-          />
-          <TextField
-            multiline
-            name="recipe-body"
-            label="Details"
-            hint="Include decisions, owners, and the next checkpoint."
-            rows={5}
-            maxLength={400}
-            showCount
-            value={body.value}
-          />
-          <Select<string>
-            name="recipe-audience"
-            value={audience.value}
-            label="Audience"
-            choices={[
-              { value: 'team', label: 'Workspace Team' },
-              { value: 'reviewers', label: 'Reviewers' },
-              { value: 'organization', label: 'Entire Organization' },
-            ]}
-          />
-        </List>
-        <Row gap="xs" wrap controlInsets="rl">
-          <Spacer flex />
-          <Button
-            emphasis="secondary"
-            action="recipe-action"
-            rootAttributes={{ 'data-recipe-command': 'reset' }}
-          >
-            Reset
-          </Button>
-          <Button
-            tone="brand"
-            action="recipe-action"
-            rootAttributes={{ 'data-recipe-command': 'submit' }}
-          >
-            Publish Update
-          </Button>
-        </Row>
-      </List>
-    </Form>
-  );
+  const render = () =>
+    renderRecipeComposerForm({
+      title: title.value,
+      body: body.value,
+      audience: audience.value,
+      error: status.value === 'error',
+      saved: status.value === 'saved',
+    });
   return {
     render,
     action(command, element) {
@@ -168,7 +75,10 @@ export const createRecipe: RecipeFactory = (announce) => {
         (element as HTMLElement & { value?: string | null }).value ?? '';
       if (element.getAttribute('name') === 'recipe-title') title.value = value;
       if (element.getAttribute('name') === 'recipe-body') body.value = value;
-      if (element.getAttribute('name') === 'recipe-audience')
+      if (
+        element.getAttribute('name') === 'recipe-audience' &&
+        (value === 'team' || value === 'reviewers' || value === 'organization')
+      )
         audience.value = value;
     },
   };

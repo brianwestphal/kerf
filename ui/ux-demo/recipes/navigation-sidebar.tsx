@@ -1,20 +1,10 @@
 import '@kerfjs/ui/layout.css';
 
-import { ContentItem } from '@kerfjs/ui/content-item';
-import { List } from '@kerfjs/ui/list';
-import { ListHeader } from '@kerfjs/ui/list-header';
-import { ListItem } from '@kerfjs/ui/list-item';
-import { LucideIcon } from '@kerfjs/ui/lucide-icon';
-import { Pane } from '@kerfjs/ui/pane';
-import { Text } from '@kerfjs/ui/text';
-import { Toolbar } from '@kerfjs/ui/toolbar';
-import {
-  ToolbarButton,
-  ToolbarControlGroup,
-} from '@kerfjs/ui/toolbar-control-group';
 import { signal } from 'kerfjs';
-import { Folder, Inbox, Plus, Settings, Users } from 'lucide';
 
+import { renderRecipeNavigationProjects } from '../views/recipe-navigation-projects.view.js';
+import { renderRecipeNavigationSidebar } from '../views/recipe-navigation-sidebar.view.js';
+import { renderRecipeNavigationWorkspace } from '../views/recipe-navigation-workspace.view.js';
 import type { RecipeFactory, RecipePresentation } from './types.js';
 
 export const presentation: RecipePresentation = {
@@ -33,108 +23,29 @@ export const presentation: RecipePresentation = {
 export const createRecipe: RecipeFactory = (announce) => {
   const selected = signal('inbox');
   const expanded = signal(true);
-  const render = () => (
-    <Pane
-      element="aside"
-      label="Workspace Navigation"
-      rootAttributes={{ 'data-recipe': 'recipe-navigation-sidebar' }}
-      footer={
-        <Toolbar
-          label="Sidebar Actions"
-          dividerSides="t"
-          leading={
-            <ToolbarControlGroup appearance="borderless" single>
-              <ToolbarButton
-                ariaLabel="Add Project"
-                action="recipe-action"
-                rootAttributes={{ 'data-recipe-command': 'add' }}
-                icon={<LucideIcon icon={Plus} name="plus" />}
-              />
-            </ToolbarControlGroup>
-          }
-          trailing={
-            <ToolbarControlGroup appearance="borderless" single>
-              <ToolbarButton
-                ariaLabel="Workspace Settings"
-                action="recipe-action"
-                rootAttributes={{ 'data-recipe-command': 'settings' }}
-                icon={<LucideIcon icon={Settings} name="settings" />}
-              />
-            </ToolbarControlGroup>
-          }
-        />
-      }
-    >
-      <section>
-        <ListHeader
-          label="Workspace"
-          count={3}
-          countLabel="3 workspaces"
-          action="recipe-action"
-          actionLabel="Add workspace item"
-          actionIcon={<LucideIcon icon={Plus} name="plus" />}
-        />
-        <ListItem
-          action="recipe-action"
-          itemId="inbox"
-          label="Inbox"
-          icon={<LucideIcon icon={Inbox} name="inbox" />}
-          trailing={<span>12</span>}
-          selected={selected.value === 'inbox'}
-        />
-        <ListItem
-          action="recipe-action"
-          itemId="shared"
-          label="Shared with Me"
-          icon={<LucideIcon icon={Users} name="users" />}
-          selected={selected.value === 'shared'}
-        />
-        <ListItem
-          action="recipe-action"
-          itemId="drafts"
-          label="Drafts Without an Icon"
-          selected={selected.value === 'drafts'}
-        />
-      </section>
-      <section>
-        <ListHeader
-          label="Projects"
-          toggle
-          action="recipe-action"
-          expanded={expanded.value}
-        />
-        {expanded.value && (
+  const render = () =>
+    renderRecipeNavigationSidebar(
+      {},
+      {
+        content: () => (
           <>
-            <ListItem
-              action="recipe-action"
-              itemId="design"
-              label="Design system rollout across desktop and tablet"
-              icon={<LucideIcon icon={Folder} name="folder" />}
-              selected={selected.value === 'design'}
-              multiline
-            />
-            <ListItem
-              action="recipe-action"
-              itemId="archive"
-              label="Archived"
-              disabled
-              title="Available to administrators"
-            />
-            <ContentItem>
-              <List gap="2xs">
-                <Text variant="span" weight="strong">
-                  Quarterly Goal
-                </Text>
-                <Text variant="span" tone="quiet" size="compact">
-                  Ship accessible navigation patterns to every workspace.
-                </Text>
-              </List>
-            </ContentItem>
+            <section>
+              {renderRecipeNavigationWorkspace({
+                inboxSelected: selected.value === 'inbox',
+                sharedSelected: selected.value === 'shared',
+                draftsSelected: selected.value === 'drafts',
+              })}
+            </section>
+            <section>
+              {renderRecipeNavigationProjects({
+                expanded: expanded.value,
+                designSelected: selected.value === 'design',
+              })}
+            </section>
           </>
-        )}
-      </section>
-    </Pane>
-  );
+        ),
+      },
+    );
   return {
     render,
     action(command, element) {

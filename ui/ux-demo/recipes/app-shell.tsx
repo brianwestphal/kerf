@@ -1,32 +1,22 @@
 import '@kerfjs/ui/layout.css';
 import '@kerfjs/ui/workbench.css';
 
-import { List } from '@kerfjs/ui/list';
-import { ListItem } from '@kerfjs/ui/list-item';
-import { LucideIcon } from '@kerfjs/ui/lucide-icon';
-import { Toolbar } from '@kerfjs/ui/toolbar';
-import {
-  ToolbarButton,
-  ToolbarControlGroup,
-} from '@kerfjs/ui/toolbar-control-group';
-import { ToolbarText } from '@kerfjs/ui/toolbar-text';
-import { ValueTable, ValueTableRow } from '@kerfjs/ui/value-table';
 import { wireWorkbench } from '@kerfjs/ui/wire-workbench';
-import { Workbench } from '@kerfjs/ui/workbench';
 import { delegate, signal } from 'kerfjs';
-import { Bell, Folder, Inbox, Settings } from 'lucide';
 
+import { renderRecipeAppShellBar } from '../views/recipe-app-shell-bar.view.js';
+import { renderRecipeAppShellFrame } from '../views/recipe-app-shell-frame.view.js';
+import { renderRecipeAppShellInspector } from '../views/recipe-app-shell-inspector.view.js';
+import { renderRecipeAppShellMainTitle } from '../views/recipe-app-shell-main-title.view.js';
+import { renderRecipeAppShellNavigation } from '../views/recipe-app-shell-navigation.view.js';
+import { renderRecipeAppShellNewTask } from '../views/recipe-app-shell-new-task.view.js';
+import { renderRecipeAppShellRailTitle } from '../views/recipe-app-shell-rail-title.view.js';
+import { renderRecipeAppShellTasks } from '../views/recipe-app-shell-tasks.view.js';
+import { renderRecipeAppShellWorkbench } from '../views/recipe-app-shell-workbench.view.js';
 import type { RecipeFactory, RecipePresentation } from './types.js';
 
 const NAVIGATION_ACTION = 'recipe-shell-toggle-navigation';
 const INSPECTOR_ACTION = 'recipe-shell-toggle-inspector';
-
-const tasks = [
-  ['Release accessibility audit', 'Interface systems · due this week'],
-  ['Prepare tablet navigation', 'Interface systems · due this week'],
-  ['Review stale-data states', 'Platform · due next week'],
-  ['Confirm package boundaries', 'Platform · due next week'],
-] as const;
 
 export const presentation: RecipePresentation = {
   viewport: {
@@ -49,133 +39,50 @@ export const createRecipe: RecipeFactory = (announce) => {
 
   const navigation = () => (
     <nav aria-label="Workspace">
-      <List gap="2xs">
-        <ListItem
-          action="recipe-action"
-          itemId="inbox"
-          label="Inbox"
-          icon={<LucideIcon icon={Inbox} name="inbox" />}
-          selected={selected.value === 'inbox'}
-        />
-        <ListItem
-          action="recipe-action"
-          itemId="projects"
-          label="Projects with a Deliberately Wrapping Title"
-          icon={<LucideIcon icon={Folder} name="folder" />}
-          selected={selected.value === 'projects'}
-          multiline
-        />
-      </List>
+      {renderRecipeAppShellNavigation({
+        inboxSelected: selected.value === 'inbox',
+        projectsSelected: selected.value === 'projects',
+      })}
     </nav>
   );
 
-  const render = () => (
-    <List fill rootAttributes={{ 'data-recipe': 'recipe-app-shell' }}>
-      <Toolbar
-        label="Atlas Workspace"
-        safeAreaEdges={['block-start', 'inline-start', 'inline-end']}
-        dividerSides="b"
-        leading={<ToolbarText text="Atlas" />}
-        trailing={
-          <ToolbarControlGroup
-            appearance="borderless"
-            label="Workspace Controls"
-          >
-            <ToolbarButton
-              ariaLabel="Notifications"
-              action="recipe-action"
-              rootAttributes={{ 'data-recipe-command': 'notify' }}
-              icon={<LucideIcon icon={Bell} name="bell" />}
-            />
-            <ToolbarButton
-              ariaLabel="Settings"
-              action="recipe-action"
-              rootAttributes={{ 'data-recipe-command': 'settings' }}
-              icon={<LucideIcon icon={Settings} name="settings" />}
-            />
-          </ToolbarControlGroup>
-        }
-      />
-      <List flex>
-        <Workbench
-          id="recipe-shell"
-          label="Atlas Workspace Panes"
-          leftRail={{
-            label: 'Navigation',
-            size: navigationSize.value,
-            resizable: { min: 180, max: 320 },
-            collapsed: navigationCollapsed.value,
-            toolbar: {
-              label: 'Navigation',
-              title: <ToolbarText text="Workspace" />,
-              toggle: { action: NAVIGATION_ACTION, name: 'Navigation' },
+  const render = () =>
+    renderRecipeAppShellFrame(
+      {},
+      {
+        bar: renderRecipeAppShellBar,
+        workbench: () =>
+          renderRecipeAppShellWorkbench(
+            {
+              navigationSize: navigationSize.value,
+              inspectorSize: inspectorSize.value,
+              navigationCollapsed: navigationCollapsed.value,
+              inspectorCollapsed: inspectorCollapsed.value,
             },
-            content: navigation(),
-          }}
-          mainToolbar={{
-            label: 'Current Workspace View',
-            title: (
-              <ToolbarText
-                text={
-                  selected.value === 'inbox'
-                    ? 'Inbox Triage'
-                    : 'Active Projects'
-                }
-                size="xlarge"
-                id="recipe-shell-main-title"
-              />
-            ),
-            responsive: 'wrap',
-            trailing: (
-              <ToolbarControlGroup
-                appearance="borderless"
-                content="text"
-                single
-              >
-                <ToolbarButton
-                  action="recipe-action"
-                  rootAttributes={{ 'data-recipe-command': 'new' }}
-                >
-                  New Task
-                </ToolbarButton>
-              </ToolbarControlGroup>
-            ),
-          }}
-          main={
-            <section aria-label="Tasks">
-              {tasks.map(([title, detail]) => (
-                <ListItem
-                  action="recipe-action"
-                  label={title}
-                  description={detail}
-                  multiline
-                  rootAttributes={{ 'data-recipe-command': 'open-task' }}
-                />
-              ))}
-            </section>
-          }
-          rightRail={{
-            label: 'Inspector',
-            size: inspectorSize.value,
-            resizable: { min: 200, max: 360 },
-            collapsed: inspectorCollapsed.value,
-            toolbar: {
-              label: 'Inspector',
-              title: <ToolbarText text="Inspector" />,
-              toggle: { action: INSPECTOR_ACTION, name: 'Inspector' },
+            {
+              navigationTitle: () =>
+                renderRecipeAppShellRailTitle({ text: 'Workspace' }),
+              navigation,
+              mainTitle: () =>
+                renderRecipeAppShellMainTitle({
+                  text:
+                    selected.value === 'inbox'
+                      ? 'Inbox Triage'
+                      : 'Active Projects',
+                }),
+              newTask: renderRecipeAppShellNewTask,
+              main: () => (
+                <section aria-label="Tasks">
+                  {renderRecipeAppShellTasks()}
+                </section>
+              ),
+              inspectorTitle: () =>
+                renderRecipeAppShellRailTitle({ text: 'Inspector' }),
+              inspector: renderRecipeAppShellInspector,
             },
-            content: (
-              <ValueTable label="Selected Task">
-                <ValueTableRow label="Status" value="In review" />
-                <ValueTableRow label="Owner" value="Mara Chen" />
-                <ValueTableRow label="Priority" value="High" />
-              </ValueTable>
-            ),
-          }}
-        />
-      </List>
-    </List>
-  );
+          ),
+      },
+    );
 
   return {
     render,

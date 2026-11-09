@@ -1,0 +1,72 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "RecipeMediaActions",
+  "catalogs": ["@kerfjs/ui"],
+  "root": {
+    "id": "01M6ZB77700000000000000107",
+    "type": "@kerfjs/ui:toolbar-control-group",
+    "props": {
+      "label": "Album Actions",
+      "content": "icon",
+      "material": "glass"
+    },
+    "zones": {
+      "children": [
+        {
+          "id": "01M6ZB77700000000000000104",
+          "type": "@kerfjs/ui:toolbar-control-group#ToolbarButton",
+          "props": {
+            "action": {
+              "$action": "recipe-action"
+            },
+            "rootAttributes": {
+              "data-recipe-command": "share"
+            },
+            "ariaLabel": "Share"
+          },
+          "zones": {
+            "icon": [
+              {
+                "id": "01M6ZB77700000000000000103",
+                "type": "@kerfjs/ui:lucide-icon",
+                "props": {
+                  "icon": {
+                    "$icon": "share"
+                  },
+                  "name": "share"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "01M6ZB77700000000000000106",
+          "type": "@kerfjs/ui:toolbar-control-group#ToolbarButton",
+          "props": {
+            "action": {
+              "$action": "recipe-action"
+            },
+            "rootAttributes": {
+              "data-recipe-command": "more"
+            },
+            "ariaLabel": "More"
+          },
+          "zones": {
+            "icon": [
+              {
+                "id": "01M6ZB77700000000000000105",
+                "type": "@kerfjs/ui:lucide-icon",
+                "props": {
+                  "icon": {
+                    "$icon": "ellipsis"
+                  },
+                  "name": "ellipsis"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}

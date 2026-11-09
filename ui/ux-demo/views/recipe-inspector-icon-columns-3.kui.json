@@ -1,0 +1,15 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "RecipeInspectorIconColumns3",
+  "catalogs": ["@kerfjs/ui"],
+  "root": {
+    "id": "01M6ZB77700000000000000122",
+    "type": "@kerfjs/ui:lucide-icon",
+    "props": {
+      "icon": {
+        "$icon": "columns-3"
+      },
+      "name": "columns-3"
+    }
+  }
+}

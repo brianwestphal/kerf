@@ -1,18 +1,7 @@
 import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
-import { ContentItem } from '@kerfjs/ui/content-item';
-import { Grid } from '@kerfjs/ui/grid';
-import { StateBanner } from '@kerfjs/ui/state-banner';
-import { Text } from '@kerfjs/ui/text';
 
-// Brand renders through StateBanner's `info` tone, which is the brand
-// on-fill role over the quiet brand fill.
-const tones = [
-  ['Brand', 'info'],
-  ['Pop', 'pop'],
-  ['Success', 'success'],
-  ['Warning', 'warning'],
-  ['Danger', 'danger'],
-] as const;
+import { renderFoundationPalette } from '../views/foundation-palette.view.js';
+import { renderFoundationTypeSpacing } from '../views/foundation-type-spacing.view.js';
 
 export function FoundationDemo() {
   return (
@@ -25,30 +14,14 @@ export function FoundationDemo() {
         note="Foundation roles stay readable in the active light or dark theme."
         align="none"
       >
-        <Grid columns={2} gap="xs">
-          {tones.map(([label, tone]) => (
-            <StateBanner
-              tone={tone}
-              title={label}
-              detail="Quiet semantic surface"
-            />
-          ))}
-        </Grid>
+        {renderFoundationPalette()}
       </CatalogExample>
       <CatalogExample
         label="Type and Spacing"
         note="The public scale keeps application-owned composition aligned with component defaults."
         align="none"
       >
-        <ContentItem appearance="surface" frame="framed">
-          <Text variant="h3">Application heading</Text>
-          <Text tone="quiet">
-            Body copy uses the shared sans-serif and standard group gap.
-          </Text>
-          <Text tone="quiet" size="compact" font="monospace">
-            --kui-space-xs · --kui-font-s
-          </Text>
-        </ContentItem>
+        {renderFoundationTypeSpacing()}
       </CatalogExample>
     </CatalogExampleStack>
   );

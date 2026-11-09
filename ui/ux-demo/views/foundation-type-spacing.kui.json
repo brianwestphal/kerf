@@ -1,0 +1,42 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "FoundationTypeSpacing",
+  "catalogs": ["@kerfjs/ui"],
+  "root": {
+    "id": "01M6Z9ABC00000000000000021",
+    "type": "@kerfjs/ui:content-item",
+    "props": {
+      "appearance": "surface",
+      "frame": "framed"
+    },
+    "zones": {
+      "children": [
+        {
+          "id": "01M6Z9ABC00000000000000018",
+          "type": "@kerfjs/ui:text",
+          "props": {
+            "variant": "h3",
+            "children": "Application heading"
+          }
+        },
+        {
+          "id": "01M6Z9ABC00000000000000019",
+          "type": "@kerfjs/ui:text",
+          "props": {
+            "children": "Body copy uses the shared sans-serif and standard group gap."
+          }
+        },
+        {
+          "id": "01M6Z9ABC00000000000000020",
+          "type": "@kerfjs/ui:text",
+          "props": {
+            "tone": "quiet",
+            "size": "compact",
+            "font": "monospace",
+            "children": "--kui-space-xs \u00b7 --kui-font-s"
+          }
+        }
+      ]
+    }
+  }
+}

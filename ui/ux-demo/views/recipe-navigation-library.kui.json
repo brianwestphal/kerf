@@ -1,0 +1,94 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "RecipeNavigationLibrary",
+  "catalogs": ["@kerfjs/ui"],
+  "root": {
+    "id": "01M6ZB77700000000000000037",
+    "type": "@kerfjs/ui:list",
+    "zones": {
+      "children": [
+        {
+          "id": "01M6ZB77700000000000000036",
+          "type": "@kerfjs/ui:list-header",
+          "props": {
+            "label": "Components"
+          }
+        },
+        {
+          "$each": {
+            "$param": "items"
+          },
+          "as": "item",
+          "key": "item.id",
+          "template": {
+            "id": "01M6ZB77700000000000000035",
+            "type": "@kerfjs/ui:list-item",
+            "props": {
+              "action": {
+                "$action": "recipe-action"
+              },
+              "itemId": {
+                "$bind": "item.id"
+              },
+              "label": {
+                "$bind": "item.label"
+              }
+            },
+            "zones": {
+              "icon": [
+                {
+                  "id": "01M6ZB77700000000000000033",
+                  "type": "@kerfjs/ui:lucide-icon",
+                  "props": {
+                    "icon": {
+                      "$icon": "folder"
+                    },
+                    "name": "folder"
+                  }
+                }
+              ],
+              "trailing": [
+                {
+                  "id": "01M6ZB77700000000000000034",
+                  "type": "@kerfjs/ui:lucide-icon",
+                  "props": {
+                    "icon": {
+                      "$icon": "chevron-right"
+                    },
+                    "name": "chevron-right"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ]
+    }
+  },
+  "params": {
+    "items": {
+      "type": {
+        "kind": "array",
+        "items": {
+          "kind": "object",
+          "props": [
+            {
+              "name": "id",
+              "type": {
+                "kind": "string"
+              },
+              "required": true
+            },
+            {
+              "name": "label",
+              "type": {
+                "kind": "string"
+              },
+              "required": true
+            }
+          ]
+        }
+      }
+    }
+  }
+}

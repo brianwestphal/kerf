@@ -1,0 +1,85 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "RecipeAppShellNavigation",
+  "catalogs": ["@kerfjs/ui"],
+  "root": {
+    "id": "01M6ZRBCA00000000000000069",
+    "type": "@kerfjs/ui:list",
+    "props": {
+      "gap": "2xs"
+    },
+    "zones": {
+      "children": [
+        {
+          "id": "01M6ZRBCA00000000000000066",
+          "type": "@kerfjs/ui:list-item",
+          "props": {
+            "action": {
+              "$action": "recipe-action"
+            },
+            "itemId": "inbox",
+            "label": "Inbox",
+            "selected": {
+              "$param": "inboxSelected"
+            }
+          },
+          "zones": {
+            "icon": [
+              {
+                "id": "01M6ZRBCA00000000000000065",
+                "type": "@kerfjs/ui:lucide-icon",
+                "props": {
+                  "icon": {
+                    "$icon": "inbox"
+                  },
+                  "name": "inbox"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "01M6ZRBCA00000000000000068",
+          "type": "@kerfjs/ui:list-item",
+          "props": {
+            "action": {
+              "$action": "recipe-action"
+            },
+            "itemId": "projects",
+            "label": "Projects with a Deliberately Wrapping Title",
+            "selected": {
+              "$param": "projectsSelected"
+            },
+            "multiline": true
+          },
+          "zones": {
+            "icon": [
+              {
+                "id": "01M6ZRBCA00000000000000067",
+                "type": "@kerfjs/ui:lucide-icon",
+                "props": {
+                  "icon": {
+                    "$icon": "folder"
+                  },
+                  "name": "folder"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  },
+  "params": {
+    "inboxSelected": {
+      "type": {
+        "kind": "boolean"
+      }
+    },
+    "projectsSelected": {
+      "type": {
+        "kind": "boolean"
+      }
+    }
+  }
+}

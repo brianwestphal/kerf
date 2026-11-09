@@ -1,0 +1,140 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "RecipeNavigationWorkspace",
+  "catalogs": ["@kerfjs/ui"],
+  "root": {
+    "id": "01M6ZRBCA00000000000000015",
+    "type": "@kerfjs/ui:list",
+    "props": {
+      "gap": "none"
+    },
+    "zones": {
+      "children": [
+        {
+          "id": "01M6ZRBCA00000000000000009",
+          "type": "@kerfjs/ui:list-header",
+          "props": {
+            "action": {
+              "$action": "recipe-action"
+            },
+            "label": "Workspace",
+            "count": 3,
+            "countLabel": "3 workspaces",
+            "actionLabel": "Add workspace item"
+          },
+          "zones": {
+            "actionIcon": [
+              {
+                "id": "01M6ZRBCA00000000000000008",
+                "type": "@kerfjs/ui:lucide-icon",
+                "props": {
+                  "icon": {
+                    "$icon": "plus"
+                  },
+                  "name": "plus"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "01M6ZRBCA00000000000000011",
+          "type": "@kerfjs/ui:list-item",
+          "props": {
+            "action": {
+              "$action": "recipe-action"
+            },
+            "itemId": "inbox",
+            "label": "Inbox",
+            "selected": {
+              "$param": "inboxSelected"
+            }
+          },
+          "zones": {
+            "icon": [
+              {
+                "id": "01M6ZRBCA00000000000000010",
+                "type": "@kerfjs/ui:lucide-icon",
+                "props": {
+                  "icon": {
+                    "$icon": "inbox"
+                  },
+                  "name": "inbox"
+                }
+              }
+            ],
+            "trailing": [
+              {
+                "id": "01M6ZRBCA00000000000000016",
+                "type": "@kerfjs/ui:text",
+                "props": {
+                  "variant": "span",
+                  "children": "12"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "01M6ZRBCA00000000000000013",
+          "type": "@kerfjs/ui:list-item",
+          "props": {
+            "action": {
+              "$action": "recipe-action"
+            },
+            "itemId": "shared",
+            "label": "Shared with Me",
+            "selected": {
+              "$param": "sharedSelected"
+            }
+          },
+          "zones": {
+            "icon": [
+              {
+                "id": "01M6ZRBCA00000000000000012",
+                "type": "@kerfjs/ui:lucide-icon",
+                "props": {
+                  "icon": {
+                    "$icon": "users"
+                  },
+                  "name": "users"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "01M6ZRBCA00000000000000014",
+          "type": "@kerfjs/ui:list-item",
+          "props": {
+            "action": {
+              "$action": "recipe-action"
+            },
+            "itemId": "drafts",
+            "label": "Drafts Without an Icon",
+            "selected": {
+              "$param": "draftsSelected"
+            }
+          }
+        }
+      ]
+    }
+  },
+  "params": {
+    "inboxSelected": {
+      "type": {
+        "kind": "boolean"
+      }
+    },
+    "sharedSelected": {
+      "type": {
+        "kind": "boolean"
+      }
+    },
+    "draftsSelected": {
+      "type": {
+        "kind": "boolean"
+      }
+    }
+  }
+}

@@ -1,0 +1,174 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "FeedbackStates",
+  "catalogs": ["@kerfjs/ui"],
+  "root": {
+    "id": "01M6Z9ABC00000000000000069",
+    "type": "@kerfjs/ui:list",
+    "props": {
+      "gap": "m"
+    },
+    "zones": {
+      "children": [
+        {
+          "id": "01M6Z9ABC00000000000000060",
+          "type": "@kerfjs/ui:state-banner",
+          "props": {
+            "tone": {
+              "$param": "tone"
+            },
+            "urgency": {
+              "$param": "urgency"
+            },
+            "title": {
+              "$param": "title"
+            },
+            "detail": "State is expressed with text and color."
+          },
+          "zones": {
+            "icon": [
+              {
+                "$if": {
+                  "$param": "danger"
+                },
+                "then": {
+                  "id": "01M6Z9ABC00000000000000057",
+                  "type": "@kerfjs/ui:lucide-icon",
+                  "props": {
+                    "icon": {
+                      "$icon": "circle-question-mark"
+                    },
+                    "name": "circle-question-mark"
+                  }
+                },
+                "else": {
+                  "id": "01M6Z9ABC00000000000000058",
+                  "type": "@kerfjs/ui:lucide-icon",
+                  "props": {
+                    "icon": {
+                      "$icon": "check"
+                    },
+                    "name": "check"
+                  }
+                }
+              }
+            ],
+            "action": [
+              {
+                "id": "01M6Z9ABC00000000000000059",
+                "type": "@kerfjs/ui:button",
+                "props": {
+                  "size": "compact",
+                  "shape": "pill",
+                  "action": {
+                    "$action": "cycle-tone"
+                  },
+                  "children": "Cycle Tone"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "01M6Z9ABC00000000000000063",
+          "type": "@kerfjs/ui:empty-state",
+          "props": {
+            "title": "Nothing Here Yet",
+            "detail": "Create the first item when you are ready."
+          },
+          "zones": {
+            "icon": [
+              {
+                "id": "01M6Z9ABC00000000000000061",
+                "type": "@kerfjs/ui:lucide-icon",
+                "props": {
+                  "icon": {
+                    "$icon": "search"
+                  },
+                  "name": "search"
+                }
+              }
+            ],
+            "action": [
+              {
+                "id": "01M6Z9ABC00000000000000062",
+                "type": "@kerfjs/ui:button",
+                "props": {
+                  "children": "Create Item",
+                  "action": {
+                    "$action": "log-add"
+                  }
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "01M6Z9ABC00000000000000068",
+          "type": "@kerfjs/ui:row",
+          "props": {
+            "vAlign": "middle",
+            "wrap": true
+          },
+          "zones": {
+            "children": [
+              {
+                "id": "01M6Z9ABC00000000000000064",
+                "type": "@kerfjs/ui:loading-spinner",
+                "props": {
+                  "label": "Loading preview\u2026"
+                }
+              },
+              {
+                "id": "01M6Z9ABC00000000000000065",
+                "type": "@kerfjs/ui:text",
+                "props": {
+                  "variant": "span",
+                  "children": "Meaningfully labeled progress"
+                }
+              },
+              {
+                "id": "01M6Z9ABC00000000000000066",
+                "type": "@kerfjs/ui:loading-spinner"
+              },
+              {
+                "id": "01M6Z9ABC00000000000000067",
+                "type": "@kerfjs/ui:text",
+                "props": {
+                  "variant": "span",
+                  "children": "Decorative progress"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  },
+  "params": {
+    "tone": {
+      "type": {
+        "kind": "prop",
+        "component": "@kerfjs/ui:state-banner",
+        "prop": "tone"
+      }
+    },
+    "urgency": {
+      "type": {
+        "kind": "prop",
+        "component": "@kerfjs/ui:state-banner",
+        "prop": "urgency"
+      }
+    },
+    "title": {
+      "type": {
+        "kind": "string"
+      }
+    },
+    "danger": {
+      "type": {
+        "kind": "boolean"
+      }
+    }
+  }
+}

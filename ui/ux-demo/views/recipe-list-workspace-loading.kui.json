@@ -1,0 +1,31 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "RecipeListWorkspaceLoading",
+  "catalogs": ["@kerfjs/ui"],
+  "root": {
+    "id": "01M6ZRBCA00000000000000052",
+    "type": "@kerfjs/ui:empty-state",
+    "props": {
+      "title": "Loading Release Tasks",
+      "detail": "The current workspace will appear when data is ready.",
+      "busy": true
+    },
+    "zones": {
+      "action": [
+        {
+          "id": "01M6ZRBCA00000000000000051",
+          "type": "@kerfjs/ui:button",
+          "props": {
+            "action": {
+              "$action": "recipe-action"
+            },
+            "rootAttributes": {
+              "data-recipe-command": "load"
+            },
+            "children": "Complete Load"
+          }
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,131 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "RecipeListDetailRows",
+  "catalogs": ["@kerfjs/ui"],
+  "root": {
+    "id": "01M6ZRBCA00000000000000096",
+    "type": "@kerfjs/ui:list",
+    "props": {
+      "controlInsets": {
+        "$param": "controlInsets"
+      }
+    },
+    "zones": {
+      "children": [
+        {
+          "$each": {
+            "$param": "records"
+          },
+          "as": "record",
+          "key": "record.id",
+          "template": {
+            "id": "01M6ZRBCA00000000000000095",
+            "type": "@kerfjs/ui:list-item",
+            "props": {
+              "action": {
+                "$action": "recipe-action"
+              },
+              "itemId": {
+                "$bind": "record.id"
+              },
+              "label": {
+                "$bind": "record.name"
+              },
+              "description": {
+                "$bind": "record.description"
+              },
+              "selected": {
+                "$bind": "record.selected"
+              },
+              "multiline": true
+            },
+            "zones": {
+              "icon": [
+                {
+                  "id": "01M6ZRBCA00000000000000093",
+                  "type": "@kerfjs/ui:lucide-icon",
+                  "props": {
+                    "icon": {
+                      "$icon": "file-text"
+                    },
+                    "name": "file-text"
+                  }
+                }
+              ],
+              "trailing": [
+                {
+                  "$if": {
+                    "$param": "compact"
+                  },
+                  "then": {
+                    "id": "01M6ZRBCA00000000000000094",
+                    "type": "@kerfjs/ui:lucide-icon",
+                    "props": {
+                      "icon": {
+                        "$icon": "chevron-right"
+                      },
+                      "name": "chevron-right"
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ]
+    }
+  },
+  "params": {
+    "records": {
+      "type": {
+        "kind": "array",
+        "items": {
+          "kind": "object",
+          "props": [
+            {
+              "name": "id",
+              "type": {
+                "kind": "string"
+              },
+              "required": true
+            },
+            {
+              "name": "name",
+              "type": {
+                "kind": "string"
+              },
+              "required": true
+            },
+            {
+              "name": "description",
+              "type": {
+                "kind": "string"
+              },
+              "required": true
+            },
+            {
+              "name": "selected",
+              "type": {
+                "kind": "boolean"
+              },
+              "required": true
+            }
+          ]
+        }
+      }
+    },
+    "compact": {
+      "type": {
+        "kind": "boolean"
+      }
+    },
+    "controlInsets": {
+      "type": {
+        "kind": "prop",
+        "component": "@kerfjs/ui:list",
+        "prop": "controlInsets"
+      },
+      "optional": true
+    }
+  }
+}

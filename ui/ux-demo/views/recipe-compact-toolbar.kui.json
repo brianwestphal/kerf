@@ -1,0 +1,424 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "RecipeCompactToolbar",
+  "catalogs": ["@kerfjs/ui"],
+  "root": {
+    "id": "01M6ZB77700000000000000032",
+    "type": "@kerfjs/ui:list",
+    "props": {
+      "gap": "l",
+      "controlInsets": "b"
+    },
+    "zones": {
+      "children": [
+        {
+          "id": "01M6ZB77700000000000000014",
+          "type": "@kerfjs/ui:toolbar",
+          "props": {
+            "label": "Task Workspace Controls",
+            "responsive": "stack",
+            "responsiveAt": "compact"
+          },
+          "zones": {
+            "leading": [
+              {
+                "id": "01M6ZB77700000000000000001",
+                "type": "@kerfjs/ui:toolbar-text",
+                "props": {
+                  "text": "Tasks",
+                  "size": "small"
+                }
+              }
+            ],
+            "center": [
+              {
+                "id": "01M6ZB77700000000000000003",
+                "type": "@kerfjs/ui:toolbar-control-group",
+                "zones": {
+                  "children": [
+                    {
+                      "id": "01M6ZB77700000000000000002",
+                      "type": "@kerfjs/ui:segmented-control",
+                      "props": {
+                        "id": "recipe-view",
+                        "label": "View",
+                        "value": {
+                          "$param": "view"
+                        },
+                        "action": {
+                          "$action": "recipe-action"
+                        },
+                        "appearance": "toolbar",
+                        "shape": "pill",
+                        "size": "compact",
+                        "choices": [
+                          {
+                            "value": "list",
+                            "label": "List"
+                          },
+                          {
+                            "value": "board",
+                            "label": "Board"
+                          },
+                          {
+                            "value": "timeline",
+                            "label": "Timeline"
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              }
+            ],
+            "trailing": [
+              {
+                "id": "01M6ZB77700000000000000005",
+                "type": "@kerfjs/ui:toolbar-control-group",
+                "props": {
+                  "single": true,
+                  "focusRing": "outline"
+                },
+                "zones": {
+                  "children": [
+                    {
+                      "id": "01M6ZB77700000000000000004",
+                      "type": "@kerfjs/ui:select",
+                      "props": {
+                        "name": "recipe-sort",
+                        "value": {
+                          "$param": "sort"
+                        },
+                        "ariaLabel": "Sort Tasks",
+                        "fitMenu": true,
+                        "presentation": "toolbar-borderless",
+                        "size": "compact",
+                        "focusRingOwner": "group",
+                        "choices": [
+                          {
+                            "value": "updated",
+                            "label": "Recently Updated"
+                          },
+                          {
+                            "value": "priority",
+                            "label": "Priority"
+                          },
+                          {
+                            "value": "owner",
+                            "label": "Owner"
+                          },
+                          {
+                            "value": "created",
+                            "label": "Created Date"
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "01M6ZB77700000000000000010",
+                "type": "@kerfjs/ui:toolbar-control-group",
+                "props": {
+                  "label": "Task Actions",
+                  "buttonAppearance": "push"
+                },
+                "zones": {
+                  "children": [
+                    {
+                      "id": "01M6ZB77700000000000000007",
+                      "type": "@kerfjs/ui:toolbar-control-group#ToolbarButton",
+                      "props": {
+                        "ariaLabel": "Toggle Filters",
+                        "pressed": {
+                          "$param": "filtered"
+                        },
+                        "action": {
+                          "$action": "recipe-action"
+                        },
+                        "rootAttributes": {
+                          "data-recipe-command": "filter"
+                        }
+                      },
+                      "zones": {
+                        "icon": [
+                          {
+                            "id": "01M6ZB77700000000000000006",
+                            "type": "@kerfjs/ui:lucide-icon",
+                            "props": {
+                              "icon": {
+                                "$icon": "funnel"
+                              },
+                              "name": "funnel"
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "id": "01M6ZB77700000000000000009",
+                      "type": "@kerfjs/ui:toolbar-control-group#ToolbarButton",
+                      "props": {
+                        "ariaLabel": "Refresh Tasks",
+                        "action": {
+                          "$action": "recipe-action"
+                        },
+                        "rootAttributes": {
+                          "data-recipe-command": "refresh"
+                        }
+                      },
+                      "zones": {
+                        "icon": [
+                          {
+                            "id": "01M6ZB77700000000000000008",
+                            "type": "@kerfjs/ui:lucide-icon",
+                            "props": {
+                              "icon": {
+                                "$icon": "refresh-cw"
+                              },
+                              "name": "refresh-cw"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "01M6ZB77700000000000000013",
+                "type": "@kerfjs/ui:toolbar-control-group",
+                "props": {
+                  "label": "More Task Actions",
+                  "single": true
+                },
+                "zones": {
+                  "children": [
+                    {
+                      "id": "01M6ZB77700000000000000012",
+                      "type": "@kerfjs/ui:toolbar-control-group#ToolbarButton",
+                      "props": {
+                        "ariaLabel": "More Task Actions",
+                        "action": {
+                          "$action": "recipe-action"
+                        },
+                        "rootAttributes": {
+                          "data-recipe-command": "more"
+                        }
+                      },
+                      "zones": {
+                        "icon": [
+                          {
+                            "id": "01M6ZB77700000000000000011",
+                            "type": "@kerfjs/ui:lucide-icon",
+                            "props": {
+                              "icon": {
+                                "$icon": "ellipsis"
+                              },
+                              "name": "ellipsis"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "01M6ZB77700000000000000031",
+          "type": "@kerfjs/ui:grid",
+          "props": {
+            "columns": {
+              "$param": "columns"
+            },
+            "gap": "none"
+          },
+          "zones": {
+            "children": [
+              {
+                "id": "01M6ZB77700000000000000018",
+                "type": "@kerfjs/ui:list-inset-text",
+                "zones": {
+                  "children": [
+                    {
+                      "id": "01M6ZB77700000000000000017",
+                      "type": "@kerfjs/ui:list",
+                      "props": {
+                        "gap": "2xs"
+                      },
+                      "zones": {
+                        "children": [
+                          {
+                            "id": "01M6ZB77700000000000000015",
+                            "type": "@kerfjs/ui:text",
+                            "props": {
+                              "variant": "span",
+                              "weight": "strong",
+                              "children": "ToolbarControlGroup"
+                            }
+                          },
+                          {
+                            "id": "01M6ZB77700000000000000016",
+                            "type": "@kerfjs/ui:text",
+                            "props": {
+                              "variant": "span",
+                              "tone": "quiet",
+                              "size": "compact",
+                              "children": "Related commands or pressed tools."
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "01M6ZB77700000000000000022",
+                "type": "@kerfjs/ui:list-inset-text",
+                "zones": {
+                  "children": [
+                    {
+                      "id": "01M6ZB77700000000000000021",
+                      "type": "@kerfjs/ui:list",
+                      "props": {
+                        "gap": "2xs"
+                      },
+                      "zones": {
+                        "children": [
+                          {
+                            "id": "01M6ZB77700000000000000019",
+                            "type": "@kerfjs/ui:text",
+                            "props": {
+                              "variant": "span",
+                              "weight": "strong",
+                              "children": "SegmentedControl"
+                            }
+                          },
+                          {
+                            "id": "01M6ZB77700000000000000020",
+                            "type": "@kerfjs/ui:text",
+                            "props": {
+                              "variant": "span",
+                              "tone": "quiet",
+                              "size": "compact",
+                              "children": "A few visible exclusive choices."
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "01M6ZB77700000000000000026",
+                "type": "@kerfjs/ui:list-inset-text",
+                "zones": {
+                  "children": [
+                    {
+                      "id": "01M6ZB77700000000000000025",
+                      "type": "@kerfjs/ui:list",
+                      "props": {
+                        "gap": "2xs"
+                      },
+                      "zones": {
+                        "children": [
+                          {
+                            "id": "01M6ZB77700000000000000023",
+                            "type": "@kerfjs/ui:text",
+                            "props": {
+                              "variant": "span",
+                              "weight": "strong",
+                              "children": "Select"
+                            }
+                          },
+                          {
+                            "id": "01M6ZB77700000000000000024",
+                            "type": "@kerfjs/ui:text",
+                            "props": {
+                              "variant": "span",
+                              "tone": "quiet",
+                              "size": "compact",
+                              "children": "A longer controlled value list."
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "01M6ZB77700000000000000030",
+                "type": "@kerfjs/ui:list-inset-text",
+                "zones": {
+                  "children": [
+                    {
+                      "id": "01M6ZB77700000000000000029",
+                      "type": "@kerfjs/ui:list",
+                      "props": {
+                        "gap": "2xs"
+                      },
+                      "zones": {
+                        "children": [
+                          {
+                            "id": "01M6ZB77700000000000000027",
+                            "type": "@kerfjs/ui:text",
+                            "props": {
+                              "variant": "span",
+                              "weight": "strong",
+                              "children": "Ordinary button"
+                            }
+                          },
+                          {
+                            "id": "01M6ZB77700000000000000028",
+                            "type": "@kerfjs/ui:text",
+                            "props": {
+                              "variant": "span",
+                              "tone": "quiet",
+                              "size": "compact",
+                              "children": "One independent command."
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  },
+  "params": {
+    "view": {
+      "type": {
+        "kind": "enum",
+        "values": ["list", "board", "timeline"]
+      }
+    },
+    "sort": {
+      "type": {
+        "kind": "enum",
+        "values": ["updated", "priority", "owner", "created"]
+      }
+    },
+    "filtered": {
+      "type": {
+        "kind": "boolean"
+      }
+    },
+    "columns": {
+      "type": {
+        "kind": "number"
+      }
+    }
+  }
+}

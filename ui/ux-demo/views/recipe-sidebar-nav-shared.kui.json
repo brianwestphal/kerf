@@ -1,0 +1,40 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "RecipeSidebarNavShared",
+  "catalogs": ["@kerfjs/ui"],
+  "root": {
+    "id": "01M6ZB77700000000000000133",
+    "type": "@kerfjs/ui:list-item",
+    "props": {
+      "action": {
+        "$action": "recipe-action"
+      },
+      "itemId": "shared",
+      "label": "Shared with Me",
+      "selected": {
+        "$param": "selected"
+      }
+    },
+    "zones": {
+      "icon": [
+        {
+          "id": "01M6ZB77700000000000000132",
+          "type": "@kerfjs/ui:lucide-icon",
+          "props": {
+            "icon": {
+              "$icon": "users"
+            },
+            "name": "users"
+          }
+        }
+      ]
+    }
+  },
+  "params": {
+    "selected": {
+      "type": {
+        "kind": "boolean"
+      }
+    }
+  }
+}

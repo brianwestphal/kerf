@@ -1,0 +1,253 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "RecipeComposerForm",
+  "catalogs": ["@kerfjs/ui"],
+  "root": {
+    "id": "01M6ZRBCA00000000000000043",
+    "type": "@kerfjs/ui:form",
+    "props": {
+      "rootAttributes": {
+        "data-recipe": "recipe-composer-form"
+      },
+      "labelledBy": "recipe-composer-title",
+      "describedBy": "recipe-composer-summary",
+      "noValidate": true
+    },
+    "zones": {
+      "children": [
+        {
+          "id": "01M6ZRBCA00000000000000042",
+          "type": "@kerfjs/ui:list",
+          "props": {
+            "gap": "l",
+            "controlInsets": "tb"
+          },
+          "zones": {
+            "children": [
+              {
+                "id": "01M6ZRBCA00000000000000031",
+                "type": "@kerfjs/ui:list",
+                "zones": {
+                  "children": [
+                    {
+                      "id": "01M6ZRBCA00000000000000028",
+                      "type": "@kerfjs/ui:toolbar",
+                      "props": {
+                        "label": "Publish Workspace Update"
+                      },
+                      "zones": {
+                        "leading": [
+                          {
+                            "id": "01M6ZRBCA00000000000000027",
+                            "type": "@kerfjs/ui:toolbar-text",
+                            "props": {
+                              "text": "Publish Workspace Update",
+                              "size": "xlarge",
+                              "id": "recipe-composer-title"
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "id": "01M6ZRBCA00000000000000030",
+                      "type": "@kerfjs/ui:list-inset-text",
+                      "props": {
+                        "sides": "rl"
+                      },
+                      "zones": {
+                        "children": [
+                          {
+                            "id": "01M6ZRBCA00000000000000029",
+                            "type": "@kerfjs/ui:text",
+                            "props": {
+                              "variant": "span",
+                              "tone": "quiet",
+                              "id": "recipe-composer-summary",
+                              "children": "Share a concise, actionable update with collaborators."
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "$if": {
+                  "$param": "error"
+                },
+                "then": {
+                  "id": "01M6ZRBCA00000000000000040",
+                  "type": "@kerfjs/ui:state-banner",
+                  "props": {
+                    "title": "Add a Title Before Publishing",
+                    "detail": "The update body and audience are preserved.",
+                    "tone": "danger",
+                    "urgency": "alert"
+                  }
+                }
+              },
+              {
+                "$if": {
+                  "$param": "saved"
+                },
+                "then": {
+                  "id": "01M6ZRBCA00000000000000041",
+                  "type": "@kerfjs/ui:state-banner",
+                  "props": {
+                    "title": "Update Published",
+                    "detail": "The team audience can now read it.",
+                    "tone": "success"
+                  }
+                }
+              },
+              {
+                "id": "01M6ZRBCA00000000000000035",
+                "type": "@kerfjs/ui:list",
+                "props": {
+                  "gap": "xs",
+                  "controlInsets": "rl"
+                },
+                "zones": {
+                  "children": [
+                    {
+                      "id": "01M6ZRBCA00000000000000032",
+                      "type": "@kerfjs/ui:text-field",
+                      "props": {
+                        "name": "recipe-title",
+                        "label": "Update Title",
+                        "hint": "Summarize the outcome in one line.",
+                        "required": true,
+                        "value": {
+                          "$param": "title"
+                        }
+                      }
+                    },
+                    {
+                      "id": "01M6ZRBCA00000000000000033",
+                      "type": "@kerfjs/ui:text-field",
+                      "props": {
+                        "multiline": true,
+                        "name": "recipe-body",
+                        "label": "Details",
+                        "hint": "Include decisions, owners, and the next checkpoint.",
+                        "rows": 5,
+                        "maxLength": 400,
+                        "showCount": true,
+                        "value": {
+                          "$param": "body"
+                        }
+                      }
+                    },
+                    {
+                      "id": "01M6ZRBCA00000000000000034",
+                      "type": "@kerfjs/ui:select",
+                      "props": {
+                        "name": "recipe-audience",
+                        "value": {
+                          "$param": "audience"
+                        },
+                        "label": "Audience",
+                        "choices": [
+                          {
+                            "value": "team",
+                            "label": "Workspace Team"
+                          },
+                          {
+                            "value": "reviewers",
+                            "label": "Reviewers"
+                          },
+                          {
+                            "value": "organization",
+                            "label": "Entire Organization"
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "01M6ZRBCA00000000000000039",
+                "type": "@kerfjs/ui:row",
+                "props": {
+                  "gap": "xs",
+                  "wrap": true,
+                  "controlInsets": "rl"
+                },
+                "zones": {
+                  "children": [
+                    {
+                      "id": "01M6ZRBCA00000000000000036",
+                      "type": "@kerfjs/ui:spacer",
+                      "props": {
+                        "flex": true
+                      }
+                    },
+                    {
+                      "id": "01M6ZRBCA00000000000000037",
+                      "type": "@kerfjs/ui:button",
+                      "props": {
+                        "action": {
+                          "$action": "recipe-action"
+                        },
+                        "rootAttributes": {
+                          "data-recipe-command": "reset"
+                        },
+                        "children": "Reset",
+                        "emphasis": "secondary"
+                      }
+                    },
+                    {
+                      "id": "01M6ZRBCA00000000000000038",
+                      "type": "@kerfjs/ui:button",
+                      "props": {
+                        "action": {
+                          "$action": "recipe-action"
+                        },
+                        "rootAttributes": {
+                          "data-recipe-command": "submit"
+                        },
+                        "children": "Publish Update",
+                        "tone": "brand"
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  },
+  "params": {
+    "title": {
+      "type": {
+        "kind": "string"
+      }
+    },
+    "body": {
+      "type": {
+        "kind": "string"
+      }
+    },
+    "audience": {
+      "type": {
+        "kind": "enum",
+        "values": ["team", "reviewers", "organization"]
+      }
+    },
+    "error": {
+      "type": {
+        "kind": "boolean"
+      }
+    },
+    "saved": {
+      "type": {
+        "kind": "boolean"
+      }
+    }
+  }
+}

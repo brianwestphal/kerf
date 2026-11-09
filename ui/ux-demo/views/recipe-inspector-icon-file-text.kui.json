@@ -1,0 +1,15 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "RecipeInspectorIconFileText",
+  "catalogs": ["@kerfjs/ui"],
+  "root": {
+    "id": "01M6ZB77700000000000000123",
+    "type": "@kerfjs/ui:lucide-icon",
+    "props": {
+      "icon": {
+        "$icon": "file-text"
+      },
+      "name": "file-text"
+    }
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "RecipeSidebarRailTitle",
+  "catalogs": ["@kerfjs/ui"],
+  "root": {
+    "id": "01M6ZB77700000000000000124",
+    "type": "@kerfjs/ui:toolbar-text",
+    "props": {
+      "text": "Atlas"
+    }
+  }
+}

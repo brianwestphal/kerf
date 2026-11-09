@@ -1,0 +1,40 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "RecipeAppShellInspector",
+  "catalogs": ["@kerfjs/ui"],
+  "root": {
+    "id": "01M6ZRBCA00000000000000078",
+    "type": "@kerfjs/ui:value-table",
+    "props": {
+      "label": "Selected Task"
+    },
+    "zones": {
+      "children": [
+        {
+          "id": "01M6ZRBCA00000000000000075",
+          "type": "@kerfjs/ui:value-table#ValueTableRow",
+          "props": {
+            "label": "Status",
+            "value": "In review"
+          }
+        },
+        {
+          "id": "01M6ZRBCA00000000000000076",
+          "type": "@kerfjs/ui:value-table#ValueTableRow",
+          "props": {
+            "label": "Owner",
+            "value": "Mara Chen"
+          }
+        },
+        {
+          "id": "01M6ZRBCA00000000000000077",
+          "type": "@kerfjs/ui:value-table#ValueTableRow",
+          "props": {
+            "label": "Priority",
+            "value": "High"
+          }
+        }
+      ]
+    }
+  }
+}

@@ -1,14 +1,6 @@
-import { Button } from '@kerfjs/ui/button';
 import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
-import { EmptyState } from '@kerfjs/ui/empty-state';
-import { List } from '@kerfjs/ui/list';
-import { LoadingSpinner } from '@kerfjs/ui/loading-spinner';
-import { LucideIcon } from '@kerfjs/ui/lucide-icon';
-import { Row } from '@kerfjs/ui/row';
-import { StateBanner } from '@kerfjs/ui/state-banner';
-import { Text } from '@kerfjs/ui/text';
-import { Check, CircleQuestionMark, Search } from 'lucide';
 
+import { renderFeedbackStates } from '../views/feedback-states.view.js';
 import { bannerTone } from './state.js';
 
 export function FeedbackDemo() {
@@ -19,43 +11,13 @@ export function FeedbackDemo() {
       rootAttributes={{ 'data-demo': 'feedback' }}
     >
       <CatalogExample label="Persistent, Empty, and Loading Feedback">
-        <List gap="m">
-          <StateBanner
-            tone={tone}
-            urgency={tone === 'danger' ? 'alert' : 'status'}
-            title={
-              tone === 'danger' ? 'Action Required' : 'Everything Is Connected'
-            }
-            detail="State is expressed with text and color."
-            icon={
-              tone === 'danger' ? (
-                <LucideIcon
-                  icon={CircleQuestionMark}
-                  name="circle-question-mark"
-                />
-              ) : (
-                <LucideIcon icon={Check} name="check" />
-              )
-            }
-            action={
-              <Button size="compact" shape="pill" action="cycle-tone">
-                Cycle Tone
-              </Button>
-            }
-          />
-          <EmptyState
-            title="Nothing Here Yet"
-            detail="Create the first item when you are ready."
-            icon={<LucideIcon icon={Search} name="search" />}
-            action={<Button action="log-add">Create Item</Button>}
-          />
-          <Row vAlign="middle" wrap>
-            <LoadingSpinner label="Loading preview…" />
-            <Text variant="span">Meaningfully labeled progress</Text>
-            <LoadingSpinner />
-            <Text variant="span">Decorative progress</Text>
-          </Row>
-        </List>
+        {renderFeedbackStates({
+          tone,
+          danger: tone === 'danger',
+          urgency: tone === 'danger' ? 'alert' : 'status',
+          title:
+            tone === 'danger' ? 'Action Required' : 'Everything Is Connected',
+        })}
       </CatalogExample>
     </CatalogExampleStack>
   );

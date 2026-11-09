@@ -1,0 +1,36 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "RecipeAppShellFrame",
+  "catalogs": ["@kerfjs/ui"],
+  "root": {
+    "id": "01M6ZRBCA00000000000000091",
+    "type": "@kerfjs/ui:list",
+    "props": {
+      "fill": true,
+      "rootAttributes": {
+        "data-recipe": "recipe-app-shell"
+      }
+    },
+    "zones": {
+      "children": [
+        {
+          "$slot": "bar"
+        },
+        {
+          "id": "01M6ZRBCA00000000000000090",
+          "type": "@kerfjs/ui:list",
+          "props": {
+            "flex": true
+          },
+          "zones": {
+            "children": [
+              {
+                "$slot": "workbench"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}

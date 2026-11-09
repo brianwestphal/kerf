@@ -1,0 +1,369 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "RecipeLoadingInspector",
+  "catalogs": ["@kerfjs/ui"],
+  "root": {
+    "id": "01M6ZB77700000000000000069",
+    "type": "@kerfjs/ui:pane",
+    "props": {
+      "element": "section",
+      "label": "Ticket Inspector",
+      "rootAttributes": {
+        "data-recipe": "recipe-loading-inspector",
+        "data-inspector-loading": {
+          "$param": "loadingText"
+        }
+      }
+    },
+    "zones": {
+      "header": [
+        {
+          "id": "01M6ZB77700000000000000051",
+          "type": "@kerfjs/ui:toolbar",
+          "props": {
+            "label": "Ticket Inspector",
+            "responsive": "wrap"
+          },
+          "zones": {
+            "leading": [
+              {
+                "id": "01M6ZB77700000000000000047",
+                "type": "@kerfjs/ui:toolbar-control-group",
+                "props": {
+                  "appearance": "borderless",
+                  "single": true
+                },
+                "zones": {
+                  "children": [
+                    {
+                      "id": "01M6ZB77700000000000000046",
+                      "type": "@kerfjs/ui:lucide-icon",
+                      "props": {
+                        "icon": {
+                          "$icon": "file-text"
+                        },
+                        "name": "file-text"
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "01M6ZB77700000000000000048",
+                "type": "@kerfjs/ui:toolbar-text",
+                "props": {
+                  "text": "Ticket \u00b7 KF-2048",
+                  "size": "xlarge",
+                  "id": "recipe-inspector-title",
+                  "placeholder": {
+                    "$param": "loading"
+                  }
+                }
+              }
+            ],
+            "trailing": [
+              {
+                "id": "01M6ZB77700000000000000050",
+                "type": "@kerfjs/ui:toolbar-control-group",
+                "props": {
+                  "appearance": "borderless",
+                  "content": "text",
+                  "single": true
+                },
+                "zones": {
+                  "children": [
+                    {
+                      "id": "01M6ZB77700000000000000049",
+                      "type": "@kerfjs/ui:toolbar-control-group#ToolbarButton",
+                      "props": {
+                        "action": {
+                          "$action": "recipe-action"
+                        },
+                        "rootAttributes": {
+                          "data-recipe-command": "toggle"
+                        },
+                        "children": {
+                          "$param": "toggleLabel"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "01M6ZB77700000000000000054",
+          "type": "@kerfjs/ui:row",
+          "props": {
+            "controlInsets": "trbl"
+          },
+          "zones": {
+            "children": [
+              {
+                "id": "01M6ZB77700000000000000053",
+                "type": "@kerfjs/ui:text",
+                "props": {
+                  "tone": "quiet",
+                  "id": "recipe-inspector-summary"
+                },
+                "zones": {
+                  "children": [
+                    {
+                      "$if": {
+                        "$param": "loading"
+                      },
+                      "then": {
+                        "id": "01M6ZB77700000000000000052",
+                        "type": "@kerfjs/ui:skeleton",
+                        "props": {
+                          "width": {
+                            "$css": "em(18)"
+                          }
+                        }
+                      },
+                      "else": {
+                        "id": "01M6ZB77799999999999999999",
+                        "type": "#text",
+                        "value": "Restore keyboard focus after a dialog closes"
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "content": [
+        {
+          "id": "01M6ZB77700000000000000060",
+          "type": "@kerfjs/ui:value-table",
+          "props": {
+            "label": "Ticket Details"
+          },
+          "zones": {
+            "children": [
+              {
+                "id": "01M6ZB77700000000000000056",
+                "type": "@kerfjs/ui:value-table#ValueTableRow",
+                "props": {
+                  "label": "Status",
+                  "value": "In review",
+                  "placeholder": {
+                    "$param": "loading"
+                  }
+                },
+                "zones": {
+                  "icon": [
+                    {
+                      "id": "01M6ZB77700000000000000055",
+                      "type": "@kerfjs/ui:lucide-icon",
+                      "props": {
+                        "icon": {
+                          "$icon": "inbox"
+                        },
+                        "name": "inbox"
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "01M6ZB77700000000000000057",
+                "type": "@kerfjs/ui:value-table#ValueTableRow",
+                "props": {
+                  "label": "Owner",
+                  "value": "Mara Lopez",
+                  "placeholder": {
+                    "$param": "loading"
+                  }
+                }
+              },
+              {
+                "id": "01M6ZB77700000000000000058",
+                "type": "@kerfjs/ui:value-table#ValueTableRow",
+                "props": {
+                  "label": "Priority",
+                  "value": "High",
+                  "placeholder": {
+                    "$param": "loading"
+                  }
+                }
+              },
+              {
+                "id": "01M6ZB77700000000000000059",
+                "type": "@kerfjs/ui:value-table#ValueTableRow",
+                "props": {
+                  "label": "Updated",
+                  "value": "2 hours ago",
+                  "placeholder": {
+                    "$param": "loading"
+                  }
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "01M6ZB77700000000000000063",
+          "type": "@kerfjs/ui:list",
+          "props": {
+            "gap": "xs",
+            "controlInsets": "rl"
+          },
+          "zones": {
+            "children": [
+              {
+                "id": "01M6ZB77700000000000000061",
+                "type": "@kerfjs/ui:select",
+                "props": {
+                  "name": "recipe-inspector-status",
+                  "value": "review",
+                  "label": "Status",
+                  "hint": "Where this ticket sits in the review workflow.",
+                  "placeholder": {
+                    "$param": "loading"
+                  },
+                  "choices": [
+                    {
+                      "value": "review",
+                      "label": "In Review"
+                    },
+                    {
+                      "value": "ready",
+                      "label": "Ready"
+                    },
+                    {
+                      "value": "done",
+                      "label": "Done"
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "01M6ZB77700000000000000062",
+                "type": "@kerfjs/ui:segmented-control",
+                "props": {
+                  "id": "recipe-inspector-view",
+                  "label": "Inspector View",
+                  "value": "details",
+                  "appearance": "toolbar",
+                  "shape": "pill",
+                  "size": "compact",
+                  "placeholder": {
+                    "$param": "loading"
+                  },
+                  "choices": {
+                    "$param": "viewChoices"
+                  }
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "01M6ZB77700000000000000065",
+          "type": "@kerfjs/ui:list-item",
+          "props": {
+            "action": {
+              "$action": "recipe-action"
+            },
+            "itemId": "reassign",
+            "label": "Reassign Ticket",
+            "placeholder": {
+              "$param": "loading"
+            }
+          },
+          "zones": {
+            "icon": [
+              {
+                "id": "01M6ZB77700000000000000064",
+                "type": "@kerfjs/ui:lucide-icon",
+                "props": {
+                  "icon": {
+                    "$icon": "inbox"
+                  },
+                  "name": "inbox"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "01M6ZB77700000000000000066",
+          "type": "@kerfjs/ui:list-item",
+          "props": {
+            "action": {
+              "$action": "recipe-action"
+            },
+            "itemId": "watch",
+            "label": "Watch for Changes",
+            "placeholder": {
+              "$param": "loading"
+            }
+          }
+        },
+        {
+          "id": "01M6ZB77700000000000000068",
+          "type": "@kerfjs/ui:state-banner",
+          "props": {
+            "tone": {
+              "$param": "bannerTone"
+            },
+            "title": "Up to Date",
+            "detail": "All checks passed on the latest revision.",
+            "placeholder": {
+              "$param": "loading"
+            }
+          },
+          "zones": {
+            "icon": [
+              {
+                "id": "01M6ZB77700000000000000067",
+                "type": "@kerfjs/ui:lucide-icon",
+                "props": {
+                  "icon": {
+                    "$icon": "file-text"
+                  },
+                  "name": "file-text"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  },
+  "params": {
+    "loading": {
+      "type": {
+        "kind": "boolean"
+      }
+    },
+    "loadingText": {
+      "type": {
+        "kind": "string"
+      }
+    },
+    "toggleLabel": {
+      "type": {
+        "kind": "string"
+      }
+    },
+    "bannerTone": {
+      "type": {
+        "kind": "enum",
+        "values": ["info", "success"]
+      }
+    },
+    "viewChoices": {
+      "type": {
+        "kind": "prop",
+        "component": "@kerfjs/ui:segmented-control",
+        "prop": "choices"
+      }
+    }
+  }
+}

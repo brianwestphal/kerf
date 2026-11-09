@@ -1,0 +1,97 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "DocumentBaselineShell",
+  "catalogs": ["@kerfjs/ui"],
+  "root": {
+    "id": "01M6Z9ABC00000000000000022",
+    "type": "@kerfjs/ui:split-view",
+    "props": {
+      "id": "catalog-document-baseline-split",
+      "label": "Application Shell",
+      "listTitle": "Mailboxes",
+      "detailTitle": "Inbox"
+    },
+    "zones": {
+      "list": [
+        {
+          "id": "01M6Z9ABC00000000000000026",
+          "type": "@kerfjs/ui:content-item",
+          "zones": {
+            "children": [
+              {
+                "id": "01M6Z9ABC00000000000000025",
+                "type": "@kerfjs/ui:list",
+                "props": {
+                  "gap": "2xs"
+                },
+                "zones": {
+                  "children": [
+                    {
+                      "id": "01M6Z9ABC00000000000000023",
+                      "type": "@kerfjs/ui:text",
+                      "props": {
+                        "variant": "span",
+                        "weight": "strong",
+                        "children": "Mailboxes"
+                      }
+                    },
+                    {
+                      "id": "01M6Z9ABC00000000000000024",
+                      "type": "@kerfjs/ui:text",
+                      "props": {
+                        "variant": "span",
+                        "tone": "quiet",
+                        "size": "compact",
+                        "children": "The list pane fills the root height."
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "detail": [
+        {
+          "id": "01M6Z9ABC00000000000000030",
+          "type": "@kerfjs/ui:content-item",
+          "zones": {
+            "children": [
+              {
+                "id": "01M6Z9ABC00000000000000029",
+                "type": "@kerfjs/ui:list",
+                "props": {
+                  "gap": "2xs"
+                },
+                "zones": {
+                  "children": [
+                    {
+                      "id": "01M6Z9ABC00000000000000027",
+                      "type": "@kerfjs/ui:text",
+                      "props": {
+                        "variant": "span",
+                        "weight": "strong",
+                        "children": "Inbox"
+                      }
+                    },
+                    {
+                      "id": "01M6Z9ABC00000000000000028",
+                      "type": "@kerfjs/ui:text",
+                      "props": {
+                        "variant": "span",
+                        "tone": "quiet",
+                        "size": "compact",
+                        "children": "The detail pane fills it too."
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}

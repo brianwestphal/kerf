@@ -1,6 +1,29 @@
 import { expect, test } from '@playwright/test';
 
 for (const width of [1440, 390]) {
+  test(`migrated compositions render at ${width}px`, async ({
+    page,
+  }, testInfo) => {
+    await page.setViewportSize({ width, height: 900 });
+    for (const component of [
+      'foundation',
+      'document-baseline',
+      'layout',
+      'application-tabs',
+      'feedback',
+      'toast',
+      'tooltip',
+    ]) {
+      await page.goto(`/?component=${component}`);
+      const demo = page.locator(`[data-demo="${component}"]`);
+      await expect(demo).toBeVisible();
+      await expect(demo.locator('[data-kerf-node]').first()).toBeAttached();
+      await demo.screenshot({
+        path: testInfo.outputPath(`${component}-${width}.png`),
+      });
+    }
+  });
+
   test(`catalog views keep their composition and actions at ${width}px`, async ({
     page,
   }, testInfo) => {

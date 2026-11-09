@@ -1,0 +1,104 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "RecipeAppShellWorkbench",
+  "catalogs": ["@kerfjs/ui"],
+  "root": {
+    "id": "01M6ZRBCA00000000000000092",
+    "type": "@kerfjs/ui:workbench",
+    "props": {
+      "id": "recipe-shell",
+      "label": "Atlas Workspace Panes",
+      "leftRail": {
+        "label": "Navigation",
+        "size": {
+          "$param": "navigationSize"
+        },
+        "resizable": {
+          "min": 180,
+          "max": 320
+        },
+        "collapsed": {
+          "$param": "navigationCollapsed"
+        },
+        "toolbar": {
+          "label": "Navigation",
+          "title": {
+            "$slot": "navigationTitle"
+          },
+          "toggle": {
+            "action": "recipe-shell-toggle-navigation",
+            "name": "Navigation"
+          }
+        },
+        "content": {
+          "$slot": "navigation"
+        }
+      },
+      "mainToolbar": {
+        "label": "Current Workspace View",
+        "title": {
+          "$slot": "mainTitle"
+        },
+        "responsive": "wrap",
+        "trailing": {
+          "$slot": "newTask"
+        }
+      },
+      "rightRail": {
+        "label": "Inspector",
+        "size": {
+          "$param": "inspectorSize"
+        },
+        "resizable": {
+          "min": 200,
+          "max": 360
+        },
+        "collapsed": {
+          "$param": "inspectorCollapsed"
+        },
+        "toolbar": {
+          "label": "Inspector",
+          "title": {
+            "$slot": "inspectorTitle"
+          },
+          "toggle": {
+            "action": "recipe-shell-toggle-inspector",
+            "name": "Inspector"
+          }
+        },
+        "content": {
+          "$slot": "inspector"
+        }
+      }
+    },
+    "zones": {
+      "main": [
+        {
+          "$slot": "main"
+        }
+      ]
+    }
+  },
+  "params": {
+    "navigationSize": {
+      "type": {
+        "kind": "number"
+      }
+    },
+    "inspectorSize": {
+      "type": {
+        "kind": "number"
+      }
+    },
+    "navigationCollapsed": {
+      "type": {
+        "kind": "boolean"
+      }
+    },
+    "inspectorCollapsed": {
+      "type": {
+        "kind": "boolean"
+      }
+    }
+  }
+}

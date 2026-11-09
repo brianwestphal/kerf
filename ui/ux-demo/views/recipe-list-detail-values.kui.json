@@ -1,0 +1,74 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "RecipeListDetailValues",
+  "catalogs": ["@kerfjs/ui"],
+  "root": {
+    "id": "01M6ZRBCA00000000000000105",
+    "type": "@kerfjs/ui:list",
+    "props": {
+      "controlInsets": "tb"
+    },
+    "zones": {
+      "children": [
+        {
+          "id": "01M6ZRBCA00000000000000104",
+          "type": "@kerfjs/ui:value-table",
+          "props": {
+            "label": "Project Details"
+          },
+          "zones": {
+            "children": [
+              {
+                "id": "01M6ZRBCA00000000000000101",
+                "type": "@kerfjs/ui:value-table#ValueTableRow",
+                "props": {
+                  "label": "Owner",
+                  "value": {
+                    "$param": "owner"
+                  }
+                }
+              },
+              {
+                "id": "01M6ZRBCA00000000000000102",
+                "type": "@kerfjs/ui:value-table#ValueTableRow",
+                "props": {
+                  "label": "Status",
+                  "value": {
+                    "$param": "state"
+                  }
+                }
+              },
+              {
+                "id": "01M6ZRBCA00000000000000103",
+                "type": "@kerfjs/ui:value-table#ValueTableRow",
+                "props": {
+                  "label": "Updated",
+                  "value": {
+                    "$param": "updated"
+                  }
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  },
+  "params": {
+    "owner": {
+      "type": {
+        "kind": "string"
+      }
+    },
+    "state": {
+      "type": {
+        "kind": "string"
+      }
+    },
+    "updated": {
+      "type": {
+        "kind": "string"
+      }
+    }
+  }
+}

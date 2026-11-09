@@ -1,0 +1,18 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "ToastReplaceButton",
+  "catalogs": ["@kerfjs/ui"],
+  "root": {
+    "id": "01M6Z9ABC00000000000000006",
+    "type": "@kerfjs/ui:button",
+    "props": {
+      "children": "Copy Link",
+      "action": {
+        "$action": "show-toast-demo"
+      },
+      "rootAttributes": {
+        "data-toast": "replace"
+      }
+    }
+  }
+}

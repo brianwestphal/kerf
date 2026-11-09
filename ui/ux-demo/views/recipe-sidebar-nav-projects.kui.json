@@ -1,0 +1,40 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "RecipeSidebarNavProjects",
+  "catalogs": ["@kerfjs/ui"],
+  "root": {
+    "id": "01M6ZB77700000000000000131",
+    "type": "@kerfjs/ui:list-item",
+    "props": {
+      "action": {
+        "$action": "recipe-action"
+      },
+      "itemId": "projects",
+      "label": "Projects",
+      "selected": {
+        "$param": "selected"
+      }
+    },
+    "zones": {
+      "icon": [
+        {
+          "id": "01M6ZB77700000000000000130",
+          "type": "@kerfjs/ui:lucide-icon",
+          "props": {
+            "icon": {
+              "$icon": "folder"
+            },
+            "name": "folder"
+          }
+        }
+      ]
+    }
+  },
+  "params": {
+    "selected": {
+      "type": {
+        "kind": "boolean"
+      }
+    }
+  }
+}

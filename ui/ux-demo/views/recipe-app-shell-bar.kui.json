@@ -1,0 +1,93 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "RecipeAppShellBar",
+  "catalogs": ["@kerfjs/ui"],
+  "root": {
+    "id": "01M6ZRBCA00000000000000085",
+    "type": "@kerfjs/ui:toolbar",
+    "props": {
+      "label": "Atlas Workspace",
+      "safeAreaEdges": ["block-start", "inline-start", "inline-end"],
+      "dividerSides": "b"
+    },
+    "zones": {
+      "leading": [
+        {
+          "id": "01M6ZRBCA00000000000000079",
+          "type": "@kerfjs/ui:toolbar-text",
+          "props": {
+            "text": "Atlas"
+          }
+        }
+      ],
+      "trailing": [
+        {
+          "id": "01M6ZRBCA00000000000000084",
+          "type": "@kerfjs/ui:toolbar-control-group",
+          "props": {
+            "appearance": "borderless",
+            "label": "Workspace Controls"
+          },
+          "zones": {
+            "children": [
+              {
+                "id": "01M6ZRBCA00000000000000081",
+                "type": "@kerfjs/ui:toolbar-control-group#ToolbarButton",
+                "props": {
+                  "action": {
+                    "$action": "recipe-action"
+                  },
+                  "ariaLabel": "Notifications",
+                  "rootAttributes": {
+                    "data-recipe-command": "notify"
+                  }
+                },
+                "zones": {
+                  "icon": [
+                    {
+                      "id": "01M6ZRBCA00000000000000080",
+                      "type": "@kerfjs/ui:lucide-icon",
+                      "props": {
+                        "icon": {
+                          "$icon": "bell"
+                        },
+                        "name": "bell"
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "01M6ZRBCA00000000000000083",
+                "type": "@kerfjs/ui:toolbar-control-group#ToolbarButton",
+                "props": {
+                  "action": {
+                    "$action": "recipe-action"
+                  },
+                  "ariaLabel": "Settings",
+                  "rootAttributes": {
+                    "data-recipe-command": "settings"
+                  }
+                },
+                "zones": {
+                  "icon": [
+                    {
+                      "id": "01M6ZRBCA00000000000000082",
+                      "type": "@kerfjs/ui:lucide-icon",
+                      "props": {
+                        "icon": {
+                          "$icon": "settings"
+                        },
+                        "name": "settings"
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}

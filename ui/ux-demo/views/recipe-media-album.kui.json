@@ -1,0 +1,185 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "RecipeMediaAlbum",
+  "catalogs": ["@kerfjs/ui"],
+  "root": {
+    "id": "01M6ZB77700000000000000119",
+    "type": "@kerfjs/ui:backdrop-image",
+    "props": {
+      "src": {
+        "$param": "artworkUrl"
+      },
+      "alt": {
+        "$param": "artworkAlt"
+      },
+      "position": "bottom",
+      "parallax": "subtle",
+      "blur": {
+        "dim": 0.2
+      },
+      "fadeTo": {
+        "$css": "uiColor('surface')"
+      },
+      "underChrome": true
+    },
+    "zones": {
+      "overlay": [
+        {
+          "id": "01M6ZB77700000000000000118",
+          "type": "@kerfjs/ui:toolbar",
+          "props": {
+            "label": {
+              "$param": "title"
+            }
+          },
+          "zones": {
+            "leading": [
+              {
+                "id": "01M6ZB77700000000000000117",
+                "type": "@kerfjs/ui:toolbar-text",
+                "props": {
+                  "text": {
+                    "$param": "title"
+                  },
+                  "description": {
+                    "$param": "artist"
+                  },
+                  "size": "xlarge",
+                  "headingLevel": 2
+                }
+              }
+            ],
+            "trailing": [
+              {
+                "$slot": "playback"
+              }
+            ]
+          }
+        }
+      ],
+      "children": [
+        {
+          "id": "01M6ZB77700000000000000116",
+          "type": "@kerfjs/ui:list",
+          "zones": {
+            "children": [
+              {
+                "id": "01M6ZB77700000000000000115",
+                "type": "@kerfjs/ui:list-header",
+                "props": {
+                  "label": "Songs",
+                  "count": {
+                    "$param": "trackCount"
+                  },
+                  "countLabel": {
+                    "$param": "trackCountLabel"
+                  }
+                }
+              },
+              {
+                "$each": {
+                  "$param": "tracks"
+                },
+                "as": "track",
+                "key": "track.id",
+                "template": {
+                  "id": "01M6ZB77700000000000000114",
+                  "type": "@kerfjs/ui:list-item",
+                  "props": {
+                    "action": {
+                      "$action": "recipe-action"
+                    },
+                    "itemId": {
+                      "$bind": "track.id"
+                    },
+                    "label": {
+                      "$bind": "track.title"
+                    }
+                  },
+                  "zones": {
+                    "trailing": [
+                      {
+                        "id": "01M6ZB77700000000000000113",
+                        "type": "@kerfjs/ui:text",
+                        "props": {
+                          "variant": "span",
+                          "tone": "quiet",
+                          "children": {
+                            "$bind": "track.length"
+                          }
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  },
+  "params": {
+    "title": {
+      "type": {
+        "kind": "string"
+      }
+    },
+    "artist": {
+      "type": {
+        "kind": "string"
+      }
+    },
+    "artworkUrl": {
+      "type": {
+        "kind": "string"
+      }
+    },
+    "artworkAlt": {
+      "type": {
+        "kind": "string"
+      }
+    },
+    "trackCount": {
+      "type": {
+        "kind": "number"
+      }
+    },
+    "trackCountLabel": {
+      "type": {
+        "kind": "string"
+      }
+    },
+    "tracks": {
+      "type": {
+        "kind": "array",
+        "items": {
+          "kind": "object",
+          "props": [
+            {
+              "name": "id",
+              "type": {
+                "kind": "string"
+              },
+              "required": true
+            },
+            {
+              "name": "title",
+              "type": {
+                "kind": "string"
+              },
+              "required": true
+            },
+            {
+              "name": "length",
+              "type": {
+                "kind": "string"
+              },
+              "required": true
+            }
+          ]
+        }
+      }
+    }
+  }
+}

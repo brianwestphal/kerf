@@ -1,0 +1,137 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "RecipeNavigationProjects",
+  "catalogs": ["@kerfjs/ui"],
+  "root": {
+    "id": "01M6ZRBCA00000000000000025",
+    "type": "@kerfjs/ui:list",
+    "props": {
+      "gap": "none"
+    },
+    "zones": {
+      "children": [
+        {
+          "id": "01M6ZRBCA00000000000000017",
+          "type": "@kerfjs/ui:list-header",
+          "props": {
+            "action": {
+              "$action": "recipe-action"
+            },
+            "label": "Projects",
+            "toggle": true,
+            "expanded": {
+              "$param": "expanded"
+            }
+          }
+        },
+        {
+          "$if": {
+            "$param": "expanded"
+          },
+          "then": {
+            "id": "01M6ZRBCA00000000000000019",
+            "type": "@kerfjs/ui:list-item",
+            "props": {
+              "action": {
+                "$action": "recipe-action"
+              },
+              "itemId": "design",
+              "label": "Design system rollout across desktop and tablet",
+              "multiline": true,
+              "selected": {
+                "$param": "designSelected"
+              }
+            },
+            "zones": {
+              "icon": [
+                {
+                  "id": "01M6ZRBCA00000000000000018",
+                  "type": "@kerfjs/ui:lucide-icon",
+                  "props": {
+                    "icon": {
+                      "$icon": "folder"
+                    },
+                    "name": "folder"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "$if": {
+            "$param": "expanded"
+          },
+          "then": {
+            "id": "01M6ZRBCA00000000000000020",
+            "type": "@kerfjs/ui:list-item",
+            "props": {
+              "action": {
+                "$action": "recipe-action"
+              },
+              "itemId": "archive",
+              "label": "Archived",
+              "disabled": true,
+              "title": "Available to administrators"
+            }
+          }
+        },
+        {
+          "$if": {
+            "$param": "expanded"
+          },
+          "then": {
+            "id": "01M6ZRBCA00000000000000024",
+            "type": "@kerfjs/ui:content-item",
+            "zones": {
+              "children": [
+                {
+                  "id": "01M6ZRBCA00000000000000023",
+                  "type": "@kerfjs/ui:list",
+                  "props": {
+                    "gap": "2xs"
+                  },
+                  "zones": {
+                    "children": [
+                      {
+                        "id": "01M6ZRBCA00000000000000021",
+                        "type": "@kerfjs/ui:text",
+                        "props": {
+                          "variant": "span",
+                          "weight": "strong",
+                          "children": "Quarterly Goal"
+                        }
+                      },
+                      {
+                        "id": "01M6ZRBCA00000000000000022",
+                        "type": "@kerfjs/ui:text",
+                        "props": {
+                          "variant": "span",
+                          "tone": "quiet",
+                          "size": "compact",
+                          "children": "Ship accessible navigation patterns to every workspace."
+                        }
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ]
+    }
+  },
+  "params": {
+    "expanded": {
+      "type": {
+        "kind": "boolean"
+      }
+    },
+    "designSelected": {
+      "type": {
+        "kind": "boolean"
+      }
+    }
+  }
+}

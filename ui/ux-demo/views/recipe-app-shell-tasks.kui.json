@@ -1,0 +1,76 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "RecipeAppShellTasks",
+  "catalogs": ["@kerfjs/ui"],
+  "root": {
+    "id": "01M6ZRBCA00000000000000074",
+    "type": "@kerfjs/ui:list",
+    "props": {
+      "gap": "none"
+    },
+    "zones": {
+      "children": [
+        {
+          "id": "01M6ZRBCA00000000000000070",
+          "type": "@kerfjs/ui:list-item",
+          "props": {
+            "action": {
+              "$action": "recipe-action"
+            },
+            "label": "Release accessibility audit",
+            "description": "Interface systems \u00b7 due this week",
+            "multiline": true,
+            "rootAttributes": {
+              "data-recipe-command": "open-task"
+            }
+          }
+        },
+        {
+          "id": "01M6ZRBCA00000000000000071",
+          "type": "@kerfjs/ui:list-item",
+          "props": {
+            "action": {
+              "$action": "recipe-action"
+            },
+            "label": "Prepare tablet navigation",
+            "description": "Interface systems \u00b7 due this week",
+            "multiline": true,
+            "rootAttributes": {
+              "data-recipe-command": "open-task"
+            }
+          }
+        },
+        {
+          "id": "01M6ZRBCA00000000000000072",
+          "type": "@kerfjs/ui:list-item",
+          "props": {
+            "action": {
+              "$action": "recipe-action"
+            },
+            "label": "Review stale-data states",
+            "description": "Platform \u00b7 due next week",
+            "multiline": true,
+            "rootAttributes": {
+              "data-recipe-command": "open-task"
+            }
+          }
+        },
+        {
+          "id": "01M6ZRBCA00000000000000073",
+          "type": "@kerfjs/ui:list-item",
+          "props": {
+            "action": {
+              "$action": "recipe-action"
+            },
+            "label": "Confirm package boundaries",
+            "description": "Platform \u00b7 due next week",
+            "multiline": true,
+            "rootAttributes": {
+              "data-recipe-command": "open-task"
+            }
+          }
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,51 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "RecipeListWorkspaceStale",
+  "catalogs": ["@kerfjs/ui"],
+  "root": {
+    "id": "01M6ZRBCA00000000000000060",
+    "type": "@kerfjs/ui:state-banner",
+    "props": {
+      "title": "Showing Saved Results",
+      "detail": "Refreshing in the background.",
+      "tone": "warning"
+    },
+    "zones": {
+      "action": [
+        {
+          "id": "01M6ZRBCA00000000000000059",
+          "type": "@kerfjs/ui:row",
+          "props": {
+            "gap": "xs"
+          },
+          "zones": {
+            "children": [
+              {
+                "id": "01M6ZRBCA00000000000000057",
+                "type": "@kerfjs/ui:loading-spinner",
+                "props": {
+                  "label": "Refreshing release tasks\u2026"
+                }
+              },
+              {
+                "id": "01M6ZRBCA00000000000000058",
+                "type": "@kerfjs/ui:button",
+                "props": {
+                  "action": {
+                    "$action": "recipe-action"
+                  },
+                  "rootAttributes": {
+                    "data-recipe-command": "finish"
+                  },
+                  "children": "Finish Refresh",
+                  "size": "compact",
+                  "shape": "pill"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}

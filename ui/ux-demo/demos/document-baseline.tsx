@@ -2,9 +2,8 @@ import '@kerfjs/ui/layout.css';
 import '@kerfjs/ui/split-view.css';
 
 import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
-import { SplitView } from '@kerfjs/ui/split-view';
 
-import { DemoContentItem } from './demo-content-item.js';
+import { renderDocumentBaselineShell } from '../views/document-baseline-shell.view.js';
 
 // The catalog page itself imports @kerfjs/ui/document.css and mounts into
 // `<div id="app" class="kui-app-root">`; this specimen repeats that one
@@ -26,24 +25,7 @@ export function DocumentBaselineDemo() {
         }}
       >
         <div class="kui-app-root" data-document-baseline-root>
-          <SplitView
-            id="catalog-document-baseline-split"
-            label="Application Shell"
-            listTitle="Mailboxes"
-            detailTitle="Inbox"
-            list={
-              <DemoContentItem
-                title="Mailboxes"
-                detail="The list pane fills the root height."
-              />
-            }
-            detail={
-              <DemoContentItem
-                title="Inbox"
-                detail="The detail pane fills it too."
-              />
-            }
-          />
+          {renderDocumentBaselineShell()}
         </div>
       </CatalogExample>
     </CatalogExampleStack>

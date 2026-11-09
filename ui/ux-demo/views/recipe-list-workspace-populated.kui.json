@@ -1,0 +1,58 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "RecipeListWorkspacePopulated",
+  "catalogs": ["@kerfjs/ui"],
+  "root": {
+    "id": "01M6ZRBCA00000000000000064",
+    "type": "@kerfjs/ui:list",
+    "props": {
+      "gap": "none"
+    },
+    "zones": {
+      "children": [
+        {
+          "id": "01M6ZRBCA00000000000000061",
+          "type": "@kerfjs/ui:list-item",
+          "props": {
+            "action": {
+              "$action": "recipe-action"
+            },
+            "label": "Audit keyboard focus order",
+            "description": "In review \u00b7 Mara",
+            "rootAttributes": {
+              "data-recipe-command": "open-task"
+            }
+          }
+        },
+        {
+          "id": "01M6ZRBCA00000000000000062",
+          "type": "@kerfjs/ui:list-item",
+          "props": {
+            "action": {
+              "$action": "recipe-action"
+            },
+            "label": "Verify 200% zoom layout",
+            "description": "Ready \u00b7 Sam",
+            "rootAttributes": {
+              "data-recipe-command": "open-task"
+            }
+          }
+        },
+        {
+          "id": "01M6ZRBCA00000000000000063",
+          "type": "@kerfjs/ui:list-item",
+          "props": {
+            "action": {
+              "$action": "recipe-action"
+            },
+            "label": "Publish package migration notes",
+            "description": "Draft \u00b7 Inez",
+            "rootAttributes": {
+              "data-recipe-command": "open-task"
+            }
+          }
+        }
+      ]
+    }
+  }
+}

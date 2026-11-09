@@ -1,0 +1,128 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "LayoutPane",
+  "catalogs": ["@kerfjs/ui"],
+  "root": {
+    "id": "01M6Z9ABC00000000000000042",
+    "type": "@kerfjs/ui:pane",
+    "props": {
+      "contentElement": "section"
+    },
+    "zones": {
+      "header": [
+        {
+          "id": "01M6Z9ABC00000000000000034",
+          "type": "@kerfjs/ui:toolbar",
+          "props": {
+            "label": "Semantic Layout"
+          },
+          "zones": {
+            "leading": [
+              {
+                "id": "01M6Z9ABC00000000000000031",
+                "type": "@kerfjs/ui:toolbar-text",
+                "props": {
+                  "text": "Semantic Layout",
+                  "size": "xlarge",
+                  "id": "layout-title"
+                }
+              }
+            ],
+            "trailing": [
+              {
+                "id": "01M6Z9ABC00000000000000033",
+                "type": "@kerfjs/ui:toolbar-control-group",
+                "props": {
+                  "appearance": "borderless",
+                  "single": true
+                },
+                "zones": {
+                  "children": [
+                    {
+                      "id": "01M6Z9ABC00000000000000032",
+                      "type": "@kerfjs/ui:toolbar-control-group#ToolbarButton",
+                      "props": {
+                        "action": {
+                          "$action": "log-add"
+                        },
+                        "children": "New Item"
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "content": [
+        {
+          "id": "01M6Z9ABC00000000000000037",
+          "type": "@kerfjs/ui:content-item",
+          "props": {
+            "appearance": "surface",
+            "frame": "framed"
+          },
+          "zones": {
+            "children": [
+              {
+                "id": "01M6Z9ABC00000000000000035",
+                "type": "@kerfjs/ui:text",
+                "props": {
+                  "weight": "strong",
+                  "children": "One owner per item"
+                }
+              },
+              {
+                "id": "01M6Z9ABC00000000000000036",
+                "type": "@kerfjs/ui:text",
+                "props": {
+                  "children": "Each content child owns its margin, border, background, padding, and radius."
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "01M6Z9ABC00000000000000040",
+          "type": "@kerfjs/ui:row",
+          "props": {
+            "controlInsets": "l"
+          },
+          "zones": {
+            "children": [
+              {
+                "id": "01M6Z9ABC00000000000000038",
+                "type": "@kerfjs/ui:button",
+                "props": {
+                  "tone": "brand",
+                  "action": {
+                    "$action": "log-add"
+                  },
+                  "children": "Primary Action"
+                }
+              },
+              {
+                "id": "01M6Z9ABC00000000000000039",
+                "type": "@kerfjs/ui:button",
+                "props": {
+                  "action": {
+                    "$action": "log-more"
+                  },
+                  "children": "Secondary Action"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "01M6Z9ABC00000000000000041",
+          "type": "@kerfjs/ui:text",
+          "props": {
+            "children": "24px major rhythm \u00b7 8px internal rhythm"
+          }
+        }
+      ]
+    }
+  }
+}

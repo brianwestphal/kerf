@@ -1,0 +1,91 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "RecipeNavigationDetail",
+  "catalogs": ["@kerfjs/ui"],
+  "root": {
+    "id": "01M6ZB77700000000000000044",
+    "type": "@kerfjs/ui:list",
+    "props": {
+      "controlInsets": "t"
+    },
+    "zones": {
+      "children": [
+        {
+          "id": "01M6ZB77700000000000000043",
+          "type": "@kerfjs/ui:content-item",
+          "zones": {
+            "children": [
+              {
+                "id": "01M6ZB77700000000000000042",
+                "type": "@kerfjs/ui:row",
+                "props": {
+                  "gap": "xs"
+                },
+                "zones": {
+                  "children": [
+                    {
+                      "id": "01M6ZB77700000000000000038",
+                      "type": "@kerfjs/ui:lucide-icon",
+                      "props": {
+                        "icon": {
+                          "$icon": "file-text"
+                        },
+                        "name": "file-text"
+                      }
+                    },
+                    {
+                      "id": "01M6ZB77700000000000000041",
+                      "type": "@kerfjs/ui:list",
+                      "props": {
+                        "gap": "2xs"
+                      },
+                      "zones": {
+                        "children": [
+                          {
+                            "id": "01M6ZB77700000000000000039",
+                            "type": "@kerfjs/ui:text",
+                            "props": {
+                              "variant": "span",
+                              "weight": "strong",
+                              "children": {
+                                "$param": "label"
+                              }
+                            }
+                          },
+                          {
+                            "id": "01M6ZB77700000000000000040",
+                            "type": "@kerfjs/ui:text",
+                            "props": {
+                              "variant": "span",
+                              "tone": "quiet",
+                              "size": "compact",
+                              "children": {
+                                "$param": "detail"
+                              }
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  },
+  "params": {
+    "label": {
+      "type": {
+        "kind": "string"
+      }
+    },
+    "detail": {
+      "type": {
+        "kind": "string"
+      }
+    }
+  }
+}

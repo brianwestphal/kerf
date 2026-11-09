@@ -1,7 +1,8 @@
-import { Button } from '@kerfjs/ui/button';
 import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
-import { Row } from '@kerfjs/ui/row';
 import { tooltip, type TooltipOptions } from 'kerfjs/overlay';
+
+import { renderTooltipButtons } from '../views/tooltip-buttons.view.js';
+import { renderTooltipRichButton } from '../views/tooltip-rich-button.view.js';
 
 /** The exit every demo tooltip takes, as `@kerfjs/ui/overlay-tooltip.css` names it. */
 const EXIT: TooltipOptions = {
@@ -14,10 +15,6 @@ const TEXT_TIPS: Record<string, string> = {
     'Builds the current branch and deploys it to staging. Production needs a separate approval.',
   retry: 'Runs the failed checks again.',
 };
-
-function anchor(id: string, label: string) {
-  return <Button rootAttributes={{ 'data-tooltip-demo': id }}>{label}</Button>;
-}
 
 /**
  * Attach the demo's tooltips under `root` with the public `tooltip()`;
@@ -57,17 +54,14 @@ export function TooltipDemo() {
         note="kerfjs/overlay's tooltip() with @kerfjs/ui/overlay-tooltip.css imported: hover or focus a control and, after a short delay, a help-tag-style tooltip appears above it, wrapping longer text at 40 characters. It fades out through exitClass 'kui-tooltip-exit'."
         align="inline-control"
       >
-        <Row gap="xs" wrap>
-          {anchor('deploy', 'Deploy')}
-          {anchor('retry', 'Retry')}
-        </Row>
+        {renderTooltipButtons()}
       </CatalogExample>
       <CatalogExample
         label="Rich Tooltip"
         note="A render function supplies structured content, which inherits the tooltip's colors; placement: 'bottom' shows it below the control."
         align="inline-control"
       >
-        {anchor('build', 'Build Status')}
+        {renderTooltipRichButton()}
       </CatalogExample>
     </CatalogExampleStack>
   );

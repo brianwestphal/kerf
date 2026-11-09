@@ -1,0 +1,21 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "RecipeAppShellRailTitle",
+  "catalogs": ["@kerfjs/ui"],
+  "root": {
+    "id": "01M6ZRBCA00000000000000087",
+    "type": "@kerfjs/ui:toolbar-text",
+    "props": {
+      "text": {
+        "$param": "text"
+      }
+    }
+  },
+  "params": {
+    "text": {
+      "type": {
+        "kind": "string"
+      }
+    }
+  }
+}

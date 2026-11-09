@@ -1,0 +1,164 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "ApplicationTabsDisabled",
+  "catalogs": ["@kerfjs/ui"],
+  "root": {
+    "id": "01M6Z9ABC00000000000000099",
+    "type": "@kerfjs/ui:list",
+    "props": {
+      "gap": "none"
+    },
+    "zones": {
+      "children": [
+        {
+          "id": "01M6Z9ABC00000000000000092",
+          "type": "@kerfjs/ui:tab-bar",
+          "props": {
+            "id": "catalog-disabled-tabs",
+            "label": "Report Tabs",
+            "activation": "manual"
+          },
+          "zones": {
+            "tabs": [
+              {
+                "id": "01M6Z9ABC00000000000000089",
+                "type": "@kerfjs/ui:tabs",
+                "props": {
+                  "id": "overview",
+                  "name": "Overview",
+                  "selected": {
+                    "$param": "overviewSelected"
+                  },
+                  "closable": false,
+                  "selectAction": {
+                    "$action": "select-report-tab"
+                  },
+                  "tabId": "report-overview-tab",
+                  "panelId": "report-overview-panel"
+                }
+              },
+              {
+                "id": "01M6Z9ABC00000000000000090",
+                "type": "@kerfjs/ui:tabs",
+                "props": {
+                  "id": "loading",
+                  "name": "Preparing Report",
+                  "disabled": true,
+                  "closable": false,
+                  "selectAction": {
+                    "$action": "select-report-tab"
+                  },
+                  "tabId": "report-loading-tab",
+                  "panelId": "report-loading-panel"
+                }
+              },
+              {
+                "id": "01M6Z9ABC00000000000000091",
+                "type": "@kerfjs/ui:tabs",
+                "props": {
+                  "id": "history",
+                  "name": "History",
+                  "selected": {
+                    "$param": "historySelected"
+                  },
+                  "closable": false,
+                  "selectAction": {
+                    "$action": "select-report-tab"
+                  },
+                  "tabId": "report-history-tab",
+                  "panelId": "report-history-panel"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "01M6Z9ABC00000000000000094",
+          "type": "@kerfjs/ui:tab-panel",
+          "props": {
+            "id": "report-overview-panel",
+            "tabId": "report-overview-tab",
+            "hidden": {
+              "$param": "overviewHidden"
+            }
+          },
+          "zones": {
+            "children": [
+              {
+                "id": "01M6Z9ABC00000000000000093",
+                "type": "@kerfjs/ui:text",
+                "props": {
+                  "children": "Overview report"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "01M6Z9ABC00000000000000096",
+          "type": "@kerfjs/ui:tab-panel",
+          "props": {
+            "id": "report-loading-panel",
+            "tabId": "report-loading-tab",
+            "hidden": true
+          },
+          "zones": {
+            "children": [
+              {
+                "id": "01M6Z9ABC00000000000000095",
+                "type": "@kerfjs/ui:text",
+                "props": {
+                  "children": "Report unavailable"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "01M6Z9ABC00000000000000098",
+          "type": "@kerfjs/ui:tab-panel",
+          "props": {
+            "id": "report-history-panel",
+            "tabId": "report-history-tab",
+            "hidden": {
+              "$param": "historyHidden"
+            }
+          },
+          "zones": {
+            "children": [
+              {
+                "id": "01M6Z9ABC00000000000000097",
+                "type": "@kerfjs/ui:text",
+                "props": {
+                  "children": "Report history"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  },
+  "params": {
+    "overviewSelected": {
+      "type": {
+        "kind": "boolean"
+      }
+    },
+    "historySelected": {
+      "type": {
+        "kind": "boolean"
+      }
+    },
+    "overviewHidden": {
+      "type": {
+        "kind": "boolean"
+      }
+    },
+    "historyHidden": {
+      "type": {
+        "kind": "boolean"
+      }
+    }
+  }
+}

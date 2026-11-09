@@ -1,0 +1,72 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "RecipeMediaPlayback",
+  "catalogs": ["@kerfjs/ui"],
+  "root": {
+    "id": "01M6ZB77700000000000000112",
+    "type": "@kerfjs/ui:toolbar-control-group",
+    "props": {
+      "label": "Playback",
+      "content": "mixed",
+      "material": "glass"
+    },
+    "zones": {
+      "children": [
+        {
+          "id": "01M6ZB77700000000000000109",
+          "type": "@kerfjs/ui:toolbar-control-group#ToolbarButton",
+          "props": {
+            "action": {
+              "$action": "recipe-action"
+            },
+            "rootAttributes": {
+              "data-recipe-command": "play"
+            },
+            "children": "Play"
+          },
+          "zones": {
+            "icon": [
+              {
+                "id": "01M6ZB77700000000000000108",
+                "type": "@kerfjs/ui:lucide-icon",
+                "props": {
+                  "icon": {
+                    "$icon": "play"
+                  },
+                  "name": "play"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "01M6ZB77700000000000000111",
+          "type": "@kerfjs/ui:toolbar-control-group#ToolbarButton",
+          "props": {
+            "action": {
+              "$action": "recipe-action"
+            },
+            "rootAttributes": {
+              "data-recipe-command": "shuffle"
+            },
+            "ariaLabel": "Shuffle"
+          },
+          "zones": {
+            "icon": [
+              {
+                "id": "01M6ZB77700000000000000110",
+                "type": "@kerfjs/ui:lucide-icon",
+                "props": {
+                  "icon": {
+                    "$icon": "shuffle"
+                  },
+                  "name": "shuffle"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}

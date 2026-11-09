@@ -1,0 +1,104 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "RecipeMediaLibrary",
+  "catalogs": ["@kerfjs/ui"],
+  "root": {
+    "id": "01M6ZB77700000000000000102",
+    "type": "@kerfjs/ui:list",
+    "zones": {
+      "children": [
+        {
+          "id": "01M6ZB77700000000000000101",
+          "type": "@kerfjs/ui:list-header",
+          "props": {
+            "label": "Albums"
+          }
+        },
+        {
+          "$each": {
+            "$param": "albums"
+          },
+          "as": "album",
+          "key": "album.id",
+          "template": {
+            "id": "01M6ZB77700000000000000100",
+            "type": "@kerfjs/ui:list-item",
+            "props": {
+              "action": {
+                "$action": "recipe-action"
+              },
+              "itemId": {
+                "$bind": "album.id"
+              },
+              "label": {
+                "$bind": "album.title"
+              },
+              "description": {
+                "$bind": "album.artist"
+              }
+            },
+            "zones": {
+              "icon": [
+                {
+                  "id": "01M6ZB77700000000000000098",
+                  "type": "@kerfjs/ui:lucide-icon",
+                  "props": {
+                    "icon": {
+                      "$icon": "disc-3"
+                    },
+                    "name": "disc-3"
+                  }
+                }
+              ],
+              "trailing": [
+                {
+                  "id": "01M6ZB77700000000000000099",
+                  "type": "@kerfjs/ui:lucide-icon",
+                  "props": {
+                    "icon": {
+                      "$icon": "chevron-right"
+                    },
+                    "name": "chevron-right"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ]
+    }
+  },
+  "params": {
+    "albums": {
+      "type": {
+        "kind": "array",
+        "items": {
+          "kind": "object",
+          "props": [
+            {
+              "name": "id",
+              "type": {
+                "kind": "string"
+              },
+              "required": true
+            },
+            {
+              "name": "title",
+              "type": {
+                "kind": "string"
+              },
+              "required": true
+            },
+            {
+              "name": "artist",
+              "type": {
+                "kind": "string"
+              },
+              "required": true
+            }
+          ]
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,37 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "TooltipButtons",
+  "catalogs": ["@kerfjs/ui"],
+  "root": {
+    "id": "01M6Z9ABC00000000000000010",
+    "type": "@kerfjs/ui:row",
+    "props": {
+      "gap": "xs",
+      "wrap": true
+    },
+    "zones": {
+      "children": [
+        {
+          "id": "01M6Z9ABC00000000000000008",
+          "type": "@kerfjs/ui:button",
+          "props": {
+            "children": "Deploy",
+            "rootAttributes": {
+              "data-tooltip-demo": "deploy"
+            }
+          }
+        },
+        {
+          "id": "01M6Z9ABC00000000000000009",
+          "type": "@kerfjs/ui:button",
+          "props": {
+            "children": "Retry",
+            "rootAttributes": {
+              "data-tooltip-demo": "retry"
+            }
+          }
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "ToastBannerButton",
+  "catalogs": ["@kerfjs/ui"],
+  "root": {
+    "id": "01M6Z9ABC00000000000000005",
+    "type": "@kerfjs/ui:button",
+    "props": {
+      "children": "Show Export Result",
+      "action": {
+        "$action": "show-toast-demo"
+      },
+      "rootAttributes": {
+        "data-toast": "banner"
+      }
+    }
+  }
+}

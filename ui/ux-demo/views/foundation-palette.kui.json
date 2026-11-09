@@ -1,0 +1,62 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "FoundationPalette",
+  "catalogs": ["@kerfjs/ui"],
+  "root": {
+    "id": "01M6Z9ABC00000000000000017",
+    "type": "@kerfjs/ui:grid",
+    "props": {
+      "columns": 2,
+      "gap": "xs"
+    },
+    "zones": {
+      "children": [
+        {
+          "id": "01M6Z9ABC00000000000000012",
+          "type": "@kerfjs/ui:state-banner",
+          "props": {
+            "tone": "info",
+            "title": "Brand",
+            "detail": "Quiet semantic surface"
+          }
+        },
+        {
+          "id": "01M6Z9ABC00000000000000013",
+          "type": "@kerfjs/ui:state-banner",
+          "props": {
+            "tone": "pop",
+            "title": "Pop",
+            "detail": "Quiet semantic surface"
+          }
+        },
+        {
+          "id": "01M6Z9ABC00000000000000014",
+          "type": "@kerfjs/ui:state-banner",
+          "props": {
+            "tone": "success",
+            "title": "Success",
+            "detail": "Quiet semantic surface"
+          }
+        },
+        {
+          "id": "01M6Z9ABC00000000000000015",
+          "type": "@kerfjs/ui:state-banner",
+          "props": {
+            "tone": "warning",
+            "title": "Warning",
+            "detail": "Quiet semantic surface"
+          }
+        },
+        {
+          "id": "01M6Z9ABC00000000000000016",
+          "type": "@kerfjs/ui:state-banner",
+          "props": {
+            "tone": "danger",
+            "title": "Danger",
+            "detail": "Quiet semantic surface"
+          }
+        }
+      ]
+    }
+  }
+}

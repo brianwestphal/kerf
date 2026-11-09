@@ -1,0 +1,111 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "RecipeListWorkspaceShell",
+  "catalogs": ["@kerfjs/ui"],
+  "root": {
+    "id": "01M6ZRBCA00000000000000050",
+    "type": "@kerfjs/ui:pane",
+    "props": {
+      "element": "section",
+      "label": "Release Tasks",
+      "rootAttributes": {
+        "data-recipe": "recipe-list-workspace-states",
+        "data-list-state": {
+          "$param": "state"
+        }
+      }
+    },
+    "zones": {
+      "header": [
+        {
+          "id": "01M6ZRBCA00000000000000049",
+          "type": "@kerfjs/ui:toolbar",
+          "props": {
+            "label": "Release Tasks",
+            "responsive": "stack",
+            "responsiveAt": "compact"
+          },
+          "zones": {
+            "leading": [
+              {
+                "id": "01M6ZRBCA00000000000000044",
+                "type": "@kerfjs/ui:toolbar-text",
+                "props": {
+                  "text": "Release Tasks",
+                  "size": "xlarge",
+                  "id": "recipe-list-title"
+                }
+              }
+            ],
+            "trailing": [
+              {
+                "id": "01M6ZRBCA00000000000000048",
+                "type": "@kerfjs/ui:toolbar-control-group",
+                "props": {
+                  "appearance": "borderless",
+                  "content": "text",
+                  "buttonAppearance": "push"
+                },
+                "zones": {
+                  "children": [
+                    {
+                      "id": "01M6ZRBCA00000000000000045",
+                      "type": "@kerfjs/ui:toolbar-control-group#ToolbarButton",
+                      "props": {
+                        "action": {
+                          "$action": "recipe-action"
+                        },
+                        "rootAttributes": {
+                          "data-recipe-command": "empty"
+                        },
+                        "children": "Clear"
+                      }
+                    },
+                    {
+                      "id": "01M6ZRBCA00000000000000046",
+                      "type": "@kerfjs/ui:toolbar-control-group#ToolbarButton",
+                      "props": {
+                        "action": {
+                          "$action": "recipe-action"
+                        },
+                        "rootAttributes": {
+                          "data-recipe-command": "fail"
+                        },
+                        "children": "Simulate Failure"
+                      }
+                    },
+                    {
+                      "id": "01M6ZRBCA00000000000000047",
+                      "type": "@kerfjs/ui:toolbar-control-group#ToolbarButton",
+                      "props": {
+                        "action": {
+                          "$action": "recipe-action"
+                        },
+                        "rootAttributes": {
+                          "data-recipe-command": "refresh"
+                        },
+                        "children": "Refresh"
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "content": [
+        {
+          "$slot": "body"
+        }
+      ]
+    }
+  },
+  "params": {
+    "state": {
+      "type": {
+        "kind": "string"
+      }
+    }
+  }
+}

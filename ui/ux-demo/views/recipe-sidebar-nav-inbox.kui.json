@@ -1,0 +1,50 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "RecipeSidebarNavInbox",
+  "catalogs": ["@kerfjs/ui"],
+  "root": {
+    "id": "01M6ZB77700000000000000129",
+    "type": "@kerfjs/ui:list-item",
+    "props": {
+      "action": {
+        "$action": "recipe-action"
+      },
+      "itemId": "inbox",
+      "label": "Inbox",
+      "selected": {
+        "$param": "selected"
+      }
+    },
+    "zones": {
+      "icon": [
+        {
+          "id": "01M6ZB77700000000000000127",
+          "type": "@kerfjs/ui:lucide-icon",
+          "props": {
+            "icon": {
+              "$icon": "inbox"
+            },
+            "name": "inbox"
+          }
+        }
+      ],
+      "trailing": [
+        {
+          "id": "01M6ZB77700000000000000128",
+          "type": "@kerfjs/ui:text",
+          "props": {
+            "variant": "span",
+            "children": "12"
+          }
+        }
+      ]
+    }
+  },
+  "params": {
+    "selected": {
+      "type": {
+        "kind": "boolean"
+      }
+    }
+  }
+}

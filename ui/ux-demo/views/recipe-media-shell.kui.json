@@ -1,0 +1,38 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "RecipeMediaShell",
+  "catalogs": ["@kerfjs/ui"],
+  "root": {
+    "id": "01M6ZB77700000000000000120",
+    "type": "@kerfjs/ui:nav-stack",
+    "props": {
+      "id": "recipe-media",
+      "label": "Music",
+      "views": {
+        "$param": "views"
+      },
+      "chromePresentation": "clear",
+      "scrollEdge": "material",
+      "tint": {
+        "$param": "tint"
+      }
+    }
+  },
+  "params": {
+    "views": {
+      "type": {
+        "kind": "prop",
+        "component": "@kerfjs/ui:nav-stack",
+        "prop": "views"
+      }
+    },
+    "tint": {
+      "type": {
+        "kind": "prop",
+        "component": "@kerfjs/ui:nav-stack",
+        "prop": "tint"
+      },
+      "optional": true
+    }
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "RecipeAppShellNewTask",
+  "catalogs": ["@kerfjs/ui"],
+  "root": {
+    "id": "01M6ZRBCA00000000000000089",
+    "type": "@kerfjs/ui:toolbar-control-group",
+    "props": {
+      "appearance": "borderless",
+      "content": "text",
+      "single": true
+    },
+    "zones": {
+      "children": [
+        {
+          "id": "01M6ZRBCA00000000000000088",
+          "type": "@kerfjs/ui:toolbar-control-group#ToolbarButton",
+          "props": {
+            "action": {
+              "$action": "recipe-action"
+            },
+            "rootAttributes": {
+              "data-recipe-command": "new"
+            },
+            "children": "New Task"
+          }
+        }
+      ]
+    }
+  }
+}

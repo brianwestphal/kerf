@@ -1,0 +1,15 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "RecipeInspectorIconList",
+  "catalogs": ["@kerfjs/ui"],
+  "root": {
+    "id": "01M6ZB77700000000000000121",
+    "type": "@kerfjs/ui:lucide-icon",
+    "props": {
+      "icon": {
+        "$icon": "list"
+      },
+      "name": "list"
+    }
+  }
+}

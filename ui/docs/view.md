@@ -174,22 +174,21 @@ compiler then reports exactly the call sites a breaking change affects.
 
 ### Catalog-owned views
 
-The UX catalog uses this same path for the `headers` composition and the
-`recipe-workspace-header` recipe. Their editable sources live in
+The UX catalog uses this same path for compositions and recipes. Their editable sources live in
 `ux-demo/views/`; the checked `*.view.ts` files beside them render the
 component trees imported by the catalog hosts. The `headers.tsx` host keeps
 `CatalogExample` framing, and the workspace recipe host keeps presentation and
 command handling. The catalog's existing delegated actions handle the button
 names and `data-recipe-command` values in the documents.
 
-After editing either document in the editor, run this command from `ui/` and
+After editing a catalog document in the editor, run this command from `ui/` and
 commit the document and generated module together:
 
 ```sh
 npm run catalog:views:generate
 ```
 
-`npm run check:catalog-views` fails when either module is missing, stale, or
+`npm run check:catalog-views` fails when any module is missing, stale, or
 hand-edited. Both `npm run check:change` and `npm run check` include that check.
 
 ## Rendering documents at runtime

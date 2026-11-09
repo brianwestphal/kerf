@@ -1,0 +1,30 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "RecipeListWorkspaceEmpty",
+  "catalogs": ["@kerfjs/ui"],
+  "root": {
+    "id": "01M6ZRBCA00000000000000054",
+    "type": "@kerfjs/ui:empty-state",
+    "props": {
+      "title": "No Release Tasks",
+      "detail": "Create the first task for this milestone."
+    },
+    "zones": {
+      "action": [
+        {
+          "id": "01M6ZRBCA00000000000000053",
+          "type": "@kerfjs/ui:button",
+          "props": {
+            "action": {
+              "$action": "recipe-action"
+            },
+            "rootAttributes": {
+              "data-recipe-command": "create"
+            },
+            "children": "Create Task"
+          }
+        }
+      ]
+    }
+  }
+}

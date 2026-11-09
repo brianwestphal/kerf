@@ -1,0 +1,23 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "RecipeAppShellMainTitle",
+  "catalogs": ["@kerfjs/ui"],
+  "root": {
+    "id": "01M6ZRBCA00000000000000086",
+    "type": "@kerfjs/ui:toolbar-text",
+    "props": {
+      "text": {
+        "$param": "text"
+      },
+      "size": "xlarge",
+      "id": "recipe-shell-main-title"
+    }
+  },
+  "params": {
+    "text": {
+      "type": {
+        "kind": "string"
+      }
+    }
+  }
+}

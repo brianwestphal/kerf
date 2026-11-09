@@ -1,0 +1,15 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "TooltipRichButton",
+  "catalogs": ["@kerfjs/ui"],
+  "root": {
+    "id": "01M6Z9ABC00000000000000011",
+    "type": "@kerfjs/ui:button",
+    "props": {
+      "children": "Build Status",
+      "rootAttributes": {
+        "data-tooltip-demo": "build"
+      }
+    }
+  }
+}

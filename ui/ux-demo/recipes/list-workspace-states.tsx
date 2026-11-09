@@ -1,27 +1,16 @@
 import '@kerfjs/ui/layout.css';
 
-import { Button } from '@kerfjs/ui/button';
-import { EmptyState } from '@kerfjs/ui/empty-state';
-import { ListItem } from '@kerfjs/ui/list-item';
-import { LoadingSpinner } from '@kerfjs/ui/loading-spinner';
-import { Pane } from '@kerfjs/ui/pane';
-import { StateBanner } from '@kerfjs/ui/state-banner';
-import { Toolbar } from '@kerfjs/ui/toolbar';
-import {
-  ToolbarButton,
-  ToolbarControlGroup,
-} from '@kerfjs/ui/toolbar-control-group';
-import { ToolbarText } from '@kerfjs/ui/toolbar-text';
 import { signal } from 'kerfjs';
 
+import { renderRecipeListWorkspaceEmpty } from '../views/recipe-list-workspace-empty.view.js';
+import { renderRecipeListWorkspaceError } from '../views/recipe-list-workspace-error.view.js';
+import { renderRecipeListWorkspaceLoading } from '../views/recipe-list-workspace-loading.view.js';
+import { renderRecipeListWorkspacePopulated } from '../views/recipe-list-workspace-populated.view.js';
+import { renderRecipeListWorkspaceShell } from '../views/recipe-list-workspace-shell.view.js';
+import { renderRecipeListWorkspaceStale } from '../views/recipe-list-workspace-stale.view.js';
 import type { RecipeFactory, RecipePresentation } from './types.js';
 
 type ListState = 'loading' | 'empty' | 'populated' | 'stale' | 'error';
-const items = [
-  ['Audit keyboard focus order', 'In review · Mara'],
-  ['Verify 200% zoom layout', 'Ready · Sam'],
-  ['Publish package migration notes', 'Draft · Inez'],
-] as const;
 
 export const presentation: RecipePresentation = {
   viewport: {
@@ -40,145 +29,33 @@ export const createRecipe: RecipeFactory = (announce) => {
   const state = signal<ListState>('loading');
   const populated = () => (
     <section aria-label="Release Task List">
-      {items.map(([title, detail]) => (
-        <ListItem
-          action="recipe-action"
-          label={title}
-          description={detail}
-          rootAttributes={{ 'data-recipe-command': 'open-task' }}
-        />
-      ))}
+      {renderRecipeListWorkspacePopulated()}
     </section>
   );
   const renderBody = () => {
-    if (state.value === 'loading')
-      return (
-        <EmptyState
-          title="Loading Release Tasks"
-          detail="The current workspace will appear when data is ready."
-          busy
-          action={
-            <Button
-              action="recipe-action"
-              rootAttributes={{ 'data-recipe-command': 'load' }}
-            >
-              Complete Load
-            </Button>
-          }
-        />
-      );
-    if (state.value === 'empty')
-      return (
-        <EmptyState
-          title="No Release Tasks"
-          detail="Create the first task for this milestone."
-          action={
-            <Button
-              action="recipe-action"
-              rootAttributes={{ 'data-recipe-command': 'create' }}
-            >
-              Create Task
-            </Button>
-          }
-        />
-      );
-    if (state.value === 'error')
-      return (
-        <StateBanner
-          title="Release Tasks Could Not Be Refreshed"
-          detail="Existing filters are preserved. Try again when the connection recovers."
-          tone="danger"
-          urgency="alert"
-          action={
-            <Button
-              size="compact"
-              shape="pill"
-              action="recipe-action"
-              rootAttributes={{ 'data-recipe-command': 'retry' }}
-            >
-              Retry
-            </Button>
-          }
-        />
-      );
-    return (
-      <>
-        {state.value === 'stale' && (
-          <StateBanner
-            title="Showing Saved Results"
-            detail="Refreshing in the background."
-            tone="warning"
-            action={
-              <>
-                <LoadingSpinner label="Refreshing release tasks…" />
-                <Button
-                  size="compact"
-                  shape="pill"
-                  action="recipe-action"
-                  rootAttributes={{ 'data-recipe-command': 'finish' }}
-                >
-                  Finish Refresh
-                </Button>
-              </>
-            }
-          />
-        )}
-        {populated()}
-      </>
-    );
+    switch (state.value) {
+      case 'loading':
+        return renderRecipeListWorkspaceLoading();
+      case 'empty':
+        return renderRecipeListWorkspaceEmpty();
+      case 'error':
+        return renderRecipeListWorkspaceError();
+      case 'stale':
+        return (
+          <>
+            {renderRecipeListWorkspaceStale()}
+            {populated()}
+          </>
+        );
+      case 'populated':
+        return populated();
+    }
   };
-  const render = () => (
-    <Pane
-      element="section"
-      label="Release Tasks"
-      rootAttributes={{
-        'data-recipe': 'recipe-list-workspace-states',
-        'data-list-state': state.value,
-      }}
-      header={
-        <Toolbar
-          label="Release Tasks"
-          responsive="stack"
-          responsiveAt="compact"
-          leading={
-            <ToolbarText
-              text="Release Tasks"
-              size="xlarge"
-              id="recipe-list-title"
-            />
-          }
-          trailing={
-            <ToolbarControlGroup
-              appearance="borderless"
-              content="text"
-              buttonAppearance="push"
-            >
-              <ToolbarButton
-                action="recipe-action"
-                rootAttributes={{ 'data-recipe-command': 'empty' }}
-              >
-                Clear
-              </ToolbarButton>
-              <ToolbarButton
-                action="recipe-action"
-                rootAttributes={{ 'data-recipe-command': 'fail' }}
-              >
-                Simulate Failure
-              </ToolbarButton>
-              <ToolbarButton
-                action="recipe-action"
-                rootAttributes={{ 'data-recipe-command': 'refresh' }}
-              >
-                Refresh
-              </ToolbarButton>
-            </ToolbarControlGroup>
-          }
-        />
-      }
-    >
-      {renderBody()}
-    </Pane>
-  );
+  const render = () =>
+    renderRecipeListWorkspaceShell(
+      { state: state.value },
+      { body: renderBody },
+    );
   return {
     render,
     action(command) {

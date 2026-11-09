@@ -1,0 +1,12 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "RecipeSidebarNavHeader",
+  "catalogs": ["@kerfjs/ui"],
+  "root": {
+    "id": "01M6ZB77700000000000000126",
+    "type": "@kerfjs/ui:list-header",
+    "props": {
+      "label": "Workspace"
+    }
+  }
+}

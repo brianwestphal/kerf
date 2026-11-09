@@ -1,0 +1,57 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "RecipeListDetailDialog",
+  "catalogs": ["@kerfjs/ui"],
+  "root": {
+    "id": "01M6ZRBCA00000000000000106",
+    "type": "@kerfjs/ui:list-detail-dialog",
+    "props": {
+      "id": "recipe-projects",
+      "label": "Project Details",
+      "compact": {
+        "$param": "compact"
+      },
+      "detailActive": {
+        "$param": "detailActive"
+      },
+      "backLabel": "Back to Projects",
+      "viewportGutter": {
+        "$css": "remify(16)"
+      },
+      "list": {
+        "title": "Recent Projects",
+        "content": {
+          "$slot": "listContent"
+        }
+      },
+      "detail": {
+        "title": {
+          "$param": "name"
+        },
+        "content": {
+          "$slot": "detailContent"
+        },
+        "footer": {
+          "$slot": "footer"
+        }
+      }
+    }
+  },
+  "params": {
+    "compact": {
+      "type": {
+        "kind": "boolean"
+      }
+    },
+    "detailActive": {
+      "type": {
+        "kind": "boolean"
+      }
+    },
+    "name": {
+      "type": {
+        "kind": "string"
+      }
+    }
+  }
+}

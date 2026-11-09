@@ -1,0 +1,33 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "RecipeListDetailLauncher",
+  "catalogs": ["@kerfjs/ui"],
+  "root": {
+    "id": "01M6ZRBCA00000000000000108",
+    "type": "@kerfjs/ui:row",
+    "props": {
+      "hAlign": "center"
+    },
+    "zones": {
+      "children": [
+        {
+          "id": "01M6ZRBCA00000000000000107",
+          "type": "@kerfjs/ui:button",
+          "props": {
+            "action": {
+              "$action": "recipe-action"
+            },
+            "rootAttributes": {
+              "data-recipe-command": "open"
+            },
+            "children": "Open Project Details",
+            "tone": "brand"
+          }
+        },
+        {
+          "$slot": "dialog"
+        }
+      ]
+    }
+  }
+}

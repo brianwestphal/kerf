@@ -1,0 +1,34 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "RecipeListWorkspaceError",
+  "catalogs": ["@kerfjs/ui"],
+  "root": {
+    "id": "01M6ZRBCA00000000000000056",
+    "type": "@kerfjs/ui:state-banner",
+    "props": {
+      "title": "Release Tasks Could Not Be Refreshed",
+      "detail": "Existing filters are preserved. Try again when the connection recovers.",
+      "tone": "danger",
+      "urgency": "alert"
+    },
+    "zones": {
+      "action": [
+        {
+          "id": "01M6ZRBCA00000000000000055",
+          "type": "@kerfjs/ui:button",
+          "props": {
+            "action": {
+              "$action": "recipe-action"
+            },
+            "rootAttributes": {
+              "data-recipe-command": "retry"
+            },
+            "children": "Retry",
+            "size": "compact",
+            "shape": "pill"
+          }
+        }
+      ]
+    }
+  }
+}

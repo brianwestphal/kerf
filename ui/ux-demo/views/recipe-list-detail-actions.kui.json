@@ -1,0 +1,53 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "RecipeListDetailActions",
+  "catalogs": ["@kerfjs/ui"],
+  "root": {
+    "id": "01M6ZRBCA00000000000000100",
+    "type": "@kerfjs/ui:row",
+    "props": {
+      "gap": "xs",
+      "wrap": true,
+      "controlInsets": "trbl"
+    },
+    "zones": {
+      "children": [
+        {
+          "id": "01M6ZRBCA00000000000000097",
+          "type": "@kerfjs/ui:spacer",
+          "props": {
+            "flex": true
+          }
+        },
+        {
+          "id": "01M6ZRBCA00000000000000098",
+          "type": "@kerfjs/ui:button",
+          "props": {
+            "action": {
+              "$action": "recipe-action"
+            },
+            "rootAttributes": {
+              "data-recipe-command": "archive"
+            },
+            "children": "Archive",
+            "emphasis": "secondary"
+          }
+        },
+        {
+          "id": "01M6ZRBCA00000000000000099",
+          "type": "@kerfjs/ui:button",
+          "props": {
+            "action": {
+              "$action": "recipe-action"
+            },
+            "rootAttributes": {
+              "data-recipe-command": "open-record"
+            },
+            "children": "Open Project",
+            "tone": "brand"
+          }
+        }
+      ]
+    }
+  }
+}

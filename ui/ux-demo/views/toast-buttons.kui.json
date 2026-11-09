@@ -1,0 +1,56 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "ToastButtons",
+  "catalogs": ["@kerfjs/ui"],
+  "root": {
+    "id": "01M6Z9ABC00000000000000004",
+    "type": "@kerfjs/ui:row",
+    "props": {
+      "gap": "xs",
+      "wrap": true
+    },
+    "zones": {
+      "children": [
+        {
+          "id": "01M6Z9ABC00000000000000001",
+          "type": "@kerfjs/ui:button",
+          "props": {
+            "children": "Show Toast",
+            "action": {
+              "$action": "show-toast-demo"
+            },
+            "rootAttributes": {
+              "data-toast": "plain"
+            }
+          }
+        },
+        {
+          "id": "01M6Z9ABC00000000000000002",
+          "type": "@kerfjs/ui:button",
+          "props": {
+            "children": "Show Success",
+            "action": {
+              "$action": "show-toast-demo"
+            },
+            "rootAttributes": {
+              "data-toast": "success"
+            }
+          }
+        },
+        {
+          "id": "01M6Z9ABC00000000000000003",
+          "type": "@kerfjs/ui:button",
+          "props": {
+            "children": "Show Warning",
+            "action": {
+              "$action": "show-toast-demo"
+            },
+            "rootAttributes": {
+              "data-toast": "warning"
+            }
+          }
+        }
+      ]
+    }
+  }
+}

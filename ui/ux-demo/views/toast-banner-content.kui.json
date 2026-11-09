@@ -1,0 +1,14 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "ToastBannerContent",
+  "catalogs": ["@kerfjs/ui"],
+  "root": {
+    "id": "01M6Z9ABC00000000000000007",
+    "type": "@kerfjs/ui:state-banner",
+    "props": {
+      "title": "Export Finished",
+      "detail": "report.csv is in your Downloads folder.",
+      "tone": "success"
+    }
+  }
+}

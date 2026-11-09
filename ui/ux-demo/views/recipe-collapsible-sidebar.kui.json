@@ -1,0 +1,317 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "RecipeCollapsibleSidebar",
+  "catalogs": ["@kerfjs/ui"],
+  "root": {
+    "id": "01M6ZB77700000000000000097",
+    "type": "@kerfjs/ui:row",
+    "props": {
+      "gap": "none",
+      "fill": true,
+      "rootAttributes": {
+        "data-recipe": "recipe-collapsible-sidebar",
+        "data-rail-collapsed": {
+          "$param": "railCollapsedText"
+        },
+        "data-drawer-collapsed": {
+          "$param": "drawerCollapsedText"
+        }
+      }
+    },
+    "zones": {
+      "children": [
+        {
+          "id": "01M6ZB77700000000000000078",
+          "type": "@kerfjs/ui:collapsible-panel",
+          "props": {
+            "id": "sidebar-rail",
+            "side": "left",
+            "size": 232,
+            "collapsed": {
+              "$param": "railCollapsed"
+            },
+            "label": "Workspace Navigation",
+            "toolbar": {
+              "$param": "railToolbar"
+            }
+          },
+          "zones": {
+            "children": [
+              {
+                "$slot": "navigation"
+              }
+            ]
+          }
+        },
+        {
+          "id": "01M6ZB77700000000000000096",
+          "type": "@kerfjs/ui:list",
+          "props": {
+            "flex": true
+          },
+          "zones": {
+            "children": [
+              {
+                "id": "01M6ZB77700000000000000095",
+                "type": "@kerfjs/ui:grid",
+                "props": {
+                  "columns": 1,
+                  "gap": "none",
+                  "flex": true
+                },
+                "zones": {
+                  "children": [
+                    {
+                      "id": "01M6ZB77700000000000000086",
+                      "type": "@kerfjs/ui:pane",
+                      "props": {
+                        "element": "main"
+                      },
+                      "zones": {
+                        "header": [
+                          {
+                            "id": "01M6ZB77700000000000000081",
+                            "type": "@kerfjs/ui:toolbar",
+                            "props": {
+                              "label": "Current Navigation View"
+                            },
+                            "zones": {
+                              "leading": [
+                                {
+                                  "id": "01M6ZB77700000000000000079",
+                                  "type": "@kerfjs/ui:collapsible-panel#CollapsiblePanelRelocated",
+                                  "props": {
+                                    "panelId": "sidebar-rail",
+                                    "side": "left",
+                                    "collapsed": {
+                                      "$param": "railCollapsed"
+                                    },
+                                    "toolbar": {
+                                      "$param": "railRelocatedToolbar"
+                                    }
+                                  }
+                                },
+                                {
+                                  "id": "01M6ZB77700000000000000080",
+                                  "type": "@kerfjs/ui:toolbar-text",
+                                  "props": {
+                                    "text": {
+                                      "$param": "selectedLabel"
+                                    },
+                                    "size": "xlarge",
+                                    "id": "recipe-collapsible-main-title"
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        ],
+                        "content": [
+                          {
+                            "id": "01M6ZB77700000000000000085",
+                            "type": "@kerfjs/ui:content-item",
+                            "zones": {
+                              "children": [
+                                {
+                                  "id": "01M6ZB77700000000000000084",
+                                  "type": "@kerfjs/ui:list",
+                                  "props": {
+                                    "gap": "2xs"
+                                  },
+                                  "zones": {
+                                    "children": [
+                                      {
+                                        "id": "01M6ZB77700000000000000082",
+                                        "type": "@kerfjs/ui:text",
+                                        "props": {
+                                          "variant": "span",
+                                          "weight": "strong",
+                                          "children": "Compact Width"
+                                        }
+                                      },
+                                      {
+                                        "id": "01M6ZB77700000000000000083",
+                                        "type": "@kerfjs/ui:text",
+                                        "props": {
+                                          "variant": "span",
+                                          "tone": "quiet",
+                                          "size": "compact",
+                                          "children": "Narrow the window to a compact width: the rail and drawer start closed and open as a dismissable overlay, with a backdrop, Escape, and a trapped Tab ring, all managed by the wire."
+                                        }
+                                      }
+                                    ]
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "01M6ZB77700000000000000094",
+                "type": "@kerfjs/ui:collapsible-panel",
+                "props": {
+                  "id": "sidebar-console",
+                  "side": "bottom",
+                  "size": 168,
+                  "collapsed": {
+                    "$param": "drawerCollapsed"
+                  },
+                  "label": "Activity",
+                  "toolbar": {
+                    "$param": "drawerToolbar"
+                  }
+                },
+                "zones": {
+                  "restoreControl": [
+                    {
+                      "id": "01M6ZB77700000000000000088",
+                      "type": "@kerfjs/ui:floating-toolbar",
+                      "props": {
+                        "label": "Activity Drawer"
+                      },
+                      "zones": {
+                        "children": [
+                          {
+                            "id": "01M6ZB77700000000000000087",
+                            "type": "@kerfjs/ui:collapsible-panel#CollapsiblePanelRelocated",
+                            "props": {
+                              "panelId": "sidebar-console",
+                              "side": "bottom",
+                              "collapsed": {
+                                "$param": "drawerCollapsed"
+                              },
+                              "toolbar": {
+                                "$param": "drawerRelocatedToolbar"
+                              }
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ],
+                  "children": [
+                    {
+                      "id": "01M6ZB77700000000000000093",
+                      "type": "@kerfjs/ui:value-table",
+                      "props": {
+                        "label": "Recent Activity"
+                      },
+                      "zones": {
+                        "children": [
+                          {
+                            "id": "01M6ZB77700000000000000090",
+                            "type": "@kerfjs/ui:value-table#ValueTableRow",
+                            "props": {
+                              "label": "Deploy finished",
+                              "value": "2m ago"
+                            },
+                            "zones": {
+                              "icon": [
+                                {
+                                  "id": "01M6ZB77700000000000000089",
+                                  "type": "@kerfjs/ui:lucide-icon",
+                                  "props": {
+                                    "icon": {
+                                      "$icon": "bell"
+                                    },
+                                    "name": "bell"
+                                  }
+                                }
+                              ]
+                            }
+                          },
+                          {
+                            "id": "01M6ZB77700000000000000092",
+                            "type": "@kerfjs/ui:value-table#ValueTableRow",
+                            "props": {
+                              "label": "Review requested",
+                              "value": "9m ago"
+                            },
+                            "zones": {
+                              "icon": [
+                                {
+                                  "id": "01M6ZB77700000000000000091",
+                                  "type": "@kerfjs/ui:lucide-icon",
+                                  "props": {
+                                    "icon": {
+                                      "$icon": "bell"
+                                    },
+                                    "name": "bell"
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  },
+  "params": {
+    "railCollapsed": {
+      "type": {
+        "kind": "boolean"
+      }
+    },
+    "drawerCollapsed": {
+      "type": {
+        "kind": "boolean"
+      }
+    },
+    "railCollapsedText": {
+      "type": {
+        "kind": "string"
+      }
+    },
+    "drawerCollapsedText": {
+      "type": {
+        "kind": "string"
+      }
+    },
+    "selectedLabel": {
+      "type": {
+        "kind": "string"
+      }
+    },
+    "railToolbar": {
+      "type": {
+        "kind": "prop",
+        "component": "@kerfjs/ui:collapsible-panel",
+        "prop": "toolbar"
+      }
+    },
+    "drawerToolbar": {
+      "type": {
+        "kind": "prop",
+        "component": "@kerfjs/ui:collapsible-panel",
+        "prop": "toolbar"
+      }
+    },
+    "railRelocatedToolbar": {
+      "type": {
+        "kind": "prop",
+        "component": "@kerfjs/ui:collapsible-panel#CollapsiblePanelRelocated",
+        "prop": "toolbar"
+      }
+    },
+    "drawerRelocatedToolbar": {
+      "type": {
+        "kind": "prop",
+        "component": "@kerfjs/ui:collapsible-panel#CollapsiblePanelRelocated",
+        "prop": "toolbar"
+      }
+    }
+  }
+}

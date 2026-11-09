@@ -6,24 +6,16 @@ import '@kerfjs/ui/toolbar.css';
 import '@kerfjs/ui/toolbar-text.css';
 import '@kerfjs/ui/toolbar-control-group.css';
 
-import { BackdropImage } from '@kerfjs/ui/backdrop-image';
-import { fillColor, uiColor } from '@kerfjs/ui/css-values';
-import { List } from '@kerfjs/ui/list';
-import { ListHeader } from '@kerfjs/ui/list-header';
-import { ListItem } from '@kerfjs/ui/list-item';
-import { LucideIcon } from '@kerfjs/ui/lucide-icon';
-import { NavStack, type NavStackView } from '@kerfjs/ui/nav-stack';
-import { Text } from '@kerfjs/ui/text';
-import { Toolbar } from '@kerfjs/ui/toolbar';
-import {
-  ToolbarButton,
-  ToolbarControlGroup,
-} from '@kerfjs/ui/toolbar-control-group';
-import { ToolbarText } from '@kerfjs/ui/toolbar-text';
+import { fillColor } from '@kerfjs/ui/css-values';
+import { type NavStackView } from '@kerfjs/ui/nav-stack';
 import { wireScrollDividers } from '@kerfjs/ui/wire-scroll-dividers';
 import { signal } from 'kerfjs';
-import { ChevronRight, Disc3, Ellipsis, Play, Share, Shuffle } from 'lucide';
 
+import { renderRecipeMediaActions } from '../views/recipe-media-actions.view.js';
+import { renderRecipeMediaAlbum } from '../views/recipe-media-album.view.js';
+import { renderRecipeMediaLibrary } from '../views/recipe-media-library.view.js';
+import { renderRecipeMediaPlayback } from '../views/recipe-media-playback.view.js';
+import { renderRecipeMediaShell } from '../views/recipe-media-shell.view.js';
 import type { RecipeFactory, RecipePresentation } from './types.js';
 
 export const presentation: RecipePresentation = {
@@ -91,139 +83,35 @@ const artwork = () =>
     new Blob([ARTWORK], { type: 'image/svg+xml' }),
   ));
 
-/** A playback command: icon-only with `label` as its name, or labeled. */
-const command = (
-  name: string,
-  label: string,
-  icon: SafeIcon,
-  visibleLabel = false,
-) =>
-  visibleLabel ? (
-    <ToolbarButton
-      action="recipe-action"
-      rootAttributes={{ 'data-recipe-command': name }}
-      icon={icon}
-    >
-      {label}
-    </ToolbarButton>
-  ) : (
-    <ToolbarButton
-      ariaLabel={label}
-      action="recipe-action"
-      rootAttributes={{ 'data-recipe-command': name }}
-      icon={icon}
-    />
-  );
-
-type SafeIcon = ReturnType<typeof LucideIcon>;
-
 export const createRecipe: RecipeFactory = (announce) => {
   const libraryView = (): NavStackView => ({
     key: 'library',
     toolbar: { title: 'Library' },
-    content: (
-      <List>
-        <section>
-          <ListHeader label="Albums" />
-          {ALBUMS.map((album) => (
-            <ListItem
-              action="recipe-action"
-              itemId={album.id}
-              label={album.title}
-              description={album.artist}
-              icon={<LucideIcon icon={Disc3} name="disc-3" />}
-              trailing={<LucideIcon icon={ChevronRight} name="chevron-right" />}
-            />
-          ))}
-        </section>
-      </List>
-    ),
+    content: renderRecipeMediaLibrary({ albums: ALBUMS }),
   });
 
   const albumView = (album: Album): NavStackView => ({
     key: album.id,
     toolbar: {
       title: '',
-      trailing: (
-        <ToolbarControlGroup
-          label="Album Actions"
-          content="icon"
-          material="glass"
-        >
-          {command('share', 'Share', <LucideIcon icon={Share} name="share" />)}
-          {command(
-            'more',
-            'More',
-            <LucideIcon icon={Ellipsis} name="ellipsis" />,
-          )}
-        </ToolbarControlGroup>
-      ),
+      trailing: renderRecipeMediaActions({}),
     },
     pane: { safeAreaEdges: [] },
-    content: (
-      <BackdropImage
-        src={artwork()}
-        alt={`${album.title} artwork: ridges at dusk under a low sun`}
-        position="bottom"
-        parallax="subtle"
-        blur={{ dim: 0.2 }}
-        fadeTo={uiColor('surface')}
-        underChrome
-        overlay={
-          <Toolbar
-            label={album.title}
-            leading={
-              <ToolbarText
-                text={album.title}
-                description={album.artist}
-                size="xlarge"
-                headingLevel={2}
-              />
-            }
-            trailing={
-              <ToolbarControlGroup
-                label="Playback"
-                content="mixed"
-                material="glass"
-              >
-                {command(
-                  'play',
-                  'Play',
-                  <LucideIcon icon={Play} name="play" />,
-                  true,
-                )}
-                {command(
-                  'shuffle',
-                  'Shuffle',
-                  <LucideIcon icon={Shuffle} name="shuffle" />,
-                )}
-              </ToolbarControlGroup>
-            }
-          />
-        }
-      >
-        <List>
-          <section>
-            <ListHeader
-              label="Songs"
-              count={album.tracks.length}
-              countLabel={`${String(album.tracks.length)} songs`}
-            />
-            {album.tracks.map(([title, length], index) => (
-              <ListItem
-                action="recipe-action"
-                itemId={`${album.id}-track-${String(index + 1)}`}
-                label={title}
-                trailing={
-                  <Text variant="span" tone="quiet">
-                    {length}
-                  </Text>
-                }
-              />
-            ))}
-          </section>
-        </List>
-      </BackdropImage>
+    content: renderRecipeMediaAlbum(
+      {
+        title: album.title,
+        artist: album.artist,
+        artworkUrl: artwork(),
+        artworkAlt: `${album.title} artwork: ridges at dusk under a low sun`,
+        trackCount: album.tracks.length,
+        trackCountLabel: `${String(album.tracks.length)} songs`,
+        tracks: album.tracks.map(([title, length], index) => ({
+          id: `${album.id}-track-${String(index + 1)}`,
+          title,
+          length,
+        })),
+      },
+      { playback: () => renderRecipeMediaPlayback({}) },
     ),
   });
 
@@ -235,18 +123,13 @@ export const createRecipe: RecipeFactory = (announce) => {
     const album = current();
     return (
       <section data-recipe="recipe-media-detail" aria-label="Music">
-        <NavStack
-          id="recipe-media"
-          label="Music"
-          views={views.value}
-          chromePresentation="clear"
-          scrollEdge="material"
-          tint={
+        {renderRecipeMediaShell({
+          views: views.value,
+          tint:
             album === undefined
               ? undefined
-              : { color: fillColor(album.tint), scheme: 'dark' }
-          }
-        />
+              : { color: fillColor(album.tint), scheme: 'dark' },
+        })}
       </section>
     );
   };
