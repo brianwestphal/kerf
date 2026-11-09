@@ -164,6 +164,22 @@ describe(
         const requestPath = join(directory, 'request.json');
         const types = 'export type RecipeFactory = string;\n';
         const oldApp = 'export const before = true;\n';
+        const definition = (
+          await readJson('ai-regressions/corpus-v3.json')
+        ).cases.find(
+          ({ id }: { id: string }) => id === 'extend-application-navigation',
+        );
+        const sources = await Promise.all(
+          definition.contextFiles.map(async (path: string) => {
+            const content =
+              path === 'ux-demo/recipes/app-shell.tsx'
+                ? oldApp
+                : path === 'ux-demo/recipes/types.ts'
+                  ? types
+                  : await readFile(resolve(root, path), 'utf8');
+            return { path, content, sha256: sha256AiRegression(content) };
+          }),
+        );
         await writeFile(
           responsePath,
           canonicalAiRegressionJson({
@@ -181,18 +197,7 @@ describe(
             modelInput: {
               caseId: 'extend-application-navigation',
               caseContext: {
-                sources: [
-                  {
-                    path: 'ux-demo/recipes/app-shell.tsx',
-                    content: oldApp,
-                    sha256: sha256AiRegression(oldApp),
-                  },
-                  {
-                    path: 'ux-demo/recipes/types.ts',
-                    content: types,
-                    sha256: sha256AiRegression(types),
-                  },
-                ],
+                sources,
               },
             },
           }),

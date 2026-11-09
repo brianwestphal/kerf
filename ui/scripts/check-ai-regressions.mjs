@@ -386,6 +386,13 @@ for (const testCase of corpusV3.cases) {
     )
   )
     fail(`${testCase.id} editable files must be present in its context`);
+  for (const path of testCase.editableFiles.filter((name) =>
+    name.endsWith('.kui.json'),
+  )) {
+    const generated = path.replace(/\.kui\.json$/, '.view.ts');
+    if (!testCase.contextFiles.includes(generated))
+      fail(`${testCase.id} must include generated context ${generated}`);
+  }
   for (const path of testCase.contextFiles)
     await readFile(resolve(root, path), 'utf8');
   for (const code of testCase.requiredDiagnostics)

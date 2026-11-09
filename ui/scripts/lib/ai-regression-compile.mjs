@@ -4,9 +4,14 @@ import { basename, dirname, posix, relative, resolve, sep } from 'node:path';
 
 import ts from 'typescript';
 
+import { createViewCatalog } from '../../view/catalog.mjs';
+import { generateView, viewModulePath } from '../../view/generate.mjs';
+import { validateView } from '../../view/validate.mjs';
+
 const sha256 = (value) => createHash('sha256').update(value).digest('hex');
 const codeExtension = /(?:\.d)?\.tsx?$/;
-const acceptedExtension = /(?:\.d)?\.tsx?$|\.css$/;
+const viewDocumentExtension = /\.kui\.json$/;
+const acceptedExtension = /(?:\.d)?\.tsx?$|\.css$|\.kui\.json$/;
 
 function safeResponsePath(name) {
   if (
@@ -102,6 +107,7 @@ export async function compileAiRegressionResponse(
     responseSha256.slice(0, 12),
   );
   const virtualFiles = new Map();
+  const documentFiles = new Map();
   // Suite v3 responses contain edits only. Keep unchanged case modules at
   // their original paths so relative imports resolve inside the virtual host.
   const corpus = JSON.parse(
@@ -145,8 +151,15 @@ export async function compileAiRegressionResponse(
         pinnedSources?.get(name) ??
           (await readFile(resolve(root, name), 'utf8')),
       );
+    if (viewDocumentExtension.test(name))
+      documentFiles.set(
+        name,
+        pinnedSources?.get(name) ??
+          (await readFile(resolve(root, name), 'utf8')),
+      );
   }
   let compiledFiles = 0;
+  const editedDocuments = [];
   for (const [name, source] of Object.entries(response.files)) {
     safeResponsePath(name);
     if (typeof source !== 'string')
@@ -155,8 +168,58 @@ export async function compileAiRegressionResponse(
       virtualFiles.set(resolve(virtualRoot, name), source);
       compiledFiles++;
     }
+    if (viewDocumentExtension.test(name)) {
+      documentFiles.set(name, source);
+      editedDocuments.push(name);
+    }
   }
-  if (!compiledFiles)
+  const documentDiagnostics = [];
+  if (editedDocuments.length) {
+    const catalog = createViewCatalog({
+      props: [
+        JSON.parse(await readFile(resolve(root, 'ai/component-props.json'))),
+      ],
+      composition: [
+        JSON.parse(
+          await readFile(resolve(root, 'ai/component-composition.json')),
+        ),
+      ],
+    });
+    for (const name of editedDocuments) {
+      let document;
+      try {
+        document = JSON.parse(documentFiles.get(name));
+      } catch (error) {
+        documentDiagnostics.push({
+          code: 9001,
+          file: `response/${name}`,
+          message: `Invalid view document JSON: ${error.message}`,
+        });
+        continue;
+      }
+      const validation = validateView(document, catalog);
+      if (!validation.valid) {
+        documentDiagnostics.push(
+          ...validation.diagnostics.map(({ code, path, message }) => ({
+            code: 9002,
+            file: `response/${name}`,
+            message: `${code} ${path}: ${message}`,
+          })),
+        );
+        continue;
+      }
+      const generated = generateView(document, catalog, {
+        source: basename(name),
+        importFrom: dirname(resolve(root, name)),
+      });
+      virtualFiles.set(
+        resolve(virtualRoot, viewModulePath(name, 'ts')),
+        generated.code,
+      );
+      compiledFiles++;
+    }
+  }
+  if (!compiledFiles && !documentDiagnostics.length)
     throw new Error(
       'Response contains no .ts, .tsx, or .d.ts files to compile',
     );
@@ -225,9 +288,11 @@ export async function compileAiRegressionResponse(
     options: compilerOptions,
     host,
   });
-  const diagnostics = ts
-    .getPreEmitDiagnostics(program)
-    .map((diagnostic) => diagnosticRecord(root, virtualRoot, diagnostic));
+  const diagnostics = documentDiagnostics.concat(
+    ts
+      .getPreEmitDiagnostics(program)
+      .map((diagnostic) => diagnosticRecord(root, virtualRoot, diagnostic)),
+  );
   const serializedOptions = {
     target: 'ES2022',
     module: 'ESNext',

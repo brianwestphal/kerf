@@ -287,23 +287,28 @@ describe('local AI regression foundation', { timeout: 30_000 }, () => {
     async () => {
       const types = 'export type RecipeFactory = string;\n';
       const oldApp = 'export const before = true;\n';
+      const definition = (
+        await readJson('ai-regressions/corpus-v3.json')
+      ).cases.find(
+        ({ id }: { id: string }) => id === 'extend-application-navigation',
+      );
+      const sources = await Promise.all(
+        definition.contextFiles.map(async (path: string) => {
+          const content =
+            path === 'ux-demo/recipes/app-shell.tsx'
+              ? oldApp
+              : path === 'ux-demo/recipes/types.ts'
+                ? types
+                : await readFile(resolve(root, path), 'utf8');
+          return { path, content, sha256: sha256AiRegression(content) };
+        }),
+      );
       const request = {
         caseId: 'extend-application-navigation',
         modelInput: {
           caseId: 'extend-application-navigation',
           caseContext: {
-            sources: [
-              {
-                path: 'ux-demo/recipes/app-shell.tsx',
-                content: oldApp,
-                sha256: sha256AiRegression(oldApp),
-              },
-              {
-                path: 'ux-demo/recipes/types.ts',
-                content: types,
-                sha256: sha256AiRegression(types),
-              },
-            ],
+            sources,
           },
         },
       };
@@ -359,6 +364,59 @@ describe('local AI regression foundation', { timeout: 30_000 }, () => {
           },
         }),
       ).rejects.toThrow('Invalid prepared context source');
+    },
+    compileTestTimeout,
+  );
+
+  it(
+    'validates edited view documents and compiles their regenerated modules',
+    async () => {
+      const caseId = 'extend-application-navigation';
+      const definition = (
+        await readJson('ai-regressions/corpus-v3.json')
+      ).cases.find(({ id }: { id: string }) => id === caseId);
+      const documentPath = 'ux-demo/views/recipe-app-shell-navigation.kui.json';
+      const generatedPath = 'ux-demo/views/recipe-app-shell-navigation.view.ts';
+      const document = await readFile(resolve(root, documentPath), 'utf8');
+      const sources = await Promise.all(
+        definition.contextFiles.map(async (path: string) => {
+          const content =
+            path === generatedPath
+              ? 'export const broken: = true;\n'
+              : await readFile(resolve(root, path), 'utf8');
+          return { path, content, sha256: sha256AiRegression(content) };
+        }),
+      );
+      const request = {
+        caseId,
+        modelInput: { caseId, caseContext: { sources } },
+      };
+      const response = { caseId, files: { [documentPath]: document } };
+      expect(validateAiRegressionResponseV3(definition, response)).toEqual([]);
+      const result = await compileAiRegressionResponse(
+        root,
+        response,
+        undefined,
+        request,
+      );
+      expect(result.passed).toBe(true);
+      expect(result.compiledFiles).toBe(1);
+      const badJson = await compileAiRegressionResponse(root, {
+        caseId,
+        files: { [documentPath]: '{' },
+      });
+      expect(badJson.passed).toBe(false);
+      expect(badJson.diagnostics.some(({ code }) => code === 9001)).toBe(true);
+      const invalidDocument = JSON.stringify({
+        ...JSON.parse(document),
+        schema: 'invalid',
+      });
+      const invalid = await compileAiRegressionResponse(root, {
+        caseId,
+        files: { [documentPath]: invalidDocument },
+      });
+      expect(invalid.passed).toBe(false);
+      expect(invalid.diagnostics.some(({ code }) => code === 9002)).toBe(true);
     },
     compileTestTimeout,
   );

@@ -4,24 +4,24 @@
     {
       "id": "extend-application-navigation",
       "prompt": "prompts-v3/extend-application-navigation.md",
-      "contextFiles": ["ux-demo/recipes/app-shell.tsx", "ux-demo/recipes/types.ts"],
-      "editableFiles": ["ux-demo/recipes/app-shell.tsx"],
+      "contextFiles": ["ux-demo/recipes/app-shell.tsx", "ux-demo/recipes/types.ts", "ux-demo/views/recipe-app-shell-bar.kui.json", "ux-demo/views/recipe-app-shell-bar.view.ts", "ux-demo/views/recipe-app-shell-frame.kui.json", "ux-demo/views/recipe-app-shell-frame.view.ts", "ux-demo/views/recipe-app-shell-inspector.kui.json", "ux-demo/views/recipe-app-shell-inspector.view.ts", "ux-demo/views/recipe-app-shell-main-title.kui.json", "ux-demo/views/recipe-app-shell-main-title.view.ts", "ux-demo/views/recipe-app-shell-navigation.kui.json", "ux-demo/views/recipe-app-shell-navigation.view.ts", "ux-demo/views/recipe-app-shell-new-task.kui.json", "ux-demo/views/recipe-app-shell-new-task.view.ts", "ux-demo/views/recipe-app-shell-rail-title.kui.json", "ux-demo/views/recipe-app-shell-rail-title.view.ts", "ux-demo/views/recipe-app-shell-tasks.kui.json", "ux-demo/views/recipe-app-shell-tasks.view.ts", "ux-demo/views/recipe-app-shell-workbench.kui.json", "ux-demo/views/recipe-app-shell-workbench.view.ts"],
+      "editableFiles": ["ux-demo/recipes/app-shell.tsx", "ux-demo/views/recipe-app-shell-navigation.kui.json"],
       "consumerOwnedSymbols": ["createRecipe", "RecipeFactory"],
       "requiredDiagnostics": ["static.component-selection", "static.consumer-reuse", "static.public-api", "static.wiring-cleanup", "static.composition", "static.geometry-ownership", "static.accessibility", "compile.types", "browser.interaction", "browser.keyboard", "browser.responsive", "visual.hierarchy", "visual.rhythm", "visual.density", "visual.alignment", "visual.scroll-ownership"]
     },
     {
       "id": "add-list-selection-actions",
       "prompt": "prompts-v3/add-list-selection-actions.md",
-      "contextFiles": ["ux-demo/recipes/list-workspace-states.tsx", "ux-demo/recipes/types.ts"],
-      "editableFiles": ["ux-demo/recipes/list-workspace-states.tsx"],
-      "consumerOwnedSymbols": ["createRecipe", "ListState", "items"],
+      "contextFiles": ["ux-demo/recipes/list-workspace-states.tsx", "ux-demo/recipes/types.ts", "ux-demo/views/recipe-list-workspace-shell.kui.json", "ux-demo/views/recipe-list-workspace-shell.view.ts", "ux-demo/views/recipe-list-workspace-loading.kui.json", "ux-demo/views/recipe-list-workspace-loading.view.ts", "ux-demo/views/recipe-list-workspace-empty.kui.json", "ux-demo/views/recipe-list-workspace-empty.view.ts", "ux-demo/views/recipe-list-workspace-error.kui.json", "ux-demo/views/recipe-list-workspace-error.view.ts", "ux-demo/views/recipe-list-workspace-stale.kui.json", "ux-demo/views/recipe-list-workspace-stale.view.ts", "ux-demo/views/recipe-list-workspace-populated.kui.json", "ux-demo/views/recipe-list-workspace-populated.view.ts"],
+      "editableFiles": ["ux-demo/recipes/list-workspace-states.tsx", "ux-demo/views/recipe-list-workspace-shell.kui.json", "ux-demo/views/recipe-list-workspace-loading.kui.json", "ux-demo/views/recipe-list-workspace-empty.kui.json", "ux-demo/views/recipe-list-workspace-error.kui.json", "ux-demo/views/recipe-list-workspace-stale.kui.json", "ux-demo/views/recipe-list-workspace-populated.kui.json"],
+      "consumerOwnedSymbols": ["createRecipe", "ListState", "state"],
       "requiredDiagnostics": ["static.component-selection", "static.consumer-reuse", "static.public-api", "static.wiring-cleanup", "static.composition", "static.geometry-ownership", "static.accessibility", "compile.types", "browser.interaction", "browser.keyboard", "browser.responsive", "visual.hierarchy", "visual.rhythm", "visual.density", "visual.alignment", "visual.scroll-ownership"]
     },
     {
       "id": "add-form-draft-status",
       "prompt": "prompts-v3/add-form-draft-status.md",
-      "contextFiles": ["ux-demo/recipes/composer-form.tsx", "ux-demo/recipes/types.ts"],
-      "editableFiles": ["ux-demo/recipes/composer-form.tsx"],
+      "contextFiles": ["ux-demo/recipes/composer-form.tsx", "ux-demo/recipes/types.ts", "ux-demo/views/recipe-composer-form.kui.json", "ux-demo/views/recipe-composer-form.view.ts"],
+      "editableFiles": ["ux-demo/recipes/composer-form.tsx", "ux-demo/views/recipe-composer-form.kui.json"],
       "consumerOwnedSymbols": ["createRecipe", "syncControlledFieldValues", "RecipeFactory"],
       "requiredDiagnostics": ["static.component-selection", "static.consumer-reuse", "static.public-api", "static.wiring-cleanup", "static.composition", "static.geometry-ownership", "static.accessibility", "compile.types", "browser.interaction", "browser.keyboard", "browser.responsive", "visual.hierarchy", "visual.rhythm", "visual.density", "visual.alignment", "visual.scroll-ownership"]
     }

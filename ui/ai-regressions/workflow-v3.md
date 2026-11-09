@@ -37,6 +37,11 @@ available to TypeScript imports but remain absent from `response.files` and
 the changed-file count. Pass `--request <prepared-request.json>` to the compile
 CLI for measured cells so it uses the exact context bytes and hashes the model
 saw; without a request, ad hoc compilation reads current checkout files.
+For a changed `.kui.json` source, the compile probe validates the document and
+regenerates its `.view.ts` module in that virtual overlay. Generated modules
+are context, never editable response files. The future paid browser runner
+must materialize the same generated module from response bytes before loading
+the app; `KF-CVAJNY` tracks that browser-side gate.
 The harness calls the evaluator explicitly so it can name a URL, forward the
 same AbortSignal, and pass the four contexts from `compatibility-v3.json`
 rather than relying on evaluator defaults. The browser stage combines evaluator
