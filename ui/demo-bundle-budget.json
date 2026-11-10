@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 164600,
-  "totalJavaScriptGzip": 469500,
+  "totalJavaScriptGzip": 469600,
   "measuredLargestJavaScriptGzip": 164547,
-  "measuredTotalJavaScriptGzip": 469405,
+  "measuredTotalJavaScriptGzip": 469530,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -7203,6 +7203,22 @@
         "measuredTotalJavaScriptGzip": 469405,
         "largestJavaScriptGzip": 164600,
         "totalJavaScriptGzip": 469500
+      }
+    },
+    {
+      "at": "2026-11-10T04:32:36.665Z",
+      "reason": "KF-MGAP67 KF-7HP7R9 KF-0XRNXD KF-GC3PRB: measured committed Library headings, edge inset configuration, search normalization and minimum-height control support on pinned Node22; preserve real UI behavior and public APIs.",
+      "old": {
+        "measuredLargestJavaScriptGzip": 164547,
+        "measuredTotalJavaScriptGzip": 469405,
+        "largestJavaScriptGzip": 164600,
+        "totalJavaScriptGzip": 469500
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 164547,
+        "measuredTotalJavaScriptGzip": 469530,
+        "largestJavaScriptGzip": 164600,
+        "totalJavaScriptGzip": 469600
       }
     }
   ]
