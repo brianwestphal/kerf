@@ -7,6 +7,7 @@ import {
   existsSync,
   mkdirSync,
   mkdtempSync,
+  readdirSync,
   readFileSync,
   writeFileSync,
 } from 'node:fs';
@@ -73,20 +74,19 @@ for (const version of ['5.0.0', '5.0.0-beta.999999']) {
     );
     const out = join(evidence, 'packed', version, name.replaceAll('/', '-'));
     mkdirSync(out, { recursive: true });
-    const packed = JSON.parse(
-      run(
-        'npm',
-        ['pack', '--ignore-scripts', '--json', '--pack-destination', out],
-        cwd,
-      ),
-    );
-    const artifact = join(out, packed[0].filename);
+    run('npm', ['pack', '--ignore-scripts', '--pack-destination', out], cwd);
+    // npm 10 can prepend lifecycle stdout even with --json/--ignore-scripts.
+    // Inspect the actual artifact rather than treating that stdout as JSON.
+    const tarballs = readdirSync(out).filter((name) => name.endsWith('.tgz'));
+    assert.equal(tarballs.length, 1, 'Expected one packed release artifact');
+    const artifact = join(out, tarballs[0]);
     const before = createHash('sha256')
       .update(readFileSync(artifact))
       .digest('hex');
     const metadata = JSON.parse(
       run('tar', ['-xOf', artifact, 'package/package.json'], cwd),
     );
+    assert.equal(metadata.name, name);
     assert.equal(metadata.version, version);
     if (relative === '.' || relative === 'ui') {
       const entries = run('tar', ['-tf', artifact], cwd);
@@ -114,7 +114,7 @@ for (const version of ['5.0.0', '5.0.0-beta.999999']) {
       version,
       filename: basename(artifact),
       sha256: before,
-      integrity: packed[0].integrity,
+      integrity: `sha512-${createHash('sha512').update(readFileSync(artifact)).digest('base64')}`,
       metadata,
       dryRun,
     });
