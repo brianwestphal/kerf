@@ -1041,6 +1041,7 @@ Every key in `ui/package.json` `exports` is listed here. The source column names
 | `@kerfjs/ui/css-values`                   | `ui/src/css-values.ts`                | Typed CSS value builders.                             |
 | `@kerfjs/ui/catalog-projection`           | `ui/catalog-projection.mjs`           | Projects component catalog data for tools.            |
 | `@kerfjs/ui/view`                         | `ui/view/index.mjs`                   | Compiles and validates declarative UI views.          |
+| `@kerfjs/ui/view-runtime`                 | `ui/src/view-runtime.ts`              | Shared curried generated component call boundary.     |
 | `@kerfjs/ui/vite-editor`                  | `ui/vite-editor.mjs`                  | Hosts the local UI editor in Vite.                    |
 | `@kerfjs/ui/vite-ux-review`               | `ui/vite-ux-review.mjs`               | Hosts contextual UX review capture in Vite.           |
 | `@kerfjs/ui/lucide-icon`                  | `ui/src/lucide-icon.tsx`              | Renders or composes Lucide Icon UI.                   |
