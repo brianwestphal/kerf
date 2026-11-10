@@ -53,6 +53,7 @@ describe(
           'pure-wasi',
           'local-peer',
           'stable-plan',
+          'bundled-dependency',
           'library-performance',
         ],
         default: 'full',
@@ -89,6 +90,7 @@ describe(
             'pure-wasi',
             'local-peer',
             'stable-plan',
+            'bundled-dependency',
             'library-performance',
           ].includes(name)
         )
@@ -161,7 +163,12 @@ describe(
 
     it('isolates exact-toolchain diagnostics without installing repository dependencies', () => {
       const candidate = candidateFrom(source);
-      for (const name of ['pure-wasi', 'local-peer', 'stable-plan']) {
+      for (const name of [
+        'pure-wasi',
+        'local-peer',
+        'stable-plan',
+        'bundled-dependency',
+      ]) {
         const job = candidate.jobs[name];
         expect(job.if).toBe(`\${{ inputs.scope == '${name}' }}`);
         expect(job.needs).toBeUndefined();

@@ -196,6 +196,7 @@ JS`,
     ['pure-wasi', 'bun-pure-wasi-probe.mjs'],
     ['local-peer', 'bun-local-peer-probe.mjs'],
     ['stable-plan', 'stable-release-plan-probe.mjs'],
+    ['bundled-dependency', 'bun-bundled-resolution-probe.mjs'],
   ]) {
     jobs[scope] = {
       if: `\${{ inputs.scope == '${scope}' }}`,
@@ -250,6 +251,7 @@ JS`,
         'pure-wasi',
         'local-peer',
         'stable-plan',
+        'bundled-dependency',
         'library-performance',
       ].includes(name)
     )
@@ -291,6 +293,7 @@ JS`,
               'pure-wasi',
               'local-peer',
               'stable-plan',
+              'bundled-dependency',
               'library-performance',
             ],
             default: 'full',
