@@ -7,6 +7,7 @@
 # Pre-flight refusals shared by every release path (the Release Scripts rule:
 # refuse a dirty tree, the wrong branch, or a missing tool, and print the fix).
 # Also fetches tags so tag-existence checks and beta numbering see the remote.
+# Pass --local-tags for a read-only dry-run: never update refs or contact origin.
 release_preflight_repo() {
   if [[ ! -f "package.json" ]]; then
     error "No package.json — run from the project root."
@@ -32,6 +33,11 @@ release_preflight_repo() {
   fi
 
   release_refuse_stale_lockfiles
+
+  if [[ "${1:-}" == "--local-tags" ]]; then
+    info "Using local tags only (dry-run does not fetch origin)."
+    return
+  fi
 
   # Intentionally NOT --prune-tags (would delete local-only unpushed tags).
   # Failure is non-fatal (offline): proceed with the local tag list and let the

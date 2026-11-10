@@ -465,6 +465,7 @@ kerf/
 │   │   ├── setup-downstream.test.ts ← packed setup against a downstream consumer.
 │   │   ├── ticket-timing.test.ts ← timing CLI successful and failing command flows.
 │   │   ├── ticket-timing-steps-ci.test.ts ← real step runner and CI import flow.
+│   │   ├── release-stable.test.ts ← guarded real-CLI stable dry runs: strict argument validation, no release mutations, preserved saved progress, and unchanged interactive stable/beta resume decisions
 │   │   ├── release-beta-auto.test.ts ← runs the release helper end to end in a temporary git repository and proves stable 4.4.1 plus v5.0.0-beta.23 selects v5.0.0-beta.24
 │   │   ├── dev-row-key-warning.internal.test.ts ← full-pipeline missing-row-key warning wiring across initial, snapshot, granular, and in-place reconciliation; source-only because it installs internal dev hooks directly
 │   │   ├── full-pipeline.test.ts ← end-to-end cart UI exercising every primitive
@@ -635,7 +636,7 @@ kerf/
 │   ├── push.mjs                  ← `npm run push`: requires a clean worktree, runs `npm run check` (skipping it when `scripts/lib/check-pass-cache.mjs` records a pass for the exact tree), then `git push`, so the long gate never runs inside an idle SSH connection
 │   ├── update-release-changelog.mjs ← stable-release changelog writer called by `release.sh`: moves the hand-curated `[Unreleased]` body into the dated version entry, then appends the distinct release-note draft
 │   ├── release-beta-auto.sh      ← non-interactive `npm run release:beta`: tag-only `vX.Y.Z-beta.N` with every prompt answered from flags; the series/number choice lives in `scripts/lib/release-beta-plan.mjs` (continues the highest prerelease series at or beyond the next target)
-│   └── release.sh                ← interactive release flow w/ --beta support; drafts release notes via gitgist (`gitgist <last-tag>..HEAD`; gitgist is a devDependency)
+│   └── release.sh                ← interactive resumable stable/beta release flow plus a strict noninteractive stable --dry-run plan (explicit --version/--notes, local tags only, current-tree checks, no release effects); drafts release notes via gitgist (`gitgist <last-tag>..HEAD`; gitgist is a devDependency)
 ├── .github/workflows/
 │   ├── ci.yml                    ← test + lint + typecheck on push/PR; a read-only site job audits all site build dependencies at high severity before its build without invoking Pages deployment; root and `@kerfjs/ui` browser jobs cache Playwright binaries and run Chromium, Firefox, and WebKit coverage; a failed UI job uploads its Playwright HTML report, traces, failure screenshots, and error context for 14 days; `ui-webawesome-latest` runs `npm --prefix ui run test:webawesome-latest` (ui unit + Chromium browser suites against the newest Web Awesome 3.x, while the lockfile tests the 3.14.0 floor of the `^3.14.0` peer range)
 │   ├── pages.yml                 ← build + deploy reactivity-demo to GitHub Pages on push to main

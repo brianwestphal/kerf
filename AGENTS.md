@@ -509,12 +509,15 @@ Compatibility across majors lives in one place: `eslint-plugin/tests/helpers/rul
 ## Releasing
 
 ```bash
+npm run release -- --dry-run --version X.Y.Z --notes <file> # noninteractive stable plan; add --skip-checks only for already-verified trees
 npm run release      # interactive: bumps version, updates changelog, tags v{ver}, pushes
 npm run release:beta # tag-only: tags v{ver}-beta.{N}, publishes with --tag beta
 npm run release:beta:auto # non-interactive beta (scripts/release-beta-auto.sh): continues the highest prerelease series
 ```
 
 `scripts/release.sh` and `scripts/release-beta-auto.sh` keep all four packages (`kerfjs`, `eslint-plugin-kerfjs`, `create-kerf-component`, and `@kerfjs/ui`) on one version/tag. `scripts/sync-lockstep-versions.mjs` also derives the plugin-reported version and component-scaffold/docs ranges; its `--check` mode runs in `npm run check`. In CI, `scripts/prepare-release-package.mjs` applies the tag version plus package-specific embedded metadata (AI manifests/signatures, plugin-reported version, and Kerf peer/scaffold ranges), then a tokenless job creates the final tarball. The OIDC-token job only downloads and publishes those already-packed bytes. `kerfjs` always publishes first: the three dependent workflows' publish jobs need a tokenless `wait-for-core` job (`scripts/wait-for-core-release.mjs`) that polls npm for `kerfjs@<version>` and fails fast if the core `release.yml` run fails — so after re-running a failed core release, re-run the dependents' failed jobs too.
+
+The stable `--dry-run` path validates the clean shipping checkout, lockfiles, and local tag availability, prints the release plan, and runs current-tree checks by default. It requires an explicit stable `--version X.Y.Z` and nonempty `--notes <file>`, preserves any saved `.release-state.json`, and never edits release metadata, fetches or creates tags, commits, pushes, or publishes. It previews operations rather than preparing versioned package artifacts; use isolated metadata/pack/publish probes for that qualification. Unknown arguments fail before state initialization. Real stable and interactive beta releases retain their resumable prompt flow; automation-only flags require `--dry-run`.
 
 Lockstep version sync writes the ESLint plugin metadata in its formatted quote style, so the release commit passes the format check.
 

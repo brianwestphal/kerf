@@ -16,6 +16,10 @@ set -euo pipefail
 #                                       plan release-beta-auto.sh uses:
 #                                       continue the highest beta series,
 #                                       N = highest + 1.
+#   bash scripts/release.sh --dry-run --version X.Y.Z --notes <file>
+#                                    — noninteractive stable plan + current-tree
+#                                       checks; no release state or metadata writes,
+#                                       tag creation/fetch, commits, or pushes.
 #
 # Editor guidance lines start with `%%`, which Markdown never uses, so the
 # notes' own `##` headings survive. Shared helpers: scripts/lib/release-common.sh.
@@ -465,14 +469,92 @@ step_beta_tag_and_push() {
   echo -e "  ${DIM}Monitor:${RESET} https://github.com/brianwestphal/kerf/actions"
 }
 
-# --- Main ---
-main() {
+# KF-Y9A9XE: parse before init_state so a typo cannot enter a real release.
+parse_args() {
   BETA_MODE=false
-  for arg in "$@"; do
-    case "$arg" in
-      --beta) BETA_MODE=true ;;
+  DRY_RUN=false
+  SKIP_CHECKS=false
+  DRY_VERSION=""
+  NOTES_FILE=""
+  while [[ $# -gt 0 ]]; do
+    case "$1" in
+      --beta) BETA_MODE=true; shift ;;
+      --dry-run) DRY_RUN=true; shift ;;
+      --skip-checks) SKIP_CHECKS=true; shift ;;
+      --version | --notes)
+        if [[ -z "${2:-}" || "$2" == --* ]]; then
+          error "$1 requires a value. See --help."
+          exit 1
+        fi
+        if [[ "$1" == "--version" ]]; then DRY_VERSION="$2"; else NOTES_FILE="$2"; fi
+        shift 2
+        ;;
+      --version=*) DRY_VERSION="${1#--version=}"; shift ;;
+      --notes=*) NOTES_FILE="${1#--notes=}"; shift ;;
+      -h | --help)
+        cat <<'EOF'
+Usage: bash scripts/release.sh [--beta]
+       bash scripts/release.sh --dry-run --version X.Y.Z --notes <file> [--skip-checks]
+
+Without --dry-run, run the existing interactive, resumable release flow.
+Stable --dry-run requires an explicit version and nonempty notes file; it
+validates the clean shipping checkout, lockfiles, and local tag availability,
+prints the release plan, and runs current-tree local checks unless skipped.
+It never writes release state or metadata, fetches/creates tags, commits,
+pushes, or publishes. It does not simulate versioned package artifacts.
+For a beta dry-run use scripts/release-beta-auto.sh --dry-run instead.
+EOF
+        exit 0
+        ;;
+      *) error "Unrecognized arg: $1. See --help."; exit 1 ;;
     esac
   done
+  if [[ "$DRY_RUN" == "true" ]]; then
+    if [[ "$BETA_MODE" == "true" ]]; then
+      error "--beta --dry-run is unsupported; use scripts/release-beta-auto.sh --dry-run."
+      exit 1
+    fi
+    if [[ ! "$DRY_VERSION" =~ ^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$ ]]; then
+      error "Stable --dry-run requires --version X.Y.Z (no prerelease suffix)."
+      exit 1
+    fi
+    if [[ -z "$NOTES_FILE" || ! -f "$NOTES_FILE" ]]; then
+      error "Stable --dry-run requires --notes <file> pointing to an existing file."
+      exit 1
+    fi
+    DRY_NOTES=$(cat "$NOTES_FILE")
+    if [[ ! "$DRY_NOTES" =~ [^[:space:]] ]]; then
+      error "Release notes are empty. Supply nonempty --notes <file>."
+      exit 1
+    fi
+  elif [[ -n "$DRY_VERSION" || -n "$NOTES_FILE" || "$SKIP_CHECKS" == "true" ]]; then
+    error "--version, --notes, and --skip-checks require --dry-run; real releases remain interactive."
+    exit 1
+  fi
+}
+
+stable_dry_run() {
+  info "Stable release dry-run: plan and current-tree validation only."
+  release_preflight_repo --local-tags
+  release_refuse_existing_tag "v${DRY_VERSION}"
+  info "Would release v${DRY_VERSION} from $(git rev-parse --short HEAD)."
+  printf '%s\n' "$DRY_NOTES"
+  info "Would update four lockstep versions and companion metadata, preserve Unreleased history in CHANGELOG.md, then check, commit, tag, and push."
+  if [[ "$SKIP_CHECKS" == "true" ]]; then
+    warn "Skipping current-tree local checks (--skip-checks)."
+  else
+    step_local_checks
+  fi
+  success "Dry run complete: no release state, version files, changelog, commits, tags, pushes, or publications changed."
+}
+
+# --- Main ---
+main() {
+  parse_args "$@"
+  if [[ "$DRY_RUN" == "true" ]]; then
+    stable_dry_run
+    return
+  fi
 
   echo ""
   if [[ "$BETA_MODE" == "true" ]]; then
