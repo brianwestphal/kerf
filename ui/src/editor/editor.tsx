@@ -70,6 +70,7 @@ import { FilePickerTrigger } from '../components/forms/file-picker/file-picker.j
 import { wireFilePickers } from '../components/forms/file-picker/wiring/wire-file-pickers.js';
 import { wireForms } from '../components/forms/form/wiring/wire-forms.js';
 import { readSearchField } from '../components/forms/search-field/search-field.js';
+import { wireSearchFields } from '../components/forms/search-field/wiring/wire-search-fields.js';
 import { Select } from '../components/forms/select/select.js';
 import { wireTagFields } from '../components/forms/tag-field/wiring/wire-tag-fields.js';
 import { TextField } from '../components/forms/text-field/text-field.js';
@@ -3768,6 +3769,7 @@ export function createEditor(options: EditorOptions) {
     root.addEventListener('toggle', answered, true);
     const stops = [
       stopPopover,
+      wireSearchFields(surface, { collapsible: false }),
       on(doc, 'keydown', (event) => {
         const key = event as KeyboardEvent;
         if (

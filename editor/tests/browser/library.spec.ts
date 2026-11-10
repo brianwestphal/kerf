@@ -432,3 +432,43 @@ test('Library header drag follows pointer without repeated layout reads', async 
   expect(reads).toBeLessThanOrEqual(6);
   await page.screenshot({ path: info.outputPath('library-drag-2048.png') });
 });
+
+test('Library keyboard-cleared search matches clear-button geometry', async ({
+  page,
+}, info) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  for (const width of [2048, 390, 960, 2048]) {
+    await page.setViewportSize({ width, height: 1128 });
+    await openLibrary(page);
+    await library(page)
+      .locator(
+        '[data-segmented-control-id="editor-library-mode"] [data-segment-value="documents"]',
+      )
+      .click();
+    const editor = library(page).getByRole('searchbox');
+    const field = library(page).locator('[data-component="search-field"]');
+    await editor.fill('Text');
+    await library(page)
+      .getByRole('button', { name: 'Clear Filter', exact: true })
+      .click();
+    const clearBox = (await field.boundingBox())!;
+    await editor.fill('Text');
+    await editor.press('ControlOrMeta+A');
+    await editor.press('Delete');
+    await expect(editor).toHaveText('');
+    await expect(field).toHaveAttribute('data-placeholder-visible', 'true');
+    await expect(
+      library(page).getByRole('button', { name: 'Clear Filter', exact: true }),
+    ).toHaveCount(0);
+    await expect(editor).toBeFocused();
+    const deletedBox = (await field.boundingBox())!;
+    expect(deletedBox.height).toBeCloseTo(clearBox.height, 0);
+    expect(deletedBox.width).toBeCloseTo(clearBox.width, 0);
+    await expect(editor.locator('br')).toHaveCount(0);
+    if (width === 2048 || width === 390)
+      await library(page).screenshot({
+        path: info.outputPath(`KF-0XRNXD-keyboard-clear-${width}.png`),
+        animations: 'disabled',
+      });
+  }
+});

@@ -8,6 +8,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Fixed
 
+- **Library keyboard-cleared search (KF-0XRNXD).** Select All then Delete now restores the same empty editor, placeholder, and field height as the clear button by installing shared SearchField wiring on the Library surface.
+
 - **Library column clipping (KF-7HP7R9).** Document columns now clip at the Library surface edges while retaining row content insets. Public ColumnTrack/ColumnExplorer `inset` and PinnablePopoverSurface `bodyInset` options configure that boundary.
 
 - **Library column headings (KF-MGAP67).** Each document column now carries its own quiet parent-folder heading; the shared path label and Back control are removed.

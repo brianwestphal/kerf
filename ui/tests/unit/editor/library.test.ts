@@ -51,6 +51,43 @@ const shortcut = (init: KeyboardEventInit) => {
 };
 
 describe('the component Library', () => {
+  it('normalizes a native delete-to-empty search before updating its controlled query', () => {
+    const { library } = open();
+    library.showPopover();
+    const filter = library.querySelector<HTMLElement>(
+      '[data-editor-palette-filter]',
+    )!;
+    const field = filter.closest<HTMLElement>(
+      '[data-component="search-field"]',
+    )!;
+    filter.innerHTML = '<span data-search-field-text>Text</span>';
+    filter.dispatchEvent(
+      new InputEvent('input', {
+        bubbles: true,
+        inputType: 'insertText',
+        data: 'Text',
+      }),
+    );
+    expect(field.dataset.placeholderVisible).toBe('false');
+    filter.innerHTML = '<br>';
+    filter.focus();
+    filter.dispatchEvent(
+      new InputEvent('input', {
+        bubbles: true,
+        inputType: 'deleteContentForward',
+      }),
+    );
+    expect(filter.querySelector('br')).toBeNull();
+    expect(
+      filter.querySelector('[data-search-field-text][data-empty="true"]'),
+    ).not.toBeNull();
+    expect(field.dataset.placeholderVisible).toBe('true');
+    expect(
+      library.querySelector('[data-action="editor-clear-palette-filter"]'),
+    ).toBeNull();
+    expect(document.activeElement).toBe(filter);
+  });
+
   it('opens from the Preview toolbar’s Library button', () => {
     const { root, library, button } = open();
     expect(button.getAttribute('popovertarget')).toBe('editor-library');

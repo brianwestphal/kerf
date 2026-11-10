@@ -717,7 +717,7 @@ children. Quiet parent-folder headings move with each column (`rootHeading="Proj
 files whose path holds every word of the query, retaining their ancestor
 folders, or all files when "Documents" holds the query. Without storage or
 `list()`, while listing loads, or after a listing failure, the mode shows its
-empty state.
+empty state. The Library installs `wireSearchFields` on its own surface so Select All followed by Delete restores canonical empty text, placeholder, and field sizing just like the clear button (KF-0XRNXD).
 
 - **A click inserts it.** A component's click shows its documentation; a
   document has none, so its click reads the document (`storage.read`) and
