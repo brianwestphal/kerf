@@ -1,12 +1,12 @@
 {
   "schemaVersion": 1,
-  "description": "gzip byte budgets for the @kerfjs/ui/view runtime entries, measured by scripts/check-view-bundle.mjs with kerfjs external. Lower a budget with --update-budget when an entry shrinks.",
+  "description": "gzip byte budgets for the @kerfjs/ui/view runtime entries, measured by scripts/check-view-bundle.mjs with kerfjs external. Lower a budget with --update-budget when an entry shrinks. KF-26P9FT/KF-MB5FFZ: browser-safe TypeScript metadata containment and module-reference validation add 1114/910 bytes on Node 22; the project compiler remains Node-only.",
   "entries": {
-    "interpretView": 13300,
-    "validateView": 9700
+    "interpretView": 14400,
+    "validateView": 10600
   },
   "measured": {
-    "interpretView": 13210,
-    "validateView": 9583
+    "interpretView": 14324,
+    "validateView": 10493
   }
 }
