@@ -3,12 +3,12 @@
 The intake requested decomposition before implementation. Annotation #1 is
 covered by four linked issues:
 
-| Follow-up | Requested change |
-| --- | --- |
-| KF-26P9FT | Resolve types from the component's owning project. |
+| Follow-up | Requested change                                                                       |
+| --------- | -------------------------------------------------------------------------------------- |
+| KF-26P9FT | Resolve types from the component's owning project.                                     |
 | KF-B8YSHV | Show compact name/type fields; edit complex types in a dialog with navstack traversal. |
-| KF-MB5FFZ | Accept TypeScript expressions with near-real-time language-service validation. |
-| KF-AFW3ZA | Add autocomplete and automatic type formatting. |
+| KF-MB5FFZ | Accept TypeScript expressions with near-real-time language-service validation.         |
+| KF-AFW3ZA | Add autocomplete and automatic type formatting.                                        |
 
 All four retain annotation #1's comment intent, rectangle
 `x=0 y=3778 w=1305 h=904` (0–10000 coordinates), and the original
