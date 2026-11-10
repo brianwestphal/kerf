@@ -4,6 +4,10 @@ name: Bun candidate qualification
 on:
   workflow_dispatch:
     inputs:
+      source-sha:
+        description: Exact 40-character source SHA for the isolated npm performance control
+        type: string
+        required: false
       scope:
         description: Qualification scope (full retains every canonical lane)
         type: choice
@@ -11,6 +15,10 @@ on:
           - full
           - release-artifacts
           - browser-apt
+          - pure-wasi
+          - local-peer
+          - stable-plan
+          - library-performance
         default: full
 permissions:
   contents: read
@@ -40,7 +48,7 @@ jobs:
           name: candidate-${{ github.job }}-${{ strategy.job-index }}-${{ github.sha }}
           path: ${{ env.BUN_QUALIFICATION_EVIDENCE }}
           if-no-files-found: warn
-    if: ${{ inputs.scope != 'release-artifacts' && inputs.scope != 'browser-apt' }}
+    if: ${{ inputs.scope == 'full' }}
   lint:
     runs-on: ubuntu-24.04
     steps:
@@ -61,7 +69,7 @@ jobs:
           name: candidate-${{ github.job }}-${{ strategy.job-index }}-${{ github.sha }}
           path: ${{ env.BUN_QUALIFICATION_EVIDENCE }}
           if-no-files-found: warn
-    if: ${{ inputs.scope != 'release-artifacts' && inputs.scope != 'browser-apt' }}
+    if: ${{ inputs.scope == 'full' }}
   typecheck:
     runs-on: ubuntu-24.04
     steps:
@@ -82,7 +90,7 @@ jobs:
           name: candidate-${{ github.job }}-${{ strategy.job-index }}-${{ github.sha }}
           path: ${{ env.BUN_QUALIFICATION_EVIDENCE }}
           if-no-files-found: warn
-    if: ${{ inputs.scope != 'release-artifacts' && inputs.scope != 'browser-apt' }}
+    if: ${{ inputs.scope == 'full' }}
   build:
     runs-on: ubuntu-24.04
     steps:
@@ -106,7 +114,7 @@ jobs:
           name: candidate-${{ github.job }}-${{ strategy.job-index }}-${{ github.sha }}
           path: ${{ env.BUN_QUALIFICATION_EVIDENCE }}
           if-no-files-found: warn
-    if: ${{ inputs.scope != 'release-artifacts' && inputs.scope != 'browser-apt' }}
+    if: ${{ inputs.scope == 'full' }}
   node-floor:
     runs-on: ubuntu-24.04
     steps:
@@ -158,7 +166,7 @@ jobs:
           name: candidate-${{ github.job }}-${{ strategy.job-index }}-${{ github.sha }}
           path: ${{ env.BUN_QUALIFICATION_EVIDENCE }}
           if-no-files-found: warn
-    if: ${{ inputs.scope != 'release-artifacts' && inputs.scope != 'browser-apt' }}
+    if: ${{ inputs.scope == 'full' }}
   gates:
     runs-on: ubuntu-24.04
     steps:
@@ -183,7 +191,7 @@ jobs:
           name: candidate-${{ github.job }}-${{ strategy.job-index }}-${{ github.sha }}
           path: ${{ env.BUN_QUALIFICATION_EVIDENCE }}
           if-no-files-found: warn
-    if: ${{ inputs.scope != 'release-artifacts' && inputs.scope != 'browser-apt' }}
+    if: ${{ inputs.scope == 'full' }}
   site:
     runs-on: ubuntu-24.04
     steps:
@@ -218,7 +226,7 @@ jobs:
           name: candidate-${{ github.job }}-${{ strategy.job-index }}-${{ github.sha }}
           path: ${{ env.BUN_QUALIFICATION_EVIDENCE }}
           if-no-files-found: warn
-    if: ${{ inputs.scope != 'release-artifacts' && inputs.scope != 'browser-apt' }}
+    if: ${{ inputs.scope == 'full' }}
   eslint-plugin:
     runs-on: ubuntu-24.04
     strategy:
@@ -252,7 +260,7 @@ jobs:
           name: candidate-${{ github.job }}-${{ strategy.job-index }}-${{ github.sha }}
           path: ${{ env.BUN_QUALIFICATION_EVIDENCE }}
           if-no-files-found: warn
-    if: ${{ inputs.scope != 'release-artifacts' && inputs.scope != 'browser-apt' }}
+    if: ${{ inputs.scope == 'full' }}
   create-kerf-component:
     runs-on: ubuntu-24.04
     defaults:
@@ -278,7 +286,7 @@ jobs:
           name: candidate-${{ github.job }}-${{ strategy.job-index }}-${{ github.sha }}
           path: ${{ env.BUN_QUALIFICATION_EVIDENCE }}
           if-no-files-found: warn
-    if: ${{ inputs.scope != 'release-artifacts' && inputs.scope != 'browser-apt' }}
+    if: ${{ inputs.scope == 'full' }}
   ui:
     runs-on: ubuntu-24.04
     defaults:
@@ -324,7 +332,7 @@ jobs:
           name: candidate-${{ github.job }}-${{ strategy.job-index }}-${{ github.sha }}
           path: ${{ env.BUN_QUALIFICATION_EVIDENCE }}
           if-no-files-found: warn
-    if: ${{ inputs.scope != 'release-artifacts' && inputs.scope != 'browser-apt' }}
+    if: ${{ inputs.scope == 'full' }}
   editor:
     runs-on: ubuntu-24.04
     defaults:
@@ -358,7 +366,7 @@ jobs:
           name: candidate-${{ github.job }}-${{ strategy.job-index }}-${{ github.sha }}
           path: ${{ env.BUN_QUALIFICATION_EVIDENCE }}
           if-no-files-found: warn
-    if: ${{ inputs.scope != 'release-artifacts' && inputs.scope != 'browser-apt' }}
+    if: ${{ inputs.scope == 'full' }}
   editor-browser:
     runs-on: ubuntu-24.04
     strategy:
@@ -422,7 +430,7 @@ jobs:
           name: candidate-${{ github.job }}-${{ strategy.job-index }}-${{ github.sha }}
           path: ${{ env.BUN_QUALIFICATION_EVIDENCE }}
           if-no-files-found: warn
-    if: ${{ inputs.scope != 'release-artifacts' && inputs.scope != 'browser-apt' }}
+    if: ${{ inputs.scope == 'full' }}
   ui-browser:
     runs-on: ubuntu-24.04
     strategy:
@@ -489,7 +497,7 @@ jobs:
           name: candidate-${{ github.job }}-${{ strategy.job-index }}-${{ github.sha }}
           path: ${{ env.BUN_QUALIFICATION_EVIDENCE }}
           if-no-files-found: warn
-    if: ${{ inputs.scope != 'release-artifacts' && inputs.scope != 'browser-apt' }}
+    if: ${{ inputs.scope == 'full' }}
   ui-webawesome-latest:
     runs-on: ubuntu-24.04
     defaults:
@@ -547,7 +555,7 @@ jobs:
           name: candidate-${{ github.job }}-${{ strategy.job-index }}-${{ github.sha }}
           path: ${{ env.BUN_QUALIFICATION_EVIDENCE }}
           if-no-files-found: warn
-    if: ${{ inputs.scope != 'release-artifacts' && inputs.scope != 'browser-apt' }}
+    if: ${{ inputs.scope == 'full' }}
   design-templates:
     runs-on: macos-latest
     defaults:
@@ -585,7 +593,7 @@ jobs:
           name: candidate-${{ github.job }}-${{ strategy.job-index }}-${{ github.sha }}
           path: ${{ env.BUN_QUALIFICATION_EVIDENCE }}
           if-no-files-found: warn
-    if: ${{ inputs.scope != 'release-artifacts' && inputs.scope != 'browser-apt' }}
+    if: ${{ inputs.scope == 'full' }}
   browser:
     runs-on: ubuntu-24.04
     steps:
@@ -620,7 +628,7 @@ jobs:
           name: candidate-${{ github.job }}-${{ strategy.job-index }}-${{ github.sha }}
           path: ${{ env.BUN_QUALIFICATION_EVIDENCE }}
           if-no-files-found: warn
-    if: ${{ inputs.scope != 'release-artifacts' && inputs.scope != 'browser-apt' }}
+    if: ${{ inputs.scope == 'full' }}
   seventh-tree:
     runs-on: ubuntu-24.04
     steps:
@@ -637,7 +645,7 @@ jobs:
         with:
           name: candidate-seventh-tree-${{ github.sha }}
           path: ${{ env.BUN_QUALIFICATION_EVIDENCE }}
-    if: ${{ inputs.scope != 'release-artifacts' && inputs.scope != 'browser-apt' }}
+    if: ${{ inputs.scope == 'full' }}
   release-artifacts:
     runs-on: ubuntu-24.04
     steps:
@@ -656,10 +664,10 @@ jobs:
         with:
           name: candidate-release-artifacts-${{ github.sha }}
           path: ${{ env.BUN_QUALIFICATION_EVIDENCE }}
-    if: ${{ inputs.scope != 'browser-apt' }}
+    if: ${{ inputs.scope == 'full' || inputs.scope == 'release-artifacts' }}
   wasi-resolution:
     uses: ./.github/workflows/bun-wasi-resolution.yml
-    if: ${{ inputs.scope != 'release-artifacts' && inputs.scope != 'browser-apt' }}
+    if: ${{ inputs.scope == 'full' }}
   browser-apt:
     if: ${{ inputs.scope == 'browser-apt' }}
     runs-on: ubuntu-24.04
@@ -700,3 +708,107 @@ jobs:
         with:
           name: browser-apt-${{ github.sha }}
           path: ${{ env.BUN_QUALIFICATION_EVIDENCE }}
+  pure-wasi:
+    if: ${{ inputs.scope == 'pure-wasi' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 22.23.4
+      - run: npm install --global bun@1.4.4
+      - name: Assert and record the diagnostic toolchain
+        run: |-
+          mkdir -p "$BUN_QUALIFICATION_EVIDENCE"
+          node --input-type=module <<'JS'
+          import assert from 'node:assert/strict';
+          import { execFileSync } from 'node:child_process';
+          import { writeFileSync } from 'node:fs';
+          const run = (file, args) => execFileSync(file, args, { encoding: 'utf8' }).trim();
+          const toolchain = { node: process.version, npm: run('npm', ['--version']), bun: run('bun', ['--version']), bunRevision: run('bun', ['--revision']), sourceSha: run('git', ['rev-parse', 'HEAD']), platform: process.platform, arch: process.arch };
+          writeFileSync(process.env.BUN_QUALIFICATION_EVIDENCE + '/toolchain.json', JSON.stringify(toolchain, null, 2));
+          assert.equal(toolchain.node, 'v22.23.4');
+          assert.equal(toolchain.npm, '10.9.9');
+          assert.equal(toolchain.bun, '1.4.4');
+          assert.equal(toolchain.sourceSha, process.env.GITHUB_SHA);
+          assert.equal(toolchain.platform, 'linux');
+          assert.equal(toolchain.arch, 'x64');
+          JS
+      - run: node scripts/bun-pure-wasi-probe.mjs .
+      - if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: pure-wasi-${{ github.sha }}
+          path: ${{ env.BUN_QUALIFICATION_EVIDENCE }}
+  local-peer:
+    if: ${{ inputs.scope == 'local-peer' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 22.23.4
+      - run: npm install --global bun@1.4.4
+      - name: Assert and record the diagnostic toolchain
+        run: |-
+          mkdir -p "$BUN_QUALIFICATION_EVIDENCE"
+          node --input-type=module <<'JS'
+          import assert from 'node:assert/strict';
+          import { execFileSync } from 'node:child_process';
+          import { writeFileSync } from 'node:fs';
+          const run = (file, args) => execFileSync(file, args, { encoding: 'utf8' }).trim();
+          const toolchain = { node: process.version, npm: run('npm', ['--version']), bun: run('bun', ['--version']), bunRevision: run('bun', ['--revision']), sourceSha: run('git', ['rev-parse', 'HEAD']), platform: process.platform, arch: process.arch };
+          writeFileSync(process.env.BUN_QUALIFICATION_EVIDENCE + '/toolchain.json', JSON.stringify(toolchain, null, 2));
+          assert.equal(toolchain.node, 'v22.23.4');
+          assert.equal(toolchain.npm, '10.9.9');
+          assert.equal(toolchain.bun, '1.4.4');
+          assert.equal(toolchain.sourceSha, process.env.GITHUB_SHA);
+          assert.equal(toolchain.platform, 'linux');
+          assert.equal(toolchain.arch, 'x64');
+          JS
+      - run: node scripts/bun-local-peer-probe.mjs .
+      - if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: local-peer-${{ github.sha }}
+          path: ${{ env.BUN_QUALIFICATION_EVIDENCE }}
+  stable-plan:
+    if: ${{ inputs.scope == 'stable-plan' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 22.23.4
+      - run: npm install --global bun@1.4.4
+      - name: Assert and record the diagnostic toolchain
+        run: |-
+          mkdir -p "$BUN_QUALIFICATION_EVIDENCE"
+          node --input-type=module <<'JS'
+          import assert from 'node:assert/strict';
+          import { execFileSync } from 'node:child_process';
+          import { writeFileSync } from 'node:fs';
+          const run = (file, args) => execFileSync(file, args, { encoding: 'utf8' }).trim();
+          const toolchain = { node: process.version, npm: run('npm', ['--version']), bun: run('bun', ['--version']), bunRevision: run('bun', ['--revision']), sourceSha: run('git', ['rev-parse', 'HEAD']), platform: process.platform, arch: process.arch };
+          writeFileSync(process.env.BUN_QUALIFICATION_EVIDENCE + '/toolchain.json', JSON.stringify(toolchain, null, 2));
+          assert.equal(toolchain.node, 'v22.23.4');
+          assert.equal(toolchain.npm, '10.9.9');
+          assert.equal(toolchain.bun, '1.4.4');
+          assert.equal(toolchain.sourceSha, process.env.GITHUB_SHA);
+          assert.equal(toolchain.platform, 'linux');
+          assert.equal(toolchain.arch, 'x64');
+          JS
+      - run: node scripts/stable-release-plan-probe.mjs .
+      - if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: stable-plan-${{ github.sha }}
+          path: ${{ env.BUN_QUALIFICATION_EVIDENCE }}
+  library-performance:
+    if: ${{ inputs.scope == 'library-performance' }}
+    uses: ./.github/workflows/library-performance.yml
+    with:
+      source-sha: ${{ inputs.source-sha }}

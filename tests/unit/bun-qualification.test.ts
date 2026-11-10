@@ -46,7 +46,15 @@ describe(
       const candidate = candidateFrom(source);
       expect(candidate.on.workflow_dispatch.inputs.scope).toMatchObject({
         type: 'choice',
-        options: ['full', 'release-artifacts', 'browser-apt'],
+        options: [
+          'full',
+          'release-artifacts',
+          'browser-apt',
+          'pure-wasi',
+          'local-peer',
+          'stable-plan',
+          'library-performance',
+        ],
         default: 'full',
       });
       expect(candidate.permissions).toEqual({ contents: 'read' });
@@ -67,15 +75,24 @@ describe(
     it('limits release-only dispatch without dropping the default full graph', () => {
       const candidate = candidateFrom(source);
       const release = candidate.jobs['release-artifacts'];
-      expect(release.if).toBe("${{ inputs.scope != 'browser-apt' }}");
+      expect(release.if).toBe(
+        "${{ inputs.scope == 'full' || inputs.scope == 'release-artifacts' }}",
+      );
       expect(release.needs).toBeUndefined();
       for (const [name, job] of Object.entries(candidate.jobs) as Array<
         [string, { if?: string }]
       >) {
-        if (name !== 'release-artifacts' && name !== 'browser-apt')
-          expect(job.if).toBe(
-            "${{ inputs.scope != 'release-artifacts' && inputs.scope != 'browser-apt' }}",
-          );
+        if (
+          ![
+            'release-artifacts',
+            'browser-apt',
+            'pure-wasi',
+            'local-peer',
+            'stable-plan',
+            'library-performance',
+          ].includes(name)
+        )
+          expect(job.if).toBe("${{ inputs.scope == 'full' }}");
       }
       expect(
         release.steps
@@ -110,7 +127,7 @@ describe(
             ? guard.slice(3, -2).trim()
             : String(guard);
         expect(candidate.jobs.test.if).toBe(
-          `\${{ (${prior}) && inputs.scope != 'release-artifacts' && inputs.scope != 'browser-apt' }}`,
+          `\${{ (${prior}) && (inputs.scope == 'full') }}`,
         );
       }
     });
@@ -140,6 +157,62 @@ describe(
       expect(launch.run).toContain('chromium, firefox, webkit');
       expect(launch.run).toContain('await browser.close()');
       expect(launch['timeout-minutes']).toBe(3);
+    });
+
+    it('isolates exact-toolchain diagnostics without installing repository dependencies', () => {
+      const candidate = candidateFrom(source);
+      for (const name of ['pure-wasi', 'local-peer', 'stable-plan']) {
+        const job = candidate.jobs[name];
+        expect(job.if).toBe(`\${{ inputs.scope == '${name}' }}`);
+        expect(job.needs).toBeUndefined();
+        expect(job['timeout-minutes']).toBe(40);
+        const commands = job.steps
+          .map((step: { run?: string }) => step.run ?? '')
+          .join('\n');
+        expect(commands).toContain("assert.equal(toolchain.node, 'v22.23.4')");
+        expect(commands).toContain("assert.equal(toolchain.npm, '10.9.9')");
+        expect(commands).toContain("assert.equal(toolchain.bun, '1.4.4')");
+        expect(commands).toContain(
+          'assert.equal(toolchain.sourceSha, process.env.GITHUB_SHA)',
+        );
+        expect(commands).not.toContain('bun-candidate-install');
+        expect(commands).not.toContain('npm ci');
+        expect(job.steps.at(-1).if).toBe('always()');
+      }
+      expect(candidate.jobs['library-performance']).toMatchObject({
+        if: "${{ inputs.scope == 'library-performance' }}",
+        uses: './.github/workflows/library-performance.yml',
+        with: { 'source-sha': '${{ inputs.source-sha }}' },
+      });
+    });
+
+    it('keeps the npm performance control isolated, exact-revision and single-worker', () => {
+      const workflow = YAML.parse(
+        readFileSync('.github/workflows/library-performance.yml', 'utf8'),
+      );
+      expect(workflow.permissions).toEqual({ contents: 'read' });
+      expect(workflow.on.workflow_call.inputs['source-sha'].required).toBe(
+        true,
+      );
+      const job = workflow.jobs['library-performance'];
+      expect(job.strategy.matrix.browser).toEqual(['firefox', 'webkit']);
+      expect(job.strategy['fail-fast']).toBe(false);
+      expect(job.steps[0].run).toContain('^[0-9a-f]{40}$');
+      expect(job.steps[1].with.ref).toBe('${{ inputs.source-sha }}');
+      const commands = job.steps
+        .map((step: { run?: string }) => step.run ?? '')
+        .join('\n');
+      expect(commands).toContain('npm ci');
+      expect(commands).toContain('npm --prefix ui ci');
+      expect(commands).toContain('npm --prefix editor ci');
+      expect(commands).toContain('--workers=1 --retries=0');
+      expect(commands).toContain(
+        "'Library expand/collapse remains responsive with 5000 project files'",
+      );
+      expect(commands).toContain("version, '1.64.1'");
+      expect(job.steps.at(-1).if).toBe('always()');
+      expect(job.steps.at(-1).with.path).toContain('editor/test-results');
+      expect(YAML.stringify(workflow)).not.toContain('id-token');
     });
 
     it('records dependency-variation trees before their tests can fail', () => {

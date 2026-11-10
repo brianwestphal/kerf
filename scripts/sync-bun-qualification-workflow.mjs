@@ -192,12 +192,72 @@ JS`,
       },
     ],
   };
+  for (const [scope, script] of [
+    ['pure-wasi', 'bun-pure-wasi-probe.mjs'],
+    ['local-peer', 'bun-local-peer-probe.mjs'],
+    ['stable-plan', 'stable-release-plan-probe.mjs'],
+  ]) {
+    jobs[scope] = {
+      if: `\${{ inputs.scope == '${scope}' }}`,
+      'runs-on': 'ubuntu-24.04',
+      'timeout-minutes': 40,
+      steps: [
+        { uses: canonical.jobs.test.steps[0].uses },
+        {
+          uses: canonical.jobs.test.steps[1].uses,
+          with: { 'node-version': '22.23.4' },
+        },
+        { run: 'npm install --global bun@1.4.4' },
+        {
+          name: 'Assert and record the diagnostic toolchain',
+          run: `mkdir -p "$BUN_QUALIFICATION_EVIDENCE"
+node --input-type=module <<'JS'
+import assert from 'node:assert/strict';
+import { execFileSync } from 'node:child_process';
+import { writeFileSync } from 'node:fs';
+const run = (file, args) => execFileSync(file, args, { encoding: 'utf8' }).trim();
+const toolchain = { node: process.version, npm: run('npm', ['--version']), bun: run('bun', ['--version']), bunRevision: run('bun', ['--revision']), sourceSha: run('git', ['rev-parse', 'HEAD']), platform: process.platform, arch: process.arch };
+writeFileSync(process.env.BUN_QUALIFICATION_EVIDENCE + '/toolchain.json', JSON.stringify(toolchain, null, 2));
+assert.equal(toolchain.node, 'v22.23.4');
+assert.equal(toolchain.npm, '10.9.9');
+assert.equal(toolchain.bun, '1.4.4');
+assert.equal(toolchain.sourceSha, process.env.GITHUB_SHA);
+assert.equal(toolchain.platform, 'linux');
+assert.equal(toolchain.arch, 'x64');
+JS`,
+        },
+        { run: `node scripts/${script} .` },
+        {
+          if: 'always()',
+          uses: upload,
+          with: {
+            name: `${scope}-\${{ github.sha }}`,
+            path: '${{ env.BUN_QUALIFICATION_EVIDENCE }}',
+          },
+        },
+      ],
+    };
+  }
+  jobs['library-performance'] = {
+    if: "${{ inputs.scope == 'library-performance' }}",
+    uses: './.github/workflows/library-performance.yml',
+    with: { 'source-sha': '${{ inputs.source-sha }}' },
+  };
   for (const [name, job] of Object.entries(jobs)) {
-    if (name === 'browser-apt') continue;
+    if (
+      [
+        'browser-apt',
+        'pure-wasi',
+        'local-peer',
+        'stable-plan',
+        'library-performance',
+      ].includes(name)
+    )
+      continue;
     const scope =
       name === 'release-artifacts'
-        ? "inputs.scope != 'browser-apt'"
-        : "inputs.scope != 'release-artifacts' && inputs.scope != 'browser-apt'";
+        ? "inputs.scope == 'full' || inputs.scope == 'release-artifacts'"
+        : "inputs.scope == 'full'";
     let prior = job.if;
     if (typeof prior === 'string') {
       prior = prior.trim();
@@ -207,18 +267,32 @@ JS`,
     job.if =
       prior === undefined
         ? `\${{ ${scope} }}`
-        : `\${{ (${prior}) && ${scope} }}`;
+        : `\${{ (${prior}) && (${scope}) }}`;
   }
   return {
     name: 'Bun candidate qualification',
     on: {
       workflow_dispatch: {
         inputs: {
+          'source-sha': {
+            description:
+              'Exact 40-character source SHA for the isolated npm performance control',
+            type: 'string',
+            required: false,
+          },
           scope: {
             description:
               'Qualification scope (full retains every canonical lane)',
             type: 'choice',
-            options: ['full', 'release-artifacts', 'browser-apt'],
+            options: [
+              'full',
+              'release-artifacts',
+              'browser-apt',
+              'pure-wasi',
+              'local-peer',
+              'stable-plan',
+              'library-performance',
+            ],
             default: 'full',
           },
         },

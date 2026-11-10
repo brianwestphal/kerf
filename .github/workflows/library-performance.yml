@@ -1,0 +1,79 @@
+# Explicit npm diagnostic control; never part of installer adoption qualification.
+name: Isolated Library performance diagnostic
+on:
+  workflow_call:
+    inputs:
+      source-sha:
+        description: Exact baseline or repair source commit
+        required: true
+        type: string
+permissions:
+  contents: read
+jobs:
+  library-performance:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        browser: [firefox, webkit]
+    steps:
+      - name: Validate the exact source revision
+        env:
+          SOURCE_SHA: ${{ inputs.source-sha }}
+        run: '[[ "$SOURCE_SHA" =~ ^[0-9a-f]{40}$ ]]'
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ inputs.source-sha }}
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: '22.23.4'
+      - name: Record exact source, toolchain and CPU environment
+        env:
+          SOURCE_SHA: ${{ inputs.source-sha }}
+        run: |
+          mkdir -p /tmp/kerf-library-performance
+          node --input-type=module <<'JS' > /tmp/kerf-library-performance/environment.json
+          import assert from 'node:assert/strict';
+          import { execFileSync } from 'node:child_process';
+          import { cpus, availableParallelism, loadavg } from 'node:os';
+          const run = (file, args) => execFileSync(file, args, { encoding: 'utf8' }).trim();
+          const result = { sourceSha: run('git', ['rev-parse', 'HEAD']), workflowSha: process.env.GITHUB_SHA, node: process.version, npm: run('npm', ['--version']), cpus: cpus(), availableParallelism: availableParallelism(), loadavg: loadavg(), workers: 1, retries: 0 };
+          console.log(JSON.stringify(result, null, 2));
+          assert.equal(result.sourceSha, process.env.SOURCE_SHA);
+          assert.equal(result.node, 'v22.23.4');
+          assert.equal(result.npm, '10.9.9');
+          JS
+      - run: npm ci
+      - run: npm run build
+      - run: npm --prefix ui ci
+      - run: npm --prefix ui run build
+      - run: npm --prefix editor ci
+      - name: Assert the exact browser toolchain
+        working-directory: editor
+        run: node --input-type=module -e "import assert from 'node:assert/strict'; import { createRequire } from 'node:module'; const require = createRequire(import.meta.url); for (const name of ['@playwright/test', 'playwright', 'playwright-core']) assert.equal(require(name + '/package.json').version, '1.64.1');"
+      - name: Configure HTTPS Ubuntu dependencies
+        timeout-minutes: 2
+        run: sudo "$(command -v node)" "$GITHUB_WORKSPACE/scripts/configure-browser-apt.mjs"
+      - name: Install the selected browser
+        timeout-minutes: 15
+        working-directory: editor
+        env:
+          BROWSER: ${{ matrix.browser }}
+        run: npx --no-install playwright install --with-deps "$BROWSER"
+      - name: Record the actual Playwright dependency tree
+        run: npm --prefix editor ls @playwright/test playwright playwright-core --all > /tmp/kerf-library-performance/playwright-tree.txt
+      - name: Measure the unchanged 1000ms budget with one worker and no retries
+        working-directory: editor
+        env:
+          BROWSER: ${{ matrix.browser }}
+        run: npx --no-install playwright test tests/browser/library-performance.spec.ts --grep 'Library expand/collapse remains responsive with 5000 project files' --project="$BROWSER" --workers=1 --retries=0
+      - if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: library-performance-${{ matrix.browser }}-${{ inputs.source-sha }}
+          path: |
+            /tmp/kerf-library-performance
+            editor/test-results
+            editor/playwright-report
+          if-no-files-found: warn
