@@ -1134,7 +1134,6 @@ Custom storage hosts can supply `createEditor({ typeService })`; the default
 `devServerStorage()` uses the project's header-protected type endpoint. The
 TypeScript compiler stays on the Node server and is absent from browser bundles.
 
-
 `params` maps a camelCase name to `{ type, default?, optional?, description? }`.
 `type` is a descriptor in the component-props type grammar (`string`,
 `number`, `boolean`, `enum`, `content`, `array`, `object`). A param with no
