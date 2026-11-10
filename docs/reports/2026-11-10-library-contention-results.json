@@ -1,0 +1,1561 @@
+{
+  "run": "https://github.com/brianwestphal/kerf/actions/runs/42804701776",
+  "candidate": "cc06dcc779c596f0bd1e012adc91504886275bb8",
+  "harness": "55952e2434d4cf564a6de6b2838142e77922208a",
+  "engines": {
+    "chromium": {
+      "zipSha256": "07dfca44f98757fb9cb60fb2863b61f67050818b23a70255370a4460c20132da",
+      "summarySha256": "750428685e87ea2b5a013ba27c2ef304da56356403568ca0f750bb9115ef19bc",
+      "node": "v22.23.4",
+      "npm": "10.9.9",
+      "playwright": "1.64.1",
+      "browserVersion": "156.0.8078.4",
+      "browserExecutable": "<browser-cache>/chromium-1248/chrome-linux64/chrome",
+      "controllerSha256": "dd93f971d3802267e32e83b3fdad7abfdbf6831090556c72a2c950398a92ab9a",
+      "originalSpecSha256": "fd826911040147a84545c119b5c231f4fe502d3a86fce8f48843eb65f1cfcb42",
+      "instrumentedSpecSha256": "6b66aafe022b2a610baab81097b8ed85cf7ef315fb61354941d9ca36c3ae83e8",
+      "inputs": {
+        "package.json": "acca6cd5646cf25666ec561d35585f7f89f7d827e554099439526475718144c9",
+        "package-lock.json": "5e833638ed0529875f869a6499860107fd3158cfcee2a93a0247f97701ee39c8",
+        "ui/package.json": "767314f03de9a78ef2e9d9a9afad4b6bbabbbeb2504287edd58b6b96a7d04c07",
+        "ui/package-lock.json": "6f76f128bc62c9362ae8b64720a6ad0876f38752dce486004c0b296bf4ccb346",
+        "editor/package.json": "888e1b552cb8a7643c0e7b7a91877d31f9348503a43118386940fab0c2aa538d",
+        "editor/package-lock.json": "b5739ec99b535ab5d53b36e5cb626675d1a9976a1e5dad723217c882ba5172fe"
+      },
+      "failedCells": [],
+      "cpuModels": ["AMD EPYC 7763 64-Core Processor"],
+      "availableParallelism": 4,
+      "cpuCount": 4,
+      "cells": [
+        {
+          "name": "single-trace-on",
+          "workers": 1,
+          "trace": "on",
+          "execution": {
+            "status": 0,
+            "signal": null,
+            "error": null
+          },
+          "taskMax": 351.30000000001746,
+          "visibleMax": 351.80000000001746,
+          "measurements": [
+            {
+              "startedAt": 1794309160728.2,
+              "taskMs": 351.30000000001746,
+              "visibleFrameMs": 351.80000000001746,
+              "added": 0,
+              "removed": 25,
+              "stableBranch": true,
+              "taskBudgetPassed": true,
+              "visibleBudgetPassed": true,
+              "competingTests": []
+            },
+            {
+              "startedAt": 1794309162790.5,
+              "taskMs": 349.8999999999942,
+              "visibleFrameMs": 350.5,
+              "added": 25,
+              "removed": 0,
+              "stableBranch": true,
+              "taskBudgetPassed": true,
+              "visibleBudgetPassed": true,
+              "competingTests": []
+            },
+            {
+              "startedAt": 1794309164802.8,
+              "taskMs": 348.1000000000058,
+              "visibleFrameMs": 348.5,
+              "added": 0,
+              "removed": 25,
+              "stableBranch": true,
+              "taskBudgetPassed": true,
+              "visibleBudgetPassed": true,
+              "competingTests": []
+            },
+            {
+              "startedAt": 1794309166792.2,
+              "taskMs": 349.5,
+              "visibleFrameMs": 350,
+              "added": 25,
+              "removed": 0,
+              "stableBranch": true,
+              "taskBudgetPassed": true,
+              "visibleBudgetPassed": true,
+              "competingTests": []
+            }
+          ],
+          "testCount": 1,
+          "testFailures": [],
+          "overlapValid": null,
+          "before": {
+            "at": "2026-11-10T11:12:28.147Z",
+            "uptime": 166.51,
+            "availableParallelism": 4,
+            "loadavg": [1.52, 0.6, 0.22],
+            "linuxCpuPressure": "some avg10=3.11 avg60=2.50 avg300=1.22 total=5400718\nfull avg10=0.00 avg60=0.00 avg300=0.00 total=0\n",
+            "aggregateCpuTimes": {
+              "user": 130210,
+              "nice": 2630,
+              "sys": 37740,
+              "idle": 470020,
+              "irq": 0
+            }
+          },
+          "after": {
+            "at": "2026-11-10T11:12:54.855Z",
+            "uptime": 193.21,
+            "availableParallelism": 4,
+            "loadavg": [1.4, 0.65, 0.25],
+            "linuxCpuPressure": "some avg10=1.98 avg60=2.80 avg300=1.42 total=6533301\nfull avg10=0.00 avg60=0.00 avg300=0.00 total=0\n",
+            "aggregateCpuTimes": {
+              "user": 170150,
+              "nice": 2630,
+              "sys": 42130,
+              "idle": 531270,
+              "irq": 0
+            }
+          }
+        },
+        {
+          "name": "three-trace-on",
+          "workers": 3,
+          "trace": "on",
+          "execution": {
+            "status": 0,
+            "signal": null,
+            "error": null
+          },
+          "taskMax": 690.3999999999942,
+          "visibleMax": 690.8999999999942,
+          "measurements": [
+            {
+              "startedAt": 1794309191365,
+              "taskMs": 690.3999999999942,
+              "visibleFrameMs": 690.8999999999942,
+              "added": 0,
+              "removed": 25,
+              "stableBranch": true,
+              "taskBudgetPassed": true,
+              "visibleBudgetPassed": true,
+              "competingTests": [
+                {
+                  "title": "Library shows a fixed-row divider only after results scroll",
+                  "file": "library.spec.ts",
+                  "status": "passed",
+                  "workerIndex": 1,
+                  "start": 1794309190598,
+                  "end": 1794309194417
+                },
+                {
+                  "title": "Library grid names truncate visibly without losing the full name",
+                  "file": "library.spec.ts",
+                  "status": "passed",
+                  "workerIndex": 2,
+                  "start": 1794309190935,
+                  "end": 1794309194300
+                }
+              ]
+            },
+            {
+              "startedAt": 1794309194944,
+              "taskMs": 630.6000000000058,
+              "visibleFrameMs": 631.1000000000058,
+              "added": 25,
+              "removed": 0,
+              "stableBranch": true,
+              "taskBudgetPassed": true,
+              "visibleBudgetPassed": true,
+              "competingTests": [
+                {
+                  "title": "Library resizing changes its default size without pinning",
+                  "file": "library.spec.ts",
+                  "status": "passed",
+                  "workerIndex": 2,
+                  "start": 1794309194447,
+                  "end": 1794309205492
+                },
+                {
+                  "title": "Library header drag follows pointer without repeated layout reads",
+                  "file": "library.spec.ts",
+                  "status": "passed",
+                  "workerIndex": 1,
+                  "start": 1794309194582,
+                  "end": 1794309196829
+                }
+              ]
+            },
+            {
+              "startedAt": 1794309198617.2002,
+              "taskMs": 605.2999999999884,
+              "visibleFrameMs": 606,
+              "added": 0,
+              "removed": 25,
+              "stableBranch": true,
+              "taskBudgetPassed": true,
+              "visibleBudgetPassed": true,
+              "competingTests": [
+                {
+                  "title": "Library resizing changes its default size without pinning",
+                  "file": "library.spec.ts",
+                  "status": "passed",
+                  "workerIndex": 2,
+                  "start": 1794309194447,
+                  "end": 1794309205492
+                },
+                {
+                  "title": "Library keyboard-cleared search matches clear-button geometry",
+                  "file": "library.spec.ts",
+                  "status": "passed",
+                  "workerIndex": 1,
+                  "start": 1794309196929,
+                  "end": 1794309204976
+                }
+              ]
+            },
+            {
+              "startedAt": 1794309201895.2002,
+              "taskMs": 648.5,
+              "visibleFrameMs": 650.2999999999884,
+              "added": 25,
+              "removed": 0,
+              "stableBranch": true,
+              "taskBudgetPassed": true,
+              "visibleBudgetPassed": true,
+              "competingTests": [
+                {
+                  "title": "Library resizing changes its default size without pinning",
+                  "file": "library.spec.ts",
+                  "status": "passed",
+                  "workerIndex": 2,
+                  "start": 1794309194447,
+                  "end": 1794309205492
+                },
+                {
+                  "title": "Library keyboard-cleared search matches clear-button geometry",
+                  "file": "library.spec.ts",
+                  "status": "passed",
+                  "workerIndex": 1,
+                  "start": 1794309196929,
+                  "end": 1794309204976
+                }
+              ]
+            }
+          ],
+          "testCount": 12,
+          "testFailures": [],
+          "overlapValid": true,
+          "before": {
+            "at": "2026-11-10T11:12:54.859Z",
+            "uptime": 193.22,
+            "availableParallelism": 4,
+            "loadavg": [1.4, 0.65, 0.25],
+            "linuxCpuPressure": "some avg10=1.98 avg60=2.80 avg300=1.42 total=6535246\nfull avg10=0.00 avg60=0.00 avg300=0.00 total=0\n",
+            "aggregateCpuTimes": {
+              "user": 170160,
+              "nice": 2630,
+              "sys": 42130,
+              "idle": 531290,
+              "irq": 0
+            }
+          },
+          "after": {
+            "at": "2026-11-10T11:13:48.174Z",
+            "uptime": 246.53,
+            "availableParallelism": 4,
+            "loadavg": [3.46, 1.39, 0.53],
+            "linuxCpuPressure": "some avg10=10.49 avg60=13.31 avg300=4.89 total=18793380\nfull avg10=0.00 avg60=0.00 avg300=0.00 total=0\n",
+            "aggregateCpuTimes": {
+              "user": 295710,
+              "nice": 2630,
+              "sys": 64460,
+              "idle": 594140,
+              "irq": 0
+            }
+          }
+        },
+        {
+          "name": "three-trace-off",
+          "workers": 3,
+          "trace": "off",
+          "execution": {
+            "status": 0,
+            "signal": null,
+            "error": null
+          },
+          "taskMax": 635,
+          "visibleMax": 635.7000000000116,
+          "measurements": [
+            {
+              "startedAt": 1794309238825.7,
+              "taskMs": 615.2000000000116,
+              "visibleFrameMs": 615.8000000000175,
+              "added": 0,
+              "removed": 25,
+              "stableBranch": true,
+              "taskBudgetPassed": true,
+              "visibleBudgetPassed": true,
+              "competingTests": [
+                {
+                  "title": "closes after a drop, stays open for Option, and stays pinned",
+                  "file": "library.spec.ts",
+                  "status": "passed",
+                  "workerIndex": 2,
+                  "start": 1794309235388,
+                  "end": 1794309239226
+                },
+                {
+                  "title": "Library results scroll to the visible bottom edge",
+                  "file": "library.spec.ts",
+                  "status": "passed",
+                  "workerIndex": 1,
+                  "start": 1794309237784,
+                  "end": 1794309239531
+                }
+              ]
+            },
+            {
+              "startedAt": 1794309239795.6,
+              "taskMs": 604.6999999999825,
+              "visibleFrameMs": 605.1999999999825,
+              "added": 25,
+              "removed": 0,
+              "stableBranch": true,
+              "taskBudgetPassed": true,
+              "visibleBudgetPassed": true,
+              "competingTests": [
+                {
+                  "title": "Library shows a fixed-row divider only after results scroll",
+                  "file": "library.spec.ts",
+                  "status": "passed",
+                  "workerIndex": 2,
+                  "start": 1794309239485,
+                  "end": 1794309241720
+                },
+                {
+                  "title": "Library grid names truncate visibly without losing the full name",
+                  "file": "library.spec.ts",
+                  "status": "passed",
+                  "workerIndex": 1,
+                  "start": 1794309239553,
+                  "end": 1794309241158
+                }
+              ]
+            },
+            {
+              "startedAt": 1794309240706.8,
+              "taskMs": 527.5,
+              "visibleFrameMs": 528,
+              "added": 0,
+              "removed": 25,
+              "stableBranch": true,
+              "taskBudgetPassed": true,
+              "visibleBudgetPassed": true,
+              "competingTests": [
+                {
+                  "title": "Library shows a fixed-row divider only after results scroll",
+                  "file": "library.spec.ts",
+                  "status": "passed",
+                  "workerIndex": 2,
+                  "start": 1794309239485,
+                  "end": 1794309241720
+                },
+                {
+                  "title": "Library grid names truncate visibly without losing the full name",
+                  "file": "library.spec.ts",
+                  "status": "passed",
+                  "workerIndex": 1,
+                  "start": 1794309239553,
+                  "end": 1794309241158
+                },
+                {
+                  "title": "Library resizing changes its default size without pinning",
+                  "file": "library.spec.ts",
+                  "status": "passed",
+                  "workerIndex": 1,
+                  "start": 1794309241188,
+                  "end": 1794309247446
+                }
+              ]
+            },
+            {
+              "startedAt": 1794309241595.7,
+              "taskMs": 635,
+              "visibleFrameMs": 635.7000000000116,
+              "added": 25,
+              "removed": 0,
+              "stableBranch": true,
+              "taskBudgetPassed": true,
+              "visibleBudgetPassed": true,
+              "competingTests": [
+                {
+                  "title": "Library shows a fixed-row divider only after results scroll",
+                  "file": "library.spec.ts",
+                  "status": "passed",
+                  "workerIndex": 2,
+                  "start": 1794309239485,
+                  "end": 1794309241720
+                },
+                {
+                  "title": "Library resizing changes its default size without pinning",
+                  "file": "library.spec.ts",
+                  "status": "passed",
+                  "workerIndex": 1,
+                  "start": 1794309241188,
+                  "end": 1794309247446
+                },
+                {
+                  "title": "Library header drag follows pointer without repeated layout reads",
+                  "file": "library.spec.ts",
+                  "status": "passed",
+                  "workerIndex": 2,
+                  "start": 1794309241746,
+                  "end": 1794309243124
+                }
+              ]
+            }
+          ],
+          "testCount": 12,
+          "testFailures": [],
+          "overlapValid": true,
+          "before": {
+            "at": "2026-11-10T11:13:48.177Z",
+            "uptime": 246.54,
+            "availableParallelism": 4,
+            "loadavg": [3.46, 1.39, 0.53],
+            "linuxCpuPressure": "some avg10=10.49 avg60=13.31 avg300=4.89 total=18793390\nfull avg10=0.00 avg60=0.00 avg300=0.00 total=0\n",
+            "aggregateCpuTimes": {
+              "user": 295710,
+              "nice": 2630,
+              "sys": 64460,
+              "idle": 594150,
+              "irq": 0
+            }
+          },
+          "after": {
+            "at": "2026-11-10T11:14:27.882Z",
+            "uptime": 286.24,
+            "availableParallelism": 4,
+            "loadavg": [3.12, 1.59, 0.63],
+            "linuxCpuPressure": "some avg10=5.76 avg60=12.72 avg300=5.95 total=24366648\nfull avg10=0.00 avg60=0.00 avg300=0.00 total=0\n",
+            "aggregateCpuTimes": {
+              "user": 372300,
+              "nice": 2630,
+              "sys": 76120,
+              "idle": 662890,
+              "irq": 0
+            }
+          }
+        },
+        {
+          "name": "single-trace-off",
+          "workers": 1,
+          "trace": "off",
+          "execution": {
+            "status": 0,
+            "signal": null,
+            "error": null
+          },
+          "taskMax": 349.20000000001164,
+          "visibleMax": 349.70000000001164,
+          "measurements": [
+            {
+              "startedAt": 1794309276675.4,
+              "taskMs": 340.5999999999767,
+              "visibleFrameMs": 341.20000000001164,
+              "added": 0,
+              "removed": 25,
+              "stableBranch": true,
+              "taskBudgetPassed": true,
+              "visibleBudgetPassed": true,
+              "competingTests": []
+            },
+            {
+              "startedAt": 1794309277221.9,
+              "taskMs": 347,
+              "visibleFrameMs": 347.5,
+              "added": 25,
+              "removed": 0,
+              "stableBranch": true,
+              "taskBudgetPassed": true,
+              "visibleBudgetPassed": true,
+              "competingTests": []
+            },
+            {
+              "startedAt": 1794309277734.2998,
+              "taskMs": 328.5999999999767,
+              "visibleFrameMs": 329.0999999999767,
+              "added": 0,
+              "removed": 25,
+              "stableBranch": true,
+              "taskBudgetPassed": true,
+              "visibleBudgetPassed": true,
+              "competingTests": []
+            },
+            {
+              "startedAt": 1794309278221.7,
+              "taskMs": 349.20000000001164,
+              "visibleFrameMs": 349.70000000001164,
+              "added": 25,
+              "removed": 0,
+              "stableBranch": true,
+              "taskBudgetPassed": true,
+              "visibleBudgetPassed": true,
+              "competingTests": []
+            }
+          ],
+          "testCount": 1,
+          "testFailures": [],
+          "overlapValid": null,
+          "before": {
+            "at": "2026-11-10T11:14:27.884Z",
+            "uptime": 286.24,
+            "availableParallelism": 4,
+            "loadavg": [3.12, 1.59, 0.63],
+            "linuxCpuPressure": "some avg10=5.76 avg60=12.72 avg300=5.95 total=24367932\nfull avg10=0.00 avg60=0.00 avg300=0.00 total=0\n",
+            "aggregateCpuTimes": {
+              "user": 372300,
+              "nice": 2630,
+              "sys": 76120,
+              "idle": 662910,
+              "irq": 0
+            }
+          },
+          "after": {
+            "at": "2026-11-10T11:14:42.141Z",
+            "uptime": 300.5,
+            "availableParallelism": 4,
+            "loadavg": [3.27, 1.67, 0.67],
+            "linuxCpuPressure": "some avg10=3.50 avg60=10.76 avg300=5.83 total=24918949\nfull avg10=0.00 avg60=0.00 avg300=0.00 total=0\n",
+            "aggregateCpuTimes": {
+              "user": 391580,
+              "nice": 2630,
+              "sys": 78510,
+              "idle": 697720,
+              "irq": 0
+            }
+          }
+        }
+      ]
+    },
+    "firefox": {
+      "zipSha256": "8c084b6e5ce2494cbf86de93989bd10c5ef4c0a1392ebe5d63705f6158668b14",
+      "summarySha256": "f3b07e19dc26e0b4480f7a31beb2e725ceaf89df4756f11f670a567d7552276f",
+      "node": "v22.23.4",
+      "npm": "10.9.9",
+      "playwright": "1.64.1",
+      "browserVersion": "157.0",
+      "browserExecutable": "<browser-cache>/firefox-1555/firefox/firefox",
+      "controllerSha256": "dd93f971d3802267e32e83b3fdad7abfdbf6831090556c72a2c950398a92ab9a",
+      "originalSpecSha256": "fd826911040147a84545c119b5c231f4fe502d3a86fce8f48843eb65f1cfcb42",
+      "instrumentedSpecSha256": "6b66aafe022b2a610baab81097b8ed85cf7ef315fb61354941d9ca36c3ae83e8",
+      "inputs": {
+        "package.json": "acca6cd5646cf25666ec561d35585f7f89f7d827e554099439526475718144c9",
+        "package-lock.json": "5e833638ed0529875f869a6499860107fd3158cfcee2a93a0247f97701ee39c8",
+        "ui/package.json": "767314f03de9a78ef2e9d9a9afad4b6bbabbbeb2504287edd58b6b96a7d04c07",
+        "ui/package-lock.json": "6f76f128bc62c9362ae8b64720a6ad0876f38752dce486004c0b296bf4ccb346",
+        "editor/package.json": "888e1b552cb8a7643c0e7b7a91877d31f9348503a43118386940fab0c2aa538d",
+        "editor/package-lock.json": "b5739ec99b535ab5d53b36e5cb626675d1a9976a1e5dad723217c882ba5172fe"
+      },
+      "failedCells": [],
+      "cpuModels": ["AMD EPYC 9V45 96-Core Processor"],
+      "availableParallelism": 4,
+      "cpuCount": 4,
+      "cells": [
+        {
+          "name": "single-trace-on",
+          "workers": 1,
+          "trace": "on",
+          "execution": {
+            "status": 0,
+            "signal": null,
+            "error": null
+          },
+          "taskMax": 241,
+          "visibleMax": 407,
+          "measurements": [
+            {
+              "startedAt": 1794308960657,
+              "taskMs": 241,
+              "visibleFrameMs": 407,
+              "added": 0,
+              "removed": 25,
+              "stableBranch": true,
+              "taskBudgetPassed": true,
+              "visibleBudgetPassed": true,
+              "competingTests": []
+            },
+            {
+              "startedAt": 1794308962584,
+              "taskMs": 221,
+              "visibleFrameMs": 302,
+              "added": 25,
+              "removed": 0,
+              "stableBranch": true,
+              "taskBudgetPassed": true,
+              "visibleBudgetPassed": true,
+              "competingTests": []
+            },
+            {
+              "startedAt": 1794308964364,
+              "taskMs": 225,
+              "visibleFrameMs": 227,
+              "added": 0,
+              "removed": 25,
+              "stableBranch": true,
+              "taskBudgetPassed": true,
+              "visibleBudgetPassed": true,
+              "competingTests": []
+            },
+            {
+              "startedAt": 1794308966207,
+              "taskMs": 230,
+              "visibleFrameMs": 308,
+              "added": 25,
+              "removed": 0,
+              "stableBranch": true,
+              "taskBudgetPassed": true,
+              "visibleBudgetPassed": true,
+              "competingTests": []
+            }
+          ],
+          "testCount": 1,
+          "testFailures": [],
+          "overlapValid": null,
+          "before": {
+            "at": "2026-11-10T11:09:10.242Z",
+            "uptime": 392.25,
+            "availableParallelism": 4,
+            "loadavg": [0.69, 0.37, 0.15],
+            "linuxCpuPressure": "some avg10=0.86 avg60=2.40 avg300=1.37 total=6529316\nfull avg10=0.00 avg60=0.00 avg300=0.00 total=0\n",
+            "aggregateCpuTimes": {
+              "user": 84210,
+              "nice": 2370,
+              "sys": 26410,
+              "idle": 1403860,
+              "irq": 0
+            }
+          },
+          "after": {
+            "at": "2026-11-10T11:09:32.745Z",
+            "uptime": 414.75,
+            "availableParallelism": 4,
+            "loadavg": [1.03, 0.48, 0.19],
+            "linuxCpuPressure": "some avg10=1.53 avg60=2.36 avg300=1.45 total=7242582\nfull avg10=0.00 avg60=0.00 avg300=0.00 total=0\n",
+            "aggregateCpuTimes": {
+              "user": 115030,
+              "nice": 2370,
+              "sys": 30440,
+              "idle": 1457420,
+              "irq": 0
+            }
+          }
+        },
+        {
+          "name": "three-trace-on",
+          "workers": 3,
+          "trace": "on",
+          "execution": {
+            "status": 0,
+            "signal": null,
+            "error": null
+          },
+          "taskMax": 571,
+          "visibleMax": 571,
+          "measurements": [
+            {
+              "startedAt": 1794308988490,
+              "taskMs": 571,
+              "visibleFrameMs": 571,
+              "added": 0,
+              "removed": 25,
+              "stableBranch": true,
+              "taskBudgetPassed": true,
+              "visibleBudgetPassed": true,
+              "competingTests": [
+                {
+                  "title": "Library shows a fixed-row divider only after results scroll",
+                  "file": "library.spec.ts",
+                  "status": "passed",
+                  "workerIndex": 1,
+                  "start": 1794308988216,
+                  "end": 1794308992055
+                }
+              ]
+            },
+            {
+              "startedAt": 1794308992119,
+              "taskMs": 376,
+              "visibleFrameMs": 381,
+              "added": 25,
+              "removed": 0,
+              "stableBranch": true,
+              "taskBudgetPassed": true,
+              "visibleBudgetPassed": true,
+              "competingTests": [
+                {
+                  "title": "Library grid names truncate visibly without losing the full name",
+                  "file": "library.spec.ts",
+                  "status": "passed",
+                  "workerIndex": 2,
+                  "start": 1794308989552,
+                  "end": 1794308992669
+                },
+                {
+                  "title": "Library resizing changes its default size without pinning",
+                  "file": "library.spec.ts",
+                  "status": "passed",
+                  "workerIndex": 1,
+                  "start": 1794308992189,
+                  "end": 1794309003297
+                }
+              ]
+            },
+            {
+              "startedAt": 1794308995422,
+              "taskMs": 445,
+              "visibleFrameMs": 452,
+              "added": 0,
+              "removed": 25,
+              "stableBranch": true,
+              "taskBudgetPassed": true,
+              "visibleBudgetPassed": true,
+              "competingTests": [
+                {
+                  "title": "Library resizing changes its default size without pinning",
+                  "file": "library.spec.ts",
+                  "status": "passed",
+                  "workerIndex": 1,
+                  "start": 1794308992189,
+                  "end": 1794309003297
+                },
+                {
+                  "title": "Library keyboard-cleared search matches clear-button geometry",
+                  "file": "library.spec.ts",
+                  "status": "passed",
+                  "workerIndex": 2,
+                  "start": 1794308995058,
+                  "end": 1794309003219
+                }
+              ]
+            },
+            {
+              "startedAt": 1794308998274,
+              "taskMs": 421,
+              "visibleFrameMs": 421,
+              "added": 25,
+              "removed": 0,
+              "stableBranch": true,
+              "taskBudgetPassed": true,
+              "visibleBudgetPassed": true,
+              "competingTests": [
+                {
+                  "title": "Library resizing changes its default size without pinning",
+                  "file": "library.spec.ts",
+                  "status": "passed",
+                  "workerIndex": 1,
+                  "start": 1794308992189,
+                  "end": 1794309003297
+                },
+                {
+                  "title": "Library keyboard-cleared search matches clear-button geometry",
+                  "file": "library.spec.ts",
+                  "status": "passed",
+                  "workerIndex": 2,
+                  "start": 1794308995058,
+                  "end": 1794309003219
+                }
+              ]
+            }
+          ],
+          "testCount": 12,
+          "testFailures": [],
+          "overlapValid": true,
+          "before": {
+            "at": "2026-11-10T11:09:32.748Z",
+            "uptime": 414.76,
+            "availableParallelism": 4,
+            "loadavg": [1.03, 0.48, 0.19],
+            "linuxCpuPressure": "some avg10=1.53 avg60=2.36 avg300=1.45 total=7242582\nfull avg10=0.00 avg60=0.00 avg300=0.00 total=0\n",
+            "aggregateCpuTimes": {
+              "user": 115030,
+              "nice": 2370,
+              "sys": 30440,
+              "idle": 1457430,
+              "irq": 0
+            }
+          },
+          "after": {
+            "at": "2026-11-10T11:10:20.221Z",
+            "uptime": 462.23,
+            "availableParallelism": 4,
+            "loadavg": [3.58, 1.28, 0.48],
+            "linuxCpuPressure": "some avg10=24.02 avg60=19.74 avg300=6.43 total=24278446\nfull avg10=0.00 avg60=0.00 avg300=0.00 total=0\n",
+            "aggregateCpuTimes": {
+              "user": 234110,
+              "nice": 2370,
+              "sys": 47770,
+              "idle": 1503550,
+              "irq": 0
+            }
+          }
+        },
+        {
+          "name": "three-trace-off",
+          "workers": 3,
+          "trace": "off",
+          "execution": {
+            "status": 0,
+            "signal": null,
+            "error": null
+          },
+          "taskMax": 406,
+          "visibleMax": 544,
+          "measurements": [
+            {
+              "startedAt": 1794309029941,
+              "taskMs": 372,
+              "visibleFrameMs": 544,
+              "added": 0,
+              "removed": 25,
+              "stableBranch": true,
+              "taskBudgetPassed": true,
+              "visibleBudgetPassed": true,
+              "competingTests": [
+                {
+                  "title": "closes after a drop, stays open for Option, and stays pinned",
+                  "file": "library.spec.ts",
+                  "status": "passed",
+                  "workerIndex": 2,
+                  "start": 1794309025877,
+                  "end": 1794309031656
+                },
+                {
+                  "title": "fits a phone\u2019s gutter",
+                  "file": "library.spec.ts",
+                  "status": "passed",
+                  "workerIndex": 1,
+                  "start": 1794309029530,
+                  "end": 1794309030620
+                }
+              ]
+            },
+            {
+              "startedAt": 1794309030820,
+              "taskMs": 406,
+              "visibleFrameMs": 406,
+              "added": 25,
+              "removed": 0,
+              "stableBranch": true,
+              "taskBudgetPassed": true,
+              "visibleBudgetPassed": true,
+              "competingTests": [
+                {
+                  "title": "closes after a drop, stays open for Option, and stays pinned",
+                  "file": "library.spec.ts",
+                  "status": "passed",
+                  "workerIndex": 2,
+                  "start": 1794309025877,
+                  "end": 1794309031656
+                },
+                {
+                  "title": "Library results scroll to the visible bottom edge",
+                  "file": "library.spec.ts",
+                  "status": "passed",
+                  "workerIndex": 1,
+                  "start": 1794309030634,
+                  "end": 1794309032656
+                }
+              ]
+            },
+            {
+              "startedAt": 1794309031775,
+              "taskMs": 341,
+              "visibleFrameMs": 341,
+              "added": 0,
+              "removed": 25,
+              "stableBranch": true,
+              "taskBudgetPassed": true,
+              "visibleBudgetPassed": true,
+              "competingTests": [
+                {
+                  "title": "Library results scroll to the visible bottom edge",
+                  "file": "library.spec.ts",
+                  "status": "passed",
+                  "workerIndex": 1,
+                  "start": 1794309030634,
+                  "end": 1794309032656
+                }
+              ]
+            },
+            {
+              "startedAt": 1794309032676,
+              "taskMs": 370,
+              "visibleFrameMs": 374,
+              "added": 25,
+              "removed": 0,
+              "stableBranch": true,
+              "taskBudgetPassed": true,
+              "visibleBudgetPassed": true,
+              "competingTests": [
+                {
+                  "title": "Library shows a fixed-row divider only after results scroll",
+                  "file": "library.spec.ts",
+                  "status": "passed",
+                  "workerIndex": 2,
+                  "start": 1794309032390,
+                  "end": 1794309034985
+                },
+                {
+                  "title": "Library grid names truncate visibly without losing the full name",
+                  "file": "library.spec.ts",
+                  "status": "passed",
+                  "workerIndex": 1,
+                  "start": 1794309032672,
+                  "end": 1794309034599
+                }
+              ]
+            }
+          ],
+          "testCount": 12,
+          "testFailures": [],
+          "overlapValid": true,
+          "before": {
+            "at": "2026-11-10T11:10:20.224Z",
+            "uptime": 462.23,
+            "availableParallelism": 4,
+            "loadavg": [3.58, 1.28, 0.48],
+            "linuxCpuPressure": "some avg10=24.02 avg60=19.74 avg300=6.43 total=24279135\nfull avg10=0.00 avg60=0.00 avg300=0.00 total=0\n",
+            "aggregateCpuTimes": {
+              "user": 234110,
+              "nice": 2370,
+              "sys": 47770,
+              "idle": 1503550,
+              "irq": 0
+            }
+          },
+          "after": {
+            "at": "2026-11-10T11:10:54.791Z",
+            "uptime": 496.8,
+            "availableParallelism": 4,
+            "loadavg": [3.13, 1.43, 0.56],
+            "linuxCpuPressure": "some avg10=23.34 avg60=24.81 avg300=9.36 total=35428981\nfull avg10=0.00 avg60=0.00 avg300=0.00 total=0\n",
+            "aggregateCpuTimes": {
+              "user": 317840,
+              "nice": 2370,
+              "sys": 58420,
+              "idle": 1545560,
+              "irq": 0
+            }
+          }
+        },
+        {
+          "name": "single-trace-off",
+          "workers": 1,
+          "trace": "off",
+          "execution": {
+            "status": 0,
+            "signal": null,
+            "error": null
+          },
+          "taskMax": 223,
+          "visibleMax": 284,
+          "measurements": [
+            {
+              "startedAt": 1794309062896,
+              "taskMs": 223,
+              "visibleFrameMs": 224,
+              "added": 0,
+              "removed": 25,
+              "stableBranch": true,
+              "taskBudgetPassed": true,
+              "visibleBudgetPassed": true,
+              "competingTests": []
+            },
+            {
+              "startedAt": 1794309063388,
+              "taskMs": 211,
+              "visibleFrameMs": 212,
+              "added": 25,
+              "removed": 0,
+              "stableBranch": true,
+              "taskBudgetPassed": true,
+              "visibleBudgetPassed": true,
+              "competingTests": []
+            },
+            {
+              "startedAt": 1794309063862,
+              "taskMs": 201,
+              "visibleFrameMs": 284,
+              "added": 0,
+              "removed": 25,
+              "stableBranch": true,
+              "taskBudgetPassed": true,
+              "visibleBudgetPassed": true,
+              "competingTests": []
+            },
+            {
+              "startedAt": 1794309064321,
+              "taskMs": 211,
+              "visibleFrameMs": 212,
+              "added": 25,
+              "removed": 0,
+              "stableBranch": true,
+              "taskBudgetPassed": true,
+              "visibleBudgetPassed": true,
+              "competingTests": []
+            }
+          ],
+          "testCount": 1,
+          "testFailures": [],
+          "overlapValid": null,
+          "before": {
+            "at": "2026-11-10T11:10:54.793Z",
+            "uptime": 496.8,
+            "availableParallelism": 4,
+            "loadavg": [3.13, 1.43, 0.56],
+            "linuxCpuPressure": "some avg10=23.34 avg60=24.81 avg300=9.36 total=35428990\nfull avg10=0.00 avg60=0.00 avg300=0.00 total=0\n",
+            "aggregateCpuTimes": {
+              "user": 317840,
+              "nice": 2370,
+              "sys": 58420,
+              "idle": 1545580,
+              "irq": 0
+            }
+          },
+          "after": {
+            "at": "2026-11-10T11:11:07.345Z",
+            "uptime": 509.35,
+            "availableParallelism": 4,
+            "loadavg": [2.89, 1.43, 0.57],
+            "linuxCpuPressure": "some avg10=9.05 avg60=20.91 avg300=9.11 total=35859138\nfull avg10=0.00 avg60=0.00 avg300=0.00 total=0\n",
+            "aggregateCpuTimes": {
+              "user": 335410,
+              "nice": 2370,
+              "sys": 60660,
+              "idle": 1575370,
+              "irq": 0
+            }
+          }
+        }
+      ]
+    },
+    "webkit": {
+      "zipSha256": "c0755660bbd6df0230f96991eaa099242417b36b0aeb1e0299b418745bf9e45d",
+      "summarySha256": "138b3ad914ad4bbfa3bbf50dd150a184dfbb122b7fd10161338de05f199fabd1",
+      "node": "v22.23.4",
+      "npm": "10.9.9",
+      "playwright": "1.64.1",
+      "browserVersion": "27.2",
+      "browserExecutable": "<browser-cache>/webkit-2370/pw_run.sh",
+      "controllerSha256": "dd93f971d3802267e32e83b3fdad7abfdbf6831090556c72a2c950398a92ab9a",
+      "originalSpecSha256": "fd826911040147a84545c119b5c231f4fe502d3a86fce8f48843eb65f1cfcb42",
+      "instrumentedSpecSha256": "6b66aafe022b2a610baab81097b8ed85cf7ef315fb61354941d9ca36c3ae83e8",
+      "inputs": {
+        "package.json": "acca6cd5646cf25666ec561d35585f7f89f7d827e554099439526475718144c9",
+        "package-lock.json": "5e833638ed0529875f869a6499860107fd3158cfcee2a93a0247f97701ee39c8",
+        "ui/package.json": "767314f03de9a78ef2e9d9a9afad4b6bbabbbeb2504287edd58b6b96a7d04c07",
+        "ui/package-lock.json": "6f76f128bc62c9362ae8b64720a6ad0876f38752dce486004c0b296bf4ccb346",
+        "editor/package.json": "888e1b552cb8a7643c0e7b7a91877d31f9348503a43118386940fab0c2aa538d",
+        "editor/package-lock.json": "b5739ec99b535ab5d53b36e5cb626675d1a9976a1e5dad723217c882ba5172fe"
+      },
+      "failedCells": [],
+      "cpuModels": ["AMD EPYC 9V45 96-Core Processor"],
+      "availableParallelism": 4,
+      "cpuCount": 4,
+      "cells": [
+        {
+          "name": "single-trace-on",
+          "workers": 1,
+          "trace": "on",
+          "execution": {
+            "status": 0,
+            "signal": null,
+            "error": null
+          },
+          "taskMax": 356,
+          "visibleMax": 447,
+          "measurements": [
+            {
+              "startedAt": 1794309065037,
+              "taskMs": 356,
+              "visibleFrameMs": 447,
+              "added": 0,
+              "removed": 25,
+              "stableBranch": true,
+              "taskBudgetPassed": true,
+              "visibleBudgetPassed": true,
+              "competingTests": []
+            },
+            {
+              "startedAt": 1794309066249,
+              "taskMs": 352,
+              "visibleFrameMs": 404,
+              "added": 25,
+              "removed": 0,
+              "stableBranch": true,
+              "taskBudgetPassed": true,
+              "visibleBudgetPassed": true,
+              "competingTests": []
+            },
+            {
+              "startedAt": 1794309067414,
+              "taskMs": 349,
+              "visibleFrameMs": 399,
+              "added": 0,
+              "removed": 25,
+              "stableBranch": true,
+              "taskBudgetPassed": true,
+              "visibleBudgetPassed": true,
+              "competingTests": []
+            },
+            {
+              "startedAt": 1794309068584,
+              "taskMs": 356,
+              "visibleFrameMs": 407,
+              "added": 25,
+              "removed": 0,
+              "stableBranch": true,
+              "taskBudgetPassed": true,
+              "visibleBudgetPassed": true,
+              "competingTests": []
+            }
+          ],
+          "testCount": 1,
+          "testFailures": [],
+          "overlapValid": null,
+          "before": {
+            "at": "2026-11-10T11:10:41.664Z",
+            "uptime": 124.33,
+            "availableParallelism": 4,
+            "loadavg": [1.09, 0.57, 0.22],
+            "linuxCpuPressure": "some avg10=1.29 avg60=1.57 avg300=0.79 total=3445579\nfull avg10=0.00 avg60=0.00 avg300=0.00 total=0\n",
+            "aggregateCpuTimes": {
+              "user": 75240,
+              "nice": 1660,
+              "sys": 27600,
+              "idle": 362880,
+              "irq": 0
+            }
+          },
+          "after": {
+            "at": "2026-11-10T11:11:20.263Z",
+            "uptime": 162.93,
+            "availableParallelism": 4,
+            "loadavg": [1.55, 0.78, 0.31],
+            "linuxCpuPressure": "some avg10=0.43 avg60=1.29 avg300=0.83 total=4092890\nfull avg10=0.00 avg60=0.00 avg300=0.00 total=0\n",
+            "aggregateCpuTimes": {
+              "user": 113800,
+              "nice": 2160,
+              "sys": 30680,
+              "idle": 468210,
+              "irq": 0
+            }
+          }
+        },
+        {
+          "name": "three-trace-on",
+          "workers": 3,
+          "trace": "on",
+          "execution": {
+            "status": 0,
+            "signal": null,
+            "error": null
+          },
+          "taskMax": 567,
+          "visibleMax": 703,
+          "measurements": [
+            {
+              "startedAt": 1794309106638,
+              "taskMs": 567,
+              "visibleFrameMs": 703,
+              "added": 0,
+              "removed": 25,
+              "stableBranch": true,
+              "taskBudgetPassed": true,
+              "visibleBudgetPassed": true,
+              "competingTests": [
+                {
+                  "title": "edits project TypeScript parameters in a compact dialog across viewport sizes",
+                  "file": "params.spec.ts",
+                  "status": "passed",
+                  "workerIndex": 1,
+                  "start": 1794309103121,
+                  "end": 1794309117965
+                },
+                {
+                  "title": "validates defaults with the compiler and persists undoable parameter edits",
+                  "file": "params.spec.ts",
+                  "status": "passed",
+                  "workerIndex": 2,
+                  "start": 1794309106644,
+                  "end": 1794309120296
+                }
+              ]
+            },
+            {
+              "startedAt": 1794309108806,
+              "taskMs": 483,
+              "visibleFrameMs": 585,
+              "added": 25,
+              "removed": 0,
+              "stableBranch": true,
+              "taskBudgetPassed": true,
+              "visibleBudgetPassed": true,
+              "competingTests": [
+                {
+                  "title": "edits project TypeScript parameters in a compact dialog across viewport sizes",
+                  "file": "params.spec.ts",
+                  "status": "passed",
+                  "workerIndex": 1,
+                  "start": 1794309103121,
+                  "end": 1794309117965
+                },
+                {
+                  "title": "validates defaults with the compiler and persists undoable parameter edits",
+                  "file": "params.spec.ts",
+                  "status": "passed",
+                  "workerIndex": 2,
+                  "start": 1794309106644,
+                  "end": 1794309120296
+                }
+              ]
+            },
+            {
+              "startedAt": 1794309110555,
+              "taskMs": 456,
+              "visibleFrameMs": 534,
+              "added": 0,
+              "removed": 25,
+              "stableBranch": true,
+              "taskBudgetPassed": true,
+              "visibleBudgetPassed": true,
+              "competingTests": [
+                {
+                  "title": "edits project TypeScript parameters in a compact dialog across viewport sizes",
+                  "file": "params.spec.ts",
+                  "status": "passed",
+                  "workerIndex": 1,
+                  "start": 1794309103121,
+                  "end": 1794309117965
+                },
+                {
+                  "title": "validates defaults with the compiler and persists undoable parameter edits",
+                  "file": "params.spec.ts",
+                  "status": "passed",
+                  "workerIndex": 2,
+                  "start": 1794309106644,
+                  "end": 1794309120296
+                }
+              ]
+            },
+            {
+              "startedAt": 1794309112773,
+              "taskMs": 450,
+              "visibleFrameMs": 521,
+              "added": 25,
+              "removed": 0,
+              "stableBranch": true,
+              "taskBudgetPassed": true,
+              "visibleBudgetPassed": true,
+              "competingTests": [
+                {
+                  "title": "edits project TypeScript parameters in a compact dialog across viewport sizes",
+                  "file": "params.spec.ts",
+                  "status": "passed",
+                  "workerIndex": 1,
+                  "start": 1794309103121,
+                  "end": 1794309117965
+                },
+                {
+                  "title": "validates defaults with the compiler and persists undoable parameter edits",
+                  "file": "params.spec.ts",
+                  "status": "passed",
+                  "workerIndex": 2,
+                  "start": 1794309106644,
+                  "end": 1794309120296
+                }
+              ]
+            }
+          ],
+          "testCount": 12,
+          "testFailures": [],
+          "overlapValid": true,
+          "before": {
+            "at": "2026-11-10T11:11:20.266Z",
+            "uptime": 162.93,
+            "availableParallelism": 4,
+            "loadavg": [1.55, 0.78, 0.31],
+            "linuxCpuPressure": "some avg10=0.43 avg60=1.29 avg300=0.83 total=4092898\nfull avg10=0.00 avg60=0.00 avg300=0.00 total=0\n",
+            "aggregateCpuTimes": {
+              "user": 113800,
+              "nice": 2160,
+              "sys": 30680,
+              "idle": 468210,
+              "irq": 0
+            }
+          },
+          "after": {
+            "at": "2026-11-10T11:12:06.639Z",
+            "uptime": 209.31,
+            "availableParallelism": 4,
+            "loadavg": [4.07, 1.6, 0.61],
+            "linuxCpuPressure": "some avg10=15.80 avg60=14.71 avg300=4.75 total=17151351\nfull avg10=0.00 avg60=0.00 avg300=0.00 total=0\n",
+            "aggregateCpuTimes": {
+              "user": 229780,
+              "nice": 5910,
+              "sys": 44540,
+              "idle": 518000,
+              "irq": 0
+            }
+          }
+        },
+        {
+          "name": "three-trace-off",
+          "workers": 3,
+          "trace": "off",
+          "execution": {
+            "status": 0,
+            "signal": null,
+            "error": null
+          },
+          "taskMax": 715,
+          "visibleMax": 755,
+          "measurements": [
+            {
+              "startedAt": 1794309150033,
+              "taskMs": 420,
+              "visibleFrameMs": 420,
+              "added": 0,
+              "removed": 25,
+              "stableBranch": true,
+              "taskBudgetPassed": true,
+              "visibleBudgetPassed": true,
+              "competingTests": [
+                {
+                  "title": "edits project TypeScript parameters in a compact dialog across viewport sizes",
+                  "file": "params.spec.ts",
+                  "status": "passed",
+                  "workerIndex": 2,
+                  "start": 1794309143198,
+                  "end": 1794309157193
+                },
+                {
+                  "title": "validates defaults with the compiler and persists undoable parameter edits",
+                  "file": "params.spec.ts",
+                  "status": "passed",
+                  "workerIndex": 1,
+                  "start": 1794309147505,
+                  "end": 1794309159670
+                }
+              ]
+            },
+            {
+              "startedAt": 1794309150648,
+              "taskMs": 715,
+              "visibleFrameMs": 755,
+              "added": 25,
+              "removed": 0,
+              "stableBranch": true,
+              "taskBudgetPassed": true,
+              "visibleBudgetPassed": true,
+              "competingTests": [
+                {
+                  "title": "edits project TypeScript parameters in a compact dialog across viewport sizes",
+                  "file": "params.spec.ts",
+                  "status": "passed",
+                  "workerIndex": 2,
+                  "start": 1794309143198,
+                  "end": 1794309157193
+                },
+                {
+                  "title": "validates defaults with the compiler and persists undoable parameter edits",
+                  "file": "params.spec.ts",
+                  "status": "passed",
+                  "workerIndex": 1,
+                  "start": 1794309147505,
+                  "end": 1794309159670
+                }
+              ]
+            },
+            {
+              "startedAt": 1794309151661,
+              "taskMs": 645,
+              "visibleFrameMs": 683,
+              "added": 0,
+              "removed": 25,
+              "stableBranch": true,
+              "taskBudgetPassed": true,
+              "visibleBudgetPassed": true,
+              "competingTests": [
+                {
+                  "title": "edits project TypeScript parameters in a compact dialog across viewport sizes",
+                  "file": "params.spec.ts",
+                  "status": "passed",
+                  "workerIndex": 2,
+                  "start": 1794309143198,
+                  "end": 1794309157193
+                },
+                {
+                  "title": "validates defaults with the compiler and persists undoable parameter edits",
+                  "file": "params.spec.ts",
+                  "status": "passed",
+                  "workerIndex": 1,
+                  "start": 1794309147505,
+                  "end": 1794309159670
+                }
+              ]
+            },
+            {
+              "startedAt": 1794309152593,
+              "taskMs": 401,
+              "visibleFrameMs": 433,
+              "added": 25,
+              "removed": 0,
+              "stableBranch": true,
+              "taskBudgetPassed": true,
+              "visibleBudgetPassed": true,
+              "competingTests": [
+                {
+                  "title": "edits project TypeScript parameters in a compact dialog across viewport sizes",
+                  "file": "params.spec.ts",
+                  "status": "passed",
+                  "workerIndex": 2,
+                  "start": 1794309143198,
+                  "end": 1794309157193
+                },
+                {
+                  "title": "validates defaults with the compiler and persists undoable parameter edits",
+                  "file": "params.spec.ts",
+                  "status": "passed",
+                  "workerIndex": 1,
+                  "start": 1794309147505,
+                  "end": 1794309159670
+                }
+              ]
+            }
+          ],
+          "testCount": 12,
+          "testFailures": [],
+          "overlapValid": true,
+          "before": {
+            "at": "2026-11-10T11:12:06.643Z",
+            "uptime": 209.31,
+            "availableParallelism": 4,
+            "loadavg": [4.07, 1.6, 0.61],
+            "linuxCpuPressure": "some avg10=15.80 avg60=14.71 avg300=4.75 total=17151359\nfull avg10=0.00 avg60=0.00 avg300=0.00 total=0\n",
+            "aggregateCpuTimes": {
+              "user": 229780,
+              "nice": 5910,
+              "sys": 44540,
+              "idle": 518020,
+              "irq": 0
+            }
+          },
+          "after": {
+            "at": "2026-11-10T11:12:43.388Z",
+            "uptime": 246.06,
+            "availableParallelism": 4,
+            "loadavg": [3.91, 1.89, 0.76],
+            "linuxCpuPressure": "some avg10=16.62 avg60=18.48 avg300=6.95 total=25886921\nfull avg10=0.00 avg60=0.00 avg300=0.00 total=0\n",
+            "aggregateCpuTimes": {
+              "user": 318760,
+              "nice": 8500,
+              "sys": 54810,
+              "idle": 561780,
+              "irq": 0
+            }
+          }
+        },
+        {
+          "name": "single-trace-off",
+          "workers": 1,
+          "trace": "off",
+          "execution": {
+            "status": 0,
+            "signal": null,
+            "error": null
+          },
+          "taskMax": 365,
+          "visibleMax": 369,
+          "measurements": [
+            {
+              "startedAt": 1794309179817,
+              "taskMs": 365,
+              "visibleFrameMs": 365,
+              "added": 0,
+              "removed": 25,
+              "stableBranch": true,
+              "taskBudgetPassed": true,
+              "visibleBudgetPassed": true,
+              "competingTests": []
+            },
+            {
+              "startedAt": 1794309180315,
+              "taskMs": 365,
+              "visibleFrameMs": 369,
+              "added": 25,
+              "removed": 0,
+              "stableBranch": true,
+              "taskBudgetPassed": true,
+              "visibleBudgetPassed": true,
+              "competingTests": []
+            },
+            {
+              "startedAt": 1794309180830,
+              "taskMs": 350,
+              "visibleFrameMs": 360,
+              "added": 0,
+              "removed": 25,
+              "stableBranch": true,
+              "taskBudgetPassed": true,
+              "visibleBudgetPassed": true,
+              "competingTests": []
+            },
+            {
+              "startedAt": 1794309181310,
+              "taskMs": 351,
+              "visibleFrameMs": 359,
+              "added": 25,
+              "removed": 0,
+              "stableBranch": true,
+              "taskBudgetPassed": true,
+              "visibleBudgetPassed": true,
+              "competingTests": []
+            }
+          ],
+          "testCount": 1,
+          "testFailures": [],
+          "overlapValid": null,
+          "before": {
+            "at": "2026-11-10T11:12:43.390Z",
+            "uptime": 246.06,
+            "availableParallelism": 4,
+            "loadavg": [3.91, 1.89, 0.76],
+            "linuxCpuPressure": "some avg10=16.62 avg60=18.48 avg300=6.95 total=25886929\nfull avg10=0.00 avg60=0.00 avg300=0.00 total=0\n",
+            "aggregateCpuTimes": {
+              "user": 318760,
+              "nice": 8500,
+              "sys": 54810,
+              "idle": 561780,
+              "irq": 0
+            }
+          },
+          "after": {
+            "at": "2026-11-10T11:13:10.656Z",
+            "uptime": 273.32,
+            "availableParallelism": 4,
+            "loadavg": [3.26, 1.9, 0.79],
+            "linuxCpuPressure": "some avg10=1.38 avg60=11.90 avg300=6.39 total=26265388\nfull avg10=0.00 avg60=0.00 avg300=0.00 total=0\n",
+            "aggregateCpuTimes": {
+              "user": 347700,
+              "nice": 8710,
+              "sys": 56870,
+              "idle": 639110,
+              "irq": 0
+            }
+          }
+        }
+      ]
+    }
+  }
+}

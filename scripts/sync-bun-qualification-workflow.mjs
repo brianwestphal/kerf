@@ -14,6 +14,25 @@ const upload =
 export function qualificationWorkflow(source) {
   const canonical = YAML.parse(source);
   const jobs = structuredClone(canonical.jobs);
+  // KF-1XBJDT: candidate installation must preserve canonical measurement phases.
+  const editor = canonical.jobs['editor-browser'];
+  const functional = editor.steps.find((step) => step.id === 'editor_browser');
+  const performance = editor.steps.find(
+    (step) => step.id === 'library_performance',
+  );
+  assert.ok(
+    functional?.run.includes(
+      '--test-list-invert=tests/library-performance.exclude',
+    ) && functional.run.includes('--workers=3'),
+    'Editor functional phase must exclude only the performance manifest at three workers',
+  );
+  assert.ok(
+    performance?.run.includes('tests/browser/library-performance.spec.ts') &&
+      performance.run.includes('--workers=1') &&
+      performance.run.includes('--retries=0'),
+    'Editor performance phase must retain the single-worker zero-retry spec',
+  );
+
   for (const [name, job] of Object.entries(jobs)) {
     const recordVariation =
       `bun pm ls --all > "$BUN_QUALIFICATION_EVIDENCE/${name}-final-packages.txt" && ` +

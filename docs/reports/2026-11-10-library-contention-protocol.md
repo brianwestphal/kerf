@@ -19,7 +19,7 @@ Raw output retains each exit status/signal/error, full Playwright JSON/logs/test
 
 This four-cell protocol has one run per condition. It can expose workload/trace sensitivity on the same hardware, but cannot exclude temporal drift or every scheduler effect. No cross-VM timing ratio, new API, containment policy, threshold change, or canonical scheduling change follows automatically. The results must be reviewed before choosing any further product or benchmark-design action.
 
-Dispatch with the exact failing candidate SHA `cc06dcc779c596f0bd1e012adc91504886275bb8`. The diagnostic workflow/harness revision is recorded separately. Linux execution is pending publication; local controller/unit verification does not establish Linux causation.
+Dispatch with the exact failing candidate SHA `cc06dcc779c596f0bd1e012adc91504886275bb8`. The diagnostic workflow/harness revision is recorded separately. Linux execution is complete; see [the exact-source results](2026-11-10-library-contention-results.md). Local controller/unit verification alone does not establish Linux causation.
 
 ## Local controller verification
 

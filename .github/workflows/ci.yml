@@ -304,16 +304,28 @@ jobs:
         timeout-minutes: 15
       - name: Run editor browser tests
         id: editor_browser
-        run: npm run test:e2e -- --project=${{ matrix.browser }} --shard=${{ matrix.shard }}/4
+        run: npm run test:e2e -- --project=${{ matrix.browser }} --shard=${{ matrix.shard }}/4 --workers=3 --test-list-invert=tests/library-performance.exclude --output=test-results-functional
+      # KF-1XBJDT: measure after the functional workload, never as a retry.
+      - name: Measure Library disclosure without competing test workers
+        id: library_performance
+        if: ${{ !cancelled() && matrix.shard == 3 && (steps.editor_browser.outcome == 'success' || steps.editor_browser.outcome == 'failure') }}
+        run: npm run test:e2e -- tests/browser/library-performance.spec.ts --project=${{ matrix.browser }} --workers=1 --retries=0 --output=test-results-performance
+      - name: Retain every Library performance result
+        if: ${{ !cancelled() && matrix.shard == 3 && (steps.library_performance.outcome == 'success' || steps.library_performance.outcome == 'failure') }}
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: editor-library-performance-${{ matrix.browser }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: editor/test-results-performance
+          if-no-files-found: warn
       - name: Upload failed editor browser evidence
         if: ${{ !cancelled() && steps.editor_browser.outcome == 'failure' }}
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: editor-browser-failure-${{ matrix.browser }}-${{ matrix.shard }}-${{ github.run_id }}-${{ github.run_attempt }}
           path: |
-            editor/test-results/**/trace.zip
-            editor/test-results/**/test-failed-*.png
-            editor/test-results/**/error-context.md
+            editor/test-results-functional/**/trace.zip
+            editor/test-results-functional/**/test-failed-*.png
+            editor/test-results-functional/**/error-context.md
 
   # Run the full browser suite in each engine concurrently. The package check
   # remains the stable `ui` status check; each browser reports its own result.
