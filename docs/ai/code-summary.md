@@ -86,6 +86,7 @@ the detected reason. These fixtures prove no-network local-artifact behavior,
 not a registry-cache implementation. The fresh UI app fixture also verifies
 the generated catalog page, structure test, and Vite build.
 `tests/helpers/git-environment.ts` lists the Git variables that pin a command to one repository and `isolatedGitEnvironment()` removes them for git fixtures (KF-9XZ6XQ: a hook's `GIT_DIR` once turned a fixture's `git init` into a reinit that set `core.bare = true`). `tests/helpers/load-scaled-timeout.ts` (with a `ui/tests/helpers` twin) stretches the subprocess-heavy integration suites' fixed timeouts by the one-minute load average per core (1..4x, 1 in CI, `KERF_TEST_TIMEOUT_SCALE` overrides) so a busy machine does not fail the pre-push gate (KF-S4XNEM); `tests/unit/load-scaled-timeout.test.ts` covers the factor.
+`tests/happy-dom-environment.ts` extends Vitest's built-in DOM environment so Node-native storage globals cannot shadow browser storage. `tests/unit/happy-dom-environment.test.ts` verifies actual storage operations, fresh per-environment state, teardown descriptor restoration, and failed-setup restoration (KF-14YDD6).
 `tests/unit/guidance-integrity.test.ts` covers byte snapshots and the
 changed/created/deleted comparison matrix, while
 `tests/integration/guidance-integrity.test.ts` drives the real command wrapper
