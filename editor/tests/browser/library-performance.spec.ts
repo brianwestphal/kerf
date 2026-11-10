@@ -55,6 +55,8 @@ test('Library expand/collapse remains responsive with 5000 project files', async
     const stable = root.querySelector(
       '[data-item-id="folder:designs/group-001/"]',
     );
+    if (!stable)
+      throw new Error('Unrelated Library branch is missing before disclosure');
     document.addEventListener(
       'click',
       (event) => {
