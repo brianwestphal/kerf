@@ -10,6 +10,12 @@ describe('ColumnTrack', () => {
     );
   });
 
+  it('opts out of inline edge clearance without changing column insets', () => {
+    expect(
+      String(ColumnTrack({ children: <section />, inset: 'none' })),
+    ).toContain('data-inset="none"');
+  });
+
   it('carries paged layout, sizing, and safe root metadata', () => {
     const html = String(
       ColumnTrack({

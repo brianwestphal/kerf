@@ -1101,3 +1101,19 @@ h2.kui-dialog-surface__title {
 .kui-popup-surface {
   display: inline-flex;
 }
+
+/* A PinnablePopoverSurface delegates edge clearance to its content owners
+   when its body contains an edge-to-edge scroller. */
+.kui-pinnable-popover-surface[data-body-inset="none"]
+  > .kui-pinnable-popover-surface__body {
+  padding: 0;
+}
+.kui-pinnable-popover-surface[data-body-inset="comfortable"]
+  > .kui-pinnable-popover-surface__body {
+  padding-inline: var(--kui-container-inset, remify(16px));
+  padding-block-end: var(--kui-container-inset, remify(16px));
+}
+.kui-pinnable-popover-surface[data-body-inset="comfortable"][data-body-layout="fill-last"]
+  > .kui-pinnable-popover-surface__body {
+  padding-block-end: 0;
+}

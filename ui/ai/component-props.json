@@ -2627,6 +2627,17 @@
           "description": "ColumnTrack's layout: `scroll` (default) or `paged` for a phone."
         },
         {
+          "name": "inset",
+          "type": {
+            "kind": "enum",
+            "values": ["default", "none"],
+            "text": "\"default\" | \"none\" | undefined",
+            "nullable": true
+          },
+          "required": false,
+          "description": "ColumnTrack inline clearance; none clips columns at the explorer edges."
+        },
+        {
           "name": "minColumnWidth",
           "type": {
             "kind": "css-value",
@@ -2723,6 +2734,17 @@
           "required": false,
           "default": "scroll",
           "description": "`scroll` (default): equal columns that never shrink below\n`minColumnWidth`, so a narrow track scrolls sideways instead of crushing\nthem. `paged`: each column is nearly the visible width, the next one peeks\nin, and scrolling snaps to column starts."
+        },
+        {
+          "name": "inset",
+          "type": {
+            "kind": "enum",
+            "values": ["default", "none"],
+            "text": "\"default\" | \"none\" | undefined",
+            "nullable": true
+          },
+          "required": false,
+          "description": "Inline edge clearance: default uses the layout margin; none clips columns at the track edges."
         },
         {
           "name": "minColumnWidth",
@@ -13470,6 +13492,17 @@
           "required": false,
           "default": "flow",
           "description": "Body layout (default `flow`); `fill` lets one child own the body and\n`fill-last` stacks fixed rows above one filling last child."
+        },
+        {
+          "name": "bodyInset",
+          "type": {
+            "kind": "enum",
+            "values": ["none", "default", "comfortable", "compact"],
+            "text": "SurfaceInset | undefined",
+            "nullable": true
+          },
+          "required": false,
+          "description": "Body edge clearance; none lets content owners meet the surface edges. Default default (8px)."
         },
         {
           "name": "resizeFromBottom",

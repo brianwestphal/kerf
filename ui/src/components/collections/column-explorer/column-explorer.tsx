@@ -49,6 +49,8 @@ export interface ColumnExplorerProps {
   preview?: SafeHtml;
   /** ColumnTrack's layout: `scroll` (default) or `paged` for a phone. */
   layout?: 'scroll' | 'paged';
+  /** ColumnTrack inline clearance; none clips columns at the explorer edges. */
+  inset?: 'default' | 'none';
   /** Each column's minimum width (ColumnTrack's default 250px). */
   minColumnWidth?: CssLength;
   /** How much of the next column a paged layout shows. */
@@ -80,6 +82,7 @@ export function ColumnExplorer({
   action,
   preview,
   layout,
+  inset,
   minColumnWidth,
   peek,
   rootHeading,
@@ -103,7 +106,12 @@ export function ColumnExplorer({
       data-column-explorer-id={id}
       slot={slot}
     >
-      <ColumnTrack layout={layout} minColumnWidth={minColumnWidth} peek={peek}>
+      <ColumnTrack
+        layout={layout}
+        inset={inset}
+        minColumnWidth={minColumnWidth}
+        peek={peek}
+      >
         {columns.map((column) => {
           // One Tab stop per column: its chosen row, else its first.
           const stop = column.chosen ?? column.nodes[0]?.id;

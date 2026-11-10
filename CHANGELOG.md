@@ -8,6 +8,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Fixed
 
+- **Library column clipping (KF-7HP7R9).** Document columns now clip at the Library surface edges while retaining row content insets. Public ColumnTrack/ColumnExplorer `inset` and PinnablePopoverSurface `bodyInset` options configure that boundary.
+
 - **Library column headings (KF-MGAP67).** Each document column now carries its own quiet parent-folder heading; the shared path label and Back control are removed.
 
 - **Editor Library resize (KF-EQRNAR).** Bottom-edge pointer and keyboard resizing now remembers the chosen size without pinning the Library. Header movement still pins it; transient panels keep light dismissal and restore their size after reopening or reload.

@@ -43,7 +43,7 @@ export function ColumnTrackDemo() {
         note='layout="paged" shows one near-full-width column per page; the next one peeks in and a swipe snaps to its start.'
         viewport={{ height: 'medium', width: 'compact', frame: 'solid' }}
       >
-        <ColumnTrack layout="paged" ariaLabel="Paged Board">
+        <ColumnTrack layout="paged" inset="none" ariaLabel="Paged Board">
           {board()}
         </ColumnTrack>
       </CatalogExample>

@@ -195,7 +195,7 @@ describe('PinnablePopoverSurface', () => {
     expect(html).toContain('data-key="library"');
     expect(html).toContain('data-presentation="embedded" data-size="small"');
     expect(html).toContain(
-      'data-height="" data-max-height="" data-body-layout="fill" data-pinned=""',
+      'data-height="" data-max-height="" data-body-layout="fill" data-body-inset="default" data-pinned=""',
     );
     expect(html).not.toContain('popover="manual"');
     expect(html).not.toContain('popovertarget');
@@ -222,6 +222,24 @@ describe('PinnablePopoverSurface', () => {
     expect(
       render({ presentation: 'embedded', resizeFromBottom: true }),
     ).not.toContain('kui-pinnable-popover-surface__bottom-resize');
+  });
+});
+
+describe('PinnablePopoverSurface body insets', () => {
+  it('configures content-owned edge clearance with the shared surface vocabulary', () => {
+    for (const inset of ['none', 'comfortable', 'compact'] as const) {
+      const html = String(
+        PinnablePopoverSurface({
+          id: 'inset',
+          label: 'Inset',
+          bodyInset: inset,
+          children: <p>Body</p>,
+        }),
+      );
+      expect(html).toContain(
+        `data-body-inset="${inset === 'compact' ? 'default' : inset}"`,
+      );
+    }
   });
 });
 

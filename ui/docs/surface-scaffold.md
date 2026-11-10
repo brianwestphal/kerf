@@ -628,3 +628,5 @@ grabber, and restoring that measured state after an application re-render).
 Import `@kerfjs/ui/surface-scaffold/register` once when a dialog may be opened
 without `openDialog` and should still take close requests. Rendering a
 `DialogSurface` has no side effects and registers no custom element.
+
+`PinnablePopoverSurface bodyInset` uses the shared surface inset vocabulary: `default` keeps 8px body clearance, `none` delegates all clearance to the body content, and `comfortable` uses the container inset. Use `none` for edge-to-edge scrolling columns whose rows own their own insets.

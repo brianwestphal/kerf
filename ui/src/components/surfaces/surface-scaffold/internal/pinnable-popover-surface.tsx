@@ -11,6 +11,7 @@ import type {
   DialogSurfaceHeight,
   DialogSurfaceMaxHeight,
   DialogSurfaceSize,
+  SurfaceInset,
 } from './dialog-surface.js';
 import type { PopoverDialogSurfaceDataAttributes } from './popover-dialog-surface.js';
 import type { SurfacePresentation } from './surface-presentation.js';
@@ -68,6 +69,8 @@ export interface PinnablePopoverSurfaceProps {
    * `fill-last` stacks fixed rows above one filling last child.
    */
   bodyLayout?: DialogSurfaceBodyLayout;
+  /** Body edge clearance; none lets content owners meet the surface edges. Default default (8px). */
+  bodyInset?: SurfaceInset;
   /** Add a bottom-edge handle that resizes by drag or arrow key without changing pin state. */
   resizeFromBottom?: boolean;
   /** The Pin toggle's accessible name (default `Pin`). */
@@ -89,6 +92,7 @@ const PINNABLE_POPOVER_PROTECTED = new Set([
   'data-height',
   'data-max-height',
   'data-body-layout',
+  'data-body-inset',
   'data-pinned',
   'data-placed',
   'data-scrolled',
@@ -123,6 +127,7 @@ export function PinnablePopoverSurface({
   maxHeight,
   viewportGutter,
   bodyLayout = 'flow',
+  bodyInset = 'default',
   resizeFromBottom = false,
   pinLabel = 'Pin',
   closeLabel = 'Close',
@@ -159,6 +164,7 @@ export function PinnablePopoverSurface({
       data-height={height === undefined ? undefined : ''}
       data-max-height={maxHeight === undefined ? undefined : ''}
       data-body-layout={bodyLayout === 'flow' ? undefined : bodyLayout}
+      data-body-inset={bodyInset === 'compact' ? 'default' : bodyInset}
       data-resize-from-bottom={resizeFromBottom ? '' : undefined}
       data-pinned={pinned ? '' : undefined}
       popover={overlay ? 'manual' : undefined}

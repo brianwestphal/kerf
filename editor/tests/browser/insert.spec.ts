@@ -273,7 +273,6 @@ for (const width of [2048, 390]) {
   test(`captures the Library's documents at ${width}`, async ({
     page,
   }, info) => {
-    test.skip(info.project.name !== 'chromium', 'visual QA capture');
     await page.emulateMedia({ reducedMotion: 'reduce' });
     await page.setViewportSize({ width: 2048, height: 1128 });
     const folder = await openMain(page, `library-capture-${width}`);
@@ -312,16 +311,46 @@ for (const width of [2048, 390]) {
         `[data-editor-palette-document="${folder}/message-row.kui.json"]`,
       ),
     ).toBeVisible();
+    const edges = await library.evaluate((surface) => {
+      const frame = surface.getBoundingClientRect();
+      const track = surface.querySelector('.kui-column-track')!;
+      const box = track.getBoundingClientRect();
+      return {
+        left: box.left - frame.left,
+        right: frame.right - box.right,
+        padding: getComputedStyle(track).paddingInlineStart,
+      };
+    });
+    expect(edges.left).toBeCloseTo(1, 0);
+    expect(edges.right).toBeCloseTo(1, 0);
+    expect(edges.padding).toBe('0px');
     await library.screenshot({
-      path: info.outputPath(`KF-MGAP67-library-columns-${width}.png`),
+      path: info.outputPath(`KF-7HP7R9-library-columns-${width}.png`),
+      animations: 'disabled',
     });
     await expect(
       library.locator('.kui-column-explorer .kui-list-header'),
     ).toHaveText(['Project', 'pw-documents', folder.split('/').at(-1)!]);
     await page.screenshot({
-      path: info.outputPath(`KF-MGAP67-editor-columns-${width}.png`),
+      path: info.outputPath(`KF-7HP7R9-editor-columns-${width}.png`),
       animations: 'disabled',
     });
+    if (width === 390) {
+      for (const nextWidth of [960, 2048]) {
+        await page.setViewportSize({ width: nextWidth, height: 1128 });
+        const track = library.locator('.kui-column-track');
+        const [panel, viewport] = await Promise.all([
+          library.boundingBox(),
+          track.boundingBox(),
+        ]);
+        expect(viewport!.x).toBeCloseTo(panel!.x + 1, 0);
+        expect(viewport!.width).toBeCloseTo(panel!.width - 2, 0);
+        await page.screenshot({
+          path: info.outputPath(`KF-7HP7R9-transition-${nextWidth}.png`),
+          animations: 'disabled',
+        });
+      }
+    }
     await library
       .locator(
         `[data-editor-palette-document="${folder}/message-row.kui.json"]`,

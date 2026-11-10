@@ -147,6 +147,14 @@ describe('ColumnExplorer markup', () => {
     ).toBe(true);
   });
 
+  it('passes edge-to-edge clipping to its ColumnTrack', () => {
+    expect(
+      render({ inset: 'none' })
+        .querySelector('.kui-column-track')
+        ?.getAttribute('data-inset'),
+    ).toBe('none');
+  });
+
   it('adds a preview column for a chosen leaf only', () => {
     const preview = raw('<p data-preview>plan.md, 2 KB</p>');
     const leaf = render({ path: ['docs', 'work', 'plan'], preview });

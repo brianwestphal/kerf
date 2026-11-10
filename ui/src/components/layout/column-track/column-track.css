@@ -1,12 +1,13 @@
 /* The track is the sideways scroll owner and fills its parent's height; the
    columns sit flush in one row and own their insets and vertical scrolling. */
 .kui-column-track {
+  --_kui-column-track-inset: var(--kui-layout-inline-margin, remify(8px));
   --_kui-column-track-min-width: remify(250px);
   --_kui-column-track-peek: remify(24px);
   width: 100%;
   height: 100%;
   min-height: 0;
-  padding-inline: var(--kui-layout-inline-margin, remify(8px));
+  padding-inline: var(--_kui-column-track-inset);
   overflow-x: auto;
   overflow-y: hidden;
   box-sizing: border-box;
@@ -31,7 +32,7 @@
 .kui-column-track[data-layout="paged"] {
   container-type: inline-size;
   scroll-behavior: smooth;
-  scroll-padding-inline: var(--kui-layout-inline-margin, remify(8px));
+  scroll-padding-inline: var(--_kui-column-track-inset);
   scroll-snap-type: x mandatory;
   scrollbar-width: none;
 }
@@ -54,4 +55,8 @@
   .kui-column-track[data-layout="paged"] {
     scroll-behavior: auto;
   }
+}
+
+.kui-column-track[data-inset="none"] {
+  --_kui-column-track-inset: 0px;
 }

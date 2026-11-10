@@ -126,6 +126,7 @@ export function ColumnExplorerDemo() {
         <ColumnExplorer
           id="phone"
           rootHeading="Project"
+          inset="none"
           label="Files on a phone"
           nodes={NODES}
           path={current.phone ?? []}

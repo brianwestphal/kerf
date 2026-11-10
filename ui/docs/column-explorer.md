@@ -75,3 +75,5 @@ insets, hover, and selected tint. The explorer fills its parent's height, so
 give it a container with a height.
 
 `rootHeading="Project"` adds a quiet `ListHeader` at the top of every column: the root name in the first column and the chosen parent folder name in later columns. Each heading moves with its column; omit it for the existing headerless presentation.
+
+Use `inset="none"` when the column viewport must clip at its containing surface edges; the default keeps ColumnTrack's layout-margin clearance. Rows and headings retain their normal content insets.

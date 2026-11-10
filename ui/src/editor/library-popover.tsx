@@ -178,6 +178,7 @@ export function createLibraryPopover(
         action={DOCUMENT_ROW_ACTION}
         layout="paged"
         rootHeading="Project"
+        inset="none"
       />
     ) : (
       <TreeList
@@ -224,6 +225,7 @@ export function createLibraryPopover(
         size="small"
         height={px(560)}
         bodyLayout="fill-last"
+        bodyInset="none"
         resizeFromBottom
         headerActions={
           componentsMode ? (

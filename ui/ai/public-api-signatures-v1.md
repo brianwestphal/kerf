@@ -5355,8 +5355,8 @@ export { wireToolbarVisibility };
 ## `@kerfjs/ui/surface-scaffold`
 
 ```ts
-import { n as DialogSurfaceSize, f as DialogSurfaceHeight, g as DialogSurfaceMaxHeight, c as DialogSurfaceBodyLayout } from './dialog-surface-controller-BeKZ3e8Z.js';
-export { D as DialogCloseSource, a as DialogRequestCloseDetail, b as DialogSurface, q as DialogSurfaceCloseEmphasis, d as DialogSurfaceFooterPresentation, e as DialogSurfaceHeaderPresentation, h as DialogSurfaceName, i as DialogSurfaceOptions, j as DialogSurfacePresentation, k as DialogSurfaceProps, l as DialogSurfaceRootAttributes, m as DialogSurfaceSheetMotion, r as DialogSurfaceStack, S as SurfaceInset, o as closeDialog, p as openDialog, s as syncDialogStack, w as wireDialogStack } from './dialog-surface-controller-BeKZ3e8Z.js';
+import { n as DialogSurfaceSize, f as DialogSurfaceHeight, g as DialogSurfaceMaxHeight, c as DialogSurfaceBodyLayout, S as SurfaceInset } from './dialog-surface-controller-BeKZ3e8Z.js';
+export { D as DialogCloseSource, a as DialogRequestCloseDetail, b as DialogSurface, q as DialogSurfaceCloseEmphasis, d as DialogSurfaceFooterPresentation, e as DialogSurfaceHeaderPresentation, h as DialogSurfaceName, i as DialogSurfaceOptions, j as DialogSurfacePresentation, k as DialogSurfaceProps, l as DialogSurfaceRootAttributes, m as DialogSurfaceSheetMotion, r as DialogSurfaceStack, o as closeDialog, p as openDialog, s as syncDialogStack, w as wireDialogStack } from './dialog-surface-controller-BeKZ3e8Z.js';
 import * as kerfjs from 'kerfjs';
 import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
 import { CssLength } from './css-values.js';
@@ -5499,6 +5499,8 @@ interface PinnablePopoverSurfaceProps {
      * `fill-last` stacks fixed rows above one filling last child.
      */
     bodyLayout?: DialogSurfaceBodyLayout;
+    /** Body edge clearance; none lets content owners meet the surface edges. Default default (8px). */
+    bodyInset?: SurfaceInset;
     /** Add a bottom-edge handle that resizes by drag or arrow key without changing pin state. */
     resizeFromBottom?: boolean;
     /** The Pin toggle's accessible name (default `Pin`). */
@@ -5523,7 +5525,7 @@ interface PinnablePopoverSurfaceProps {
  * what `onChange` reports. Use `PopoverDialogSurface` for a dialog that only
  * ever light-dismisses.
  */
-declare function PinnablePopoverSurface({ id, label, describedBy, children, headerActions, presentation, pinned, size, preferredWidth, height, maxHeight, viewportGutter, bodyLayout, resizeFromBottom, pinLabel, closeLabel, moveDescription, rootAttributes, className, slot, }: PinnablePopoverSurfaceProps): kerfjs.SafeHtml;
+declare function PinnablePopoverSurface({ id, label, describedBy, children, headerActions, presentation, pinned, size, preferredWidth, height, maxHeight, viewportGutter, bodyLayout, bodyInset, resizeFromBottom, pinLabel, closeLabel, moveDescription, rootAttributes, className, slot, }: PinnablePopoverSurfaceProps): kerfjs.SafeHtml;
 
 type PopupSurfaceInset = 'none' | 'compact' | 'default' | /** @deprecated Use default. */ 'standard' | /** @deprecated Use none. */ 'list-zero';
 interface PopupSurfaceProps {
@@ -5602,7 +5604,7 @@ declare function pinPopover(surface: HTMLElement, pinned?: boolean): void;
  */
 declare function wirePinnablePopover(surface: HTMLElement, options?: PinnablePopoverOptions): () => void;
 
-export { DialogSurfaceBodyLayout, DialogSurfaceHeight, DialogSurfaceMaxHeight, DialogSurfaceSize, type PinnablePopoverChange, type PinnablePopoverChangeReason, type PinnablePopoverOptions, type PinnablePopoverPlacement, PinnablePopoverSurface, type PinnablePopoverSurfacePresentation, type PinnablePopoverSurfaceProps, PopoverDialogSurface, type PopoverDialogSurfaceDataAttributes, type PopoverDialogSurfaceDismiss, type PopoverDialogSurfacePresentation, type PopoverDialogSurfaceProps, PopupSurface, type PopupSurfaceInset, type PopupSurfaceProps, type SurfacePresentation, isPopoverPinned, pinPopover, wirePinnablePopover };
+export { DialogSurfaceBodyLayout, DialogSurfaceHeight, DialogSurfaceMaxHeight, DialogSurfaceSize, type PinnablePopoverChange, type PinnablePopoverChangeReason, type PinnablePopoverOptions, type PinnablePopoverPlacement, PinnablePopoverSurface, type PinnablePopoverSurfacePresentation, type PinnablePopoverSurfaceProps, PopoverDialogSurface, type PopoverDialogSurfaceDataAttributes, type PopoverDialogSurfaceDismiss, type PopoverDialogSurfacePresentation, type PopoverDialogSurfaceProps, PopupSurface, type PopupSurfaceInset, type PopupSurfaceProps, SurfaceInset, type SurfacePresentation, isPopoverPinned, pinPopover, wirePinnablePopover };
 ```
 
 ## `@kerfjs/ui/list-detail-dialog`
@@ -6224,6 +6226,8 @@ interface ColumnExplorerProps {
     preview?: SafeHtml;
     /** ColumnTrack's layout: `scroll` (default) or `paged` for a phone. */
     layout?: 'scroll' | 'paged';
+    /** ColumnTrack inline clearance; none clips columns at the explorer edges. */
+    inset?: 'default' | 'none';
     /** Each column's minimum width (ColumnTrack's default 250px). */
     minColumnWidth?: CssLength;
     /** How much of the next column a paged layout shows. */
@@ -6244,7 +6248,7 @@ interface ColumnExplorerProps {
  * its children. The application owns the nodes and the chosen path and
  * handles `action`; wire the keyboard with `wireColumnExplorer`.
  */
-declare function ColumnExplorer({ id, label, nodes, path, action, preview, layout, minColumnWidth, peek, rootHeading, density, className, rootAttributes, slot, }: ColumnExplorerProps): SafeHtml;
+declare function ColumnExplorer({ id, label, nodes, path, action, preview, layout, inset, minColumnWidth, peek, rootHeading, density, className, rootAttributes, slot, }: ColumnExplorerProps): SafeHtml;
 
 export { ColumnExplorer, type ColumnExplorerProps, type ExplorerColumn, explorerChosen, explorerColumns };
 ```
@@ -6477,6 +6481,8 @@ interface ColumnTrackProps {
      * in, and scrolling snaps to column starts.
      */
     layout?: ColumnTrackLayout;
+    /** Inline edge clearance: default uses the layout margin; none clips columns at the track edges. */
+    inset?: 'default' | 'none';
     /** Narrowest a `scroll` column gets before the track scrolls; default 250px. */
     minColumnWidth?: CssLength;
     /** How much of the next column a `paged` track shows; default 24px. */
@@ -6503,7 +6509,7 @@ interface ColumnTrackProps {
  * insets and vertical scrolling. Kerf owns the overflow, the paged snapping,
  * and reduced motion.
  */
-declare function ColumnTrack({ children, layout, minColumnWidth, peek, ariaLabel, id, className, rootAttributes, slot, }: ColumnTrackProps): kerfjs.SafeHtml;
+declare function ColumnTrack({ children, layout, inset, minColumnWidth, peek, ariaLabel, id, className, rootAttributes, slot, }: ColumnTrackProps): kerfjs.SafeHtml;
 
 export { ColumnTrack, type ColumnTrackLayout, type ColumnTrackProps };
 ```

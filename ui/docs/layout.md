@@ -904,7 +904,7 @@ equally but never narrow below `minColumnWidth` (250px), so a narrow board
 scrolls sideways instead of crushing them. `layout="paged"` gives each column
 nearly the visible width, lets the next one `peek` in (24px), snaps to column
 starts, hides the scrollbar, and scrolls smoothly unless reduced motion is
-preferred. Choose the layout per device class in the app.
+preferred. Choose the layout per device class in the app. Set `inset="none"` for an edge-to-edge column viewport without changing the content insets of its columns.
 
 Name a board with `ariaLabel`: the track becomes a `role="region"` with that
 name. Name each column the same way: a column `List` takes

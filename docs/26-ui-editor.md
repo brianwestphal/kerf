@@ -713,8 +713,7 @@ each time the Library opens. Folder hierarchy is shown either as an expanded
 `TreeList` or a paged `ColumnExplorer`. A **Document View** segmented control
 switches the layouts; the choice persists per browser under
 `kerf-ui-editor:document-view`. In columns, selecting a folder opens its
-children and the parent-folder button returns one level. Arrow keys navigate
-both layouts. A file row still clicks or drags to insert it. The filter keeps
+children. Quiet parent-folder headings move with each column (`rootHeading="Project"`), replacing the shared path label and Back control (KF-MGAP67). The viewport clips at the Library edges (`inset="none"`, KF-7HP7R9), while rows keep their content insets. Arrow keys navigate both layouts; Left returns to the previous column. A file row still clicks or drags to insert it. The filter keeps
 files whose path holds every word of the query, retaining their ancestor
 folders, or all files when "Documents" holds the query. Without storage or
 `list()`, while listing loads, or after a listing failure, the mode shows its
@@ -1379,8 +1378,6 @@ composing document belongs beside its rows before they render.
     path, ignoring case) over a list of the project's documents, without the
     current document's own file and drafts. Each row leads with its file
     name, under its folder. While the listing loads it says so; an empty
-
-    The Documents column view uses `ColumnExplorer rootHeading="Project"`: quiet parent-folder headings travel with their columns, replacing the shared path label and Back control (KF-MGAP67). Keyboard Left returns to the previous column.
     project, no match, and a failed listing each show an empty state with
     the reason. Choosing a row inserts it.
 

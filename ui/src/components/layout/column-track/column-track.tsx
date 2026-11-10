@@ -8,7 +8,11 @@ import type { CssLength } from '../../../shared/styles/css-values.js';
 /** `scroll` keeps equal min-width columns; `paged` shows one near-full-width column per page. */
 export type ColumnTrackLayout = 'scroll' | 'paged';
 
-const columnTrackProtected = new Set(['data-component', 'data-layout']);
+const columnTrackProtected = new Set([
+  'data-component',
+  'data-layout',
+  'data-inset',
+]);
 /** Attributes a named track owns as a region. */
 const columnTrackRegionAttributes = ['role', 'aria-label'];
 
@@ -25,6 +29,8 @@ export interface ColumnTrackProps {
    * in, and scrolling snaps to column starts.
    */
   layout?: ColumnTrackLayout;
+  /** Inline edge clearance: default uses the layout margin; none clips columns at the track edges. */
+  inset?: 'default' | 'none';
   /** Narrowest a `scroll` column gets before the track scrolls; default 250px. */
   minColumnWidth?: CssLength;
   /** How much of the next column a `paged` track shows; default 24px. */
@@ -55,6 +61,7 @@ export interface ColumnTrackProps {
 export function ColumnTrack({
   children,
   layout = 'scroll',
+  inset = 'default',
   minColumnWidth,
   peek,
   ariaLabel,
@@ -84,6 +91,7 @@ export function ColumnTrack({
       class={`kui-column-track ${className}`.trim()}
       data-component="column-track"
       data-layout={layout}
+      data-inset={inset === 'none' ? 'none' : undefined}
       style={style || undefined}
       slot={slot}
     >
