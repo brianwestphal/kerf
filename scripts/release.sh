@@ -478,9 +478,18 @@ parse_args() {
   NOTES_FILE=""
   while [[ $# -gt 0 ]]; do
     case "$1" in
-      --beta) BETA_MODE=true; shift ;;
-      --dry-run) DRY_RUN=true; shift ;;
-      --skip-checks) SKIP_CHECKS=true; shift ;;
+      --beta)
+        BETA_MODE=true
+        shift
+        ;;
+      --dry-run)
+        DRY_RUN=true
+        shift
+        ;;
+      --skip-checks)
+        SKIP_CHECKS=true
+        shift
+        ;;
       --version | --notes)
         if [[ -z "${2:-}" || "$2" == --* ]]; then
           error "$1 requires a value. See --help."
@@ -489,10 +498,16 @@ parse_args() {
         if [[ "$1" == "--version" ]]; then DRY_VERSION="$2"; else NOTES_FILE="$2"; fi
         shift 2
         ;;
-      --version=*) DRY_VERSION="${1#--version=}"; shift ;;
-      --notes=*) NOTES_FILE="${1#--notes=}"; shift ;;
+      --version=*)
+        DRY_VERSION="${1#--version=}"
+        shift
+        ;;
+      --notes=*)
+        NOTES_FILE="${1#--notes=}"
+        shift
+        ;;
       -h | --help)
-        cat <<'EOF'
+        cat << 'EOF'
 Usage: bash scripts/release.sh [--beta]
        bash scripts/release.sh --dry-run --version X.Y.Z --notes <file> [--skip-checks]
 
@@ -506,7 +521,10 @@ For a beta dry-run use scripts/release-beta-auto.sh --dry-run instead.
 EOF
         exit 0
         ;;
-      *) error "Unrecognized arg: $1. See --help."; exit 1 ;;
+      *)
+        error "Unrecognized arg: $1. See --help."
+        exit 1
+        ;;
     esac
   done
   if [[ "$DRY_RUN" == "true" ]]; then
