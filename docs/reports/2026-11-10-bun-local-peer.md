@@ -2,7 +2,7 @@
 
 **The missing-selector failure is reproduced and explained by a local-file snapshot plus ancestor fallback.** Bun 1.4.4 installs the site's `file:..` Kerf peer before `dist` exists. Building the root afterward does not update that installed directory. TypeScript then selects the older transitive `kerfjs@4.4.1` declarations in the root `node_modules`, which do not export `selector`.
 
-This is diagnosis and disposable candidate-policy evidence. Production remains npm. No canonical install/build reordering, production manifest/lock edit, npm fallback, global Bun link registration/config change, or installer adoption is part of this change. Exact Linux execution of the new probe remains required before closing the qualification finding.
+This is diagnosis and disposable candidate-policy evidence. Production remains npm. No canonical install/build reordering, production manifest/lock edit, npm fallback, global Bun link registration/config change, or installer adoption is part of this change. The exact Linux execution recorded below supplies the previously missing reproduction evidence; adoption remains a separate decision.
 
 ## Mechanism and minimal controls
 
@@ -67,7 +67,7 @@ Assertions require the original missing-selector failure, snapshot invisibility,
 Canonical root manifest/npm-lock hashes: `acca6cd5646cf25666ec561d35585f7f89f7d827e554099439526475718144c9` / `5e833638ed0529875f869a6499860107fd3158cfcee2a93a0247f97701ee39c8`.
 Canonical site manifest/npm-lock hashes: `eed4e3acc0997daeb21942dadd15293858baeeed0f96de3670d0a0ec47cc3249` / `3d9f1d30172935aaeb2be7e85609bf4c517ea1287fa1f24e7210f6c6d78633e0`.
 
-Three unit regressions exercise real compiler fallback and filesystem copy/symlink/atomic-replacement behavior. The full local script separately executed all five real-installer minimal cases, the exact repository-order baseline and the fresh-build link-policy counterfactual. The qualification worker owns the Linux manual scope and artifact at its exact future commit; these macOS results do not stand in for that run.
+Three unit regressions exercise real compiler fallback and filesystem copy/symlink/atomic-replacement behavior. The full local script separately executed all five real-installer minimal cases, the exact repository-order baseline and the fresh-build link-policy counterfactual. At that initial local checkpoint, Linux execution remained unverified; these macOS results did not stand in for it. The following section records the subsequent exact-commit Linux run and artifact.
 
 ## Exact Linux reproduction and separate link candidate
 
