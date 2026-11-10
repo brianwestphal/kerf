@@ -81,6 +81,7 @@ export function ListTreeItem({
       data-has-description={String(Boolean(description))}
       data-density={density === 'standard' ? 'default' : density}
       data-divider="none"
+      data-kui-tree-row=""
       data-kui-disabled={disabled ? 'true' : undefined}
       draggable={draggable && !disabled ? 'true' : undefined}
       aria-level={String(level)}

@@ -4,6 +4,7 @@ import { each, mount, signal } from 'kerfjs';
 import { delegateActions } from 'kerfjs/actions';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
+import { ListTreeItem } from '../../src/components/collections/list-item/parts/tree-item.js';
 import {
   moveTreeListNode,
   TreeList,
@@ -242,12 +243,42 @@ describe('TreeList markup', () => {
     return host.firstElementChild as HTMLElement;
   };
 
+  it('owns its divider-free tree-row marker over caller attributes', () => {
+    const host = document.createElement('div');
+    host.innerHTML = String(
+      ListTreeItem({
+        itemId: 'owned',
+        label: 'Owned',
+        level: 1,
+        position: 1,
+        setSize: 1,
+        expandable: false,
+        expanded: false,
+        selected: false,
+        focusable: true,
+        action: 'pick',
+        toggleAction: 'toggle',
+        rootAttributes: {
+          'data-kui-tree-row': 'caller',
+          'data-divider': 'both',
+        },
+      }),
+    );
+    const row = host.firstElementChild!;
+    expect(row.getAttribute('data-kui-tree-row')).toBe('');
+    expect(row.getAttribute('data-divider')).toBe('none');
+  });
+
   it('renders an ARIA tree of ListItem treeitem rows', () => {
     const tree = render({ selected: 'index' });
     expect(tree.getAttribute('role')).toBe('tree');
     expect(tree.getAttribute('aria-label')).toBe('Files');
     expect(tree.dataset.component).toBe('tree-list');
     const rows = [...tree.querySelectorAll<HTMLElement>('[role="treeitem"]')];
+    expect(rows.every((row) => row.hasAttribute('data-kui-tree-row'))).toBe(
+      true,
+    );
+    expect(rows.every((row) => row.dataset.divider === 'none')).toBe(true);
     expect(rows.map((row) => row.dataset.itemId)).toEqual([
       'src',
       'components',

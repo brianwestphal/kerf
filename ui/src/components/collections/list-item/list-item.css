@@ -88,7 +88,12 @@
   border-start-end-radius: 0;
 }
 
-.kui-list-item:has(+ :is([data-divider="before"], [data-divider="both"])) {
+/* Internal TreeList rows never carry dividers. Exclude them before :has so
+   sibling insertion/removal does not invalidate divider matching across a
+   large tree. Public ListItem rows keep their custom-role divider behavior. */
+.kui-list-item:not([data-kui-tree-row]):has(
+    + :is([data-divider="before"], [data-divider="both"])
+  ) {
   border-end-start-radius: 0;
   border-end-end-radius: 0;
 }

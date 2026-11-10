@@ -49,3 +49,41 @@ test('ListItem uses public resting and state border tones from its list', async 
     });
   }
 });
+
+test('ListItem divider corners preserve custom tree roles and nested siblings', async ({
+  page,
+}) => {
+  await page.goto('/?component=list-item');
+  const row = page.locator('[data-item-id="member-0"]');
+  await row.evaluate((element) => {
+    element.setAttribute('role', 'treeitem');
+    element.setAttribute('data-divider', 'none');
+    (element as HTMLElement).style.setProperty(
+      '--kui-list-item-radius',
+      '12px',
+    );
+    const nested = document.createElement('div');
+    nested.append(element);
+    const next = document.createElement('div');
+    next.setAttribute('data-divider', 'before');
+    nested.append(next);
+    document.querySelector('[data-demo="list-item"]')!.append(nested);
+  });
+  const next = row.locator('xpath=following-sibling::*[1]');
+  for (const divider of ['before', 'both', 'after', 'none']) {
+    await next.evaluate(
+      (element, value) => element.setAttribute('data-divider', value),
+      divider,
+    );
+    await expect(row).toHaveCSS(
+      'border-bottom-left-radius',
+      ['before', 'both'].includes(divider) ? '0px' : '12px',
+    );
+    await expect(row).toHaveCSS(
+      'border-bottom-right-radius',
+      ['before', 'both'].includes(divider) ? '0px' : '12px',
+    );
+  }
+  await next.evaluate((element) => element.remove());
+  await expect(row).toHaveCSS('border-bottom-left-radius', '12px');
+});
