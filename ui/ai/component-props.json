@@ -16692,7 +16692,7 @@
             "text": "readonly TreeListNode[]"
           },
           "required": true,
-          "description": "The hierarchy. The application owns it."
+          "description": "The immutable hierarchy. Replace changed nodes to update their content."
         },
         {
           "name": "expanded",

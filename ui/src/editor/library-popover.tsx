@@ -1,5 +1,5 @@
 // The editor's component and document Library popover and its palette views.
-import { raw, type Signal } from 'kerfjs';
+import { computed, raw, type Signal } from 'kerfjs';
 import {
   Columns3,
   Component,
@@ -167,8 +167,28 @@ export function createLibraryPopover(
     </List>
   );
 
-  const libraryDocumentGroup = (documents: readonly string[]) => {
-    const nodes = libraryDocumentTree(documents);
+  // Keep immutable node identities stable while disclosure/selection changes.
+  const filteredDocuments = computed(() =>
+    libraryDocuments(libraryFiles.value, paletteFilter.value),
+  );
+  const documentNodes = computed(() =>
+    libraryDocumentTree(filteredDocuments.value),
+  );
+  const documentFolders = computed(
+    () =>
+      new Set(
+        filteredDocuments.value.flatMap((path) => {
+          const parts = path.split('/').filter(Boolean);
+          return parts
+            .slice(0, -1)
+            .map((_, index) =>
+              documentFolderId(`${parts.slice(0, index + 1).join('/')}/`),
+            );
+        }),
+      ),
+  );
+  const libraryDocumentGroup = () => {
+    const nodes = documentNodes.value;
     return documentView.value === 'columns' ? (
       <ColumnExplorer
         id="editor-library-documents-columns"
@@ -187,16 +207,9 @@ export function createLibraryPopover(
         nodes={nodes}
         expanded={
           new Set(
-            documents
-              .flatMap((path) => {
-                const parts = path.split('/').filter(Boolean);
-                return parts
-                  .slice(0, -1)
-                  .map((_, index) =>
-                    documentFolderId(`${parts.slice(0, index + 1).join('/')}/`),
-                  );
-              })
-              .filter((id) => !collapsedDocumentFolders.value.has(id)),
+            [...documentFolders.value].filter(
+              (id) => !collapsedDocumentFolders.value.has(id),
+            ),
           )
         }
         selected={documentPath.value.at(-1)}
@@ -215,9 +228,7 @@ export function createLibraryPopover(
   const libraryPopover = () => {
     const componentsMode = libraryMode.value === 'components';
     const groups = componentsMode ? paletteMatches() : [];
-    const documents = componentsMode
-      ? []
-      : libraryDocuments(libraryFiles.value, paletteFilter.value);
+    const documents = componentsMode ? [] : filteredDocuments.value;
     return (
       <PinnablePopoverSurface
         id={LIBRARY_ID}
@@ -322,7 +333,7 @@ export function createLibraryPopover(
               />
             )
           ) : documents.length ? (
-            libraryDocumentGroup(documents)
+            libraryDocumentGroup()
           ) : (
             <EmptyState
               title="No matching documents"

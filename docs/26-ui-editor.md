@@ -712,7 +712,7 @@ has separate Components and Documents modes. With a storage whose optional
 `list()` exists (§3.7), Documents shows the same project files Insert Document
 offers (every `.kui.json` path except the current file and drafts), refreshed
 each time the Library opens. Folder hierarchy is shown either as an expanded
-`TreeList` or a paged `ColumnExplorer`. A **Document View** segmented control
+`TreeList` or a paged `ColumnExplorer`. The filtered hierarchy is memoized across disclosure changes, and TreeList reuses unchanged keyed rows for prompt expansion/collapse in large projects. A **Document View** segmented control
 switches the layouts; the choice persists per browser under
 `kerf-ui-editor:document-view`. In columns, selecting a folder opens its
 children. Quiet parent-folder headings move with each column (`rootHeading="Project"`), replacing the shared path label and Back control (KF-MGAP67). The viewport clips at the Library edges (`inset="none"`, KF-7HP7R9), while rows keep their content insets. Arrow keys navigate both layouts; Left returns to the previous column. A file row still clicks or drags to insert it. The filter keeps

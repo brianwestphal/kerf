@@ -1,3 +1,5 @@
+import { each } from 'kerfjs';
+
 import {
   filterDataAttributes,
   type RootDataAttributes,
@@ -25,7 +27,7 @@ export interface TreeListProps {
   id: string;
   /** The tree's accessible name, such as "Document outline". */
   label: string;
-  /** The hierarchy. The application owns it. */
+  /** The immutable hierarchy. Replace changed nodes to update their content. */
   nodes: readonly TreeListNode[];
   /** Ids of the expanded nodes. The application owns this state. */
   expanded: ReadonlySet<string> | readonly string[];
@@ -77,6 +79,7 @@ export function TreeList({
       : treeListPath(nodes, selected)
           .reverse()
           .find((pathId) => visible.has(pathId))) ?? rows[0]?.node.id;
+  const byNode = new Map(rows.map((row) => [row.node, row]));
   return (
     <div
       {...filterDataAttributes(rootAttributes, TREE_LIST_PROTECTED)}
@@ -88,28 +91,52 @@ export function TreeList({
       data-tree-list-id={id}
       slot={slot}
     >
-      {rows.map((row) => (
-        <ListTreeItem
-          itemId={row.node.id}
-          label={row.node.label}
-          description={row.node.description}
-          icon={row.node.icon}
-          trailing={row.node.trailing}
-          level={row.level}
-          position={row.position}
-          setSize={row.setSize}
-          expandable={row.expandable}
-          expanded={row.expanded}
-          selected={row.node.id === selected}
-          focusable={row.node.id === focusId}
-          disabled={row.node.disabled}
-          draggable={row.node.draggable}
-          rootAttributes={row.node.rootAttributes}
-          density={density}
-          action={action}
-          toggleAction={toggleAction}
-        />
-      ))}
+      {each(
+        rows.map((row) => row.node),
+        (node) => {
+          const row = byNode.get(node)!;
+          return (
+            <ListTreeItem
+              itemId={row.node.id}
+              label={row.node.label}
+              description={row.node.description}
+              icon={row.node.icon}
+              trailing={row.node.trailing}
+              level={row.level}
+              position={row.position}
+              setSize={row.setSize}
+              expandable={row.expandable}
+              expanded={row.expanded}
+              selected={row.node.id === selected}
+              focusable={row.node.id === focusId}
+              disabled={row.node.disabled}
+              draggable={row.node.draggable}
+              rootAttributes={row.node.rootAttributes}
+              density={density}
+              action={action}
+              toggleAction={toggleAction}
+            />
+          );
+        },
+        {
+          key: `tree-list:${id}`,
+          cacheKey: (node) => {
+            const row = byNode.get(node)!;
+            return JSON.stringify([
+              row.level,
+              row.position,
+              row.setSize,
+              row.expandable,
+              row.expanded,
+              node.id === selected,
+              node.id === focusId,
+              density,
+              action,
+              toggleAction,
+            ]);
+          },
+        },
+      )}
     </div>
   );
 }

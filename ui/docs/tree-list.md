@@ -44,6 +44,10 @@ re-renders), a `label`, and optionally a `description`, an `icon` (an unsized
 node `hasChildren` to make it expandable before its children are loaded, and
 load them when `toggleAction` expands it.
 
+Rows use native keyed reconciliation. Keep unchanged node objects stable and
+replace a node when its content changes. Expansion, selection, and row position
+update independently, preserving unaffected row DOM and avoiding repeated row rendering.
+
 ## Props
 
 - `id` and `label` (required): the tree's identity and accessible name.

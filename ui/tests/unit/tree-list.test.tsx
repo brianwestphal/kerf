@@ -86,6 +86,56 @@ describe('treeListRows', () => {
   });
 });
 
+describe('TreeList reconciliation', () => {
+  it('reuses unchanged branch content when another folder is collapsed', () => {
+    let reads = 0;
+    const untouched: TreeListNode = {
+      id: 'untouched',
+      get label() {
+        reads += 1;
+        return 'Untouched';
+      },
+    };
+    const stableNodes = [
+      {
+        id: 'folder',
+        label: 'Folder',
+        children: [{ id: 'child', label: 'Child' }],
+      },
+      untouched,
+    ];
+    const expanded = signal<readonly string[]>(['folder']);
+    const host = document.createElement('div');
+    document.body.append(host);
+    const dispose = mount(host, () =>
+      TreeList({
+        id: 'memo-tree',
+        label: 'Files',
+        nodes: stableNodes,
+        expanded: expanded.value,
+        action: 'select',
+        toggleAction: 'toggle',
+      }),
+    );
+    const original = host.querySelector('[data-item-id="untouched"]');
+    const initialReads = reads;
+    expanded.value = [];
+    expect(reads).toBe(initialReads);
+    expect(host.querySelector('[data-item-id="untouched"]')).toBe(original);
+    expect(
+      host
+        .querySelector('[data-item-id="folder"]')
+        ?.getAttribute('aria-expanded'),
+    ).toBe('false');
+    expect(host.querySelector('[data-item-id="child"]')).toBeNull();
+    expanded.value = ['folder'];
+    expect(host.querySelector('[data-item-id="child"]')).not.toBeNull();
+    expect(reads).toBe(initialReads);
+    dispose();
+    host.remove();
+  });
+});
+
 describe('TreeList markup', () => {
   const render = (props: Partial<Parameters<typeof TreeList>[0]> = {}) => {
     const host = document.createElement('div');

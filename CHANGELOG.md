@@ -8,6 +8,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Fixed
 
+- **Library disclosure latency (KF-1XBJDT).** The document hierarchy stays stable across disclosure changes and TreeList reuses native keyed rows. A 5,000-file Chromium check reduced collapse from about 421 ms to 91–95 ms; WebKit measured 733–770 ms after the change.
+
 - **Library minimum size (KF-GC3PRB).** Shrinking the Library keeps its search and result rows visible through a public, viewport-capped PinnablePopoverSurface `minHeight` option. Keyboard resize remembers the actual constrained height without pinning.
 
 - **Library keyboard-cleared search (KF-0XRNXD).** Select All then Delete now restores the same empty editor, placeholder, and field height as the clear button by installing shared SearchField wiring on the Library surface.

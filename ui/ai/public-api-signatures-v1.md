@@ -6146,7 +6146,7 @@ interface TreeListProps {
     id: string;
     /** The tree's accessible name, such as "Document outline". */
     label: string;
-    /** The hierarchy. The application owns it. */
+    /** The immutable hierarchy. Replace changed nodes to update their content. */
     nodes: readonly TreeListNode[];
     /** Ids of the expanded nodes. The application owns this state. */
     expanded: ReadonlySet<string> | readonly string[];
