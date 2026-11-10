@@ -185,7 +185,7 @@
   },
   "dependencies": {
     "@preact/signals-core": "^1.14.1",
-    "minimatch": "^9.0.9",
+    "minimatch": "^6.2.3",
     "yaml": "^2.9.1"
   },
   "devDependencies": {
@@ -214,7 +214,8 @@
     "vitest": "^4.1.12"
   },
   "overrides": {
-    "esbuild": "0.28.2"
+    "esbuild": "0.28.2",
+    "minimatch@>=7 <11.0.1": "^11.0.5"
   },
   "gitgist": {
     "provider": "claude-cli",

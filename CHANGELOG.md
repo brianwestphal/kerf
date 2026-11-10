@@ -8,6 +8,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Fixed
 
+- **Dependency security (KF-3NWVZN).** Refresh vulnerable tooling, docs and example dependencies. The setup CLI retains Node 18 support through the unaffected minimatch 6 branch; contributor tooling resolves affected minimatch versions to patched 11.x. Astro stays on its patched 7.3 line to preserve the docs site's Node 22.12 floor.
+
 - **Downstream Library previews (KF-RQJ15M).** Hosts and component catalogs can register typed Library-only samples, static schematics and icon fallbacks. Built-ins use the same extension; inert shadow thumbnails share styles and refit loaded assets, while insertion defaults and canvas rendering stay independent.
 
 - Editor container, document and icon pickers restore the empty search placeholder and geometry after keyboard deletion, using their own SearchField wiring without duplicating play-stage helpers (KF-TBVRS4).
