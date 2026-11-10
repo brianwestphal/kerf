@@ -259,6 +259,27 @@ describe('Embed in', () => {
     );
     expect(choices()).toEqual([]);
     expect(dialog.textContent).toContain('No matching container');
+    // Native deletion may leave a BR in the contenteditable. The picker owns
+    // SearchField mechanics, so empty markup and placeholder state recover.
+    search.innerHTML = '<br>';
+    search.dispatchEvent(
+      new InputEvent('input', {
+        bubbles: true,
+        inputType: 'deleteContentBackward',
+      }),
+    );
+    expect(search.textContent).toBe('');
+    expect(search.querySelector('br')).toBeNull();
+    expect(
+      search
+        .closest('[data-search-field-id]')
+        ?.getAttribute('data-placeholder-visible'),
+    ).toBe('true');
+    expect(choices()).toContain('@kerfjs/ui:sized-region');
+    search.textContent = 'zzz';
+    search.dispatchEvent(
+      new InputEvent('input', { bubbles: true, inputType: 'insertText' }),
+    );
     dialog
       .querySelector<HTMLElement>('[data-action="editor-embed-clear"]')!
       .click();

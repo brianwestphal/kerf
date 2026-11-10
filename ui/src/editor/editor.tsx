@@ -3853,6 +3853,13 @@ export function createEditor(options: EditorOptions) {
   ];
 
   const wireSearch = (root: HTMLElement) => [
+    // Picker dialogs own their search mechanics. The Library owns its own
+    // helper, while play-stage and TagField searches have separate wiring.
+    ...[EMBED_DIALOG, INSERT_DOCUMENT_DIALOG, ICON_DIALOG].flatMap((id) => {
+      // Insert Document exists only for hosts that supply storage.
+      const dialog = root.querySelector<HTMLElement>(`#${id}`);
+      return dialog ? [wireSearchFields(dialog, { collapsible: false })] : [];
+    }),
     delegate<HTMLElement>(
       root,
       'input',

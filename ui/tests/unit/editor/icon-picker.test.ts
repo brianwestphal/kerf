@@ -196,6 +196,24 @@ describe(
       expect(dialog(root).textContent).toMatch(/Showing \d+ of \d+ icons/);
       // The chosen icon reads as pressed.
       search(root, 'circle');
+      const query = dialog(root).querySelector<HTMLElement>(
+        '[data-editor-icon-search]',
+      )!;
+      query.innerHTML = '<br>';
+      query.dispatchEvent(
+        new InputEvent('input', {
+          bubbles: true,
+          inputType: 'deleteContentBackward',
+        }),
+      );
+      expect(query.textContent).toBe('');
+      expect(query.querySelector('br')).toBeNull();
+      expect(
+        query
+          .closest('[data-search-field-id]')
+          ?.getAttribute('data-placeholder-visible'),
+      ).toBe('true');
+      search(root, 'circle');
       const circle = dialog(root).querySelector('[data-editor-icon="circle"]')!;
       expect(
         circle.getAttribute('aria-pressed') ??

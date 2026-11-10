@@ -720,6 +720,10 @@ files whose path holds every word of the query, retaining their ancestor
 folders, or all files when "Documents" holds the query. Without storage or
 `list()`, while listing loads, or after a listing failure, the mode shows its
 empty state. The Library installs `wireSearchFields` on its own surface so Select All followed by Delete restores canonical empty text, placeholder, and field sizing just like the clear button (KF-0XRNXD).
+The container, Insert Document and icon picker dialogs own the same search
+mechanics on their individual surfaces. Their keyboard-cleared fields restore
+the placeholder, focus and clear-button geometry without wiring the play stage
+or the Inspector's independently owned TagFields again (KF-TBVRS4).
 
 - **A click inserts it.** A component's click shows its documentation; a
   document has none, so its click reads the document (`storage.read`) and

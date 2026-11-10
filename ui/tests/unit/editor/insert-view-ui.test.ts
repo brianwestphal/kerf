@@ -153,6 +153,25 @@ describe('Insert Document from a picker', () => {
       new InputEvent('input', { bubbles: true, inputType: 'insertText' }),
     );
     expect(dialog(root).textContent).toContain('No matching document');
+    search.innerHTML = '<br>';
+    search.dispatchEvent(
+      new InputEvent('input', {
+        bubbles: true,
+        inputType: 'deleteContentBackward',
+      }),
+    );
+    expect(search.textContent).toBe('');
+    expect(search.querySelector('br')).toBeNull();
+    expect(
+      search
+        .closest('[data-search-field-id]')
+        ?.getAttribute('data-placeholder-visible'),
+    ).toBe('true');
+    expect(picks(root)).toEqual(['app.kui.json', BROKEN, ROW_PATH, SLOTTED]);
+    search.textContent = 'nothing-matches';
+    search.dispatchEvent(
+      new InputEvent('input', { bubbles: true, inputType: 'insertText' }),
+    );
     dialog(root)
       .querySelector<HTMLElement>(
         '[data-action="editor-insert-document-clear"]',

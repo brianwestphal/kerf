@@ -8,6 +8,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Fixed
 
+- Editor container, document and icon pickers restore the empty search placeholder and geometry after keyboard deletion, using their own SearchField wiring without duplicating play-stage helpers (KF-TBVRS4).
+
 - Stable release CLI rejects unknown options and supports an explicit noninteractive dry-run plan without altering release state or metadata, fetching/creating tags, committing, pushing, or publishing (KF-Y9A9XE).
 
 - **Shared generated component runtime (KF-4DR6XR).** Generated TypeScript and JavaScript views import one lightweight `@kerfjs/ui/view-runtime` helper instead of repeating it in every module. The curried boundary preserves component prop checking and linear catalog bundling analysis; declarations-only and component-free views add no runtime import.
