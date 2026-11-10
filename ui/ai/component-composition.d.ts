@@ -152,7 +152,24 @@ export interface CatalogCompositionEntry {
   diagnostics: CatalogDiagnostic[];
   provenance: { selection: string; composition: string };
 }
+/** Literal Library sample data; view bindings and expressions are not evaluated. */
+export type CatalogLibraryPreviewJson =
+  | null
+  | string
+  | number
+  | boolean
+  | readonly CatalogLibraryPreviewJson[]
+  | { readonly [key: string]: CatalogLibraryPreviewJson };
+export interface CatalogLibraryPreview {
+  readonly props?: Readonly<Record<string, CatalogLibraryPreviewJson>>;
+}
 export interface ComponentComposition {
+  /** Editor-only registrations, relative to this catalog or a package export. */
+  libraryPreviewModule?: string;
+  /** Library-only literal samples; no effect on insertion, defaults or production views. */
+  libraryPreviews?: Readonly<
+    Record<CatalogQualifiedKey, CatalogLibraryPreview>
+  >;
   $schema?: string;
   schemaVersion: 1;
   package: string;

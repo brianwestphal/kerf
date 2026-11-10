@@ -10,8 +10,56 @@
       "kind": "component",
       "source": "src/order-card.tsx",
       "publicExports": ["OrderCard"],
-      "parents": { "mode": "any", "entries": [] },
+      "parents": {
+        "mode": "any",
+        "entries": []
+      },
+      "zones": []
+    },
+    {
+      "key": "orders-app:order-workspace",
+      "package": "orders-app",
+      "id": "order-workspace",
+      "name": "OrderWorkspace",
+      "kind": "component",
+      "source": "src/order-workspace.tsx",
+      "publicExports": ["OrderWorkspace"],
+      "parents": {
+        "mode": "any",
+        "entries": []
+      },
+      "zones": []
+    },
+    {
+      "key": "orders-app:order-marker",
+      "package": "orders-app",
+      "id": "order-marker",
+      "name": "OrderMarker",
+      "kind": "component",
+      "source": "src/order-marker.tsx",
+      "publicExports": ["OrderMarker"],
+      "parents": {
+        "mode": "any",
+        "entries": []
+      },
       "zones": []
     }
-  ]
+  ],
+  "compatibility": {
+    "componentCatalog": "not-applicable",
+    "identity": "package:id"
+  },
+  "libraryPreviews": {
+    "orders-app:order-card": {
+      "props": {
+        "title": "Order #1042",
+        "total": 4200,
+        "status": "shipped",
+        "rootAttributes": {
+          "data-library-order-sample": ""
+        }
+      }
+    }
+  },
+  "libraryPreviewModule": "./src/library-previews.tsx"
 }

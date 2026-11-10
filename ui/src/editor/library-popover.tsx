@@ -1,5 +1,5 @@
 // The editor's component and document Library popover and its palette views.
-import { computed, raw, type Signal } from 'kerfjs';
+import { computed, type Signal } from 'kerfjs';
 import {
   Columns3,
   Component,
@@ -33,7 +33,6 @@ import {
   LIBRARY_ID,
   LIBRARY_MODE_ACTION,
   type LibraryMode,
-  PALETTE_ICONS,
   PALETTE_VIEW_ACTION,
   type PaletteView,
 } from './library-memory.js';
@@ -42,7 +41,6 @@ import {
   documentFolderId,
   libraryDocumentTree,
 } from './model/library-document-tree.js';
-import { paletteSketch } from './palette-schematics.js';
 import { PALETTE_ACTION, PALETTE_CLEAR_ACTION } from './shell-names.js';
 
 export interface LibraryPopoverState {
@@ -91,6 +89,17 @@ export function createLibraryPopover(
       .filter((group) => group.items.length);
   };
 
+  const fallbackIcon = (key: string) => {
+    try {
+      return LucideIcon({
+        icon: catalog.libraryPreviews?.[key]?.icon ?? Component,
+        name: 'component',
+      });
+    } catch {
+      return LucideIcon({ icon: Component, name: 'component' });
+    }
+  };
+
   const paletteSelected = (key: string) =>
     selection.value?.kind === 'component' && selection.value.key === key;
 
@@ -122,28 +131,15 @@ export function createLibraryPopover(
                     'data-key': item.key,
                   }}
                 >
-                  {paletteSketch(item.key) || PALETTE_ICONS[item.key] ? (
-                    <div class="kui-editor__palette-thumb" aria-hidden="true">
-                      {PALETTE_ICONS[item.key] ? (
-                        <LucideIcon
-                          icon={PALETTE_ICONS[item.key]!}
-                          name="component"
-                        />
-                      ) : (
-                        raw(paletteSketch(item.key)!)
-                      )}
-                    </div>
-                  ) : (
-                    <div
-                      class="kui-editor__palette-thumb"
-                      {...{ [HOOK.paletteThumb]: item.key }}
-                      data-morph-skip
-                      aria-hidden="true"
-                      inert
-                    >
-                      <LucideIcon icon={Component} name="component" />
-                    </div>
-                  )}
+                  <div
+                    class="kui-editor__palette-thumb"
+                    {...{ [HOOK.paletteThumb]: item.key }}
+                    data-morph-skip
+                    aria-hidden="true"
+                    inert
+                  >
+                    {fallbackIcon(item.key)}
+                  </div>
                   <Text variant="span" size="compact" wrap="truncate">
                     {item.name}
                   </Text>

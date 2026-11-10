@@ -47,6 +47,10 @@ export function kerfUi(): Plugin {
 
 /** One kerf for the app and `@kerfjs/ui` alike: the repository source. */
 export const kerfAliases: AliasOptions = [
+  {
+    find: /^kerfjs\/jsx-dev-runtime$/,
+    replacement: `${repo}src/jsx-runtime.ts`,
+  },
   { find: /^kerfjs\/jsx-runtime$/, replacement: `${repo}src/jsx-runtime.ts` },
   { find: /^kerfjs\/actions$/, replacement: `${repo}src/actions.ts` },
   { find: /^kerfjs\/overlay$/, replacement: `${repo}src/overlay.ts` },

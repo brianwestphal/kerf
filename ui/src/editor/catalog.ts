@@ -5,6 +5,12 @@
 import { createViewCatalog, type ViewCatalog } from '@kerfjs/ui/view';
 import type { SafeHtml } from 'kerfjs';
 
+import { KERF_UI_LIBRARY_PREVIEWS } from './library-preview-defaults.js';
+import {
+  type LibraryPreviews,
+  libraryPreviewSamples,
+  mergeLibraryPreviews,
+} from './library-previews.js';
 import type { InspectorComponent } from './model/inspector.js';
 import { KERF_UI_PLACEHOLDERS, type Placeholders } from './placeholders.js';
 
@@ -53,6 +59,8 @@ export interface EditorCatalog {
    * (KF-H3CB2P): Kerf UI's, then the host's.
    */
   readonly placeholders: Placeholders;
+  /** Library-only previews; no effect on component insertion or the canvas. */
+  readonly libraryPreviews?: LibraryPreviews;
 }
 
 export interface EditorCatalogInputs {
@@ -69,6 +77,8 @@ export interface EditorCatalogInputs {
    * fresh value. They add to and replace Kerf UI's own.
    */
   readonly placeholders?: Placeholders;
+  /** Later whole entries replace catalog samples and first-party previews. */
+  readonly libraryPreviews?: LibraryPreviews;
 }
 
 /** The category of a package component no selection catalog lists. */
@@ -106,6 +116,11 @@ export function createEditorCatalog(
     componentNames,
     components: inputs.components,
     placeholders: { ...KERF_UI_PLACEHOLDERS, ...inputs.placeholders },
+    libraryPreviews: mergeLibraryPreviews(
+      KERF_UI_LIBRARY_PREVIEWS,
+      libraryPreviewSamples(inputs.composition),
+      inputs.libraryPreviews,
+    ),
     paletteGroups() {
       const groups = new Map<string, { key: string; name: string }[]>();
       const add = (category: string, key: string) => {

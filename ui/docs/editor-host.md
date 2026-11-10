@@ -83,12 +83,12 @@ Options:
 
 ```ts
 // src/kerf-ui-registry.ts
-import { OrderCard } from "./order-card.js";
+import { CustomOrderCard } from "./custom-order-card.js";
 
 export default {
-  // Preview the card with sample data the document does not carry.
-  "orders-app:order-card": (props: Parameters<typeof OrderCard>[0]) =>
-    OrderCard({ total: 4200, ...props }),
+  // Replace the real function, including canvas and play rendering.
+  // Use libraryPreviews below for Library-only sample data.
+  "orders-app:order-card": CustomOrderCard,
 };
 ```
 
@@ -331,3 +331,57 @@ function that answers the same typed requests. Export of compiler-backed
 parameters waits for whole-document checking against actual generated bindings
 and defaults. An unavailable compiler or a failed check prevents that export.
 Legacy parameter descriptors continue to work without a compiler service.
+
+## Library-only component previews
+
+Use `defineLibraryPreviews` from `@kerfjs/ui/editor` with a literal map of your
+component functions. It checks each catalog key and each sample prop against the
+component's real interface:
+
+```tsx
+import "./library-previews.css";
+import { defineLibraryPreviews } from "@kerfjs/ui/editor";
+import { MapPin } from "lucide";
+import { OrderCard, OrderWorkspace, OrderMarker } from "./orders.js";
+
+export default defineLibraryPreviews({
+  "orders:card": OrderCard,
+  "orders:workspace": OrderWorkspace,
+  "orders:marker": OrderMarker,
+}, {
+  "orders:card": { sampleProps: () => ({ title: "Order #1042", total: 4200 }) },
+  "orders:workspace": { render: () => <svg viewBox="0 0 96 72" width="100%" height="100%" aria-hidden="true">{/* schematic */}</svg>, fit: "fill" },
+  "orders:marker": { icon: MapPin },
+});
+```
+
+Pass that map through `createEditorCatalog({ libraryPreviews })` or
+`createEditor({ libraryPreviews })`. For Vite, put its default export in
+`src/kerf-ui-library-previews.ts`, or name a module with
+`kerfUiEditor({ libraryPreviews: "src/library-previews.tsx" })`. Installed package
+composition catalogs may name their editor-only ESM module with
+`libraryPreviewModule` (relative to the catalog or an installed package export).
+Their `libraryPreviews` JSON field contains only `{ props: { ...literalJSON } }`
+entries by component key. JSON does not evaluate `$param`, `$css`, `$icon`,
+functions or JavaScript. Use executable factory samples for SafeHtml content,
+functions, models or signals. A custom host imports executable maps explicitly.
+
+Precedence is built-ins, catalog JSON samples, package modules in catalog order,
+catalog host overrides, then editor host overrides. Later registrations replace
+whole entries; `{}` restores automatic live rendering. A static renderer runs
+before ordinary seeded rendering, with sampled props. Thrown, undefined, invalid
+or empty renderer results fall back to ordinary rendering; incompatible samples
+retry ordinary props. Visually empty markup shows the configured icon or the
+generic component icon. For visible but unhelpful ordinary output, supply a
+schematic or a static LucideIcon renderer. `fit: "contain"` is the default;
+`"fill"` is for schematics authored to occupy the complete 4:3 tile.
+
+Factories/renderers are synchronous, pure and static; thumbnail output is cached
+per editor. No widgets are mounted or wired there. Output stays inert and hidden
+from accessibility APIs inside an isolated shadow root; the tile itself keeps the
+component's accessible name. Import preview CSS and assets from the module as
+usual: readable page stylesheets are shared into thumbnails, inherited theme
+variables remain available, and asset load/content resize events refit them.
+Samples and overrides never alter document defaults, inserted nodes, canvas or
+play rendering, or generated production views. The `registry` option continues
+to replace real component functions; use `libraryPreviews` for Library-only data.

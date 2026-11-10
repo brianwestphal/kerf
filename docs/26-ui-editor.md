@@ -2519,3 +2519,13 @@ shows the unseen count.
   resizing, and installed-app safe areas.
 - KF-E8T0AY (device frames): unbranded mock device chrome.
 - KF-RF6RCS (actions): host mock handlers and the action log.
+
+Library previews are extensible for downstream catalogs (KF-RQJ15M):
+`defineLibraryPreviews` checks literal component keys and sample prop types;
+`createEditorCatalog` and `createEditor` accept `libraryPreviews` registrations.
+Composition catalogs may carry literal JSON samples and a separate executable
+preview-module reference. All built-in schematics/icons use the same mechanism.
+Overrides apply only to inert, isolated Library thumbnails; insertion, defaults,
+canvas rendering and production views retain the ordinary component registry.
+See [the Library preview requirements and API](28-library-previews.md) and
+[editor hosting](../ui/docs/editor-host.md).

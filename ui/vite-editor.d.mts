@@ -4,6 +4,8 @@ export declare const KERF_UI_EDITOR_ROUTE: '/__kerf-ui-editor/';
 export declare const DEFAULT_REGISTRY: 'src/kerf-ui-registry.ts';
 /** The field editors module the plugin loads when it exists and none is named. */
 export declare const DEFAULT_FIELD_EDITORS: 'src/kerf-ui-field-editors.ts';
+/** Default Library-only executable preview registrations. */
+export declare const DEFAULT_LIBRARY_PREVIEWS: 'src/kerf-ui-library-previews.ts';
 /** Where the editor reads and writes documents. */
 export declare const KERF_UI_EDITOR_FILE_API: '/__kerf-ui-editor/api/file';
 /** Where the editor lists the project's documents (GET: a JSON array of paths). */
@@ -31,6 +33,8 @@ export interface EditorPropsCatalog {
 
 /** The catalogs an application declares for the editor. */
 export interface ApplicationCatalogs {
+  /** Existing preview modules, resolved relative to each composition catalog. */
+  readonly libraryPreviewModules?: readonly string[];
   readonly props: readonly EditorPropsCatalog[];
   readonly composition: readonly {
     readonly package?: string;
@@ -55,6 +59,8 @@ export interface KerfUiEditorOptions {
    * `src/kerf-ui-field-editors.ts` when it exists.
    */
   fieldEditors?: string;
+  /** Library-only preview registrations; defaults to src/kerf-ui-library-previews.ts when present. */
+  libraryPreviews?: string;
   /**
    * A module, resolved against Vite's `root`, whose default export is play
    * mode's device presets (`DevicePresetsOption` from `@kerfjs/ui/editor`):
@@ -138,6 +144,8 @@ export declare function editorEntry(options: {
   app: ApplicationCatalogs;
   registry?: string;
   fieldEditors?: string;
+  /** Library-only preview registrations; defaults to src/kerf-ui-library-previews.ts when present. */
+  libraryPreviews?: string;
   devicePresets?: string;
   playHandlers?: string;
 }): string;

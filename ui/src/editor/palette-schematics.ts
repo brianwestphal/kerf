@@ -279,3 +279,13 @@ export function paletteSketch(key: string): string | undefined {
     ? undefined
     : `<svg viewBox="0 0 ${WIDTH} ${HEIGHT}" width="100%" height="100%" aria-hidden="true">${drawing}</svg>`;
 }
+
+/** First-party drawings registered through the same public preview extension as package drawings. */
+export function paletteSketches(): Readonly<Record<string, string>> {
+  return Object.fromEntries(
+    [...Object.keys(SKETCHES), ...Object.keys(SAME_AS)].map((id) => {
+      const key = `@kerfjs/ui:${id}`;
+      return [key, paletteSketch(key)!];
+    }),
+  );
+}

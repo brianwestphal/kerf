@@ -5,12 +5,17 @@
   "type": "object",
   "required": ["schemaVersion", "package", "compatibility", "entries"],
   "properties": {
-    "$schema": { "type": "string" },
+    "$schema": {
+      "type": "string"
+    },
     "schemaVersion": {
       "const": 1,
       "description": "Version of the composition catalog format itself, independent of component-catalog.json's own schemaVersion."
     },
-    "package": { "type": "string", "minLength": 1 },
+    "package": {
+      "type": "string",
+      "minLength": 1
+    },
     "compatibility": {
       "type": "object",
       "required": ["componentCatalog", "identity"],
@@ -20,11 +25,39 @@
           "minLength": 1,
           "description": "Relative path to the component (selection) catalog this composition layer describes, or \"not-applicable\" when the package publishes none."
         },
-        "identity": { "const": "package:id" }
+        "identity": {
+          "const": "package:id"
+        }
       },
       "additionalProperties": false
     },
-    "entries": { "type": "array", "items": { "$ref": "#/$defs/entry" } }
+    "entries": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/entry"
+      }
+    },
+    "libraryPreviewModule": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Optional editor-only ESM preview registration module, relative to this catalog or a resolvable package export. It is imported by the Vite editor host, never evaluated as JSON."
+    },
+    "libraryPreviews": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "props": {
+            "type": "object",
+            "additionalProperties": {
+              "$ref": "#/$defs/libraryPreviewJson"
+            }
+          }
+        }
+      },
+      "description": "Library-only literal sample props, keyed by the complete component key. An empty entry restores automatic rendering. Values are literal JSON; no view bindings, CSS/icon expressions or JavaScript are evaluated."
+    }
   },
   "additionalProperties": false,
   "$defs": {
@@ -57,18 +90,29 @@
     },
     "stringList": {
       "type": "array",
-      "items": { "type": "string", "minLength": 1 },
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
       "uniqueItems": true
     },
     "cardinality": {
       "type": "object",
       "required": ["min", "max"],
       "properties": {
-        "min": { "type": "integer", "minimum": 0 },
+        "min": {
+          "type": "integer",
+          "minimum": 0
+        },
         "max": {
           "anyOf": [
-            { "type": "integer", "minimum": 1 },
-            { "const": "unbounded" }
+            {
+              "type": "integer",
+              "minimum": 1
+            },
+            {
+              "const": "unbounded"
+            }
           ]
         }
       },
@@ -78,18 +122,30 @@
       "type": "object",
       "required": ["id", "accepts", "cardinality", "exclusiveWith"],
       "properties": {
-        "id": { "type": "string", "minLength": 1 },
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
         "jsx": {
           "type": "object",
           "required": ["prop"],
           "properties": {
-            "prop": { "type": "string", "minLength": 1 }
+            "prop": {
+              "type": "string",
+              "minLength": 1
+            }
           },
           "additionalProperties": false
         },
-        "accepts": { "$ref": "#/$defs/stringList" },
-        "cardinality": { "$ref": "#/$defs/cardinality" },
-        "exclusiveWith": { "$ref": "#/$defs/stringList" }
+        "accepts": {
+          "$ref": "#/$defs/stringList"
+        },
+        "cardinality": {
+          "$ref": "#/$defs/cardinality"
+        },
+        "exclusiveWith": {
+          "$ref": "#/$defs/stringList"
+        }
       },
       "additionalProperties": false
     },
@@ -97,9 +153,16 @@
       "type": "object",
       "required": ["id", "owner", "required"],
       "properties": {
-        "id": { "type": "string", "minLength": 1 },
-        "owner": { "enum": ["application", "controlled", "component"] },
-        "required": { "type": "boolean" }
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "owner": {
+          "enum": ["application", "controlled", "component"]
+        },
+        "required": {
+          "type": "boolean"
+        }
       },
       "additionalProperties": false
     },
@@ -107,10 +170,21 @@
       "type": "object",
       "required": ["id", "severity", "when", "message"],
       "properties": {
-        "id": { "type": "string", "pattern": "^KUI-C[0-9]{3}$" },
-        "severity": { "enum": ["error", "warning"] },
-        "when": { "type": "string", "minLength": 1 },
-        "message": { "type": "string", "minLength": 1 }
+        "id": {
+          "type": "string",
+          "pattern": "^KUI-C[0-9]{3}$"
+        },
+        "severity": {
+          "enum": ["error", "warning"]
+        },
+        "when": {
+          "type": "string",
+          "minLength": 1
+        },
+        "message": {
+          "type": "string",
+          "minLength": 1
+        }
       },
       "additionalProperties": false
     },
@@ -137,12 +211,29 @@
         "provenance"
       ],
       "properties": {
-        "key": { "type": "string", "minLength": 3 },
-        "package": { "type": "string", "minLength": 1 },
-        "id": { "type": "string", "minLength": 1 },
-        "name": { "type": "string", "minLength": 1 },
-        "kind": { "enum": ["component", "composition", "recipe"] },
-        "purpose": { "type": "string", "minLength": 1 },
+        "key": {
+          "type": "string",
+          "minLength": 3
+        },
+        "package": {
+          "type": "string",
+          "minLength": 1
+        },
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "kind": {
+          "enum": ["component", "composition", "recipe"]
+        },
+        "purpose": {
+          "type": "string",
+          "minLength": 1
+        },
         "publicExports": {
           "description": "Each export's name and the package.json#exports subpath that serves it. An entry from a private application omits subpath: the application is bundled, never imported by package name, so the name resolves through the entry's source file.",
           "type": "array",
@@ -150,15 +241,26 @@
             "type": "object",
             "required": ["name"],
             "properties": {
-              "name": { "type": "string", "minLength": 1 },
-              "subpath": { "type": "string", "pattern": "^\\." }
+              "name": {
+                "type": "string",
+                "minLength": 1
+              },
+              "subpath": {
+                "type": "string",
+                "pattern": "^\\."
+              }
             },
             "additionalProperties": false
           },
           "minItems": 1
         },
-        "sourceLinks": { "$ref": "#/$defs/stringList" },
-        "source": { "type": "string", "minLength": 1 },
+        "sourceLinks": {
+          "$ref": "#/$defs/stringList"
+        },
+        "source": {
+          "type": "string",
+          "minLength": 1
+        },
         "styleSources": {
           "description": "Stylesheets owned by this component, relative to the catalog package root. Required for an entry to own its CSS in opt-in component ownership mode when no selection catalog supplies it.",
           "type": "array",
@@ -172,16 +274,22 @@
         "insetFreeChildren": {
           "description": "Prop values under which the entry's direct JSX children must bring no content-item inset. While any condition holds, a child whose layout.geometry owns its margin, border, and padding (self on all three) double-insets the entry's own geometry unless one of the child's insetFreeWhen conditions holds; eslint-plugin-kerfjs reports it as KUI-L204.",
           "type": "array",
-          "items": { "$ref": "#/$defs/propCondition" },
+          "items": {
+            "$ref": "#/$defs/propCondition"
+          },
           "minItems": 1
         },
         "insetFreeWhen": {
           "description": "Prop values that render this inset-bearing entry with no margin, border, or padding of its own (Text flush). Any one condition makes the element inset-free.",
           "type": "array",
-          "items": { "$ref": "#/$defs/propCondition" },
+          "items": {
+            "$ref": "#/$defs/propCondition"
+          },
           "minItems": 1
         },
-        "content": { "$ref": "#/$defs/interactiveContent" },
+        "content": {
+          "$ref": "#/$defs/interactiveContent"
+        },
         "configTypes": {
           "description": "Prop-value types (definition names in this package's component-props.json) that another component renders as this one, such as a NavStack view's toolbar config. A content field inside such a value is placed in this component, so this component is its parent for placement contracts. `TypeName.field` names one field of a type whose other fields render elsewhere.",
           "type": "array",
@@ -196,13 +304,18 @@
           "description": "For a wrapper component: the cataloged roots it renders (package-qualified keys), any one of them or nothing. Composition checks treat an element of this entry as each declared root: a zone accepts it only if it accepts every root, and each root's parent contract applies to where it is placed.",
           "type": "array",
           "minItems": 1,
-          "items": { "type": "string", "pattern": "^[^:]+:[^:]+$" },
+          "items": {
+            "type": "string",
+            "pattern": "^[^:]+:[^:]+$"
+          },
           "uniqueItems": true
         },
         "jsxExports": {
           "description": "Placement contracts for additional JSX exports from one selection entry. These exports do not stand for the entry's root or its zones.",
           "type": "object",
-          "propertyNames": { "pattern": "^[A-Z][A-Za-z0-9]*$" },
+          "propertyNames": {
+            "pattern": "^[A-Z][A-Za-z0-9]*$"
+          },
           "additionalProperties": {
             "type": "object",
             "required": ["parents"],
@@ -211,8 +324,12 @@
                 "type": "object",
                 "required": ["mode", "entries"],
                 "properties": {
-                  "mode": { "enum": ["any", "root", "listed"] },
-                  "entries": { "$ref": "#/$defs/stringList" }
+                  "mode": {
+                    "enum": ["any", "root", "listed"]
+                  },
+                  "entries": {
+                    "$ref": "#/$defs/stringList"
+                  }
                 },
                 "additionalProperties": false
               }
@@ -224,31 +341,59 @@
           "type": "object",
           "required": ["mode", "entries"],
           "properties": {
-            "mode": { "enum": ["any", "root", "listed"] },
-            "entries": { "$ref": "#/$defs/stringList" }
+            "mode": {
+              "enum": ["any", "root", "listed"]
+            },
+            "entries": {
+              "$ref": "#/$defs/stringList"
+            }
           },
           "additionalProperties": false
         },
-        "contexts": { "$ref": "#/$defs/stringList" },
-        "zones": { "type": "array", "items": { "$ref": "#/$defs/zone" } },
+        "contexts": {
+          "$ref": "#/$defs/stringList"
+        },
+        "zones": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/zone"
+          }
+        },
         "children": {
           "type": "object",
           "required": ["mode", "concepts", "requiredConcepts"],
           "properties": {
-            "mode": { "enum": ["any", "none", "listed"] },
-            "concepts": { "$ref": "#/$defs/stringList" },
-            "requiredConcepts": { "$ref": "#/$defs/stringList" }
+            "mode": {
+              "enum": ["any", "none", "listed"]
+            },
+            "concepts": {
+              "$ref": "#/$defs/stringList"
+            },
+            "requiredConcepts": {
+              "$ref": "#/$defs/stringList"
+            }
           },
           "additionalProperties": false
         },
-        "state": { "type": "array", "items": { "$ref": "#/$defs/state" } },
+        "state": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/state"
+          }
+        },
         "wiring": {
           "type": "object",
           "required": ["required", "helpers", "obligations"],
           "properties": {
-            "required": { "type": "boolean" },
-            "scope": { "enum": ["application", "module"] },
-            "helpers": { "$ref": "#/$defs/stringList" },
+            "required": {
+              "type": "boolean"
+            },
+            "scope": {
+              "enum": ["application", "module"]
+            },
+            "helpers": {
+              "$ref": "#/$defs/stringList"
+            },
             "sources": {
               "description": "Application-owned helper exports and their defining source files, relative to the catalog package root.",
               "type": "array",
@@ -256,9 +401,17 @@
                 "type": "object",
                 "required": ["export", "source"],
                 "properties": {
-                  "export": { "type": "string", "minLength": 1 },
-                  "source": { "type": "string", "minLength": 1 },
-                  "returnsDisposer": { "type": "boolean" }
+                  "export": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "source": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "returnsDisposer": {
+                    "type": "boolean"
+                  }
                 },
                 "additionalProperties": false
               }
@@ -267,11 +420,15 @@
               "description": "data-action values the application must handle with a root-delegated listener (delegate or delegateActions) instead of a named helper. Required wiring names at least one helper or action.",
               "$ref": "#/$defs/stringList"
             },
-            "obligations": { "$ref": "#/$defs/stringList" },
+            "obligations": {
+              "$ref": "#/$defs/stringList"
+            },
             "stateAttributes": {
               "description": "Wiring-owned state attributes: data-* attributes a wiring helper writes at runtime, which the application must not render, remove, or treat as its own state. Optional for extension catalogs; first-party entries always list it, empty when their helpers write none.",
               "type": "array",
-              "items": { "$ref": "#/$defs/stateAttribute" }
+              "items": {
+                "$ref": "#/$defs/stateAttribute"
+              }
             }
           },
           "additionalProperties": false
@@ -283,7 +440,9 @@
             "owner": {
               "enum": ["application", "component", "shared", "not-applicable"]
             },
-            "behaviors": { "$ref": "#/$defs/stringList" }
+            "behaviors": {
+              "$ref": "#/$defs/stringList"
+            }
           },
           "additionalProperties": false
         },
@@ -291,7 +450,9 @@
           "type": "object",
           "required": ["roles", "geometry"],
           "properties": {
-            "roles": { "$ref": "#/$defs/stringList" },
+            "roles": {
+              "$ref": "#/$defs/stringList"
+            },
             "geometry": {
               "type": "object",
               "required": ["margin", "border", "padding"],
@@ -326,7 +487,9 @@
                     "composed"
                   ]
                 },
-                "notes": { "$ref": "#/$defs/stringList" }
+                "notes": {
+                  "$ref": "#/$defs/stringList"
+                }
               },
               "additionalProperties": false
             }
@@ -336,12 +499,18 @@
         "accessibility": {
           "type": "object",
           "required": ["obligations"],
-          "properties": { "obligations": { "$ref": "#/$defs/stringList" } },
+          "properties": {
+            "obligations": {
+              "$ref": "#/$defs/stringList"
+            }
+          },
           "additionalProperties": false
         },
         "cssValueProps": {
           "type": "array",
-          "items": { "$ref": "#/$defs/cssValueProp" }
+          "items": {
+            "$ref": "#/$defs/cssValueProp"
+          }
         },
         "boundaries": {
           "type": "object",
@@ -349,11 +518,18 @@
           "properties": {
             "rootClass": {
               "oneOf": [
-                { "type": "string", "minLength": 1 },
-                { "type": "null" }
+                {
+                  "type": "string",
+                  "minLength": 1
+                },
+                {
+                  "type": "null"
+                }
               ]
             },
-            "publicClasses": { "$ref": "#/$defs/stringList" },
+            "publicClasses": {
+              "$ref": "#/$defs/stringList"
+            },
             "placeableClasses": {
               "$ref": "#/$defs/stringList",
               "description": "The subset of publicClasses an application may place on its own elements. Absent means none: every public class is the component's rendered anatomy, reached by rendering the component."
@@ -372,21 +548,33 @@
               "pattern": "^data-[a-z][a-z0-9]*(?:-[a-z0-9]+)*$",
               "description": "Root data attribute anchoring ownership of arbitrary unclassed descendants."
             },
-            "publicTokens": { "$ref": "#/$defs/stringList" },
-            "publicParts": { "$ref": "#/$defs/stringList" }
+            "publicTokens": {
+              "$ref": "#/$defs/stringList"
+            },
+            "publicParts": {
+              "$ref": "#/$defs/stringList"
+            }
           },
           "additionalProperties": false
         },
         "diagnostics": {
           "type": "array",
-          "items": { "$ref": "#/$defs/diagnostic" }
+          "items": {
+            "$ref": "#/$defs/diagnostic"
+          }
         },
         "provenance": {
           "type": "object",
           "required": ["selection", "composition"],
           "properties": {
-            "selection": { "type": "string", "minLength": 1 },
-            "composition": { "type": "string", "minLength": 1 }
+            "selection": {
+              "type": "string",
+              "minLength": 1
+            },
+            "composition": {
+              "type": "string",
+              "minLength": 1
+            }
           },
           "additionalProperties": false
         }
@@ -401,7 +589,9 @@
         "interactive": {
           "type": "array",
           "minItems": 1,
-          "items": { "$ref": "#/$defs/interactiveRule" }
+          "items": {
+            "$ref": "#/$defs/interactiveRule"
+          }
         },
         "exports": {
           "description": "The same rules for each additional JSX export of the entry, keyed by export name. Exports do not inherit the entry's rules.",
@@ -413,7 +603,9 @@
               "interactive": {
                 "type": "array",
                 "minItems": 1,
-                "items": { "$ref": "#/$defs/interactiveRule" }
+                "items": {
+                  "$ref": "#/$defs/interactiveRule"
+                }
               }
             },
             "additionalProperties": false
@@ -435,7 +627,10 @@
           "type": "array",
           "minItems": 1,
           "uniqueItems": true,
-          "items": { "type": "string", "pattern": "^[A-Za-z][A-Za-z0-9]*$" }
+          "items": {
+            "type": "string",
+            "pattern": "^[A-Za-z][A-Za-z0-9]*$"
+          }
         }
       },
       "additionalProperties": false
@@ -451,9 +646,15 @@
         },
         "equals": {
           "anyOf": [
-            { "type": "string" },
-            { "type": "number" },
-            { "type": "boolean" }
+            {
+              "type": "string"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "boolean"
+            }
           ],
           "description": "The statically written value that satisfies the condition. A bare boolean prop (<Text flush />) equals true."
         }
@@ -488,16 +689,61 @@
             "pixels"
           ]
         },
-        "helpers": { "$ref": "#/$defs/stringList" },
-        "nonStandaloneHelpers": { "$ref": "#/$defs/stringList" },
-        "shorthands": { "$ref": "#/$defs/stringList" },
-        "canonicalShorthands": { "$ref": "#/$defs/stringList" },
-        "exceptionalShorthands": { "$ref": "#/$defs/stringList" },
-        "rawPolicy": { "enum": ["forbid", "allow", "unsafe-only"] },
-        "unsafeHelper": { "type": "string", "minLength": 1 },
-        "examples": { "$ref": "#/$defs/stringList" }
+        "helpers": {
+          "$ref": "#/$defs/stringList"
+        },
+        "nonStandaloneHelpers": {
+          "$ref": "#/$defs/stringList"
+        },
+        "shorthands": {
+          "$ref": "#/$defs/stringList"
+        },
+        "canonicalShorthands": {
+          "$ref": "#/$defs/stringList"
+        },
+        "exceptionalShorthands": {
+          "$ref": "#/$defs/stringList"
+        },
+        "rawPolicy": {
+          "enum": ["forbid", "allow", "unsafe-only"]
+        },
+        "unsafeHelper": {
+          "type": "string",
+          "minLength": 1
+        },
+        "examples": {
+          "$ref": "#/$defs/stringList"
+        }
       },
       "additionalProperties": false
+    },
+    "libraryPreviewJson": {
+      "anyOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "boolean"
+        },
+        {
+          "type": "number"
+        },
+        {
+          "type": "string"
+        },
+        {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/libraryPreviewJson"
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/$defs/libraryPreviewJson"
+          }
+        }
+      ]
     }
   }
 }

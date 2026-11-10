@@ -13,6 +13,7 @@
  * production build.
  */
 import { existsSync, readFileSync } from 'node:fs';
+import { createRequire } from 'node:module';
 import { mkdir, readdir, readFile, rename, writeFile } from 'node:fs/promises';
 import {
   basename,
@@ -39,6 +40,8 @@ export const DEFAULT_REGISTRY = 'src/kerf-ui-registry.ts';
  * named (KF-EXA2WH: field editor API).
  */
 export const DEFAULT_FIELD_EDITORS = 'src/kerf-ui-field-editors.ts';
+/** Library-only registration module loaded when present. */
+export const DEFAULT_LIBRARY_PREVIEWS = 'src/kerf-ui-library-previews.ts';
 
 /** Where the editor reads and writes documents (KF-0SY9M6: autosave). */
 export const KERF_UI_EDITOR_FILE_API = '/__kerf-ui-editor/api/file';
@@ -91,9 +94,32 @@ export function readAppPropsCatalog(path) {
  */
 export function applicationCatalogs(root) {
   const paths = profileCatalogPaths(join(root, 'index.html'));
+  const composition = paths.composition.map(readJson);
+  const libraryPreviewModules = [
+    ...new Set(
+      composition.flatMap((catalog, index) => {
+        if (
+          typeof catalog.libraryPreviewModule !== 'string' ||
+          !catalog.libraryPreviewModule
+        )
+          return [];
+        try {
+          const named = catalog.libraryPreviewModule;
+          const file =
+            named.startsWith('.') || isAbsolute(named)
+              ? resolve(dirname(paths.composition[index]), named)
+              : createRequire(paths.composition[index]).resolve(named);
+          return existsSync(file) ? [file] : [];
+        } catch {
+          return [];
+        }
+      }),
+    ),
+  ];
   return {
     props: paths.props.map(readAppPropsCatalog),
-    composition: paths.composition.map(readJson),
+    composition,
+    libraryPreviewModules,
   };
 }
 
@@ -339,6 +365,7 @@ export function editorEntry({
   app,
   registry,
   fieldEditors,
+  libraryPreviews,
   devicePresets,
   playHandlers,
 }) {
@@ -377,6 +404,13 @@ export function editorEntry({
     registry
       ? `import registry from ${JSON.stringify(registry)};`
       : 'const registry = {};',
+    ...(app.libraryPreviewModules ?? []).map(
+      (module, index) =>
+        `import libraryPreview${index} from ${JSON.stringify(module)};`,
+    ),
+    libraryPreviews
+      ? `import libraryPreviews from ${JSON.stringify(libraryPreviews)};`
+      : 'const libraryPreviews = undefined;',
     fieldEditors
       ? `import fieldEditors from ${JSON.stringify(fieldEditors)};`
       : 'const fieldEditors = undefined;',
@@ -397,9 +431,10 @@ export function editorEntry({
     '  composition: [kerfComposition, ...appComposition],',
     '  selection: [kerfSelection],',
     '  components: { ...componentMap(props, modules), ...registry },',
+    `  libraryPreviews: { ${(app.libraryPreviewModules ?? []).map((_module, index) => `...libraryPreview${index}`).join(', ')} },`,
     '});',
     "const root = document.getElementById('kerf-ui-editor');",
-    'const editor = createEditor({ catalog, storage: devServerStorage(), fieldEditors, devicePresets, playHandlers });',
+    'const editor = createEditor({ catalog, storage: devServerStorage(), fieldEditors, devicePresets, playHandlers, libraryPreviews });',
     'mount(root, editor.render);',
     'editor.wire(root);',
     '',
@@ -436,6 +471,9 @@ export function kerfUiEditor(options = {}) {
         app: applicationCatalogs(root),
         registry: found(options.registry ?? DEFAULT_REGISTRY),
         fieldEditors: found(options.fieldEditors ?? DEFAULT_FIELD_EDITORS),
+        libraryPreviews: found(
+          options.libraryPreviews ?? DEFAULT_LIBRARY_PREVIEWS,
+        ),
         // KF-R7KXSN: play mode's extra or replacement device presets.
         devicePresets: options.devicePresets
           ? found(options.devicePresets)

@@ -1,0 +1,5 @@
+/* Application-owned preview artwork; no Kerf component is restyled. */
+.orders-library-schematic,
+[data-library-order-sample] {
+  color: var(--kui-color-brand-on-quiet);
+}

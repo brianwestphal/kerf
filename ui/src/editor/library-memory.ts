@@ -1,14 +1,6 @@
 // The component Library's per-browser memory (KF-YF1PDR: split out of
 // editor.tsx): its list or grid view, chosen size and pinned placement, kept in
-// localStorage, plus the palette tiles' fallback icons.
-import {
-  Activity,
-  BadgeCheck,
-  FaceSlightlySmiling,
-  type IconNode,
-  LoaderCircle,
-} from 'lucide';
-
+// localStorage.
 import type { PinnablePopoverChange } from '../components/surfaces/surface-scaffold/surface-scaffold.js';
 
 /** KF-JC7WTW: the Library shows a list or a grid of thumbnails. */
@@ -22,19 +14,6 @@ export type DocumentView = 'columns' | 'tree';
 const DOCUMENT_VIEW_KEY = 'kerf-ui-editor:document-view';
 const PALETTE_VIEW_KEY = 'kerf-ui-editor:palette-view';
 export type PaletteView = 'list' | 'grid';
-/**
- * A palette tile's icon where its component draws nothing recognizable
- * when added (an icon with no name, a status mark) and has no sketch
- * (KF-JC7WTW); any other tile whose thumbnail is empty shows the generic
- * one.
- */
-export const PALETTE_ICONS: Readonly<Record<string, IconNode>> = {
-  '@kerfjs/ui:lucide-icon': FaceSlightlySmiling,
-  '@kerfjs/ui:loading-spinner': LoaderCircle,
-  '@kerfjs/ui:corner-status': BadgeCheck,
-  '@kerfjs/ui:edge-activity-indicator': Activity,
-};
-
 /** The palette view the person last chose, kept per browser. */
 export function rememberedPaletteView(): PaletteView {
   try {

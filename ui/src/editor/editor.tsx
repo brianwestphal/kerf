@@ -150,6 +150,12 @@ import {
   rememberPaletteView,
 } from './library-memory.js';
 import { createLibraryPopover } from './library-popover.js';
+import { KERF_UI_LIBRARY_PREVIEWS } from './library-preview-defaults.js';
+import {
+  type LibraryPreviews,
+  mergeLibraryPreviews,
+} from './library-previews.js';
+import { createLibraryThumbnails } from './library-thumbnail-renderer.js';
 import { contentOf, nodesToText, textToNodes } from './model/content.js';
 import {
   controlOf,
@@ -465,6 +471,16 @@ export type {
   FieldEditorControlKind,
   FieldEditors,
 } from './field-editors.js';
+export {
+  defineLibraryPreviews,
+  type LibraryPreview,
+  type LibraryPreviewContext,
+  type LibraryPreviewJson,
+  type LibraryPreviews,
+  type LibraryPreviewsFor,
+  type SerializableLibraryPreview,
+  type SerializableLibraryPreviews,
+} from './library-previews.js';
 export type {
   ActionLogEntry,
   ActionOutcome,
@@ -501,6 +517,8 @@ export interface EditorOptions {
    * functions, plus an application's (`createEditorCatalog`).
    */
   readonly catalog: EditorCatalog;
+  /** Library-only previews; complete entries override the catalog registrations. */
+  readonly libraryPreviews?: LibraryPreviews;
   /**
    * Editors for named types (KF-EXA2WH: field editor API), such as a
    * catalog's `'ListConfig'` or an application's `'InvoiceFilter'`: each
@@ -612,7 +630,14 @@ function download(fileName: string, text: string): void {
 }
 
 export function createEditor(options: EditorOptions) {
-  const { catalog } = options;
+  const catalog = {
+    ...options.catalog,
+    libraryPreviews: mergeLibraryPreviews(
+      KERF_UI_LIBRARY_PREVIEWS,
+      options.catalog.libraryPreviews,
+      options.libraryPreviews,
+    ),
+  };
   const { viewCatalog, propsByKey, componentNames } = catalog;
   /** A component's prop variants, so a variant problem says how to fix it. */
   const variantsOf = (type: string) =>
@@ -2791,27 +2816,13 @@ export function createEditor(options: EditorOptions) {
       slotNamer(usedSlots(doc.value)),
     );
 
-  /**
-   * KF-JC7WTW: component `key`'s palette thumbnail: its seeded node as the
-   * root of an otherwise empty document, rendered as the canvas renders it,
-   * once per editor. An empty layout's zones show their canvas stand-ins,
-   * so a Workbench's thumbnail sketches its regions.
-   */
-  const thumbnails = new Map<string, string>();
-  const thumbnailOf = (key: string) => {
-    if (!thumbnails.has(key)) {
-      const document = withCatalog(
-        { ...emptyDocument(), root: asRoot(seededNode(key)) },
-        key,
-      );
-      // Static markup in a shadow root, never mounted, so no mount probe.
-      thumbnails.set(
-        key,
-        canvasContent(document, [], undefined, undefined, true).toString(),
-      );
-    }
-    return thumbnails.get(key);
-  };
+  /** Cache static Library-only rendering apart from the canonical canvas registry. */
+  const thumbnails = createLibraryThumbnails(
+    catalog,
+    catalog.libraryPreviews,
+    (key) =>
+      withCatalog({ ...emptyDocument(), root: asRoot(seededNode(key)) }, key),
+  );
 
   /**
    * Where a new container holds the node it embeds, and the props and other
@@ -4714,7 +4725,10 @@ export function createEditor(options: EditorOptions) {
       // Arrow keys move between a strip's tabs; nothing here reorders.
       wireTabBars(root, { onReorder: () => {} }),
       // KF-JC7WTW: the palette grid's tiles show their components as added.
-      wirePaletteThumbnails(root, { htmlOf: thumbnailOf }),
+      wirePaletteThumbnails(root, {
+        htmlOf: thumbnails.htmlOf,
+        fitOf: thumbnails.fitOf,
+      }),
       // KF-67K2VP: a rail's pinned tab strip shows its divider once its
       // area scrolls under it.
       wireScrollDividers(root),

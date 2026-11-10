@@ -91,16 +91,19 @@ describe('palette grid view', () => {
   it('sketches layouts, shows icons for blank components, and renders the rest live', async () => {
     const { root } = open();
     segment(root, 'grid').click();
-    // A layout draws a sketch, not a thumbnail.
-    const workbench = tile(root, '@kerfjs/ui:workbench');
-    expect(workbench.querySelector('.kui-editor__palette-thumb svg')).not.toBe(
-      null,
-    );
-    expect(workbench.querySelector('[data-editor-palette-thumb]')).toBeNull();
-    // An icon with no name shows a stand-in icon.
-    const icon = tile(root, '@kerfjs/ui:lucide-icon');
-    expect(icon.querySelector('[data-editor-palette-thumb]')).toBeNull();
-    expect(icon.querySelector('svg')).not.toBeNull();
+    // Built-in drawings and icons use the same isolated thumbnail mechanism.
+    const workbench = tile(
+      root,
+      '@kerfjs/ui:workbench',
+    ).querySelector<HTMLElement>('[data-editor-palette-thumb]')!;
+    await vi.waitFor(() => expect(workbench.dataset.thumbFit).toBe('fill'));
+    expect(workbench.shadowRoot!.querySelector('svg')).not.toBeNull();
+    expect(workbench.inert).toBe(true);
+    const icon = tile(
+      root,
+      '@kerfjs/ui:lucide-icon',
+    ).querySelector<HTMLElement>('[data-editor-palette-thumb]')!;
+    expect(icon.shadowRoot!.querySelector('svg')).not.toBeNull();
     // A control renders as added, in its tile's shadow root.
     const host = tile(root, '@kerfjs/ui:badge').querySelector<HTMLElement>(
       '[data-editor-palette-thumb]',
@@ -259,7 +262,9 @@ describe('wirePaletteThumbnails', () => {
       );
       const stage =
         host.shadowRoot!.querySelector<HTMLElement>('[data-thumb-stage]')!;
-      expect(stage.style.transform).toBe('translate(40px, 35px) scale(1)');
+      await vi.waitFor(() =>
+        expect(stage.style.transform).toBe('translate(40px, 35px) scale(1)'),
+      );
       stop();
     } finally {
       window.ResizeObserver = Real;

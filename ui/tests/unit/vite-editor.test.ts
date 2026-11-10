@@ -2,7 +2,15 @@
 // KF-6GT5QY: `@kerfjs/ui/vite-editor` serves the editor page at its route on
 // the dev server only, and generates an entry that imports every module the
 // catalogs name, the application's catalogs, and an optional registry.
-import { cpSync, mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
+import {
+  cpSync,
+  mkdirSync,
+  mkdtempSync,
+  readFileSync,
+  realpathSync,
+  rmSync,
+  writeFileSync,
+} from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 import process from 'node:process';
@@ -12,6 +20,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import {
   applicationCatalogs,
   DEFAULT_FIELD_EDITORS,
+  DEFAULT_LIBRARY_PREVIEWS,
   DEFAULT_REGISTRY,
   editorEntry,
   editorPage,
@@ -79,7 +88,7 @@ describe('the generated entry', () => {
     expect(code).toContain("import '@kerfjs/ui/select/register';");
     expect(code).toContain("import '@kerfjs/ui/surface-scaffold/register';");
     expect(code).toContain(
-      'createEditor({ catalog, storage: devServerStorage(), fieldEditors, devicePresets, playHandlers })',
+      'createEditor({ catalog, storage: devServerStorage(), fieldEditors, devicePresets, playHandlers, libraryPreviews })',
     );
     expect(editorEntry({ app: { props: [], composition: [] } })).toContain(
       'const registry = {};',
@@ -162,7 +171,7 @@ describe('kerfUiEditor', () => {
     const entry = () => plugin.load('\0virtual:kerf-ui-editor/entry')!;
     expect(entry()).toContain('const fieldEditors = undefined;');
     expect(entry()).toContain(
-      'createEditor({ catalog, storage: devServerStorage(), fieldEditors, devicePresets, playHandlers })',
+      'createEditor({ catalog, storage: devServerStorage(), fieldEditors, devicePresets, playHandlers, libraryPreviews })',
     );
     mkdirSync(join(app, 'src'), { recursive: true });
     writeFileSync(join(app, DEFAULT_FIELD_EDITORS), 'export default {};\n');
@@ -200,6 +209,61 @@ describe('kerfUiEditor', () => {
     expect(entry({ devicePresets: 'src/missing.ts' })).toContain(
       'const devicePresets = undefined;',
     );
+  });
+
+  it('loads package preview modules and the local Library-only override independently', () => {
+    const entry = (options = {}) =>
+      serve(options).plugin.load('\0virtual:kerf-ui-editor/entry')!;
+    expect(applicationCatalogs(app).libraryPreviewModules).toEqual([
+      join(app, 'src/library-previews.tsx'),
+    ]);
+    expect(entry()).toContain(
+      `import libraryPreview0 from ${JSON.stringify(join(app, 'src/library-previews.tsx'))};`,
+    );
+    expect(entry()).toContain('libraryPreviews: { ...libraryPreview0 }');
+    expect(entry()).toContain(
+      `import libraryPreviews from ${JSON.stringify(join(app, DEFAULT_LIBRARY_PREVIEWS))};`,
+    );
+    expect(entry({ libraryPreviews: 'src/missing.ts' })).toContain(
+      'const libraryPreviews = undefined;',
+    );
+    rmSync(join(app, DEFAULT_LIBRARY_PREVIEWS));
+    expect(entry()).toContain('const libraryPreviews = undefined;');
+    writeFileSync(join(app, 'src/named-previews.ts'), 'export default {};');
+    expect(entry({ libraryPreviews: 'src/named-previews.ts' })).toContain(
+      `import libraryPreviews from ${JSON.stringify(join(app, 'src/named-previews.ts'))};`,
+    );
+  });
+
+  it('resolves preview modules at the catalog origin and skips unavailable modules', () => {
+    const path = join(app, 'component-composition.json');
+    const composition = JSON.parse(readFileSync(path, 'utf8'));
+    const set = (module: unknown) => {
+      writeFileSync(
+        path,
+        JSON.stringify({ ...composition, libraryPreviewModule: module }),
+      );
+      return applicationCatalogs(app).libraryPreviewModules;
+    };
+    expect(set(join(app, 'src/library-previews.tsx'))).toEqual([
+      join(app, 'src/library-previews.tsx'),
+    ]);
+    expect(set('./src/missing.ts')).toEqual([]);
+    expect(set('missing-preview-package')).toEqual([]);
+    expect(set(undefined)).toEqual([]);
+    expect(set(123)).toEqual([]);
+    mkdirSync(join(app, 'node_modules/order-previews'), { recursive: true });
+    writeFileSync(
+      join(app, 'node_modules/order-previews/package.json'),
+      JSON.stringify({ name: 'order-previews', exports: './index.js' }),
+    );
+    writeFileSync(
+      join(app, 'node_modules/order-previews/index.js'),
+      'export default {};',
+    );
+    expect(set('order-previews')).toEqual([
+      realpathSync(join(app, 'node_modules/order-previews/index.js')),
+    ]);
   });
 
   it('serves the page at its route, with and without the trailing slash', async () => {

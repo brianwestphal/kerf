@@ -55,40 +55,68 @@ function sharedSheet(document: Document): CSSStyleSheet | null {
  * content instead.
  */
 function fit(host: HTMLElement): void {
-  // Only filled hosts are fitted, so the stage and slot are there.
   const shadow = host.shadowRoot!;
   const stage = shadow.querySelector<HTMLElement>('[data-thumb-stage]')!;
   const slot = shadow.querySelector('slot')!;
-  // An empty stage measures as a zero-size box.
-  const content = (stage.firstElementChild ?? stage) as HTMLElement;
-  // A control whose content outgrows its own box (a field wider than the
-  // stage) fits by what it draws.
-  const width = Math.max(content.offsetWidth, content.scrollWidth);
-  const height = Math.max(content.offsetHeight, content.scrollHeight);
-  const box = { width: host.clientWidth, height: host.clientHeight };
-  // A component that shows nothing until it opens keeps its fallback icon.
-  const empty = content === stage || !width || !height;
+  // Measure before scaling, including every visual root of a fragment.
+  stage.style.transform = '';
+  const stageRect = stage.getBoundingClientRect();
+  const boxes = Array.from(stage.children).map((element) => {
+    const content = element as HTMLElement;
+    const rect = content.getBoundingClientRect();
+    return {
+      x: content.offsetLeft ?? rect.left - stageRect.left,
+      y: content.offsetTop ?? rect.top - stageRect.top,
+      width: Math.max(
+        content.offsetWidth || 0,
+        content.scrollWidth || 0,
+        rect.width,
+      ),
+      height: Math.max(
+        content.offsetHeight || 0,
+        content.scrollHeight || 0,
+        rect.height,
+      ),
+    };
+  });
+  for (const node of stage.childNodes) {
+    if (node.nodeType !== 3 || !node.textContent?.trim()) continue;
+    const range = host.ownerDocument.createRange();
+    range.selectNode(node);
+    if (typeof range.getBoundingClientRect !== 'function') continue;
+    const rect = range.getBoundingClientRect();
+    boxes.push({
+      x: rect.left - stageRect.left,
+      y: rect.top - stageRect.top,
+      width: rect.width,
+      height: rect.height,
+    });
+  }
+  const visible = boxes.filter((box) => box.width > 0 && box.height > 0);
+  const empty = visible.length === 0;
   host.toggleAttribute('data-thumb-empty', empty);
   slot.hidden = !empty;
   stage.style.visibility = empty ? 'hidden' : '';
-  if (empty || !box.width || !box.height) return;
-  // A little room inside the tile, so an edge-to-edge control's border and
-  // label never sit on the clipped edge.
+  const box = { width: host.clientWidth, height: host.clientHeight };
+  if (empty || !box.width || !box.height || host.dataset.thumbFit === 'fill')
+    return;
+  const left = Math.min(...visible.map((box) => box.x));
+  const top = Math.min(...visible.map((box) => box.y));
+  const width = Math.max(...visible.map((box) => box.x + box.width)) - left;
+  const height = Math.max(...visible.map((box) => box.y + box.height)) - top;
   const scale = Math.min(
     MAX_SCALE,
     (box.width - INSET * 2) / width,
     (box.height - INSET * 2) / height,
   );
-  const centerX = content.offsetLeft + width / 2;
-  const centerY = content.offsetTop + height / 2;
-  stage.style.transform = `translate(${box.width / 2 - centerX * scale}px, ${
-    box.height / 2 - centerY * scale
-  }px) scale(${scale})`;
+  stage.style.transform = `translate(${box.width / 2 - (left + width / 2) * scale}px, ${box.height / 2 - (top + height / 2) * scale}px) scale(${scale})`;
 }
 
 export interface PaletteThumbnailOptions {
   /** The thumbnail markup for component `key`, or undefined for none. */
   readonly htmlOf: (key: string) => string | undefined;
+  /** Fill is for drawings that intentionally use the complete thumbnail canvas. */
+  readonly fitOf?: (key: string) => 'contain' | 'fill';
 }
 
 /**
@@ -103,37 +131,86 @@ export function wirePaletteThumbnails(
 ): () => void {
   const document = root.ownerDocument;
   const View = document.defaultView!;
+  const hosts = new Map<
+    HTMLElement,
+    { key: string; content?: Element; load: () => void }
+  >();
+  const owners = new Map<Element, HTMLElement>();
+  const frames = new Map<HTMLElement, number>();
+  let disposed = false;
+  const schedule = (host: HTMLElement) => {
+    const previous = frames.get(host);
+    if (previous !== undefined) View.cancelAnimationFrame(previous);
+    frames.set(
+      host,
+      View.requestAnimationFrame(() => {
+        frames.delete(host);
+        if (!disposed && root.contains(host)) fit(host);
+      }),
+    );
+  };
   const resize =
     'ResizeObserver' in View
       ? new View.ResizeObserver((entries) => {
-          for (const entry of entries) fit(entry.target as HTMLElement);
+          for (const entry of entries) {
+            const host = owners.get(entry.target);
+            if (host) schedule(host);
+          }
         })
       : undefined;
+  const release = (host: HTMLElement) => {
+    const owned = hosts.get(host)!;
+    const frame = frames.get(host);
+    if (frame !== undefined) View.cancelAnimationFrame(frame);
+    frames.delete(host);
+    resize?.unobserve(host);
+    owners.delete(host);
+    if (owned.content) {
+      resize?.unobserve(owned.content);
+      owners.delete(owned.content);
+    }
+    host.shadowRoot!.removeEventListener('load', owned.load, true);
+    hosts.delete(host);
+  };
   const fill = (host: HTMLElement) => {
     const key = host.dataset.editorPaletteThumb!;
-    if (host.dataset.thumbKey === key) return;
+    if (hosts.get(host)?.key === key) return;
+    if (hosts.has(host)) release(host);
     host.dataset.thumbKey = key;
+    host.dataset.thumbFit = options.fitOf?.(key) ?? 'contain';
     const html = options.htmlOf(key);
     const shadow = host.shadowRoot ?? host.attachShadow({ mode: 'open' });
     const sheet = sharedSheet(document);
     if (sheet) shadow.adoptedStyleSheets = [sheet];
-    // The slot shows the host's fallback until the thumbnail proves visible;
-    // the stage lays out unseen meanwhile, so it can be measured.
-    shadow.innerHTML = `<slot></slot><div data-thumb-stage style="${STAGE_STYLE}; visibility: hidden">${
-      html ?? ''
-    }</div>`;
+    const style =
+      host.dataset.thumbFit === 'fill'
+        ? `${STAGE_STYLE}; width: 100%; height: 100%`
+        : STAGE_STYLE;
+    shadow.innerHTML = `<slot></slot><div data-thumb-stage style="${style}; visibility: hidden">${html ?? ''}</div>`;
+    const content =
+      shadow.querySelector('[data-thumb-stage]')!.firstElementChild ??
+      undefined;
+    const load = () => schedule(host);
+    hosts.set(host, { key, content, load });
+    shadow.addEventListener('load', load, true);
     if (html === undefined) {
       host.toggleAttribute('data-thumb-empty', true);
       return;
     }
-    View.requestAnimationFrame(() => fit(host));
+    owners.set(host, host);
     resize?.observe(host);
+    if (content) {
+      owners.set(content, host);
+      resize?.observe(content);
+    }
+    schedule(host);
   };
   const scan = () => {
-    for (const host of root.querySelectorAll<HTMLElement>(
-      hook(HOOK.paletteThumb),
-    ))
-      fill(host);
+    const current = new Set(
+      root.querySelectorAll<HTMLElement>(hook(HOOK.paletteThumb)),
+    );
+    for (const host of hosts.keys()) if (!current.has(host)) release(host);
+    for (const host of current) fill(host);
   };
   scan();
   const observer = new View.MutationObserver(scan);
@@ -144,7 +221,10 @@ export function wirePaletteThumbnails(
     attributeFilter: [HOOK.paletteThumb],
   });
   return () => {
+    if (disposed) return;
+    disposed = true;
     observer.disconnect();
+    for (const host of hosts.keys()) release(host);
     resize?.disconnect();
   };
 }

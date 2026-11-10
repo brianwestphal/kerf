@@ -48,11 +48,80 @@
           "type": {
             "kind": "ref",
             "ref": "ShippingWindow",
-            "text": "ShippingWindow | undefined",
+            "text": "ShippingWindow",
             "nullable": true
           },
           "required": false,
           "description": "When the order ships, edited by the app's own field editor."
+        },
+        {
+          "name": "rootAttributes",
+          "type": {
+            "kind": "record",
+            "text": "Readonly<Record<`data-${string}`, string | undefined>>",
+            "nullable": true
+          },
+          "required": false,
+          "control": "hidden"
+        }
+      ],
+      "nativeAttributes": [],
+      "dataChannel": "rootAttributes"
+    },
+    {
+      "key": "orders-app:order-marker",
+      "id": "order-marker",
+      "source": "package",
+      "import": "./src/order-marker.js",
+      "export": "OrderMarker",
+      "description": "An invisible application marker, shown with an icon only in the Library.",
+      "props": [
+        {
+          "name": "label",
+          "type": {
+            "kind": "string",
+            "text": "string"
+          },
+          "required": true
+        },
+        {
+          "name": "rootAttributes",
+          "type": {
+            "kind": "record",
+            "text": "Readonly<Record<`data-${string}`, string | undefined>>",
+            "nullable": true
+          },
+          "required": false,
+          "control": "hidden"
+        }
+      ],
+      "nativeAttributes": [],
+      "dataChannel": "rootAttributes"
+    },
+    {
+      "key": "orders-app:order-workspace",
+      "id": "order-workspace",
+      "source": "package",
+      "import": "./src/order-workspace.js",
+      "export": "OrderWorkspace",
+      "description": "An application composition with navigation and a work area.",
+      "props": [
+        {
+          "name": "id",
+          "type": {
+            "kind": "string",
+            "text": "string"
+          },
+          "required": true
+        },
+        {
+          "name": "title",
+          "type": {
+            "kind": "string",
+            "text": "string"
+          },
+          "required": true,
+          "description": "The real workspace heading, independent of its Library schematic."
         },
         {
           "name": "rootAttributes",
