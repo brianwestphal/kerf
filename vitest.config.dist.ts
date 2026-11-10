@@ -18,7 +18,8 @@ export default defineConfig({
     // corrupts a list binding fails the run at the render that did it rather
     // than surfacing as a wrong assertion somewhere downstream.
     env: { KERF_DEV_INVARIANTS: 'throw' },
-    environment: 'happy-dom',
+    environment: new URL('./tests/happy-dom-environment.ts', import.meta.url)
+      .pathname,
     globals: false,
     include: ['tests/dist/**/*.test.ts'],
     // Default exclude has `**/dist/**` which would skip our tests directory.

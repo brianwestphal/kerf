@@ -26,7 +26,8 @@ export default defineConfig({
     ],
   },
   test: {
-    environment: 'happy-dom',
+    environment: new URL('../tests/happy-dom-environment.ts', import.meta.url)
+      .pathname,
     // KF-9XZ6XQ: strip Git hook variables before any test spawns git.
     setupFiles: ['./tests/setup-git-environment.ts'],
     // KF-773V87: the editor's DOM tests mount the whole editor in happy-dom.

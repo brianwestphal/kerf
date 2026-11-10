@@ -117,7 +117,8 @@ export default defineConfig({
       './tests/setup-git-environment.ts',
       './tests/setup-dev-hooks.ts',
     ],
-    environment: 'happy-dom',
+    environment: new URL('./tests/happy-dom-environment.ts', import.meta.url)
+      .pathname,
     globals: false,
     include: ['tests/unit/**/*.test.ts', 'tests/integration/**/*.test.ts'],
     // Default exclude blocks `**/dist/**`. We need the include glob to

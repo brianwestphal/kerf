@@ -34,7 +34,8 @@ export default defineConfig({
   // The editor bundles every Lucide icon so documents can name any of them.
   build: { outDir: 'dist', emptyOutDir: true, chunkSizeWarningLimit: 4096 },
   test: {
-    environment: 'happy-dom',
+    environment: new URL('../tests/happy-dom-environment.ts', import.meta.url)
+      .pathname,
     include: ['tests/unit/**/*.test.ts'],
   },
 });
