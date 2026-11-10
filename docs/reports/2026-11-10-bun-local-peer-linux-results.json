@@ -1,0 +1,1513 @@
+{
+  "schema": "kerf-bun-local-peer-linux/v1",
+  "result": "Linux reproduces the frozen file-copy failure and separate Bun link policy success; original candidate remains NO GO for production adoption.",
+  "run": {
+    "id": 42783619516,
+    "url": "https://github.com/brianwestphal/kerf/actions/runs/42783619516",
+    "headSha": "d08decc8cfbf93a1ddbe1e3d8afb867fb38cf6a2",
+    "jobs": [
+      {
+        "id": 129719334964,
+        "name": "local-peer",
+        "status": "completed",
+        "conclusion": "success",
+        "startedAt": "2026-11-10T08:34:41Z",
+        "completedAt": "2026-11-10T08:35:23Z"
+      },
+      {
+        "id": 129719336207,
+        "name": "eslint-plugin",
+        "status": "completed",
+        "conclusion": "skipped",
+        "startedAt": "2026-11-10T08:33:53Z",
+        "completedAt": "2026-11-10T08:33:53Z"
+      },
+      {
+        "id": 129719336306,
+        "name": "release-artifacts",
+        "status": "completed",
+        "conclusion": "skipped",
+        "startedAt": "2026-11-10T08:33:53Z",
+        "completedAt": "2026-11-10T08:33:53Z"
+      },
+      {
+        "id": 129719336446,
+        "name": "browser",
+        "status": "completed",
+        "conclusion": "skipped",
+        "startedAt": "2026-11-10T08:33:53Z",
+        "completedAt": "2026-11-10T08:33:53Z"
+      },
+      {
+        "id": 129719336484,
+        "name": "editor",
+        "status": "completed",
+        "conclusion": "skipped",
+        "startedAt": "2026-11-10T08:33:53Z",
+        "completedAt": "2026-11-10T08:33:53Z"
+      },
+      {
+        "id": 129719336494,
+        "name": "library-performance",
+        "status": "completed",
+        "conclusion": "skipped",
+        "startedAt": "2026-11-10T08:33:53Z",
+        "completedAt": "2026-11-10T08:33:53Z"
+      },
+      {
+        "id": 129719336544,
+        "name": "ui-browser",
+        "status": "completed",
+        "conclusion": "skipped",
+        "startedAt": "2026-11-10T08:33:53Z",
+        "completedAt": "2026-11-10T08:33:53Z"
+      },
+      {
+        "id": 129719336657,
+        "name": "browser-apt",
+        "status": "completed",
+        "conclusion": "skipped",
+        "startedAt": "2026-11-10T08:33:53Z",
+        "completedAt": "2026-11-10T08:33:53Z"
+      },
+      {
+        "id": 129719336661,
+        "name": "site",
+        "status": "completed",
+        "conclusion": "skipped",
+        "startedAt": "2026-11-10T08:33:53Z",
+        "completedAt": "2026-11-10T08:33:53Z"
+      },
+      {
+        "id": 129719336696,
+        "name": "pure-wasi",
+        "status": "completed",
+        "conclusion": "skipped",
+        "startedAt": "2026-11-10T08:33:53Z",
+        "completedAt": "2026-11-10T08:33:53Z"
+      },
+      {
+        "id": 129719336700,
+        "name": "gates",
+        "status": "completed",
+        "conclusion": "skipped",
+        "startedAt": "2026-11-10T08:33:53Z",
+        "completedAt": "2026-11-10T08:33:53Z"
+      },
+      {
+        "id": 129719336737,
+        "name": "node-floor",
+        "status": "completed",
+        "conclusion": "skipped",
+        "startedAt": "2026-11-10T08:33:53Z",
+        "completedAt": "2026-11-10T08:33:53Z"
+      },
+      {
+        "id": 129719336747,
+        "name": "design-templates",
+        "status": "completed",
+        "conclusion": "skipped",
+        "startedAt": "2026-11-10T08:33:53Z",
+        "completedAt": "2026-11-10T08:33:53Z"
+      },
+      {
+        "id": 129719337138,
+        "name": "seventh-tree",
+        "status": "completed",
+        "conclusion": "skipped",
+        "startedAt": "2026-11-10T08:33:54Z",
+        "completedAt": "2026-11-10T08:33:53Z"
+      },
+      {
+        "id": 129719337539,
+        "name": "ui-webawesome-latest",
+        "status": "completed",
+        "conclusion": "skipped",
+        "startedAt": "2026-11-10T08:33:54Z",
+        "completedAt": "2026-11-10T08:33:53Z"
+      },
+      {
+        "id": 129719337542,
+        "name": "create-kerf-component",
+        "status": "completed",
+        "conclusion": "skipped",
+        "startedAt": "2026-11-10T08:33:54Z",
+        "completedAt": "2026-11-10T08:33:53Z"
+      },
+      {
+        "id": 129719372080,
+        "name": "ui",
+        "status": "completed",
+        "conclusion": "skipped",
+        "startedAt": "2026-11-10T08:33:59Z",
+        "completedAt": "2026-11-10T08:33:53Z"
+      },
+      {
+        "id": 129719372688,
+        "name": "test",
+        "status": "completed",
+        "conclusion": "skipped",
+        "startedAt": "2026-11-10T08:33:59Z",
+        "completedAt": "2026-11-10T08:33:53Z"
+      },
+      {
+        "id": 129719380777,
+        "name": "typecheck",
+        "status": "completed",
+        "conclusion": "skipped",
+        "startedAt": "2026-11-10T08:34:00Z",
+        "completedAt": "2026-11-10T08:33:53Z"
+      },
+      {
+        "id": 129719384071,
+        "name": "wasi-resolution",
+        "status": "completed",
+        "conclusion": "skipped",
+        "startedAt": "2026-11-10T08:34:00Z",
+        "completedAt": "2026-11-10T08:33:53Z"
+      },
+      {
+        "id": 129719385190,
+        "name": "stable-plan",
+        "status": "completed",
+        "conclusion": "skipped",
+        "startedAt": "2026-11-10T08:34:00Z",
+        "completedAt": "2026-11-10T08:33:53Z"
+      },
+      {
+        "id": 129719388721,
+        "name": "lint",
+        "status": "completed",
+        "conclusion": "skipped",
+        "startedAt": "2026-11-10T08:34:01Z",
+        "completedAt": "2026-11-10T08:33:53Z"
+      },
+      {
+        "id": 129719398740,
+        "name": "build",
+        "status": "completed",
+        "conclusion": "skipped",
+        "startedAt": "2026-11-10T08:34:02Z",
+        "completedAt": "2026-11-10T08:33:53Z"
+      },
+      {
+        "id": 129719401731,
+        "name": "editor-browser",
+        "status": "completed",
+        "conclusion": "skipped",
+        "startedAt": "2026-11-10T08:34:03Z",
+        "completedAt": "2026-11-10T08:33:53Z"
+      }
+    ]
+  },
+  "artifacts": [
+    {
+      "id": 13747242397,
+      "node_id": "MDg6QXJ0aWZhY3QxMzc0NzI0MjM5Nw==",
+      "name": "local-peer-d08decc8cfbf93a1ddbe1e3d8afb867fb38cf6a2",
+      "size_in_bytes": 333852,
+      "url": "https://api.github.com/repos/brianwestphal/kerf/actions/artifacts/13747242397",
+      "archive_download_url": "https://api.github.com/repos/brianwestphal/kerf/actions/artifacts/13747242397/zip",
+      "expired": false,
+      "digest": "sha256:26631034f3ba60d6962d60c73add37b5d794d055a71179d1e9eddb1a135efefb",
+      "created_at": "2026-11-10T08:35:20Z",
+      "updated_at": "2026-11-10T08:35:20Z",
+      "expires_at": "2027-02-08T08:33:53Z",
+      "workflow_run": {
+        "id": 42783619516,
+        "repository_id": 1231460256,
+        "head_repository_id": 1231460256,
+        "head_branch": "main",
+        "head_sha": "d08decc8cfbf93a1ddbe1e3d8afb867fb38cf6a2"
+      }
+    }
+  ],
+  "toolchain": {
+    "node": "v22.23.4",
+    "npm": "10.9.9",
+    "bun": "1.4.4",
+    "bunRevision": "1.4.4+38afee6c8",
+    "sourceSha": "d08decc8cfbf93a1ddbe1e3d8afb867fb38cf6a2",
+    "platform": "linux",
+    "arch": "x64"
+  },
+  "canonicalInputs": {
+    "package.json": "acca6cd5646cf25666ec561d35585f7f89f7d827e554099439526475718144c9",
+    "package-lock.json": "5e833638ed0529875f869a6499860107fd3158cfcee2a93a0247f97701ee39c8",
+    "bun.lock": null,
+    "site/package.json": "eed4e3acc0997daeb21942dadd15293858baeeed0f96de3670d0a0ec47cc3249",
+    "site/package-lock.json": "3d9f1d30172935aaeb2be7e85609bf4c517ea1287fa1f24e7210f6c6d78633e0",
+    "site/bun.lock": null
+  },
+  "frozenInputs": {
+    "package.json": "acca6cd5646cf25666ec561d35585f7f89f7d827e554099439526475718144c9",
+    "package-lock.json": "5e833638ed0529875f869a6499860107fd3158cfcee2a93a0247f97701ee39c8",
+    "bun.lock": "029e3005684924115881a9f274fcf889afa36740378683a059222a45449d4ef9",
+    "site/package.json": "eed4e3acc0997daeb21942dadd15293858baeeed0f96de3670d0a0ec47cc3249",
+    "site/package-lock.json": "3d9f1d30172935aaeb2be7e85609bf4c517ea1287fa1f24e7210f6c6d78633e0",
+    "site/bun.lock": "76183ae67fa44c02de2363c50f5a0cdd2da96476ad37be3a36784dfa757bbfb3"
+  },
+  "minimal": [
+    {
+      "installer": "bun",
+      "initialDist": false,
+      "protocol": "file:..",
+      "commands": [
+        {
+          "command": ["bun", "pm", "migrate"],
+          "status": 0,
+          "signal": null,
+          "error": null,
+          "stdout": "",
+          "stderr": "[0.27ms] migrated lockfile from package-lock.json\n"
+        },
+        {
+          "command": [
+            "bun",
+            "install",
+            "--frozen-lockfile",
+            "--ignore-scripts"
+          ],
+          "status": 0,
+          "signal": null,
+          "error": null,
+          "stdout": "bun install v1.4.4 (38afee6c8)\n\n+ kerf-peer-fixture@..\n\n1 package installed [1.00ms]\n",
+          "stderr": ""
+        }
+      ],
+      "before": {
+        "source": {
+          "path": ".",
+          "exists": true,
+          "realpath": ".",
+          "symlink": false,
+          "manifest": {
+            "exists": true,
+            "sha256": "3ce91d4b706d59174ae4e17709ac31bd9418e070d8245ecd3bcc292a139a2501"
+          },
+          "declaration": {
+            "exists": false
+          }
+        },
+        "installed": {
+          "path": "site/node_modules/kerf-peer-fixture",
+          "exists": true,
+          "realpath": "site/node_modules/kerf-peer-fixture",
+          "symlink": false,
+          "manifest": {
+            "exists": true,
+            "sha256": "3ce91d4b706d59174ae4e17709ac31bd9418e070d8245ecd3bcc292a139a2501"
+          },
+          "declaration": {
+            "exists": false
+          }
+        },
+        "ancestor": {
+          "path": "node_modules/kerf-peer-fixture",
+          "exists": false,
+          "realpath": null,
+          "symlink": null,
+          "manifest": {
+            "exists": false
+          },
+          "declaration": {
+            "exists": false
+          }
+        }
+      },
+      "created": {
+        "source": {
+          "path": ".",
+          "exists": true,
+          "realpath": ".",
+          "symlink": false,
+          "manifest": {
+            "exists": true,
+            "sha256": "3ce91d4b706d59174ae4e17709ac31bd9418e070d8245ecd3bcc292a139a2501"
+          },
+          "declaration": {
+            "exists": true,
+            "sha256": "5a1049dd896769817d5ad9799cc284647042c88da37e527c256dfbb4aec8b68f"
+          }
+        },
+        "installed": {
+          "path": "site/node_modules/kerf-peer-fixture",
+          "exists": true,
+          "realpath": "site/node_modules/kerf-peer-fixture",
+          "symlink": false,
+          "manifest": {
+            "exists": true,
+            "sha256": "3ce91d4b706d59174ae4e17709ac31bd9418e070d8245ecd3bcc292a139a2501"
+          },
+          "declaration": {
+            "exists": false
+          }
+        },
+        "ancestor": {
+          "path": "node_modules/kerf-peer-fixture",
+          "exists": false,
+          "realpath": null,
+          "symlink": null,
+          "manifest": {
+            "exists": false
+          },
+          "declaration": {
+            "exists": false
+          }
+        }
+      },
+      "replaced": {
+        "source": {
+          "path": ".",
+          "exists": true,
+          "realpath": ".",
+          "symlink": false,
+          "manifest": {
+            "exists": true,
+            "sha256": "3ce91d4b706d59174ae4e17709ac31bd9418e070d8245ecd3bcc292a139a2501"
+          },
+          "declaration": {
+            "exists": true,
+            "sha256": "9e377ae60805765e32f22a018e3d5f5d0a0cba7d442c04e5b2ad57d77b8e683f"
+          }
+        },
+        "installed": {
+          "path": "site/node_modules/kerf-peer-fixture",
+          "exists": true,
+          "realpath": "site/node_modules/kerf-peer-fixture",
+          "symlink": false,
+          "manifest": {
+            "exists": true,
+            "sha256": "3ce91d4b706d59174ae4e17709ac31bd9418e070d8245ecd3bcc292a139a2501"
+          },
+          "declaration": {
+            "exists": false
+          }
+        },
+        "ancestor": {
+          "path": "node_modules/kerf-peer-fixture",
+          "exists": false,
+          "realpath": null,
+          "symlink": null,
+          "manifest": {
+            "exists": false
+          },
+          "declaration": {
+            "exists": false
+          }
+        }
+      },
+      "inputsBefore": {
+        "package.json": "3ce91d4b706d59174ae4e17709ac31bd9418e070d8245ecd3bcc292a139a2501",
+        "package-lock.json": null,
+        "bun.lock": null,
+        "site/package.json": "7b151727dcfacb348e4787b96ae7bba68ca94f1a766862cd3cc8d60931ae2763",
+        "site/package-lock.json": "22e35215f4935b65c9017af3a29a666e9bb1d659c5d223ee683b6b1c600888b7",
+        "site/bun.lock": "1f5e2a0380a586d686ce1af8920f8639562b28c495f8d50d96ca9f07e3f60f1c"
+      },
+      "inputsAfter": {
+        "package.json": "3ce91d4b706d59174ae4e17709ac31bd9418e070d8245ecd3bcc292a139a2501",
+        "package-lock.json": null,
+        "bun.lock": null,
+        "site/package.json": "7b151727dcfacb348e4787b96ae7bba68ca94f1a766862cd3cc8d60931ae2763",
+        "site/package-lock.json": "22e35215f4935b65c9017af3a29a666e9bb1d659c5d223ee683b6b1c600888b7",
+        "site/bun.lock": "1f5e2a0380a586d686ce1af8920f8639562b28c495f8d50d96ca9f07e3f60f1c"
+      }
+    },
+    {
+      "installer": "bun",
+      "initialDist": true,
+      "protocol": "file:..",
+      "commands": [
+        {
+          "command": ["bun", "pm", "migrate"],
+          "status": 0,
+          "signal": null,
+          "error": null,
+          "stdout": "",
+          "stderr": "[0.24ms] migrated lockfile from package-lock.json\n"
+        },
+        {
+          "command": [
+            "bun",
+            "install",
+            "--frozen-lockfile",
+            "--ignore-scripts"
+          ],
+          "status": 0,
+          "signal": null,
+          "error": null,
+          "stdout": "bun install v1.4.4 (38afee6c8)\n\n+ kerf-peer-fixture@..\n\n1 package installed [1.00ms]\n",
+          "stderr": ""
+        }
+      ],
+      "before": {
+        "source": {
+          "path": ".",
+          "exists": true,
+          "realpath": ".",
+          "symlink": false,
+          "manifest": {
+            "exists": true,
+            "sha256": "3ce91d4b706d59174ae4e17709ac31bd9418e070d8245ecd3bcc292a139a2501"
+          },
+          "declaration": {
+            "exists": true,
+            "sha256": "b4356eb62da54a1d8a110a13f28945905bdc5be35cce09896afa20bc333243b1"
+          }
+        },
+        "installed": {
+          "path": "site/node_modules/kerf-peer-fixture",
+          "exists": true,
+          "realpath": "site/node_modules/kerf-peer-fixture",
+          "symlink": false,
+          "manifest": {
+            "exists": true,
+            "sha256": "3ce91d4b706d59174ae4e17709ac31bd9418e070d8245ecd3bcc292a139a2501"
+          },
+          "declaration": {
+            "exists": true,
+            "sha256": "b4356eb62da54a1d8a110a13f28945905bdc5be35cce09896afa20bc333243b1"
+          }
+        },
+        "ancestor": {
+          "path": "node_modules/kerf-peer-fixture",
+          "exists": false,
+          "realpath": null,
+          "symlink": null,
+          "manifest": {
+            "exists": false
+          },
+          "declaration": {
+            "exists": false
+          }
+        }
+      },
+      "created": {
+        "source": {
+          "path": ".",
+          "exists": true,
+          "realpath": ".",
+          "symlink": false,
+          "manifest": {
+            "exists": true,
+            "sha256": "3ce91d4b706d59174ae4e17709ac31bd9418e070d8245ecd3bcc292a139a2501"
+          },
+          "declaration": {
+            "exists": true,
+            "sha256": "5a1049dd896769817d5ad9799cc284647042c88da37e527c256dfbb4aec8b68f"
+          }
+        },
+        "installed": {
+          "path": "site/node_modules/kerf-peer-fixture",
+          "exists": true,
+          "realpath": "site/node_modules/kerf-peer-fixture",
+          "symlink": false,
+          "manifest": {
+            "exists": true,
+            "sha256": "3ce91d4b706d59174ae4e17709ac31bd9418e070d8245ecd3bcc292a139a2501"
+          },
+          "declaration": {
+            "exists": true,
+            "sha256": "b4356eb62da54a1d8a110a13f28945905bdc5be35cce09896afa20bc333243b1"
+          }
+        },
+        "ancestor": {
+          "path": "node_modules/kerf-peer-fixture",
+          "exists": false,
+          "realpath": null,
+          "symlink": null,
+          "manifest": {
+            "exists": false
+          },
+          "declaration": {
+            "exists": false
+          }
+        }
+      },
+      "replaced": {
+        "source": {
+          "path": ".",
+          "exists": true,
+          "realpath": ".",
+          "symlink": false,
+          "manifest": {
+            "exists": true,
+            "sha256": "3ce91d4b706d59174ae4e17709ac31bd9418e070d8245ecd3bcc292a139a2501"
+          },
+          "declaration": {
+            "exists": true,
+            "sha256": "9e377ae60805765e32f22a018e3d5f5d0a0cba7d442c04e5b2ad57d77b8e683f"
+          }
+        },
+        "installed": {
+          "path": "site/node_modules/kerf-peer-fixture",
+          "exists": true,
+          "realpath": "site/node_modules/kerf-peer-fixture",
+          "symlink": false,
+          "manifest": {
+            "exists": true,
+            "sha256": "3ce91d4b706d59174ae4e17709ac31bd9418e070d8245ecd3bcc292a139a2501"
+          },
+          "declaration": {
+            "exists": true,
+            "sha256": "b4356eb62da54a1d8a110a13f28945905bdc5be35cce09896afa20bc333243b1"
+          }
+        },
+        "ancestor": {
+          "path": "node_modules/kerf-peer-fixture",
+          "exists": false,
+          "realpath": null,
+          "symlink": null,
+          "manifest": {
+            "exists": false
+          },
+          "declaration": {
+            "exists": false
+          }
+        }
+      },
+      "inputsBefore": {
+        "package.json": "3ce91d4b706d59174ae4e17709ac31bd9418e070d8245ecd3bcc292a139a2501",
+        "package-lock.json": null,
+        "bun.lock": null,
+        "site/package.json": "7b151727dcfacb348e4787b96ae7bba68ca94f1a766862cd3cc8d60931ae2763",
+        "site/package-lock.json": "22e35215f4935b65c9017af3a29a666e9bb1d659c5d223ee683b6b1c600888b7",
+        "site/bun.lock": "1f5e2a0380a586d686ce1af8920f8639562b28c495f8d50d96ca9f07e3f60f1c"
+      },
+      "inputsAfter": {
+        "package.json": "3ce91d4b706d59174ae4e17709ac31bd9418e070d8245ecd3bcc292a139a2501",
+        "package-lock.json": null,
+        "bun.lock": null,
+        "site/package.json": "7b151727dcfacb348e4787b96ae7bba68ca94f1a766862cd3cc8d60931ae2763",
+        "site/package-lock.json": "22e35215f4935b65c9017af3a29a666e9bb1d659c5d223ee683b6b1c600888b7",
+        "site/bun.lock": "1f5e2a0380a586d686ce1af8920f8639562b28c495f8d50d96ca9f07e3f60f1c"
+      }
+    },
+    {
+      "installer": "npm",
+      "initialDist": false,
+      "protocol": "file:..",
+      "commands": [
+        {
+          "command": [
+            "npm",
+            "ci",
+            "--offline",
+            "--ignore-scripts",
+            "--no-audit",
+            "--no-fund"
+          ],
+          "status": 0,
+          "signal": null,
+          "error": null,
+          "stdout": "\nadded 1 package in 206ms\n",
+          "stderr": ""
+        }
+      ],
+      "before": {
+        "source": {
+          "path": ".",
+          "exists": true,
+          "realpath": ".",
+          "symlink": false,
+          "manifest": {
+            "exists": true,
+            "sha256": "3ce91d4b706d59174ae4e17709ac31bd9418e070d8245ecd3bcc292a139a2501"
+          },
+          "declaration": {
+            "exists": false
+          }
+        },
+        "installed": {
+          "path": "site/node_modules/kerf-peer-fixture",
+          "exists": true,
+          "realpath": ".",
+          "symlink": true,
+          "manifest": {
+            "exists": true,
+            "sha256": "3ce91d4b706d59174ae4e17709ac31bd9418e070d8245ecd3bcc292a139a2501"
+          },
+          "declaration": {
+            "exists": false
+          }
+        },
+        "ancestor": {
+          "path": "node_modules/kerf-peer-fixture",
+          "exists": false,
+          "realpath": null,
+          "symlink": null,
+          "manifest": {
+            "exists": false
+          },
+          "declaration": {
+            "exists": false
+          }
+        }
+      },
+      "created": {
+        "source": {
+          "path": ".",
+          "exists": true,
+          "realpath": ".",
+          "symlink": false,
+          "manifest": {
+            "exists": true,
+            "sha256": "3ce91d4b706d59174ae4e17709ac31bd9418e070d8245ecd3bcc292a139a2501"
+          },
+          "declaration": {
+            "exists": true,
+            "sha256": "5a1049dd896769817d5ad9799cc284647042c88da37e527c256dfbb4aec8b68f"
+          }
+        },
+        "installed": {
+          "path": "site/node_modules/kerf-peer-fixture",
+          "exists": true,
+          "realpath": ".",
+          "symlink": true,
+          "manifest": {
+            "exists": true,
+            "sha256": "3ce91d4b706d59174ae4e17709ac31bd9418e070d8245ecd3bcc292a139a2501"
+          },
+          "declaration": {
+            "exists": true,
+            "sha256": "5a1049dd896769817d5ad9799cc284647042c88da37e527c256dfbb4aec8b68f"
+          }
+        },
+        "ancestor": {
+          "path": "node_modules/kerf-peer-fixture",
+          "exists": false,
+          "realpath": null,
+          "symlink": null,
+          "manifest": {
+            "exists": false
+          },
+          "declaration": {
+            "exists": false
+          }
+        }
+      },
+      "replaced": {
+        "source": {
+          "path": ".",
+          "exists": true,
+          "realpath": ".",
+          "symlink": false,
+          "manifest": {
+            "exists": true,
+            "sha256": "3ce91d4b706d59174ae4e17709ac31bd9418e070d8245ecd3bcc292a139a2501"
+          },
+          "declaration": {
+            "exists": true,
+            "sha256": "9e377ae60805765e32f22a018e3d5f5d0a0cba7d442c04e5b2ad57d77b8e683f"
+          }
+        },
+        "installed": {
+          "path": "site/node_modules/kerf-peer-fixture",
+          "exists": true,
+          "realpath": ".",
+          "symlink": true,
+          "manifest": {
+            "exists": true,
+            "sha256": "3ce91d4b706d59174ae4e17709ac31bd9418e070d8245ecd3bcc292a139a2501"
+          },
+          "declaration": {
+            "exists": true,
+            "sha256": "9e377ae60805765e32f22a018e3d5f5d0a0cba7d442c04e5b2ad57d77b8e683f"
+          }
+        },
+        "ancestor": {
+          "path": "node_modules/kerf-peer-fixture",
+          "exists": false,
+          "realpath": null,
+          "symlink": null,
+          "manifest": {
+            "exists": false
+          },
+          "declaration": {
+            "exists": false
+          }
+        }
+      },
+      "inputsBefore": {
+        "package.json": "3ce91d4b706d59174ae4e17709ac31bd9418e070d8245ecd3bcc292a139a2501",
+        "package-lock.json": null,
+        "bun.lock": null,
+        "site/package.json": "7b151727dcfacb348e4787b96ae7bba68ca94f1a766862cd3cc8d60931ae2763",
+        "site/package-lock.json": "22e35215f4935b65c9017af3a29a666e9bb1d659c5d223ee683b6b1c600888b7",
+        "site/bun.lock": null
+      },
+      "inputsAfter": {
+        "package.json": "3ce91d4b706d59174ae4e17709ac31bd9418e070d8245ecd3bcc292a139a2501",
+        "package-lock.json": null,
+        "bun.lock": null,
+        "site/package.json": "7b151727dcfacb348e4787b96ae7bba68ca94f1a766862cd3cc8d60931ae2763",
+        "site/package-lock.json": "22e35215f4935b65c9017af3a29a666e9bb1d659c5d223ee683b6b1c600888b7",
+        "site/bun.lock": null
+      }
+    },
+    {
+      "installer": "npm",
+      "initialDist": true,
+      "protocol": "file:..",
+      "commands": [
+        {
+          "command": [
+            "npm",
+            "ci",
+            "--offline",
+            "--ignore-scripts",
+            "--no-audit",
+            "--no-fund"
+          ],
+          "status": 0,
+          "signal": null,
+          "error": null,
+          "stdout": "\nadded 1 package in 193ms\n",
+          "stderr": ""
+        }
+      ],
+      "before": {
+        "source": {
+          "path": ".",
+          "exists": true,
+          "realpath": ".",
+          "symlink": false,
+          "manifest": {
+            "exists": true,
+            "sha256": "3ce91d4b706d59174ae4e17709ac31bd9418e070d8245ecd3bcc292a139a2501"
+          },
+          "declaration": {
+            "exists": true,
+            "sha256": "b4356eb62da54a1d8a110a13f28945905bdc5be35cce09896afa20bc333243b1"
+          }
+        },
+        "installed": {
+          "path": "site/node_modules/kerf-peer-fixture",
+          "exists": true,
+          "realpath": ".",
+          "symlink": true,
+          "manifest": {
+            "exists": true,
+            "sha256": "3ce91d4b706d59174ae4e17709ac31bd9418e070d8245ecd3bcc292a139a2501"
+          },
+          "declaration": {
+            "exists": true,
+            "sha256": "b4356eb62da54a1d8a110a13f28945905bdc5be35cce09896afa20bc333243b1"
+          }
+        },
+        "ancestor": {
+          "path": "node_modules/kerf-peer-fixture",
+          "exists": false,
+          "realpath": null,
+          "symlink": null,
+          "manifest": {
+            "exists": false
+          },
+          "declaration": {
+            "exists": false
+          }
+        }
+      },
+      "created": {
+        "source": {
+          "path": ".",
+          "exists": true,
+          "realpath": ".",
+          "symlink": false,
+          "manifest": {
+            "exists": true,
+            "sha256": "3ce91d4b706d59174ae4e17709ac31bd9418e070d8245ecd3bcc292a139a2501"
+          },
+          "declaration": {
+            "exists": true,
+            "sha256": "5a1049dd896769817d5ad9799cc284647042c88da37e527c256dfbb4aec8b68f"
+          }
+        },
+        "installed": {
+          "path": "site/node_modules/kerf-peer-fixture",
+          "exists": true,
+          "realpath": ".",
+          "symlink": true,
+          "manifest": {
+            "exists": true,
+            "sha256": "3ce91d4b706d59174ae4e17709ac31bd9418e070d8245ecd3bcc292a139a2501"
+          },
+          "declaration": {
+            "exists": true,
+            "sha256": "5a1049dd896769817d5ad9799cc284647042c88da37e527c256dfbb4aec8b68f"
+          }
+        },
+        "ancestor": {
+          "path": "node_modules/kerf-peer-fixture",
+          "exists": false,
+          "realpath": null,
+          "symlink": null,
+          "manifest": {
+            "exists": false
+          },
+          "declaration": {
+            "exists": false
+          }
+        }
+      },
+      "replaced": {
+        "source": {
+          "path": ".",
+          "exists": true,
+          "realpath": ".",
+          "symlink": false,
+          "manifest": {
+            "exists": true,
+            "sha256": "3ce91d4b706d59174ae4e17709ac31bd9418e070d8245ecd3bcc292a139a2501"
+          },
+          "declaration": {
+            "exists": true,
+            "sha256": "9e377ae60805765e32f22a018e3d5f5d0a0cba7d442c04e5b2ad57d77b8e683f"
+          }
+        },
+        "installed": {
+          "path": "site/node_modules/kerf-peer-fixture",
+          "exists": true,
+          "realpath": ".",
+          "symlink": true,
+          "manifest": {
+            "exists": true,
+            "sha256": "3ce91d4b706d59174ae4e17709ac31bd9418e070d8245ecd3bcc292a139a2501"
+          },
+          "declaration": {
+            "exists": true,
+            "sha256": "9e377ae60805765e32f22a018e3d5f5d0a0cba7d442c04e5b2ad57d77b8e683f"
+          }
+        },
+        "ancestor": {
+          "path": "node_modules/kerf-peer-fixture",
+          "exists": false,
+          "realpath": null,
+          "symlink": null,
+          "manifest": {
+            "exists": false
+          },
+          "declaration": {
+            "exists": false
+          }
+        }
+      },
+      "inputsBefore": {
+        "package.json": "3ce91d4b706d59174ae4e17709ac31bd9418e070d8245ecd3bcc292a139a2501",
+        "package-lock.json": null,
+        "bun.lock": null,
+        "site/package.json": "7b151727dcfacb348e4787b96ae7bba68ca94f1a766862cd3cc8d60931ae2763",
+        "site/package-lock.json": "22e35215f4935b65c9017af3a29a666e9bb1d659c5d223ee683b6b1c600888b7",
+        "site/bun.lock": null
+      },
+      "inputsAfter": {
+        "package.json": "3ce91d4b706d59174ae4e17709ac31bd9418e070d8245ecd3bcc292a139a2501",
+        "package-lock.json": null,
+        "bun.lock": null,
+        "site/package.json": "7b151727dcfacb348e4787b96ae7bba68ca94f1a766862cd3cc8d60931ae2763",
+        "site/package-lock.json": "22e35215f4935b65c9017af3a29a666e9bb1d659c5d223ee683b6b1c600888b7",
+        "site/bun.lock": null
+      }
+    },
+    {
+      "installer": "bun",
+      "initialDist": false,
+      "protocol": "link:..",
+      "commands": [
+        {
+          "command": ["bun", "pm", "migrate"],
+          "status": 0,
+          "signal": null,
+          "error": null,
+          "stdout": "",
+          "stderr": "[0.22ms] migrated lockfile from package-lock.json\n"
+        },
+        {
+          "command": [
+            "bun",
+            "install",
+            "--frozen-lockfile",
+            "--ignore-scripts"
+          ],
+          "status": 0,
+          "signal": null,
+          "error": null,
+          "stdout": "bun install v1.4.4 (38afee6c8)\n\n+ kerf-peer-fixture@..\n\n1 package installed [1.00ms]\n",
+          "stderr": ""
+        },
+        {
+          "command": ["bun", "install", "--lockfile-only", "--ignore-scripts"],
+          "status": 0,
+          "signal": null,
+          "error": null,
+          "stdout": "bun install v1.4.4 (38afee6c8)\n\nSaved bun.lock (2 packages) [1.00ms]\n",
+          "stderr": "Saved lockfile\n"
+        },
+        {
+          "command": [
+            "bun",
+            "install",
+            "--frozen-lockfile",
+            "--ignore-scripts"
+          ],
+          "status": 0,
+          "signal": null,
+          "error": null,
+          "stdout": "bun install v1.4.4 (38afee6c8)\n\n+ kerf-peer-fixture@link:..\n\n1 package installed [1.00ms]\n",
+          "stderr": ""
+        }
+      ],
+      "before": {
+        "source": {
+          "path": ".",
+          "exists": true,
+          "realpath": ".",
+          "symlink": false,
+          "manifest": {
+            "exists": true,
+            "sha256": "3ce91d4b706d59174ae4e17709ac31bd9418e070d8245ecd3bcc292a139a2501"
+          },
+          "declaration": {
+            "exists": false
+          }
+        },
+        "installed": {
+          "path": "site/node_modules/kerf-peer-fixture",
+          "exists": true,
+          "realpath": ".",
+          "symlink": true,
+          "manifest": {
+            "exists": true,
+            "sha256": "3ce91d4b706d59174ae4e17709ac31bd9418e070d8245ecd3bcc292a139a2501"
+          },
+          "declaration": {
+            "exists": false
+          }
+        },
+        "ancestor": {
+          "path": "node_modules/kerf-peer-fixture",
+          "exists": false,
+          "realpath": null,
+          "symlink": null,
+          "manifest": {
+            "exists": false
+          },
+          "declaration": {
+            "exists": false
+          }
+        }
+      },
+      "created": {
+        "source": {
+          "path": ".",
+          "exists": true,
+          "realpath": ".",
+          "symlink": false,
+          "manifest": {
+            "exists": true,
+            "sha256": "3ce91d4b706d59174ae4e17709ac31bd9418e070d8245ecd3bcc292a139a2501"
+          },
+          "declaration": {
+            "exists": true,
+            "sha256": "5a1049dd896769817d5ad9799cc284647042c88da37e527c256dfbb4aec8b68f"
+          }
+        },
+        "installed": {
+          "path": "site/node_modules/kerf-peer-fixture",
+          "exists": true,
+          "realpath": ".",
+          "symlink": true,
+          "manifest": {
+            "exists": true,
+            "sha256": "3ce91d4b706d59174ae4e17709ac31bd9418e070d8245ecd3bcc292a139a2501"
+          },
+          "declaration": {
+            "exists": true,
+            "sha256": "5a1049dd896769817d5ad9799cc284647042c88da37e527c256dfbb4aec8b68f"
+          }
+        },
+        "ancestor": {
+          "path": "node_modules/kerf-peer-fixture",
+          "exists": false,
+          "realpath": null,
+          "symlink": null,
+          "manifest": {
+            "exists": false
+          },
+          "declaration": {
+            "exists": false
+          }
+        }
+      },
+      "replaced": {
+        "source": {
+          "path": ".",
+          "exists": true,
+          "realpath": ".",
+          "symlink": false,
+          "manifest": {
+            "exists": true,
+            "sha256": "3ce91d4b706d59174ae4e17709ac31bd9418e070d8245ecd3bcc292a139a2501"
+          },
+          "declaration": {
+            "exists": true,
+            "sha256": "9e377ae60805765e32f22a018e3d5f5d0a0cba7d442c04e5b2ad57d77b8e683f"
+          }
+        },
+        "installed": {
+          "path": "site/node_modules/kerf-peer-fixture",
+          "exists": true,
+          "realpath": ".",
+          "symlink": true,
+          "manifest": {
+            "exists": true,
+            "sha256": "3ce91d4b706d59174ae4e17709ac31bd9418e070d8245ecd3bcc292a139a2501"
+          },
+          "declaration": {
+            "exists": true,
+            "sha256": "9e377ae60805765e32f22a018e3d5f5d0a0cba7d442c04e5b2ad57d77b8e683f"
+          }
+        },
+        "ancestor": {
+          "path": "node_modules/kerf-peer-fixture",
+          "exists": false,
+          "realpath": null,
+          "symlink": null,
+          "manifest": {
+            "exists": false
+          },
+          "declaration": {
+            "exists": false
+          }
+        }
+      },
+      "inputsBefore": {
+        "package.json": "3ce91d4b706d59174ae4e17709ac31bd9418e070d8245ecd3bcc292a139a2501",
+        "package-lock.json": null,
+        "bun.lock": null,
+        "site/package.json": "6545feb6b100d151e77dd6aefc9721ad945b67fd09c1c15ffddec84e3dc33483",
+        "site/package-lock.json": "22e35215f4935b65c9017af3a29a666e9bb1d659c5d223ee683b6b1c600888b7",
+        "site/bun.lock": "009e6aa0a8d6c51a76d5be7e86a784b1dae38fd72e82b26bc6bf091f248a2309"
+      },
+      "inputsAfter": {
+        "package.json": "3ce91d4b706d59174ae4e17709ac31bd9418e070d8245ecd3bcc292a139a2501",
+        "package-lock.json": null,
+        "bun.lock": null,
+        "site/package.json": "6545feb6b100d151e77dd6aefc9721ad945b67fd09c1c15ffddec84e3dc33483",
+        "site/package-lock.json": "22e35215f4935b65c9017af3a29a666e9bb1d659c5d223ee683b6b1c600888b7",
+        "site/bun.lock": "009e6aa0a8d6c51a76d5be7e86a784b1dae38fd72e82b26bc6bf091f248a2309"
+      }
+    }
+  ],
+  "beforeBuild": {
+    "peer": {
+      "source": {
+        "path": ".",
+        "exists": true,
+        "realpath": ".",
+        "symlink": false,
+        "manifest": {
+          "exists": true,
+          "sha256": "acca6cd5646cf25666ec561d35585f7f89f7d827e554099439526475718144c9"
+        },
+        "declaration": {
+          "exists": false
+        }
+      },
+      "installed": {
+        "path": "site/node_modules/kerfjs",
+        "exists": true,
+        "realpath": "site/node_modules/kerfjs",
+        "symlink": false,
+        "manifest": {
+          "exists": true,
+          "sha256": "acca6cd5646cf25666ec561d35585f7f89f7d827e554099439526475718144c9"
+        },
+        "declaration": {
+          "exists": false
+        }
+      },
+      "ancestor": {
+        "path": "node_modules/kerfjs",
+        "exists": true,
+        "realpath": "node_modules/kerfjs",
+        "symlink": false,
+        "manifest": {
+          "exists": true,
+          "sha256": "50d67d542bb3634c7727982b78c4b1f5f36f1893dfd785489b5e9bc5c7cac74d"
+        },
+        "declaration": {
+          "exists": true,
+          "sha256": "a6031546a72ce4efe6c6b0999ae241dd1d90532237db216494a2641c73608d97"
+        }
+      }
+    },
+    "types": {
+      "compiler": "6.0.3",
+      "path": "node_modules/kerfjs/dist/index.d.ts",
+      "packageId": {
+        "name": "kerfjs",
+        "subModuleName": "dist/index.d.ts",
+        "version": "4.4.1"
+      },
+      "declaration": {
+        "exists": true,
+        "sha256": "a6031546a72ce4efe6c6b0999ae241dd1d90532237db216494a2641c73608d97"
+      }
+    },
+    "inputs": {
+      "package.json": "acca6cd5646cf25666ec561d35585f7f89f7d827e554099439526475718144c9",
+      "package-lock.json": "5e833638ed0529875f869a6499860107fd3158cfcee2a93a0247f97701ee39c8",
+      "bun.lock": "029e3005684924115881a9f274fcf889afa36740378683a059222a45449d4ef9",
+      "site/package.json": "eed4e3acc0997daeb21942dadd15293858baeeed0f96de3670d0a0ec47cc3249",
+      "site/package-lock.json": "3d9f1d30172935aaeb2be7e85609bf4c517ea1287fa1f24e7210f6c6d78633e0",
+      "site/bun.lock": "76183ae67fa44c02de2363c50f5a0cdd2da96476ad37be3a36784dfa757bbfb3"
+    }
+  },
+  "afterBuild": {
+    "peer": {
+      "source": {
+        "path": ".",
+        "exists": true,
+        "realpath": ".",
+        "symlink": false,
+        "manifest": {
+          "exists": true,
+          "sha256": "acca6cd5646cf25666ec561d35585f7f89f7d827e554099439526475718144c9"
+        },
+        "declaration": {
+          "exists": true,
+          "sha256": "bbaab48f7f69cbf93f6287ec029b76c82f6ae8d789a691115fdec2f999d6732a"
+        }
+      },
+      "installed": {
+        "path": "site/node_modules/kerfjs",
+        "exists": true,
+        "realpath": "site/node_modules/kerfjs",
+        "symlink": false,
+        "manifest": {
+          "exists": true,
+          "sha256": "acca6cd5646cf25666ec561d35585f7f89f7d827e554099439526475718144c9"
+        },
+        "declaration": {
+          "exists": false
+        }
+      },
+      "ancestor": {
+        "path": "node_modules/kerfjs",
+        "exists": true,
+        "realpath": "node_modules/kerfjs",
+        "symlink": false,
+        "manifest": {
+          "exists": true,
+          "sha256": "50d67d542bb3634c7727982b78c4b1f5f36f1893dfd785489b5e9bc5c7cac74d"
+        },
+        "declaration": {
+          "exists": true,
+          "sha256": "a6031546a72ce4efe6c6b0999ae241dd1d90532237db216494a2641c73608d97"
+        }
+      }
+    },
+    "types": {
+      "compiler": "6.0.3",
+      "path": "node_modules/kerfjs/dist/index.d.ts",
+      "packageId": {
+        "name": "kerfjs",
+        "subModuleName": "dist/index.d.ts",
+        "version": "4.4.1"
+      },
+      "declaration": {
+        "exists": true,
+        "sha256": "a6031546a72ce4efe6c6b0999ae241dd1d90532237db216494a2641c73608d97"
+      }
+    },
+    "inputs": {
+      "package.json": "acca6cd5646cf25666ec561d35585f7f89f7d827e554099439526475718144c9",
+      "package-lock.json": "5e833638ed0529875f869a6499860107fd3158cfcee2a93a0247f97701ee39c8",
+      "bun.lock": "029e3005684924115881a9f274fcf889afa36740378683a059222a45449d4ef9",
+      "site/package.json": "eed4e3acc0997daeb21942dadd15293858baeeed0f96de3670d0a0ec47cc3249",
+      "site/package-lock.json": "3d9f1d30172935aaeb2be7e85609bf4c517ea1287fa1f24e7210f6c6d78633e0",
+      "site/bun.lock": "76183ae67fa44c02de2363c50f5a0cdd2da96476ad37be3a36784dfa757bbfb3"
+    }
+  },
+  "baselineTyping": {
+    "status": 1,
+    "signal": null,
+    "error": null,
+    "stdout": "site/src/examples/complete/row-selector/main.tsx(26,3): error TS2305: Module '\"kerfjs\"' has no exported member 'selector'.\n",
+    "stderr": ""
+  },
+  "linkPolicyBeforeBuild": {
+    "peer": {
+      "source": {
+        "path": ".",
+        "exists": true,
+        "realpath": ".",
+        "symlink": false,
+        "manifest": {
+          "exists": true,
+          "sha256": "acca6cd5646cf25666ec561d35585f7f89f7d827e554099439526475718144c9"
+        },
+        "declaration": {
+          "exists": false
+        }
+      },
+      "installed": {
+        "path": "site/node_modules/kerfjs",
+        "exists": true,
+        "realpath": ".",
+        "symlink": true,
+        "manifest": {
+          "exists": true,
+          "sha256": "acca6cd5646cf25666ec561d35585f7f89f7d827e554099439526475718144c9"
+        },
+        "declaration": {
+          "exists": false
+        }
+      },
+      "ancestor": {
+        "path": "node_modules/kerfjs",
+        "exists": true,
+        "realpath": "node_modules/kerfjs",
+        "symlink": false,
+        "manifest": {
+          "exists": true,
+          "sha256": "50d67d542bb3634c7727982b78c4b1f5f36f1893dfd785489b5e9bc5c7cac74d"
+        },
+        "declaration": {
+          "exists": true,
+          "sha256": "a6031546a72ce4efe6c6b0999ae241dd1d90532237db216494a2641c73608d97"
+        }
+      }
+    },
+    "types": {
+      "compiler": "6.0.3",
+      "path": "node_modules/kerfjs/dist/index.d.ts",
+      "packageId": {
+        "name": "kerfjs",
+        "subModuleName": "dist/index.d.ts",
+        "version": "4.4.1"
+      },
+      "declaration": {
+        "exists": true,
+        "sha256": "a6031546a72ce4efe6c6b0999ae241dd1d90532237db216494a2641c73608d97"
+      }
+    },
+    "inputs": {
+      "package.json": "acca6cd5646cf25666ec561d35585f7f89f7d827e554099439526475718144c9",
+      "package-lock.json": "5e833638ed0529875f869a6499860107fd3158cfcee2a93a0247f97701ee39c8",
+      "bun.lock": "029e3005684924115881a9f274fcf889afa36740378683a059222a45449d4ef9",
+      "site/package.json": "6ac7c727ba3ea0c6357c6d5d2a109e358653af2cb760f655ffc68856b280d3c2",
+      "site/package-lock.json": "3d9f1d30172935aaeb2be7e85609bf4c517ea1287fa1f24e7210f6c6d78633e0",
+      "site/bun.lock": "6761ee2079397862fd4fb5cd0361d08d835ae368ea62acb78649931850111e09"
+    }
+  },
+  "linkPolicy": {
+    "peer": {
+      "source": {
+        "path": ".",
+        "exists": true,
+        "realpath": ".",
+        "symlink": false,
+        "manifest": {
+          "exists": true,
+          "sha256": "acca6cd5646cf25666ec561d35585f7f89f7d827e554099439526475718144c9"
+        },
+        "declaration": {
+          "exists": true,
+          "sha256": "bbaab48f7f69cbf93f6287ec029b76c82f6ae8d789a691115fdec2f999d6732a"
+        }
+      },
+      "installed": {
+        "path": "site/node_modules/kerfjs",
+        "exists": true,
+        "realpath": ".",
+        "symlink": true,
+        "manifest": {
+          "exists": true,
+          "sha256": "acca6cd5646cf25666ec561d35585f7f89f7d827e554099439526475718144c9"
+        },
+        "declaration": {
+          "exists": true,
+          "sha256": "bbaab48f7f69cbf93f6287ec029b76c82f6ae8d789a691115fdec2f999d6732a"
+        }
+      },
+      "ancestor": {
+        "path": "node_modules/kerfjs",
+        "exists": true,
+        "realpath": "node_modules/kerfjs",
+        "symlink": false,
+        "manifest": {
+          "exists": true,
+          "sha256": "50d67d542bb3634c7727982b78c4b1f5f36f1893dfd785489b5e9bc5c7cac74d"
+        },
+        "declaration": {
+          "exists": true,
+          "sha256": "a6031546a72ce4efe6c6b0999ae241dd1d90532237db216494a2641c73608d97"
+        }
+      }
+    },
+    "types": {
+      "compiler": "6.0.3",
+      "path": "dist/index.d.ts",
+      "packageId": {
+        "name": "kerfjs",
+        "subModuleName": "dist/index.d.ts",
+        "version": "5.0.0"
+      },
+      "declaration": {
+        "exists": true,
+        "sha256": "bbaab48f7f69cbf93f6287ec029b76c82f6ae8d789a691115fdec2f999d6732a"
+      }
+    },
+    "inputs": {
+      "package.json": "acca6cd5646cf25666ec561d35585f7f89f7d827e554099439526475718144c9",
+      "package-lock.json": "5e833638ed0529875f869a6499860107fd3158cfcee2a93a0247f97701ee39c8",
+      "bun.lock": "029e3005684924115881a9f274fcf889afa36740378683a059222a45449d4ef9",
+      "site/package.json": "6ac7c727ba3ea0c6357c6d5d2a109e358653af2cb760f655ffc68856b280d3c2",
+      "site/package-lock.json": "3d9f1d30172935aaeb2be7e85609bf4c517ea1287fa1f24e7210f6c6d78633e0",
+      "site/bun.lock": "6761ee2079397862fd4fb5cd0361d08d835ae368ea62acb78649931850111e09"
+    }
+  },
+  "linkTyping": {
+    "status": 0,
+    "signal": null,
+    "error": null,
+    "stdout": "",
+    "stderr": ""
+  },
+  "commands": [
+    {
+      "label": "root-migrate",
+      "command": ["bun", "pm", "migrate"],
+      "cwd": ".",
+      "status": 0,
+      "signal": null,
+      "error": null
+    },
+    {
+      "label": "root-install",
+      "command": ["bun", "install", "--frozen-lockfile"],
+      "cwd": ".",
+      "status": 0,
+      "signal": null,
+      "error": null
+    },
+    {
+      "label": "site-migrate",
+      "command": ["bun", "pm", "migrate"],
+      "cwd": "site",
+      "status": 0,
+      "signal": null,
+      "error": null
+    },
+    {
+      "label": "site-install",
+      "command": ["bun", "install", "--frozen-lockfile"],
+      "cwd": "site",
+      "status": 0,
+      "signal": null,
+      "error": null,
+      "stderr": "warn: dependencies in ../package.json changed since lockfile was saved (run 'bun install')\n\n$ node scripts/check-install-script-policy.mjs\n"
+    },
+    {
+      "label": "root-build",
+      "command": ["npm", "run", "build"],
+      "cwd": ".",
+      "status": 0,
+      "signal": null,
+      "error": null
+    },
+    {
+      "label": "link-policy-plan",
+      "command": ["bun", "install", "--lockfile-only", "--ignore-scripts"],
+      "cwd": "site",
+      "status": 0,
+      "signal": null,
+      "error": null
+    },
+    {
+      "label": "link-policy-install",
+      "command": ["bun", "install", "--frozen-lockfile", "--ignore-scripts"],
+      "cwd": "site",
+      "status": 0,
+      "signal": null,
+      "error": null
+    },
+    {
+      "label": "link-policy-root-build",
+      "command": ["npm", "run", "build"],
+      "cwd": ".",
+      "status": 0,
+      "signal": null,
+      "error": null
+    }
+  ],
+  "limitations": [
+    "This exact d08 reproduction retains original canonical root/site inputs and order; it does not recover historical installed files never retained at d5.",
+    "Minimal npm cases are offline independent controls; full repository installations remain Bun-only.",
+    "link:.. changes a separate disposable site manifest/Bun lock; it is not the original frozen candidate or a production policy change."
+  ],
+  "rawFiles": [
+    {
+      "name": "canonical-package-lock.json",
+      "bytes": 252216,
+      "sha256": "5e833638ed0529875f869a6499860107fd3158cfcee2a93a0247f97701ee39c8"
+    },
+    {
+      "name": "canonical-package.json",
+      "bytes": 9501,
+      "sha256": "acca6cd5646cf25666ec561d35585f7f89f7d827e554099439526475718144c9"
+    },
+    {
+      "name": "canonical-site-package-lock.json",
+      "bytes": 251734,
+      "sha256": "3d9f1d30172935aaeb2be7e85609bf4c517ea1287fa1f24e7210f6c6d78633e0"
+    },
+    {
+      "name": "canonical-site-package.json",
+      "bytes": 1598,
+      "sha256": "eed4e3acc0997daeb21942dadd15293858baeeed0f96de3670d0a0ec47cc3249"
+    },
+    {
+      "name": "frozen-bun.lock",
+      "bytes": 115602,
+      "sha256": "029e3005684924115881a9f274fcf889afa36740378683a059222a45449d4ef9"
+    },
+    {
+      "name": "frozen-site-bun.lock",
+      "bytes": 117561,
+      "sha256": "76183ae67fa44c02de2363c50f5a0cdd2da96476ad37be3a36784dfa757bbfb3"
+    },
+    {
+      "name": "local-peer.json",
+      "bytes": 333616,
+      "sha256": "1457e92b9c46f74a9bb8ab633dcf11935f185a2d63f0b7ab04725c1b8a40485f"
+    },
+    {
+      "name": "policy-bun.lock",
+      "bytes": 115602,
+      "sha256": "029e3005684924115881a9f274fcf889afa36740378683a059222a45449d4ef9"
+    },
+    {
+      "name": "policy-site-bun.lock",
+      "bytes": 117480,
+      "sha256": "6761ee2079397862fd4fb5cd0361d08d835ae368ea62acb78649931850111e09"
+    },
+    {
+      "name": "policy-site-package.json",
+      "bytes": 1598,
+      "sha256": "6ac7c727ba3ea0c6357c6d5d2a109e358653af2cb760f655ffc68856b280d3c2"
+    },
+    {
+      "name": "toolchain.json",
+      "bytes": 196,
+      "sha256": "93fcbe73b232724bc0ce318592fcd14c503bdf20c44606af330a4f95bdd181a3"
+    }
+  ],
+  "jobLog": {
+    "name": "kerf-42783619516.log",
+    "sha256": "68856cc22df935f6fe130c9990299191ba8671ca63ec454f7fd787b40e66c665"
+  }
+}

@@ -68,3 +68,57 @@ Canonical root manifest/npm-lock hashes: `acca6cd5646cf25666ec561d35585f7f89f7d8
 Canonical site manifest/npm-lock hashes: `eed4e3acc0997daeb21942dadd15293858baeeed0f96de3670d0a0ec47cc3249` / `3d9f1d30172935aaeb2be7e85609bf4c517ea1287fa1f24e7210f6c6d78633e0`.
 
 Three unit regressions exercise real compiler fallback and filesystem copy/symlink/atomic-replacement behavior. The full local script separately executed all five real-installer minimal cases, the exact repository-order baseline and the fresh-build link-policy counterfactual. The qualification worker owns the Linux manual scope and artifact at its exact future commit; these macOS results do not stand in for that run.
+
+## Exact Linux reproduction and separate link candidate
+
+[Run 42783619516](https://github.com/brianwestphal/kerf/actions/runs/42783619516)
+passed its diagnostic assertions at exact source/workflow SHA
+`d08decc8cfbf93a1ddbe1e3d8afb867fb38cf6a2`. Only `local-peer` ran; other job
+groups were skipped. The asserted toolchain was Linux x64, Node **22.23.4**,
+npm **10.9.9**, and Bun **1.4.4+38afee6c8**.
+
+All five minimal cases reproduced the copy-versus-live-link table above,
+including declaration creation and atomic replacement, with unchanged inputs.
+The npm cases were independent offline controls. Every full-repository install
+used Bun; npm only dispatched the existing root build script.
+
+The canonical-order repository baseline reproduced the original warning and
+exact native TypeScript 7 error:
+
+```text
+warn: dependencies in ../package.json changed since lockfile was saved (run 'bun install')
+site/src/examples/complete/row-selector/main.tsx(26,3): error TS2305: Module '"kerfjs"' has no exported member 'selector'.
+```
+
+The installed site peer was a physical copy whose 5.0.0 manifest hash matched
+the root, but whose declaration remained absent after the root build. The
+TypeScript bridge resolver selected ancestor `kerfjs@4.4.1` at
+`node_modules/kerfjs/dist/index.d.ts`; its declaration hash was
+`a6031546a72ce4efe6c6b0999ae241dd1d90532237db216494a2641c73608d97`.
+The fresh root declaration hash was
+`bbaab48f7f69cbf93f6287ec029b76c82f6ae8d789a691115fdec2f999d6732a`.
+The baseline native compiler exited **1**, cleanly, with all frozen inputs
+unchanged. This establishes the observed missing-build-visibility and ancestor
+fallback mechanism, rather than attributing the export failure to the metadata
+warning alone.
+
+The separate disposable `link:..` policy installed a live directory link while
+root `dist` was absent. After the ordinary fresh root build, it exposed exactly
+the root declaration bytes, resolved package 5.0.0 at `dist/index.d.ts`, and the
+unchanged native TypeScript command exited **0** without a signal or timeout.
+Only the declared disposable site manifest and site Bun lock changed policy;
+canonical manifests/npm locks and all post-policy build input hashes stayed
+within the recorded boundary.
+
+The [portable Linux summary](2026-11-10-bun-local-peer-linux-results.json)
+retains exact run/job/toolchain identity, all five minimal observations, actual
+peer paths/manifests/declaration hashes, resolver identities, compiler output,
+input boundaries, eleven raw-file hashes and the artifact digest. Artifact
+`local-peer-d08decc8cfbf93a1ddbe1e3d8afb867fb38cf6a2` retains the full raw
+bytes and commands. This is a later exact-input reproduction, not recovery of
+historical installed files that the original d5 run did not retain.
+
+The investigation now has real Linux evidence. The original frozen candidate
+still fails; the link-policy candidate is separate and has not received the
+full adoption matrix. Production npm remains unchanged and installer adoption
+remains **NO GO**.
