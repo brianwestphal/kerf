@@ -1,0 +1,1060 @@
+{
+  "schema": "kerf-pure-bun-wasi-linux/v1",
+  "result": "Native-only experimental Linux x64 candidate under Node22; strict WASI unsupported by all eight tested pure-Bun attempts. NO GO for production installer adoption.",
+  "run": {
+    "id": 42783616290,
+    "url": "https://github.com/brianwestphal/kerf/actions/runs/42783616290",
+    "headSha": "d08decc8cfbf93a1ddbe1e3d8afb867fb38cf6a2",
+    "createdAt": "2026-11-10T08:33:50Z",
+    "updatedAt": "2026-11-10T08:34:40Z",
+    "jobs": [
+      {
+        "id": 129719329979,
+        "name": "pure-wasi",
+        "status": "completed",
+        "conclusion": "success",
+        "startedAt": "2026-11-10T08:34:00Z",
+        "completedAt": "2026-11-10T08:34:40Z"
+      },
+      {
+        "id": 129719330912,
+        "name": "editor",
+        "status": "completed",
+        "conclusion": "skipped",
+        "startedAt": "2026-11-10T08:33:53Z",
+        "completedAt": "2026-11-10T08:33:52Z"
+      },
+      {
+        "id": 129719331519,
+        "name": "create-kerf-component",
+        "status": "completed",
+        "conclusion": "skipped",
+        "startedAt": "2026-11-10T08:33:53Z",
+        "completedAt": "2026-11-10T08:33:52Z"
+      },
+      {
+        "id": 129719331875,
+        "name": "ui-browser",
+        "status": "completed",
+        "conclusion": "skipped",
+        "startedAt": "2026-11-10T08:33:53Z",
+        "completedAt": "2026-11-10T08:33:52Z"
+      },
+      {
+        "id": 129719331978,
+        "name": "build",
+        "status": "completed",
+        "conclusion": "skipped",
+        "startedAt": "2026-11-10T08:33:53Z",
+        "completedAt": "2026-11-10T08:33:52Z"
+      },
+      {
+        "id": 129719332010,
+        "name": "seventh-tree",
+        "status": "completed",
+        "conclusion": "skipped",
+        "startedAt": "2026-11-10T08:33:53Z",
+        "completedAt": "2026-11-10T08:33:52Z"
+      },
+      {
+        "id": 129719332025,
+        "name": "site",
+        "status": "completed",
+        "conclusion": "skipped",
+        "startedAt": "2026-11-10T08:33:53Z",
+        "completedAt": "2026-11-10T08:33:52Z"
+      },
+      {
+        "id": 129719332106,
+        "name": "gates",
+        "status": "completed",
+        "conclusion": "skipped",
+        "startedAt": "2026-11-10T08:33:53Z",
+        "completedAt": "2026-11-10T08:33:52Z"
+      },
+      {
+        "id": 129719332125,
+        "name": "editor-browser",
+        "status": "completed",
+        "conclusion": "skipped",
+        "startedAt": "2026-11-10T08:33:53Z",
+        "completedAt": "2026-11-10T08:33:52Z"
+      },
+      {
+        "id": 129719332194,
+        "name": "typecheck",
+        "status": "completed",
+        "conclusion": "skipped",
+        "startedAt": "2026-11-10T08:33:53Z",
+        "completedAt": "2026-11-10T08:33:52Z"
+      },
+      {
+        "id": 129719332207,
+        "name": "ui-webawesome-latest",
+        "status": "completed",
+        "conclusion": "skipped",
+        "startedAt": "2026-11-10T08:33:53Z",
+        "completedAt": "2026-11-10T08:33:52Z"
+      },
+      {
+        "id": 129719332244,
+        "name": "library-performance",
+        "status": "completed",
+        "conclusion": "skipped",
+        "startedAt": "2026-11-10T08:33:53Z",
+        "completedAt": "2026-11-10T08:33:52Z"
+      },
+      {
+        "id": 129719332248,
+        "name": "browser-apt",
+        "status": "completed",
+        "conclusion": "skipped",
+        "startedAt": "2026-11-10T08:33:53Z",
+        "completedAt": "2026-11-10T08:33:52Z"
+      },
+      {
+        "id": 129719332283,
+        "name": "stable-plan",
+        "status": "completed",
+        "conclusion": "skipped",
+        "startedAt": "2026-11-10T08:33:53Z",
+        "completedAt": "2026-11-10T08:33:52Z"
+      },
+      {
+        "id": 129719332616,
+        "name": "test",
+        "status": "completed",
+        "conclusion": "skipped",
+        "startedAt": "2026-11-10T08:33:53Z",
+        "completedAt": "2026-11-10T08:33:52Z"
+      },
+      {
+        "id": 129719332876,
+        "name": "design-templates",
+        "status": "completed",
+        "conclusion": "skipped",
+        "startedAt": "2026-11-10T08:33:53Z",
+        "completedAt": "2026-11-10T08:33:52Z"
+      },
+      {
+        "id": 129719373639,
+        "name": "lint",
+        "status": "completed",
+        "conclusion": "skipped",
+        "startedAt": "2026-11-10T08:33:59Z",
+        "completedAt": "2026-11-10T08:33:52Z"
+      },
+      {
+        "id": 129719379177,
+        "name": "browser",
+        "status": "completed",
+        "conclusion": "skipped",
+        "startedAt": "2026-11-10T08:33:59Z",
+        "completedAt": "2026-11-10T08:33:52Z"
+      },
+      {
+        "id": 129719387139,
+        "name": "local-peer",
+        "status": "completed",
+        "conclusion": "skipped",
+        "startedAt": "2026-11-10T08:34:01Z",
+        "completedAt": "2026-11-10T08:33:52Z"
+      },
+      {
+        "id": 129719391446,
+        "name": "eslint-plugin",
+        "status": "completed",
+        "conclusion": "skipped",
+        "startedAt": "2026-11-10T08:34:01Z",
+        "completedAt": "2026-11-10T08:33:52Z"
+      },
+      {
+        "id": 129719392464,
+        "name": "ui",
+        "status": "completed",
+        "conclusion": "skipped",
+        "startedAt": "2026-11-10T08:34:01Z",
+        "completedAt": "2026-11-10T08:33:52Z"
+      },
+      {
+        "id": 129719396423,
+        "name": "node-floor",
+        "status": "completed",
+        "conclusion": "skipped",
+        "startedAt": "2026-11-10T08:34:02Z",
+        "completedAt": "2026-11-10T08:33:52Z"
+      },
+      {
+        "id": 129719397674,
+        "name": "wasi-resolution",
+        "status": "completed",
+        "conclusion": "skipped",
+        "startedAt": "2026-11-10T08:34:02Z",
+        "completedAt": "2026-11-10T08:33:52Z"
+      },
+      {
+        "id": 129719400504,
+        "name": "release-artifacts",
+        "status": "completed",
+        "conclusion": "skipped",
+        "startedAt": "2026-11-10T08:34:03Z",
+        "completedAt": "2026-11-10T08:33:52Z"
+      }
+    ]
+  },
+  "artifacts": [
+    {
+      "id": 13747451638,
+      "node_id": "MDg6QXJ0aWZhY3QxMzc0NzQ1MTYzOA==",
+      "name": "pure-wasi-d08decc8cfbf93a1ddbe1e3d8afb867fb38cf6a2",
+      "size_in_bytes": 2978320,
+      "url": "https://api.github.com/repos/brianwestphal/kerf/actions/artifacts/13747451638",
+      "archive_download_url": "https://api.github.com/repos/brianwestphal/kerf/actions/artifacts/13747451638/zip",
+      "expired": false,
+      "digest": "sha256:6a6108a32aa12b4dd100d9f0e2aaebe6fd6af8fd75e450392159f9b25be4aeec",
+      "created_at": "2026-11-10T08:34:37Z",
+      "updated_at": "2026-11-10T08:34:37Z",
+      "expires_at": "2027-02-08T08:33:52Z",
+      "workflow_run": {
+        "id": 42783616290,
+        "repository_id": 1231460256,
+        "head_repository_id": 1231460256,
+        "head_branch": "main",
+        "head_sha": "d08decc8cfbf93a1ddbe1e3d8afb867fb38cf6a2"
+      }
+    }
+  ],
+  "toolchain": {
+    "node": "v22.23.4",
+    "npm": "10.9.9",
+    "bun": "1.4.4",
+    "bunRevision": "1.4.4+38afee6c8",
+    "sourceSha": "d08decc8cfbf93a1ddbe1e3d8afb867fb38cf6a2",
+    "platform": "linux",
+    "arch": "x64"
+  },
+  "canonicalInputs": {
+    "package.json": "acca6cd5646cf25666ec561d35585f7f89f7d827e554099439526475718144c9",
+    "package-lock.json": "5e833638ed0529875f869a6499860107fd3158cfcee2a93a0247f97701ee39c8",
+    "site/package.json": "eed4e3acc0997daeb21942dadd15293858baeeed0f96de3670d0a0ec47cc3249",
+    "site/package-lock.json": "3d9f1d30172935aaeb2be7e85609bf4c517ea1287fa1f24e7210f6c6d78633e0"
+  },
+  "lifecyclePolicy": "Disposable fixture only: --ignore-scripts; isolated cache; no user config writes.",
+  "runtimePolicy": "Bun installs; Node executes Satteri. No Bun-runtime claim.",
+  "attempts": [
+    {
+      "name": "native",
+      "command": ["bun", "install", "--frozen-lockfile", "--ignore-scripts"],
+      "installerExit": 0,
+      "installerSignal": null,
+      "installerError": null,
+      "beforeNodes": 0,
+      "afterNodes": 372,
+      "inputHashesBefore": {
+        "package.json": "eed4e3acc0997daeb21942dadd15293858baeeed0f96de3670d0a0ec47cc3249",
+        "package-lock.json": "3d9f1d30172935aaeb2be7e85609bf4c517ea1287fa1f24e7210f6c6d78633e0",
+        "bun.lock": "76183ae67fa44c02de2363c50f5a0cdd2da96476ad37be3a36784dfa757bbfb3"
+      },
+      "inputHashesAfter": {
+        "package.json": "eed4e3acc0997daeb21942dadd15293858baeeed0f96de3670d0a0ec47cc3249",
+        "package-lock.json": "3d9f1d30172935aaeb2be7e85609bf4c517ea1287fa1f24e7210f6c6d78633e0",
+        "bun.lock": "76183ae67fa44c02de2363c50f5a0cdd2da96476ad37be3a36784dfa757bbfb3"
+      },
+      "inputsUnchanged": true,
+      "native": {
+        "status": 0,
+        "signal": null,
+        "error": null
+      },
+      "strict": {
+        "status": 1,
+        "signal": null,
+        "error": null,
+        "missingBinding": true
+      },
+      "actualLoader": "node_modules/satteri/dist/binding.js",
+      "loaderResolutions": [
+        {
+          "name": "@bruits/satteri-wasm32-wasi",
+          "path": null,
+          "version": null
+        },
+        {
+          "name": "@emnapi/core",
+          "path": null,
+          "version": null
+        },
+        {
+          "name": "@emnapi/runtime",
+          "path": null,
+          "version": null
+        },
+        {
+          "name": "@emnapi/wasi-threads",
+          "path": null,
+          "version": null
+        },
+        {
+          "name": "@napi-rs/wasm-runtime",
+          "path": null,
+          "version": null
+        }
+      ],
+      "physicalRequestedPackages": [],
+      "installerDiagnostic": "warn: dependencies in ../package.json changed since lockfile was saved (run 'bun install')\n"
+    },
+    {
+      "name": "all-cpus",
+      "command": [
+        "bun",
+        "install",
+        "--frozen-lockfile",
+        "--ignore-scripts",
+        "--cpu=*"
+      ],
+      "installerExit": 0,
+      "installerSignal": null,
+      "installerError": null,
+      "beforeNodes": 372,
+      "afterNodes": 400,
+      "inputHashesBefore": {
+        "package.json": "eed4e3acc0997daeb21942dadd15293858baeeed0f96de3670d0a0ec47cc3249",
+        "package-lock.json": "3d9f1d30172935aaeb2be7e85609bf4c517ea1287fa1f24e7210f6c6d78633e0",
+        "bun.lock": "76183ae67fa44c02de2363c50f5a0cdd2da96476ad37be3a36784dfa757bbfb3"
+      },
+      "inputHashesAfter": {
+        "package.json": "eed4e3acc0997daeb21942dadd15293858baeeed0f96de3670d0a0ec47cc3249",
+        "package-lock.json": "3d9f1d30172935aaeb2be7e85609bf4c517ea1287fa1f24e7210f6c6d78633e0",
+        "bun.lock": "76183ae67fa44c02de2363c50f5a0cdd2da96476ad37be3a36784dfa757bbfb3"
+      },
+      "inputsUnchanged": true,
+      "native": {
+        "status": 0,
+        "signal": null,
+        "error": null
+      },
+      "strict": {
+        "status": 1,
+        "signal": null,
+        "error": null,
+        "missingBinding": true
+      },
+      "actualLoader": "node_modules/satteri/dist/binding.js",
+      "loaderResolutions": [
+        {
+          "name": "@bruits/satteri-wasm32-wasi",
+          "path": null,
+          "version": null
+        },
+        {
+          "name": "@emnapi/core",
+          "path": null,
+          "version": null
+        },
+        {
+          "name": "@emnapi/runtime",
+          "path": null,
+          "version": null
+        },
+        {
+          "name": "@emnapi/wasi-threads",
+          "path": null,
+          "version": null
+        },
+        {
+          "name": "@napi-rs/wasm-runtime",
+          "path": null,
+          "version": null
+        }
+      ],
+      "physicalRequestedPackages": [],
+      "installerDiagnostic": "warn: dependencies in ../package.json changed since lockfile was saved (run 'bun install')\n"
+    },
+    {
+      "name": "any-cpu",
+      "command": [
+        "bun",
+        "install",
+        "--frozen-lockfile",
+        "--ignore-scripts",
+        "--cpu=any"
+      ],
+      "installerExit": 0,
+      "installerSignal": null,
+      "installerError": null,
+      "beforeNodes": 400,
+      "afterNodes": 400,
+      "inputHashesBefore": {
+        "package.json": "eed4e3acc0997daeb21942dadd15293858baeeed0f96de3670d0a0ec47cc3249",
+        "package-lock.json": "3d9f1d30172935aaeb2be7e85609bf4c517ea1287fa1f24e7210f6c6d78633e0",
+        "bun.lock": "76183ae67fa44c02de2363c50f5a0cdd2da96476ad37be3a36784dfa757bbfb3"
+      },
+      "inputHashesAfter": {
+        "package.json": "eed4e3acc0997daeb21942dadd15293858baeeed0f96de3670d0a0ec47cc3249",
+        "package-lock.json": "3d9f1d30172935aaeb2be7e85609bf4c517ea1287fa1f24e7210f6c6d78633e0",
+        "bun.lock": "76183ae67fa44c02de2363c50f5a0cdd2da96476ad37be3a36784dfa757bbfb3"
+      },
+      "inputsUnchanged": true,
+      "native": {
+        "status": 0,
+        "signal": null,
+        "error": null
+      },
+      "strict": {
+        "status": 1,
+        "signal": null,
+        "error": null,
+        "missingBinding": true
+      },
+      "actualLoader": "node_modules/satteri/dist/binding.js",
+      "loaderResolutions": [
+        {
+          "name": "@bruits/satteri-wasm32-wasi",
+          "path": null,
+          "version": null
+        },
+        {
+          "name": "@emnapi/core",
+          "path": null,
+          "version": null
+        },
+        {
+          "name": "@emnapi/runtime",
+          "path": null,
+          "version": null
+        },
+        {
+          "name": "@emnapi/wasi-threads",
+          "path": null,
+          "version": null
+        },
+        {
+          "name": "@napi-rs/wasm-runtime",
+          "path": null,
+          "version": null
+        }
+      ],
+      "physicalRequestedPackages": [],
+      "installerDiagnostic": "warn: dependencies in ../package.json changed since lockfile was saved (run 'bun install')\n"
+    },
+    {
+      "name": "all-platforms",
+      "command": [
+        "bun",
+        "install",
+        "--frozen-lockfile",
+        "--ignore-scripts",
+        "--cpu=*",
+        "--os=*"
+      ],
+      "installerExit": 0,
+      "installerSignal": null,
+      "installerError": null,
+      "beforeNodes": 400,
+      "afterNodes": 452,
+      "inputHashesBefore": {
+        "package.json": "eed4e3acc0997daeb21942dadd15293858baeeed0f96de3670d0a0ec47cc3249",
+        "package-lock.json": "3d9f1d30172935aaeb2be7e85609bf4c517ea1287fa1f24e7210f6c6d78633e0",
+        "bun.lock": "76183ae67fa44c02de2363c50f5a0cdd2da96476ad37be3a36784dfa757bbfb3"
+      },
+      "inputHashesAfter": {
+        "package.json": "eed4e3acc0997daeb21942dadd15293858baeeed0f96de3670d0a0ec47cc3249",
+        "package-lock.json": "3d9f1d30172935aaeb2be7e85609bf4c517ea1287fa1f24e7210f6c6d78633e0",
+        "bun.lock": "76183ae67fa44c02de2363c50f5a0cdd2da96476ad37be3a36784dfa757bbfb3"
+      },
+      "inputsUnchanged": true,
+      "native": {
+        "status": 0,
+        "signal": null,
+        "error": null
+      },
+      "strict": {
+        "status": 1,
+        "signal": null,
+        "error": null,
+        "missingBinding": true
+      },
+      "actualLoader": "node_modules/satteri/dist/binding.js",
+      "loaderResolutions": [
+        {
+          "name": "@bruits/satteri-wasm32-wasi",
+          "path": null,
+          "version": null
+        },
+        {
+          "name": "@emnapi/core",
+          "path": null,
+          "version": null
+        },
+        {
+          "name": "@emnapi/runtime",
+          "path": null,
+          "version": null
+        },
+        {
+          "name": "@emnapi/wasi-threads",
+          "path": null,
+          "version": null
+        },
+        {
+          "name": "@napi-rs/wasm-runtime",
+          "path": null,
+          "version": null
+        }
+      ],
+      "physicalRequestedPackages": [
+        {
+          "path": "node_modules/@img/sharp-wasm32/node_modules/@emnapi/runtime",
+          "name": "@emnapi/runtime",
+          "version": "1.11.3"
+        }
+      ],
+      "installerDiagnostic": "warn: dependencies in ../package.json changed since lockfile was saved (run 'bun install')\n"
+    },
+    {
+      "name": "unsupported-wasm32",
+      "command": [
+        "bun",
+        "install",
+        "--frozen-lockfile",
+        "--ignore-scripts",
+        "--cpu=wasm32"
+      ],
+      "installerExit": 1,
+      "installerSignal": null,
+      "installerError": null,
+      "beforeNodes": 452,
+      "afterNodes": 452,
+      "inputHashesBefore": {
+        "package.json": "eed4e3acc0997daeb21942dadd15293858baeeed0f96de3670d0a0ec47cc3249",
+        "package-lock.json": "3d9f1d30172935aaeb2be7e85609bf4c517ea1287fa1f24e7210f6c6d78633e0",
+        "bun.lock": "76183ae67fa44c02de2363c50f5a0cdd2da96476ad37be3a36784dfa757bbfb3"
+      },
+      "inputHashesAfter": {
+        "package.json": "eed4e3acc0997daeb21942dadd15293858baeeed0f96de3670d0a0ec47cc3249",
+        "package-lock.json": "3d9f1d30172935aaeb2be7e85609bf4c517ea1287fa1f24e7210f6c6d78633e0",
+        "bun.lock": "76183ae67fa44c02de2363c50f5a0cdd2da96476ad37be3a36784dfa757bbfb3"
+      },
+      "inputsUnchanged": true,
+      "native": {
+        "status": 0,
+        "signal": null,
+        "error": null
+      },
+      "strict": {
+        "status": 1,
+        "signal": null,
+        "error": null,
+        "missingBinding": true
+      },
+      "actualLoader": "node_modules/satteri/dist/binding.js",
+      "loaderResolutions": [
+        {
+          "name": "@bruits/satteri-wasm32-wasi",
+          "path": null,
+          "version": null
+        },
+        {
+          "name": "@emnapi/core",
+          "path": null,
+          "version": null
+        },
+        {
+          "name": "@emnapi/runtime",
+          "path": null,
+          "version": null
+        },
+        {
+          "name": "@emnapi/wasi-threads",
+          "path": null,
+          "version": null
+        },
+        {
+          "name": "@napi-rs/wasm-runtime",
+          "path": null,
+          "version": null
+        }
+      ],
+      "physicalRequestedPackages": [
+        {
+          "path": "node_modules/@img/sharp-wasm32/node_modules/@emnapi/runtime",
+          "name": "@emnapi/runtime",
+          "version": "1.11.3"
+        }
+      ],
+      "installerDiagnostic": "error: invalid CPU architecture: 'wasm32'. valid values: *, any, arm, arm64, ia32, mips, mipsel, ppc, ppc64, s390, s390x, x32, x64. use !name to negate\n"
+    },
+    {
+      "name": "direct-platform",
+      "command": [
+        "bun",
+        "add",
+        "--exact",
+        "--ignore-scripts",
+        "@bruits/satteri-wasm32-wasi@0.10.5"
+      ],
+      "installerExit": 1,
+      "installerSignal": null,
+      "installerError": null,
+      "beforeNodes": 452,
+      "afterNodes": 452,
+      "inputHashesBefore": {
+        "package.json": "eed4e3acc0997daeb21942dadd15293858baeeed0f96de3670d0a0ec47cc3249",
+        "package-lock.json": "3d9f1d30172935aaeb2be7e85609bf4c517ea1287fa1f24e7210f6c6d78633e0",
+        "bun.lock": "76183ae67fa44c02de2363c50f5a0cdd2da96476ad37be3a36784dfa757bbfb3"
+      },
+      "inputHashesAfter": {
+        "package.json": "eed4e3acc0997daeb21942dadd15293858baeeed0f96de3670d0a0ec47cc3249",
+        "package-lock.json": "3d9f1d30172935aaeb2be7e85609bf4c517ea1287fa1f24e7210f6c6d78633e0",
+        "bun.lock": "76183ae67fa44c02de2363c50f5a0cdd2da96476ad37be3a36784dfa757bbfb3"
+      },
+      "inputsUnchanged": true,
+      "native": {
+        "status": 0,
+        "signal": null,
+        "error": null
+      },
+      "strict": {
+        "status": 1,
+        "signal": null,
+        "error": null,
+        "missingBinding": true
+      },
+      "actualLoader": "node_modules/satteri/dist/binding.js",
+      "loaderResolutions": [
+        {
+          "name": "@bruits/satteri-wasm32-wasi",
+          "path": null,
+          "version": null
+        },
+        {
+          "name": "@emnapi/core",
+          "path": null,
+          "version": null
+        },
+        {
+          "name": "@emnapi/runtime",
+          "path": null,
+          "version": null
+        },
+        {
+          "name": "@emnapi/wasi-threads",
+          "path": null,
+          "version": null
+        },
+        {
+          "name": "@napi-rs/wasm-runtime",
+          "path": null,
+          "version": null
+        }
+      ],
+      "physicalRequestedPackages": [
+        {
+          "path": "node_modules/@img/sharp-wasm32/node_modules/@emnapi/runtime",
+          "name": "@emnapi/runtime",
+          "version": "1.11.3"
+        }
+      ],
+      "installerDiagnostic": "Resolving dependencies\nResolved, downloaded and extracted [1387]\nerror: GET https://registry.npmjs.org/@domotion%2ftext-engine - 404\nerror: @domotion/text-engine@0.35.0 failed to resolve\n"
+    },
+    {
+      "name": "direct-all-platforms",
+      "command": [
+        "bun",
+        "install",
+        "--frozen-lockfile",
+        "--ignore-scripts",
+        "--cpu=*",
+        "--os=*"
+      ],
+      "installerExit": 0,
+      "installerSignal": null,
+      "installerError": null,
+      "beforeNodes": 452,
+      "afterNodes": 452,
+      "inputHashesBefore": {
+        "package.json": "eed4e3acc0997daeb21942dadd15293858baeeed0f96de3670d0a0ec47cc3249",
+        "package-lock.json": "3d9f1d30172935aaeb2be7e85609bf4c517ea1287fa1f24e7210f6c6d78633e0",
+        "bun.lock": "76183ae67fa44c02de2363c50f5a0cdd2da96476ad37be3a36784dfa757bbfb3"
+      },
+      "inputHashesAfter": {
+        "package.json": "eed4e3acc0997daeb21942dadd15293858baeeed0f96de3670d0a0ec47cc3249",
+        "package-lock.json": "3d9f1d30172935aaeb2be7e85609bf4c517ea1287fa1f24e7210f6c6d78633e0",
+        "bun.lock": "76183ae67fa44c02de2363c50f5a0cdd2da96476ad37be3a36784dfa757bbfb3"
+      },
+      "inputsUnchanged": true,
+      "native": {
+        "status": 0,
+        "signal": null,
+        "error": null
+      },
+      "strict": {
+        "status": 1,
+        "signal": null,
+        "error": null,
+        "missingBinding": true
+      },
+      "actualLoader": "node_modules/satteri/dist/binding.js",
+      "loaderResolutions": [
+        {
+          "name": "@bruits/satteri-wasm32-wasi",
+          "path": null,
+          "version": null
+        },
+        {
+          "name": "@emnapi/core",
+          "path": null,
+          "version": null
+        },
+        {
+          "name": "@emnapi/runtime",
+          "path": null,
+          "version": null
+        },
+        {
+          "name": "@emnapi/wasi-threads",
+          "path": null,
+          "version": null
+        },
+        {
+          "name": "@napi-rs/wasm-runtime",
+          "path": null,
+          "version": null
+        }
+      ],
+      "physicalRequestedPackages": [
+        {
+          "path": "node_modules/@img/sharp-wasm32/node_modules/@emnapi/runtime",
+          "name": "@emnapi/runtime",
+          "version": "1.11.3"
+        }
+      ],
+      "installerDiagnostic": "warn: dependencies in ../package.json changed since lockfile was saved (run 'bun install')\n"
+    },
+    {
+      "name": "force-reinstall",
+      "command": [
+        "bun",
+        "install",
+        "--frozen-lockfile",
+        "--ignore-scripts",
+        "--force"
+      ],
+      "installerExit": 0,
+      "installerSignal": null,
+      "installerError": null,
+      "beforeNodes": 452,
+      "afterNodes": 452,
+      "inputHashesBefore": {
+        "package.json": "eed4e3acc0997daeb21942dadd15293858baeeed0f96de3670d0a0ec47cc3249",
+        "package-lock.json": "3d9f1d30172935aaeb2be7e85609bf4c517ea1287fa1f24e7210f6c6d78633e0",
+        "bun.lock": "76183ae67fa44c02de2363c50f5a0cdd2da96476ad37be3a36784dfa757bbfb3"
+      },
+      "inputHashesAfter": {
+        "package.json": "eed4e3acc0997daeb21942dadd15293858baeeed0f96de3670d0a0ec47cc3249",
+        "package-lock.json": "3d9f1d30172935aaeb2be7e85609bf4c517ea1287fa1f24e7210f6c6d78633e0",
+        "bun.lock": "76183ae67fa44c02de2363c50f5a0cdd2da96476ad37be3a36784dfa757bbfb3"
+      },
+      "inputsUnchanged": true,
+      "native": {
+        "status": 0,
+        "signal": null,
+        "error": null
+      },
+      "strict": {
+        "status": 1,
+        "signal": null,
+        "error": null,
+        "missingBinding": true
+      },
+      "actualLoader": "node_modules/satteri/dist/binding.js",
+      "loaderResolutions": [
+        {
+          "name": "@bruits/satteri-wasm32-wasi",
+          "path": null,
+          "version": null
+        },
+        {
+          "name": "@emnapi/core",
+          "path": null,
+          "version": null
+        },
+        {
+          "name": "@emnapi/runtime",
+          "path": null,
+          "version": null
+        },
+        {
+          "name": "@emnapi/wasi-threads",
+          "path": null,
+          "version": null
+        },
+        {
+          "name": "@napi-rs/wasm-runtime",
+          "path": null,
+          "version": null
+        }
+      ],
+      "physicalRequestedPackages": [
+        {
+          "path": "node_modules/@img/sharp-wasm32/node_modules/@emnapi/runtime",
+          "name": "@emnapi/runtime",
+          "version": "1.11.3"
+        }
+      ],
+      "installerDiagnostic": "warn: dependencies in ../package.json changed since lockfile was saved (run 'bun install')\n"
+    }
+  ],
+  "limitations": [
+    "Eight sequential attempts share the explicitly inventoried disposable graph; later stages retain packages from earlier stages.",
+    "Direct addition failed before mutation with bundled @domotion/text-engine registry404 (KF-C6HCET); later frozen attempts are not successful direct provisioning.",
+    "Nested @emnapi/runtime under Sharp is physically present after wildcard provisioning but unreachable from the actual Satteri loader.",
+    "Separate historical npm-augmented positive control remains excluded; no npm provisioning occurred here."
+  ],
+  "rawFiles": [
+    {
+      "name": "all-cpus-bun.lock",
+      "bytes": 117561,
+      "sha256": "76183ae67fa44c02de2363c50f5a0cdd2da96476ad37be3a36784dfa757bbfb3"
+    },
+    {
+      "name": "all-cpus-graph-after.json",
+      "bytes": 1135589,
+      "sha256": "739789805d58591d56377c0e1457a2d2318a0c1893b2fe866dca06d5330f2802"
+    },
+    {
+      "name": "all-cpus-graph-before.json",
+      "bytes": 1103795,
+      "sha256": "df7f7c1367a8c371596b9c3f076d102dd4ad4347c284ab1516c0804ad3e3872e"
+    },
+    {
+      "name": "all-cpus-package-lock.json",
+      "bytes": 251734,
+      "sha256": "3d9f1d30172935aaeb2be7e85609bf4c517ea1287fa1f24e7210f6c6d78633e0"
+    },
+    {
+      "name": "all-cpus-package.json",
+      "bytes": 1598,
+      "sha256": "eed4e3acc0997daeb21942dadd15293858baeeed0f96de3670d0a0ec47cc3249"
+    },
+    {
+      "name": "all-platforms-bun.lock",
+      "bytes": 117561,
+      "sha256": "76183ae67fa44c02de2363c50f5a0cdd2da96476ad37be3a36784dfa757bbfb3"
+    },
+    {
+      "name": "all-platforms-graph-after.json",
+      "bytes": 1186419,
+      "sha256": "a9126987f1f9ae23ae8007cd85e45ac71dc197173d3365af2c188b5319215fd1"
+    },
+    {
+      "name": "all-platforms-graph-before.json",
+      "bytes": 1135589,
+      "sha256": "739789805d58591d56377c0e1457a2d2318a0c1893b2fe866dca06d5330f2802"
+    },
+    {
+      "name": "all-platforms-package-lock.json",
+      "bytes": 251734,
+      "sha256": "3d9f1d30172935aaeb2be7e85609bf4c517ea1287fa1f24e7210f6c6d78633e0"
+    },
+    {
+      "name": "all-platforms-package.json",
+      "bytes": 1598,
+      "sha256": "eed4e3acc0997daeb21942dadd15293858baeeed0f96de3670d0a0ec47cc3249"
+    },
+    {
+      "name": "any-cpu-bun.lock",
+      "bytes": 117561,
+      "sha256": "76183ae67fa44c02de2363c50f5a0cdd2da96476ad37be3a36784dfa757bbfb3"
+    },
+    {
+      "name": "any-cpu-graph-after.json",
+      "bytes": 1135589,
+      "sha256": "739789805d58591d56377c0e1457a2d2318a0c1893b2fe866dca06d5330f2802"
+    },
+    {
+      "name": "any-cpu-graph-before.json",
+      "bytes": 1135589,
+      "sha256": "739789805d58591d56377c0e1457a2d2318a0c1893b2fe866dca06d5330f2802"
+    },
+    {
+      "name": "any-cpu-package-lock.json",
+      "bytes": 251734,
+      "sha256": "3d9f1d30172935aaeb2be7e85609bf4c517ea1287fa1f24e7210f6c6d78633e0"
+    },
+    {
+      "name": "any-cpu-package.json",
+      "bytes": 1598,
+      "sha256": "eed4e3acc0997daeb21942dadd15293858baeeed0f96de3670d0a0ec47cc3249"
+    },
+    {
+      "name": "bun-install-help.txt",
+      "bytes": 5540,
+      "sha256": "d529aa43e0cd36a09f7401f2b5dc7931b3c522f1675fe3e5f6dd36f91ea642cd"
+    },
+    {
+      "name": "canonical-package-lock.json",
+      "bytes": 252216,
+      "sha256": "5e833638ed0529875f869a6499860107fd3158cfcee2a93a0247f97701ee39c8"
+    },
+    {
+      "name": "canonical-package.json",
+      "bytes": 9501,
+      "sha256": "acca6cd5646cf25666ec561d35585f7f89f7d827e554099439526475718144c9"
+    },
+    {
+      "name": "canonical-site-package-lock.json",
+      "bytes": 251734,
+      "sha256": "3d9f1d30172935aaeb2be7e85609bf4c517ea1287fa1f24e7210f6c6d78633e0"
+    },
+    {
+      "name": "canonical-site-package.json",
+      "bytes": 1598,
+      "sha256": "eed4e3acc0997daeb21942dadd15293858baeeed0f96de3670d0a0ec47cc3249"
+    },
+    {
+      "name": "direct-all-platforms-bun.lock",
+      "bytes": 117561,
+      "sha256": "76183ae67fa44c02de2363c50f5a0cdd2da96476ad37be3a36784dfa757bbfb3"
+    },
+    {
+      "name": "direct-all-platforms-graph-after.json",
+      "bytes": 1186419,
+      "sha256": "a9126987f1f9ae23ae8007cd85e45ac71dc197173d3365af2c188b5319215fd1"
+    },
+    {
+      "name": "direct-all-platforms-graph-before.json",
+      "bytes": 1186419,
+      "sha256": "a9126987f1f9ae23ae8007cd85e45ac71dc197173d3365af2c188b5319215fd1"
+    },
+    {
+      "name": "direct-all-platforms-package-lock.json",
+      "bytes": 251734,
+      "sha256": "3d9f1d30172935aaeb2be7e85609bf4c517ea1287fa1f24e7210f6c6d78633e0"
+    },
+    {
+      "name": "direct-all-platforms-package.json",
+      "bytes": 1598,
+      "sha256": "eed4e3acc0997daeb21942dadd15293858baeeed0f96de3670d0a0ec47cc3249"
+    },
+    {
+      "name": "direct-platform-bun.lock",
+      "bytes": 117561,
+      "sha256": "76183ae67fa44c02de2363c50f5a0cdd2da96476ad37be3a36784dfa757bbfb3"
+    },
+    {
+      "name": "direct-platform-graph-after.json",
+      "bytes": 1186419,
+      "sha256": "a9126987f1f9ae23ae8007cd85e45ac71dc197173d3365af2c188b5319215fd1"
+    },
+    {
+      "name": "direct-platform-graph-before.json",
+      "bytes": 1186419,
+      "sha256": "a9126987f1f9ae23ae8007cd85e45ac71dc197173d3365af2c188b5319215fd1"
+    },
+    {
+      "name": "direct-platform-package-lock.json",
+      "bytes": 251734,
+      "sha256": "3d9f1d30172935aaeb2be7e85609bf4c517ea1287fa1f24e7210f6c6d78633e0"
+    },
+    {
+      "name": "direct-platform-package.json",
+      "bytes": 1598,
+      "sha256": "eed4e3acc0997daeb21942dadd15293858baeeed0f96de3670d0a0ec47cc3249"
+    },
+    {
+      "name": "force-reinstall-bun.lock",
+      "bytes": 117561,
+      "sha256": "76183ae67fa44c02de2363c50f5a0cdd2da96476ad37be3a36784dfa757bbfb3"
+    },
+    {
+      "name": "force-reinstall-graph-after.json",
+      "bytes": 1186419,
+      "sha256": "77e949cb3872912d5bc531365bad7d624fdb30450f7e98bc047ec7bbeb26f6ae"
+    },
+    {
+      "name": "force-reinstall-graph-before.json",
+      "bytes": 1186419,
+      "sha256": "a9126987f1f9ae23ae8007cd85e45ac71dc197173d3365af2c188b5319215fd1"
+    },
+    {
+      "name": "force-reinstall-package-lock.json",
+      "bytes": 251734,
+      "sha256": "3d9f1d30172935aaeb2be7e85609bf4c517ea1287fa1f24e7210f6c6d78633e0"
+    },
+    {
+      "name": "force-reinstall-package.json",
+      "bytes": 1598,
+      "sha256": "eed4e3acc0997daeb21942dadd15293858baeeed0f96de3670d0a0ec47cc3249"
+    },
+    {
+      "name": "migration.json",
+      "bytes": 135,
+      "sha256": "8a195c96c3c288184fd350ced8a9f503183a85c1e11583fe657134f507150c69"
+    },
+    {
+      "name": "native-bun.lock",
+      "bytes": 117561,
+      "sha256": "76183ae67fa44c02de2363c50f5a0cdd2da96476ad37be3a36784dfa757bbfb3"
+    },
+    {
+      "name": "native-graph-after.json",
+      "bytes": 1103795,
+      "sha256": "df7f7c1367a8c371596b9c3f076d102dd4ad4347c284ab1516c0804ad3e3872e"
+    },
+    {
+      "name": "native-graph-before.json",
+      "bytes": 32,
+      "sha256": "fd3d620cb8c92ed34ace8cc7721b171a9c7ee0d12ac729ebcb2025bbc5a66def"
+    },
+    {
+      "name": "native-package-lock.json",
+      "bytes": 251734,
+      "sha256": "3d9f1d30172935aaeb2be7e85609bf4c517ea1287fa1f24e7210f6c6d78633e0"
+    },
+    {
+      "name": "native-package.json",
+      "bytes": 1598,
+      "sha256": "eed4e3acc0997daeb21942dadd15293858baeeed0f96de3670d0a0ec47cc3249"
+    },
+    {
+      "name": "pure-bun-wasi.json",
+      "bytes": 37013,
+      "sha256": "ae0e087fe0a812b3b042e436f285da86165358584a9985efc1fcc054796d4390"
+    },
+    {
+      "name": "toolchain.json",
+      "bytes": 196,
+      "sha256": "93fcbe73b232724bc0ce318592fcd14c503bdf20c44606af330a4f95bdd181a3"
+    },
+    {
+      "name": "unsupported-wasm32-bun.lock",
+      "bytes": 117561,
+      "sha256": "76183ae67fa44c02de2363c50f5a0cdd2da96476ad37be3a36784dfa757bbfb3"
+    },
+    {
+      "name": "unsupported-wasm32-graph-after.json",
+      "bytes": 1186419,
+      "sha256": "a9126987f1f9ae23ae8007cd85e45ac71dc197173d3365af2c188b5319215fd1"
+    },
+    {
+      "name": "unsupported-wasm32-graph-before.json",
+      "bytes": 1186419,
+      "sha256": "a9126987f1f9ae23ae8007cd85e45ac71dc197173d3365af2c188b5319215fd1"
+    },
+    {
+      "name": "unsupported-wasm32-package-lock.json",
+      "bytes": 251734,
+      "sha256": "3d9f1d30172935aaeb2be7e85609bf4c517ea1287fa1f24e7210f6c6d78633e0"
+    },
+    {
+      "name": "unsupported-wasm32-package.json",
+      "bytes": 1598,
+      "sha256": "eed4e3acc0997daeb21942dadd15293858baeeed0f96de3670d0a0ec47cc3249"
+    }
+  ],
+  "jobLog": {
+    "name": "kerf-42783616290.log",
+    "sha256": "22c4515d0366eed75813c4d3449e3f15bf83a3419ee9e5b6a2881c53d945b845"
+  }
+}

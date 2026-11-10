@@ -57,3 +57,53 @@ The raw `pure-bun-wasi.json` SHA-256 is `246c0eaa41846d1d05a6dc87f0ea87f1aa5d716
 The [earlier Linux result](2026-11-10-bun-linux-results.md) at `d5adc44f8aaf7e9a92261ea3cdfa036e46b3fdfa` used Node 22.23.4, npm 10.9.9 and Bun 1.4.4, with the same canonical site input hashes. Native rendering passed and unmodified strict WASI exited 1. Its positive WASI control was npm-augmented and remains excluded from pure-Bun support evidence.
 
 The new supported-mechanism probe must also run through its isolated Linux manual qualification job, retaining all raw evidence at that job's exact SHA. Do not describe an unexecuted Linux mechanism matrix as passed. `KF-C6HCET` tracks the independently observed direct-add registry failure. No adoption follows from this native-only support boundary.
+
+## Executed Linux mechanism matrix
+
+[Run 42783616290](https://github.com/brianwestphal/kerf/actions/runs/42783616290)
+completed successfully at exact source/workflow SHA
+`d08decc8cfbf93a1ddbe1e3d8afb867fb38cf6a2`. Only `pure-wasi` ran;
+all other job groups were skipped. The job asserted and recorded Linux x64,
+Node **22.23.4**, npm **10.9.9**, Bun **1.4.4+38afee6c8**, and checkout identity.
+The canonical root/site manifest and npm-lock hashes match the local table above
+and the original Linux candidate inputs.
+
+| Sequential attempt             | Bun exit | Physical package nodes before → after | Native / strict Markdown |
+| ------------------------------ | -------- | ------------------------------------- | ------------------------ |
+| Native frozen                  | 0        | 0 → 372                               | 0 / clean 1              |
+| All CPUs                       | 0        | 372 → 400                             | 0 / clean 1              |
+| Any CPU                        | 0        | 400 → 400                             | 0 / clean 1              |
+| All CPUs and OSes              | 0        | 400 → 452                             | 0 / clean 1              |
+| Unsupported wasm32             | 1        | 452 → 452                             | 0 / clean 1              |
+| Direct platform addition       | 1        | 452 → 452                             | 0 / clean 1              |
+| Subsequent all-platform frozen | 0        | 452 → 452                             | 0 / clean 1              |
+| Force reinstall                | 0        | 452 → 452                             | 0 / clean 1              |
+
+All sixteen fresh Node Markdown processes exited without a signal or timeout;
+all eight before/after manifest, npm-lock and Bun-lock hash sets are identical.
+Every strict process reported the expected missing WASI binding. The actual
+Satteri loader resolved none of the five requested WASI/runtime packages.
+The complete physical graph does contain `@emnapi/runtime@1.11.3` nested below
+Sharp after wildcard provisioning; that copy is unreachable from Satteri's
+loader and supplies no forced-WASI support proof.
+
+The direct addition independently reproduced
+`GET https://registry.npmjs.org/@domotion%2ftext-engine - 404`, followed by
+`@domotion/text-engine@0.35.0 failed to resolve` (KF-C6HCET). It failed before
+changing inputs. The final two stages therefore inspect the retained graph,
+not a successfully installed direct WASI dependency. Attempts are sequential;
+the retained before/after graphs make that cumulative policy explicit.
+
+The [portable Linux summary](2026-11-10-bun-pure-wasi-linux-results.json)
+records every attempt, toolchain, actual loader resolution, complete-graph
+counts, immutable inputs, all 48 raw-file hashes, raw-log hash, run/job identity
+and artifact digest. Artifact
+`pure-wasi-d08decc8cfbf93a1ddbe1e3d8afb867fb38cf6a2` retains the underlying
+physical graphs, manifests, locks, help and command/runtime output.
+
+This closes the missing Linux execution evidence for the tested mechanisms.
+The support decision remains **native-only experimental Linux x64 under Node
+22**, with strict WASI unsupported by these attempts. There is no production
+installer adoption, Bun-runtime claim, npm augmentation, or requalification of
+the original seven-tree candidate. The broader qualification result remains
+**NO GO** for adoption and its separately tracked gaps still apply.
