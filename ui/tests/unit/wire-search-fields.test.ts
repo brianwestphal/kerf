@@ -31,6 +31,28 @@ function inputEvent(
 }
 
 describe('wireSearchFields', () => {
+  it('accepts generic synthetic input events without an inputType', () => {
+    const root = document.createElement('div');
+    document.body.append(root);
+    root.innerHTML = String(SearchField({ id: 'generic', label: 'Search' }));
+    const onEdit = vi.fn();
+    const stop = wireSearchFields(root, { collapsible: false, onEdit });
+    const editor = root.querySelector<HTMLElement>(
+      '[data-search-field-editor]',
+    )!;
+    editor.querySelector('[data-search-field-text]')!.textContent = 'hello';
+    editor.dispatchEvent(new Event('beforeinput', { bubbles: true }));
+    editor.dispatchEvent(new Event('input', { bubbles: true }));
+    expect(onEdit).toHaveBeenCalledTimes(1);
+    expect(readSearchField(editor).query).toBe('hello');
+    expect(
+      root
+        .querySelector('[data-component="search-field"]')
+        ?.getAttribute('data-placeholder-visible'),
+    ).toBe('false');
+    stop();
+  });
+
   it('hands focus and caret to an editor the app replaces from onEdit', async () => {
     const root = document.createElement('div');
     document.body.append(root);

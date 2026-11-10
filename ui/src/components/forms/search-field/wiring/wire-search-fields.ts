@@ -484,7 +484,7 @@ function createDeletionController(
   };
   const onBeforeInput = (event: Event) => {
     const editor = editorFromEvent(root, event);
-    if (editor && (event as InputEvent).inputType.startsWith('delete'))
+    if (editor && (event as InputEvent).inputType?.startsWith('delete'))
       captureDeletion(editor);
   };
   const restoreDeletion = (
@@ -552,7 +552,7 @@ function createDeletionController(
     const editor = editorFromEvent(root, event);
     if (!editor) return;
     const editorId = intentId(editor);
-    const inputType = (event as InputEvent).inputType;
+    const inputType = (event as InputEvent).inputType ?? '';
     if (!inputType.startsWith('delete')) selectAllIntents.delete(editor);
     const deletion = pending.get(editorId);
     if (inputType.startsWith('delete'))
