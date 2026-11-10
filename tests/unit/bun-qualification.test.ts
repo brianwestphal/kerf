@@ -81,7 +81,7 @@ describe(
             step.run?.includes('vitest.mjs run'),
           )
           .run.startsWith(
-            'PATH="$GITHUB_WORKSPACE/node_modules/.bin:$PATH" node ',
+            'PATH="$GITHUB_WORKSPACE/node_modules/.bin:$PATH" HUSKY=0 node ',
           ),
       ).toBe(true);
       expect(

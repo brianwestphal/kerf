@@ -126,7 +126,7 @@ export function qualificationWorkflow(source) {
         run: 'node scripts/bun-candidate-install.mjs . && npm run build && node scripts/bun-candidate-install.mjs ui && npm --prefix ui run build',
       },
       {
-        run: 'PATH="$GITHUB_WORKSPACE/node_modules/.bin:$PATH" node node_modules/vitest/vitest.mjs run tests/unit/release-package.test.ts tests/unit/release-common.test.ts tests/unit/release-changelog.test.ts tests/unit/release-beta-plan.test.ts tests/unit/release-order.test.ts tests/integration/release-beta-auto.test.ts',
+        run: 'PATH="$GITHUB_WORKSPACE/node_modules/.bin:$PATH" HUSKY=0 node node_modules/vitest/vitest.mjs run tests/unit/release-package.test.ts tests/unit/release-common.test.ts tests/unit/release-changelog.test.ts tests/unit/release-beta-plan.test.ts tests/unit/release-order.test.ts tests/integration/release-beta-auto.test.ts',
       },
       {
         if: "${{ !cancelled() && steps.candidate-build.outcome == 'success' }}",

@@ -69,8 +69,8 @@ Manual dispatch defaults to `scope=full`. An explicit `scope=release-artifacts`
 executes only the isolated release lane, allowing a harness repair to gather
 missing release evidence without repeating the browser matrix. That run qualifies
 only its own checked-out SHA and scope; results from different SHAs must remain
-separate. The release tests receive npm-style executable PATH setup for their
-fixture lifecycle commands. Once candidate builds succeed, the independent
+separate. Both release tests and the separate artifact probe receive npm-style
+executable PATH setup with `HUSKY=0` for their fixture lifecycle commands. Once candidate builds succeed, the independent
 artifact probe still runs if a release test fails, retaining useful evidence
 without turning that failed job green.
 

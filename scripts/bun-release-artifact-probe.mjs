@@ -11,7 +11,7 @@ import {
   writeFileSync,
 } from 'node:fs';
 import { tmpdir } from 'node:os';
-import { basename, dirname, join, resolve } from 'node:path';
+import { basename, delimiter, dirname, join, resolve } from 'node:path';
 
 const root = resolve(import.meta.dirname, '..');
 const evidence = process.env.BUN_QUALIFICATION_EVIDENCE;
@@ -23,6 +23,11 @@ function run(command, args, cwd) {
     cwd,
     encoding: 'utf8',
     timeout: 120_000,
+    env: {
+      ...process.env,
+      PATH: `${join(root, 'node_modules', '.bin')}${delimiter}${process.env.PATH ?? ''}`,
+      HUSKY: '0',
+    },
   });
   if (result.status !== 0)
     throw new Error(`${command} ${args.join(' ')} failed: ${result.stderr}`);
