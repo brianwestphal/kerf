@@ -2,7 +2,15 @@
 # Manual candidate only; production npm CI and release workflows are unchanged.
 name: Bun candidate qualification
 on:
-  workflow_dispatch: null
+  workflow_dispatch:
+    inputs:
+      scope:
+        description: Qualification scope (full retains every canonical lane)
+        type: choice
+        options:
+          - full
+          - release-artifacts
+        default: full
 permissions:
   contents: read
 env:
@@ -31,6 +39,7 @@ jobs:
           name: candidate-${{ github.job }}-${{ strategy.job-index }}-${{ github.sha }}
           path: ${{ env.BUN_QUALIFICATION_EVIDENCE }}
           if-no-files-found: warn
+    if: ${{ inputs.scope != 'release-artifacts' }}
   lint:
     runs-on: ubuntu-24.04
     steps:
@@ -51,6 +60,7 @@ jobs:
           name: candidate-${{ github.job }}-${{ strategy.job-index }}-${{ github.sha }}
           path: ${{ env.BUN_QUALIFICATION_EVIDENCE }}
           if-no-files-found: warn
+    if: ${{ inputs.scope != 'release-artifacts' }}
   typecheck:
     runs-on: ubuntu-24.04
     steps:
@@ -71,6 +81,7 @@ jobs:
           name: candidate-${{ github.job }}-${{ strategy.job-index }}-${{ github.sha }}
           path: ${{ env.BUN_QUALIFICATION_EVIDENCE }}
           if-no-files-found: warn
+    if: ${{ inputs.scope != 'release-artifacts' }}
   build:
     runs-on: ubuntu-24.04
     steps:
@@ -94,6 +105,7 @@ jobs:
           name: candidate-${{ github.job }}-${{ strategy.job-index }}-${{ github.sha }}
           path: ${{ env.BUN_QUALIFICATION_EVIDENCE }}
           if-no-files-found: warn
+    if: ${{ inputs.scope != 'release-artifacts' }}
   node-floor:
     runs-on: ubuntu-24.04
     steps:
@@ -145,6 +157,7 @@ jobs:
           name: candidate-${{ github.job }}-${{ strategy.job-index }}-${{ github.sha }}
           path: ${{ env.BUN_QUALIFICATION_EVIDENCE }}
           if-no-files-found: warn
+    if: ${{ inputs.scope != 'release-artifacts' }}
   gates:
     runs-on: ubuntu-24.04
     steps:
@@ -169,6 +182,7 @@ jobs:
           name: candidate-${{ github.job }}-${{ strategy.job-index }}-${{ github.sha }}
           path: ${{ env.BUN_QUALIFICATION_EVIDENCE }}
           if-no-files-found: warn
+    if: ${{ inputs.scope != 'release-artifacts' }}
   site:
     runs-on: ubuntu-24.04
     steps:
@@ -203,6 +217,7 @@ jobs:
           name: candidate-${{ github.job }}-${{ strategy.job-index }}-${{ github.sha }}
           path: ${{ env.BUN_QUALIFICATION_EVIDENCE }}
           if-no-files-found: warn
+    if: ${{ inputs.scope != 'release-artifacts' }}
   eslint-plugin:
     runs-on: ubuntu-24.04
     strategy:
@@ -236,6 +251,7 @@ jobs:
           name: candidate-${{ github.job }}-${{ strategy.job-index }}-${{ github.sha }}
           path: ${{ env.BUN_QUALIFICATION_EVIDENCE }}
           if-no-files-found: warn
+    if: ${{ inputs.scope != 'release-artifacts' }}
   create-kerf-component:
     runs-on: ubuntu-24.04
     defaults:
@@ -261,6 +277,7 @@ jobs:
           name: candidate-${{ github.job }}-${{ strategy.job-index }}-${{ github.sha }}
           path: ${{ env.BUN_QUALIFICATION_EVIDENCE }}
           if-no-files-found: warn
+    if: ${{ inputs.scope != 'release-artifacts' }}
   ui:
     runs-on: ubuntu-24.04
     defaults:
@@ -300,6 +317,7 @@ jobs:
           name: candidate-${{ github.job }}-${{ strategy.job-index }}-${{ github.sha }}
           path: ${{ env.BUN_QUALIFICATION_EVIDENCE }}
           if-no-files-found: warn
+    if: ${{ inputs.scope != 'release-artifacts' }}
   editor:
     runs-on: ubuntu-24.04
     defaults:
@@ -333,6 +351,7 @@ jobs:
           name: candidate-${{ github.job }}-${{ strategy.job-index }}-${{ github.sha }}
           path: ${{ env.BUN_QUALIFICATION_EVIDENCE }}
           if-no-files-found: warn
+    if: ${{ inputs.scope != 'release-artifacts' }}
   editor-browser:
     runs-on: ubuntu-24.04
     strategy:
@@ -392,6 +411,7 @@ jobs:
           name: candidate-${{ github.job }}-${{ strategy.job-index }}-${{ github.sha }}
           path: ${{ env.BUN_QUALIFICATION_EVIDENCE }}
           if-no-files-found: warn
+    if: ${{ inputs.scope != 'release-artifacts' }}
   ui-browser:
     runs-on: ubuntu-24.04
     strategy:
@@ -454,6 +474,7 @@ jobs:
           name: candidate-${{ github.job }}-${{ strategy.job-index }}-${{ github.sha }}
           path: ${{ env.BUN_QUALIFICATION_EVIDENCE }}
           if-no-files-found: warn
+    if: ${{ inputs.scope != 'release-artifacts' }}
   ui-webawesome-latest:
     runs-on: ubuntu-24.04
     defaults:
@@ -505,6 +526,7 @@ jobs:
           name: candidate-${{ github.job }}-${{ strategy.job-index }}-${{ github.sha }}
           path: ${{ env.BUN_QUALIFICATION_EVIDENCE }}
           if-no-files-found: warn
+    if: ${{ inputs.scope != 'release-artifacts' }}
   design-templates:
     runs-on: macos-latest
     defaults:
@@ -542,6 +564,7 @@ jobs:
           name: candidate-${{ github.job }}-${{ strategy.job-index }}-${{ github.sha }}
           path: ${{ env.BUN_QUALIFICATION_EVIDENCE }}
           if-no-files-found: warn
+    if: ${{ inputs.scope != 'release-artifacts' }}
   browser:
     runs-on: ubuntu-24.04
     steps:
@@ -570,6 +593,7 @@ jobs:
           name: candidate-${{ github.job }}-${{ strategy.job-index }}-${{ github.sha }}
           path: ${{ env.BUN_QUALIFICATION_EVIDENCE }}
           if-no-files-found: warn
+    if: ${{ inputs.scope != 'release-artifacts' }}
   seventh-tree:
     runs-on: ubuntu-24.04
     steps:
@@ -586,6 +610,7 @@ jobs:
         with:
           name: candidate-seventh-tree-${{ github.sha }}
           path: ${{ env.BUN_QUALIFICATION_EVIDENCE }}
+    if: ${{ inputs.scope != 'release-artifacts' }}
   release-artifacts:
     runs-on: ubuntu-24.04
     steps:
@@ -594,9 +619,11 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
       - run: npm install --global bun@1.4.4
-      - run: node scripts/bun-candidate-install.mjs . && npm run build && node scripts/bun-candidate-install.mjs ui && npm --prefix ui run build
-      - run: node node_modules/vitest/vitest.mjs run tests/unit/release-package.test.ts tests/unit/release-common.test.ts tests/unit/release-changelog.test.ts tests/unit/release-beta-plan.test.ts tests/unit/release-order.test.ts tests/integration/release-beta-auto.test.ts
-      - run: node scripts/bun-release-artifact-probe.mjs
+      - id: candidate-build
+        run: node scripts/bun-candidate-install.mjs . && npm run build && node scripts/bun-candidate-install.mjs ui && npm --prefix ui run build
+      - run: PATH="$GITHUB_WORKSPACE/node_modules/.bin:$PATH" node node_modules/vitest/vitest.mjs run tests/unit/release-package.test.ts tests/unit/release-common.test.ts tests/unit/release-changelog.test.ts tests/unit/release-beta-plan.test.ts tests/unit/release-order.test.ts tests/integration/release-beta-auto.test.ts
+      - if: ${{ !cancelled() && steps.candidate-build.outcome == 'success' }}
+        run: node scripts/bun-release-artifact-probe.mjs
       - if: always()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
@@ -604,3 +631,4 @@ jobs:
           path: ${{ env.BUN_QUALIFICATION_EVIDENCE }}
   wasi-resolution:
     uses: ./.github/workflows/bun-wasi-resolution.yml
+    if: ${{ inputs.scope != 'release-artifacts' }}

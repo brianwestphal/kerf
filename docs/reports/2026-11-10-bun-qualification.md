@@ -65,6 +65,15 @@ canonical gates or unreviewed npm installation. Regenerate it after changing
 `ci.yml`; its ordinary unit test rejects stale output. Per-job artifacts retain
 input/generated lock hashes and tool versions, while Actions retains raw logs.
 
+Manual dispatch defaults to `scope=full`. An explicit `scope=release-artifacts`
+executes only the isolated release lane, allowing a harness repair to gather
+missing release evidence without repeating the browser matrix. That run qualifies
+only its own checked-out SHA and scope; results from different SHAs must remain
+separate. The release tests receive npm-style executable PATH setup for their
+fixture lifecycle commands. Once candidate builds succeed, the independent
+artifact probe still runs if a release test fails, retaining useful evidence
+without turning that failed job green.
+
 Release coverage exercises real beta dry-run integration tests, shared release
 helpers, changelog/version planning, exact four-package metadata preparation,
 and tokenless pack-to-publish workflow isolation. An additional probe copies the

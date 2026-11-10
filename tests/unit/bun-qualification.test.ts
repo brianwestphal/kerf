@@ -44,7 +44,11 @@ describe(
 
     it('is manual and read-only and never replaces candidate installs with npm', () => {
       const candidate = candidateFrom(source);
-      expect(candidate.on).toEqual({ workflow_dispatch: null });
+      expect(candidate.on.workflow_dispatch.inputs.scope).toMatchObject({
+        type: 'choice',
+        options: ['full', 'release-artifacts'],
+        default: 'full',
+      });
       expect(candidate.permissions).toEqual({ contents: 'read' });
       const text = YAML.stringify(candidate);
       expect(text).not.toContain('npm ci');
@@ -58,6 +62,55 @@ describe(
       expect(text).not.toContain('secrets.');
       expect(text).not.toMatch(/npm publish/);
       expect(text).toContain('bun-candidate-install.mjs');
+    });
+
+    it('limits release-only dispatch without dropping the default full graph', () => {
+      const candidate = candidateFrom(source);
+      const release = candidate.jobs['release-artifacts'];
+      expect(release.if).toBeUndefined();
+      expect(release.needs).toBeUndefined();
+      for (const [name, job] of Object.entries(candidate.jobs) as Array<
+        [string, { if?: string }]
+      >) {
+        if (name !== 'release-artifacts')
+          expect(job.if).toBe("${{ inputs.scope != 'release-artifacts' }}");
+      }
+      expect(
+        release.steps
+          .find((step: { run?: string }) =>
+            step.run?.includes('vitest.mjs run'),
+          )
+          .run.startsWith(
+            'PATH="$GITHUB_WORKSPACE/node_modules/.bin:$PATH" node ',
+          ),
+      ).toBe(true);
+      expect(
+        release.steps.find(
+          (step: { run?: string }) =>
+            step.run === 'node scripts/bun-release-artifact-probe.mjs',
+        ).if,
+      ).toBe(
+        "${{ !cancelled() && steps.candidate-build.outcome == 'success' }}",
+      );
+    });
+
+    it('preserves canonical job conditions when adding the scope guard', () => {
+      const canonical = YAML.parse(source);
+      for (const guard of [
+        "${{ github.ref == 'refs/heads/main' }}",
+        'always()',
+        false,
+      ]) {
+        canonical.jobs.test.if = guard;
+        const candidate = candidateFrom(YAML.stringify(canonical));
+        const prior =
+          typeof guard === 'string' && guard.startsWith('${{')
+            ? guard.slice(3, -2).trim()
+            : String(guard);
+        expect(candidate.jobs.test.if).toBe(
+          `\${{ (${prior}) && inputs.scope != 'release-artifacts' }}`,
+        );
+      }
     });
 
     it('records dependency-variation trees before their tests can fail', () => {

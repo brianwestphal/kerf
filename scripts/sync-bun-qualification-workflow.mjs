@@ -122,12 +122,16 @@ export function qualificationWorkflow(source) {
       },
       { run: 'npm install --global bun@1.4.4' },
       {
+        id: 'candidate-build',
         run: 'node scripts/bun-candidate-install.mjs . && npm run build && node scripts/bun-candidate-install.mjs ui && npm --prefix ui run build',
       },
       {
-        run: 'node node_modules/vitest/vitest.mjs run tests/unit/release-package.test.ts tests/unit/release-common.test.ts tests/unit/release-changelog.test.ts tests/unit/release-beta-plan.test.ts tests/unit/release-order.test.ts tests/integration/release-beta-auto.test.ts',
+        run: 'PATH="$GITHUB_WORKSPACE/node_modules/.bin:$PATH" node node_modules/vitest/vitest.mjs run tests/unit/release-package.test.ts tests/unit/release-common.test.ts tests/unit/release-changelog.test.ts tests/unit/release-beta-plan.test.ts tests/unit/release-order.test.ts tests/integration/release-beta-auto.test.ts',
       },
-      { run: 'node scripts/bun-release-artifact-probe.mjs' },
+      {
+        if: "${{ !cancelled() && steps.candidate-build.outcome == 'success' }}",
+        run: 'node scripts/bun-release-artifact-probe.mjs',
+      },
       {
         if: 'always()',
         uses: upload,
@@ -141,9 +145,34 @@ export function qualificationWorkflow(source) {
   jobs['wasi-resolution'] = {
     uses: './.github/workflows/bun-wasi-resolution.yml',
   };
+  for (const [name, job] of Object.entries(jobs)) {
+    if (name === 'release-artifacts') continue;
+    let prior = job.if;
+    if (typeof prior === 'string') {
+      prior = prior.trim();
+      if (prior.startsWith('${{') && prior.endsWith('}}'))
+        prior = prior.slice(3, -2).trim();
+    }
+    job.if =
+      prior === undefined
+        ? "${{ inputs.scope != 'release-artifacts' }}"
+        : `\${{ (${prior}) && inputs.scope != 'release-artifacts' }}`;
+  }
   return {
     name: 'Bun candidate qualification',
-    on: { workflow_dispatch: null },
+    on: {
+      workflow_dispatch: {
+        inputs: {
+          scope: {
+            description:
+              'Qualification scope (full retains every canonical lane)',
+            type: 'choice',
+            options: ['full', 'release-artifacts'],
+            default: 'full',
+          },
+        },
+      },
+    },
     permissions: { contents: 'read' },
     env: {
       NODE_VERSION: '22',
