@@ -52,11 +52,11 @@ Canonical SHA-256 inputs:
 
 The raw `pure-bun-wasi.json` SHA-256 is `246c0eaa41846d1d05a6dc87f0ea87f1aa5d716e9022a7535218f569fd4202bd`. Forty-seven raw files retain the complete before/after graph, each attempted manifest/npm/Bun lock, canonical root/site inputs, migration output, exact help, and runtime results. They are attached to the ticket as a compressed evidence bundle; Linux qualification must retain its own exact-commit artifact rather than reuse the macOS run.
 
-## Linux boundary and remaining work
+## Initial Linux evidence boundary
 
 The [earlier Linux result](2026-11-10-bun-linux-results.md) at `d5adc44f8aaf7e9a92261ea3cdfa036e46b3fdfa` used Node 22.23.4, npm 10.9.9 and Bun 1.4.4, with the same canonical site input hashes. Native rendering passed and unmodified strict WASI exited 1. Its positive WASI control was npm-augmented and remains excluded from pure-Bun support evidence.
 
-The new supported-mechanism probe must also run through its isolated Linux manual qualification job, retaining all raw evidence at that job's exact SHA. Do not describe an unexecuted Linux mechanism matrix as passed. `KF-C6HCET` tracks the independently observed direct-add registry failure. No adoption follows from this native-only support boundary.
+At the initial local checkpoint, the new supported-mechanism matrix remained unexecuted on Linux. The following section records the subsequent isolated Linux job and its exact-commit raw evidence. `KF-C6HCET` tracks the independently observed direct-add registry failure. No adoption follows from this native-only support boundary.
 
 ## Executed Linux mechanism matrix
 
