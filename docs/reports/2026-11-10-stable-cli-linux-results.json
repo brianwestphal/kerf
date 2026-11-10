@@ -1,0 +1,331 @@
+{
+  "schema": "kerf-stable-cli-linux-plan/v1",
+  "result": "Actual stable CLI read-only plan succeeded with unchanged tracked files, HEAD, refs, root entries and clean status. This is separate from artifact preparation and publishing.",
+  "run": {
+    "id": 42783623509,
+    "url": "https://github.com/brianwestphal/kerf/actions/runs/42783623509",
+    "headSha": "d08decc8cfbf93a1ddbe1e3d8afb867fb38cf6a2",
+    "jobs": [
+      {
+        "id": 129719350522,
+        "name": "stable-plan",
+        "status": "completed",
+        "conclusion": "success",
+        "startedAt": "2026-11-10T08:34:59Z",
+        "completedAt": "2026-11-10T08:35:32Z"
+      },
+      {
+        "id": 129719351846,
+        "name": "create-kerf-component",
+        "status": "completed",
+        "conclusion": "skipped",
+        "startedAt": "2026-11-10T08:33:56Z",
+        "completedAt": "2026-11-10T08:33:55Z"
+      },
+      {
+        "id": 129719352192,
+        "name": "editor",
+        "status": "completed",
+        "conclusion": "skipped",
+        "startedAt": "2026-11-10T08:33:56Z",
+        "completedAt": "2026-11-10T08:33:55Z"
+      },
+      {
+        "id": 129719352206,
+        "name": "site",
+        "status": "completed",
+        "conclusion": "skipped",
+        "startedAt": "2026-11-10T08:33:56Z",
+        "completedAt": "2026-11-10T08:33:55Z"
+      },
+      {
+        "id": 129719352227,
+        "name": "design-templates",
+        "status": "completed",
+        "conclusion": "skipped",
+        "startedAt": "2026-11-10T08:33:56Z",
+        "completedAt": "2026-11-10T08:33:55Z"
+      },
+      {
+        "id": 129719352278,
+        "name": "eslint-plugin",
+        "status": "completed",
+        "conclusion": "skipped",
+        "startedAt": "2026-11-10T08:33:56Z",
+        "completedAt": "2026-11-10T08:33:55Z"
+      },
+      {
+        "id": 129719352289,
+        "name": "test",
+        "status": "completed",
+        "conclusion": "skipped",
+        "startedAt": "2026-11-10T08:33:56Z",
+        "completedAt": "2026-11-10T08:33:55Z"
+      },
+      {
+        "id": 129719352335,
+        "name": "node-floor",
+        "status": "completed",
+        "conclusion": "skipped",
+        "startedAt": "2026-11-10T08:33:56Z",
+        "completedAt": "2026-11-10T08:33:55Z"
+      },
+      {
+        "id": 129719352338,
+        "name": "browser-apt",
+        "status": "completed",
+        "conclusion": "skipped",
+        "startedAt": "2026-11-10T08:33:56Z",
+        "completedAt": "2026-11-10T08:33:55Z"
+      },
+      {
+        "id": 129719352361,
+        "name": "lint",
+        "status": "completed",
+        "conclusion": "skipped",
+        "startedAt": "2026-11-10T08:33:56Z",
+        "completedAt": "2026-11-10T08:33:55Z"
+      },
+      {
+        "id": 129719352417,
+        "name": "ui",
+        "status": "completed",
+        "conclusion": "skipped",
+        "startedAt": "2026-11-10T08:33:56Z",
+        "completedAt": "2026-11-10T08:33:55Z"
+      },
+      {
+        "id": 129719352492,
+        "name": "ui-browser",
+        "status": "completed",
+        "conclusion": "skipped",
+        "startedAt": "2026-11-10T08:33:56Z",
+        "completedAt": "2026-11-10T08:33:55Z"
+      },
+      {
+        "id": 129719352497,
+        "name": "wasi-resolution",
+        "status": "completed",
+        "conclusion": "skipped",
+        "startedAt": "2026-11-10T08:33:56Z",
+        "completedAt": "2026-11-10T08:33:55Z"
+      },
+      {
+        "id": 129719352513,
+        "name": "local-peer",
+        "status": "completed",
+        "conclusion": "skipped",
+        "startedAt": "2026-11-10T08:33:56Z",
+        "completedAt": "2026-11-10T08:33:55Z"
+      },
+      {
+        "id": 129719352674,
+        "name": "gates",
+        "status": "completed",
+        "conclusion": "skipped",
+        "startedAt": "2026-11-10T08:33:56Z",
+        "completedAt": "2026-11-10T08:33:55Z"
+      },
+      {
+        "id": 129719352751,
+        "name": "seventh-tree",
+        "status": "completed",
+        "conclusion": "skipped",
+        "startedAt": "2026-11-10T08:33:56Z",
+        "completedAt": "2026-11-10T08:33:55Z"
+      },
+      {
+        "id": 129719352845,
+        "name": "library-performance",
+        "status": "completed",
+        "conclusion": "skipped",
+        "startedAt": "2026-11-10T08:33:56Z",
+        "completedAt": "2026-11-10T08:33:55Z"
+      },
+      {
+        "id": 129719353074,
+        "name": "pure-wasi",
+        "status": "completed",
+        "conclusion": "skipped",
+        "startedAt": "2026-11-10T08:33:56Z",
+        "completedAt": "2026-11-10T08:33:55Z"
+      },
+      {
+        "id": 129719390245,
+        "name": "ui-webawesome-latest",
+        "status": "completed",
+        "conclusion": "skipped",
+        "startedAt": "2026-11-10T08:34:01Z",
+        "completedAt": "2026-11-10T08:33:55Z"
+      },
+      {
+        "id": 129719411364,
+        "name": "build",
+        "status": "completed",
+        "conclusion": "skipped",
+        "startedAt": "2026-11-10T08:34:04Z",
+        "completedAt": "2026-11-10T08:33:55Z"
+      },
+      {
+        "id": 129719415422,
+        "name": "typecheck",
+        "status": "completed",
+        "conclusion": "skipped",
+        "startedAt": "2026-11-10T08:34:05Z",
+        "completedAt": "2026-11-10T08:33:55Z"
+      },
+      {
+        "id": 129719420668,
+        "name": "editor-browser",
+        "status": "completed",
+        "conclusion": "skipped",
+        "startedAt": "2026-11-10T08:34:05Z",
+        "completedAt": "2026-11-10T08:33:55Z"
+      },
+      {
+        "id": 129719420941,
+        "name": "release-artifacts",
+        "status": "completed",
+        "conclusion": "skipped",
+        "startedAt": "2026-11-10T08:34:05Z",
+        "completedAt": "2026-11-10T08:33:55Z"
+      },
+      {
+        "id": 129719422783,
+        "name": "browser",
+        "status": "completed",
+        "conclusion": "skipped",
+        "startedAt": "2026-11-10T08:34:06Z",
+        "completedAt": "2026-11-10T08:33:55Z"
+      }
+    ]
+  },
+  "toolchain": {
+    "node": "v22.23.4",
+    "npm": "10.9.9",
+    "bun": "1.4.4",
+    "bunRevision": "1.4.4+38afee6c8",
+    "sourceSha": "d08decc8cfbf93a1ddbe1e3d8afb867fb38cf6a2",
+    "platform": "linux",
+    "arch": "x64"
+  },
+  "artifacts": [
+    {
+      "id": 13747506505,
+      "node_id": "MDg6QXJ0aWZhY3QxMzc0NzUwNjUwNQ==",
+      "name": "stable-plan-d08decc8cfbf93a1ddbe1e3d8afb867fb38cf6a2",
+      "size_in_bytes": 414820,
+      "url": "https://api.github.com/repos/brianwestphal/kerf/actions/artifacts/13747506505",
+      "archive_download_url": "https://api.github.com/repos/brianwestphal/kerf/actions/artifacts/13747506505/zip",
+      "expired": false,
+      "digest": "sha256:4ce7a36c029dd3722f4937ffca0611b0100dfbf8dd27db923bd71b3ca3ae4c2f",
+      "created_at": "2026-11-10T08:35:30Z",
+      "updated_at": "2026-11-10T08:35:30Z",
+      "expires_at": "2027-02-08T08:33:55Z",
+      "workflow_run": {
+        "id": 42783623509,
+        "repository_id": 1231460256,
+        "head_repository_id": 1231460256,
+        "head_branch": "main",
+        "head_sha": "d08decc8cfbf93a1ddbe1e3d8afb867fb38cf6a2"
+      }
+    }
+  ],
+  "command": "bash scripts/release.sh --dry-run --version 999.0.0 --notes qualification-notes.md --skip-checks",
+  "fixture": {
+    "sourceSha": "d08decc8cfbf93a1ddbe1e3d8afb867fb38cf6a2",
+    "trackedFiles": 4439,
+    "beforeHead": "6a98ba3481e1b453310525569a046d022651c22c\n",
+    "afterHead": "6a98ba3481e1b453310525569a046d022651c22c\n",
+    "beforeRefs": "6a98ba3481e1b453310525569a046d022651c22c refs/heads/main\n",
+    "afterRefs": "6a98ba3481e1b453310525569a046d022651c22c refs/heads/main\n",
+    "beforeStatus": "",
+    "afterStatus": "",
+    "allTrackedHashesEqual": true,
+    "rootEntriesEqual": true,
+    "rootEntries": [
+      ".agents",
+      ".claude",
+      ".cursor",
+      ".gemini",
+      ".git",
+      ".github",
+      ".gitignore",
+      ".hotsheet2",
+      ".husky",
+      ".nvmrc",
+      ".pr-notes",
+      ".prettierignore",
+      ".prettierrc.json",
+      ".rulesync",
+      "AGENTS.md",
+      "CHANGELOG.md",
+      "CLAUDE.md",
+      "GEMINI.md",
+      "LICENSE",
+      "README.md",
+      "ai",
+      "assets",
+      "bench",
+      "create-kerf-component",
+      "docs",
+      "editor",
+      "eslint-plugin",
+      "eslint.config.js",
+      "examples",
+      "kerf.claude-skill.md",
+      "kerf.cursorrules",
+      "kerf.ui-skill.md",
+      "llms.txt",
+      "package-lock.json",
+      "package.json",
+      "playwright.config.ts",
+      "qualification-notes.md",
+      "scripts",
+      "setup",
+      "site",
+      "src",
+      "tests",
+      "tsconfig.json",
+      "tsup.config.ts",
+      "ui",
+      "vitest.config.bench.ts",
+      "vitest.config.dist-full.ts",
+      "vitest.config.dist.ts",
+      "vitest.config.ts"
+    ]
+  },
+  "scope": "Actual current-tree read-only CLI plan; local refs only, no artifact preparation, checks explicitly skipped, no remote or publish credentials.",
+  "limitations": [
+    "Clean main fixture was initialized from exact committed source plus a committed nonempty notes file before snapshots. Its initial fixture commit is not a release operation.",
+    "--skip-checks explicitly omits current-tree checks here; their default dispatch and failure behavior are covered by the separate guarded CLI regression suites.",
+    "No versioned artifacts were prepared. Eight earlier actual-byte pack/offline publish dry-runs remain separate evidence at b7273e3c.",
+    "No real release, push, tag or registry publication was performed. This closes the actual stable-plan exercise gap, not broader Bun installer adoption qualification."
+  ],
+  "rawFiles": [
+    {
+      "name": "stable-plan.json",
+      "bytes": 1108196,
+      "sha256": "bb378cb7b94309423610ef893fe9606311a99cffdc4927f6ff8e1f9db9ded280"
+    },
+    {
+      "name": "stable-plan.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "stable-plan.stdout.log",
+      "bytes": 601,
+      "sha256": "d37e18936ca580d6b26f09b6511c793d357626bf449d12e0e5cda6b79462488c"
+    },
+    {
+      "name": "toolchain.json",
+      "bytes": 196,
+      "sha256": "93fcbe73b232724bc0ce318592fcd14c503bdf20c44606af330a4f95bdd181a3"
+    }
+  ],
+  "jobLog": {
+    "name": "kerf-42783623509.log",
+    "sha256": "ec355ea54eb849386c434439c1cb74a654d5a8ab92450def33eab86b3d725f32"
+  }
+}
