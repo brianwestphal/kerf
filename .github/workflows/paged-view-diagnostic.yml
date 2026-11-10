@@ -1,0 +1,108 @@
+# KF-SAYTM1: manually requested evidence only; never a production gate or retry.
+name: PagedView Linux full-load diagnostic
+on:
+  workflow_dispatch:
+    inputs:
+      source-sha:
+        description: Exact failing source; harness stays at the dispatched workflow revision
+        required: true
+        type: string
+        default: 14c603b83ac6755bd24a4c4695f3d5f7cf9c53bc
+permissions:
+  contents: read
+jobs:
+  chromium-full-load:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    env:
+      EVIDENCE: /tmp/kerf-paged-view-diagnostic
+    steps:
+      - name: Validate the exact source revision
+        env:
+          SOURCE_SHA: ${{ inputs.source-sha }}
+        run: '[[ "$SOURCE_SHA" =~ ^[0-9a-f]{40}$ ]]'
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          path: harness
+          persist-credentials: false
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ inputs.source-sha }}
+          path: target
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: '22.23.4'
+      - name: Record source, harness and runner independently
+        working-directory: target
+        env:
+          SOURCE_SHA: ${{ inputs.source-sha }}
+        run: |
+          mkdir -p "$EVIDENCE"
+          node --input-type=module <<'JS' > "$EVIDENCE/environment.json"
+          import assert from 'node:assert/strict';
+          import { execFileSync } from 'node:child_process';
+          import { cpus, availableParallelism, loadavg } from 'node:os';
+          const run = (file, args) => execFileSync(file, args, { encoding: 'utf8' }).trim();
+          const data = { sourceSha: run('git', ['rev-parse', 'HEAD']), harnessSha: process.env.GITHUB_SHA, node: process.version, npm: run('npm', ['--version']), cpus: cpus(), availableParallelism: availableParallelism(), loadavg: loadavg(), runnerImage: process.env.ImageVersion, workers: 2, retries: 0, passes: ['uninstrumented control', 'instrumented full suite'] };
+          console.log(JSON.stringify(data, null, 2));
+          assert.equal(data.sourceSha, process.env.SOURCE_SHA);
+          assert.equal(data.node, 'v22.23.4');
+          assert.equal(data.npm, '10.9.9');
+          JS
+      - run: npm ci
+        working-directory: target
+      - run: npm run build
+        working-directory: target
+      - run: npm ci
+        working-directory: target/ui
+      - name: Configure bounded HTTPS browser dependencies from the harness
+        timeout-minutes: 2
+        run: sudo "$(command -v node)" "$GITHUB_WORKSPACE/harness/scripts/configure-browser-apt.mjs"
+      - name: Install the source lockfile's Chromium revision
+        timeout-minutes: 15
+        working-directory: target/ui
+        run: npx --no-install playwright install --with-deps chromium
+      - name: Record exact installed browser dependencies
+        working-directory: target/ui
+        run: |
+          npm ls @playwright/test playwright playwright-core --all > "$EVIDENCE/playwright-tree.txt"
+          cp node_modules/playwright-core/browsers.json "$EVIDENCE/browsers.json"
+          node --input-type=module <<'JS' > "$EVIDENCE/actual-browser.json"
+          import { chromium } from '@playwright/test';
+          const browser = await chromium.launch();
+          try {
+            const session = await browser.newBrowserCDPSession();
+            console.log(JSON.stringify({ browserVersion: browser.version(), executable: chromium.executablePath(), version: await session.send('Browser.getVersion') }, null, 2));
+          } finally { await browser.close(); }
+          JS
+      - run: npm run build
+        working-directory: target/ui
+      - name: Uninstrumented full Chromium UI suite control
+        id: control
+        working-directory: target/ui
+        env:
+          PLAYWRIGHT_HTML_OUTPUT_DIR: /tmp/kerf-paged-view-diagnostic/control-report
+        run: |
+          set -o pipefail
+          npx --no-install playwright test --project=chromium --workers=2 --retries=0 --output="$EVIDENCE/control-results" 2>&1 | tee "$EVIDENCE/control.log"
+      - name: Install import-only instrumentation overlay
+        id: overlay
+        if: ${{ !cancelled() && steps.control.outcome != 'skipped' }}
+        run: node harness/scripts/prepare-paged-view-diagnostic.mjs target "$EVIDENCE"
+      - name: Instrumented full Chromium UI suite with unchanged assertions
+        if: ${{ !cancelled() && steps.overlay.outcome == 'success' }}
+        working-directory: target/ui
+        env:
+          PLAYWRIGHT_HTML_OUTPUT_DIR: /tmp/kerf-paged-view-diagnostic/instrumented-report
+        run: |
+          set -o pipefail
+          npx --no-install playwright test --project=chromium --workers=2 --retries=0 --output="$EVIDENCE/instrumented-results" 2>&1 | tee "$EVIDENCE/instrumented.log"
+      - name: Retain diagnostics for successful and failed tests
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: paged-view-full-load-${{ inputs.source-sha }}-${{ github.run_id }}
+          path: /tmp/kerf-paged-view-diagnostic
+          if-no-files-found: warn
