@@ -6,6 +6,7 @@ import { dirname, relative, resolve } from 'node:path';
 import process from 'node:process';
 
 import { loadApplicationUiProfile } from '../ai/application-ui-profile.mjs';
+import { createFirefoxAppData } from './firefox-app-data.mjs';
 
 export const UI_EVALUATION_SCHEMA_VERSION = 1;
 
@@ -1034,14 +1035,21 @@ export async function evaluateUi({
       if (!browserType)
         throw new Error(`Unknown Playwright browser ${browserName}.`);
       let browser;
+      const appData = browserName === 'firefox' ? createFirefoxAppData() : null;
       try {
         try {
-          const launch = browserType.launch();
+          const launch = browserType.launch(
+            appData ? { env: appData.env } : {},
+          );
           void launch.then(
             (candidate) => {
-              if (signal?.aborted) void candidate.close();
+              if (signal?.aborted)
+                void candidate.close().then(
+                  () => appData?.dispose(),
+                  () => appData?.dispose(),
+                );
             },
-            () => {},
+            () => appData?.dispose(),
           );
           browser = await abortable(launch, signal);
           activeBrowser = browser;
@@ -1149,8 +1157,14 @@ export async function evaluateUi({
           });
         }
       } finally {
-        await browser?.close();
-        activeBrowser = undefined;
+        try {
+          await browser?.close();
+        } finally {
+          // Cancellation may win while launch is pending. Its settlement
+          // handler closes that late browser before removing its app data.
+          if (browser || !signal?.aborted) appData?.dispose();
+          activeBrowser = undefined;
+        }
       }
     }
   } catch (error) {

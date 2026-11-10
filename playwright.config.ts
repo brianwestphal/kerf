@@ -1,6 +1,10 @@
 import { getPriority, setPriority } from 'node:os';
 import { defineConfig, devices } from '@playwright/test';
 
+import { createFirefoxAppData } from './ui/evaluator/firefox-app-data.mjs';
+
+const firefoxAppData = createFirefoxAppData();
+
 // Run local Playwright at a lower CPU priority so several parallel suites can't starve the
 // machine; its workers, browsers, and web server inherit it. PLAYWRIGHT_NICE overrides the
 // default of 10 (0 opts out), and CI keeps its priority unless overridden.
@@ -64,7 +68,13 @@ export default defineConfig({
   },
   projects: [
     { name: 'chromium', use: { ...devices['Desktop Chrome'] } },
-    { name: 'firefox', use: { ...devices['Desktop Firefox'] } },
+    {
+      name: 'firefox',
+      use: {
+        ...devices['Desktop Firefox'],
+        launchOptions: { env: firefoxAppData.env },
+      },
+    },
     { name: 'webkit', use: { ...devices['Desktop Safari'] } },
   ],
   webServer: {

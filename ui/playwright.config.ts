@@ -2,6 +2,7 @@ import { getPriority, setPriority } from 'node:os';
 import { defineConfig } from '@playwright/test';
 
 import { guardWebkitRun } from '../scripts/playwright-webkit-guard.mjs';
+import { createFirefoxAppData } from './evaluator/firefox-app-data.mjs';
 
 // Run local Playwright at a lower CPU priority so several parallel suites can't starve the
 // machine; its workers, browsers, and web server inherit it. PLAYWRIGHT_NICE overrides the
@@ -32,6 +33,8 @@ const BROWSERS = ['chromium', 'firefox', 'webkit'] as const;
 // WebKit run, until a machine-wide browser slot pool exists.
 guardWebkitRun([...BROWSERS]);
 
+const firefoxAppData = createFirefoxAppData();
+
 export default defineConfig({
   testDir: './tests/browser',
   fullyParallel: false,
@@ -52,6 +55,11 @@ export default defineConfig({
   },
   projects: BROWSERS.map((browserName) => ({
     name: browserName,
-    use: { browserName },
+    use: {
+      browserName,
+      ...(browserName === 'firefox'
+        ? { launchOptions: { env: firefoxAppData.env } }
+        : {}),
+    },
   })),
 });

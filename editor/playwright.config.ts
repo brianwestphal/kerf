@@ -1,12 +1,15 @@
 import { defineConfig } from '@playwright/test';
 
 import { guardWebkitRun } from '../scripts/playwright-webkit-guard.mjs';
+import { createFirefoxAppData } from '../ui/evaluator/firefox-app-data.mjs';
 import { EDITOR_URL, FIXTURE_EDITOR_URL } from './ports.js';
 
 const BROWSERS = ['chromium', 'firefox', 'webkit'] as const;
 // KF-YN8JNT: refuse a local repeated WebKit run, and warn on any local
 // WebKit run, until a machine-wide browser slot pool exists.
 guardWebkitRun([...BROWSERS]);
+
+const firefoxAppData = createFirefoxAppData();
 
 export default defineConfig({
   testDir: './tests/browser',
@@ -42,6 +45,11 @@ export default defineConfig({
   ],
   projects: BROWSERS.map((browserName) => ({
     name: browserName,
-    use: { browserName },
+    use: {
+      browserName,
+      ...(browserName === 'firefox'
+        ? { launchOptions: { env: firefoxAppData.env } }
+        : {}),
+    },
   })),
 });
