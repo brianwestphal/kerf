@@ -92,7 +92,7 @@ describe('TreeList reconciliation', () => {
     const mutable = { id: 'node', label: 'Before' };
     const revision = signal(0);
     const dispose = mount(host, () => {
-      revision.value;
+      void revision.value;
       return TreeList({
         id: 'mutable',
         label: 'Files',
