@@ -1182,7 +1182,19 @@ test('shows the palette as a grid of thumbnails', async ({ page }, info) => {
     )
     .toBe(true);
   // A layout shows its sketch.
-  await expect(tile('workbench').locator('svg')).toBeVisible();
+  await tile('workbench').scrollIntoViewIfNeeded();
+  const workbenchThumb = tile('workbench').locator(
+    '[data-editor-palette-thumb]',
+  );
+  const schematic = workbenchThumb.locator('[data-thumb-stage] > svg');
+  await expect(schematic).toBeVisible();
+  await expect(schematic).toHaveAttribute('viewBox', '0 0 96 72');
+  // The light-DOM Component glyph remains available for empty previews;
+  // a rendered schematic hides its fallback slot instead of deleting it.
+  await expect(workbenchThumb.locator('slot')).toHaveAttribute('hidden', '');
+  await expect(
+    workbenchThumb.locator('svg[data-lucide="component"]'),
+  ).toBeHidden();
   await page.screenshot({
     path: info.outputPath('KF-JC7WTW-palette-grid-1440.png'),
     animations: 'disabled',
