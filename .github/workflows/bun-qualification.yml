@@ -1,51 +1,606 @@
+# Generated from ci.yml by scripts/sync-bun-qualification-workflow.mjs.
+# Manual candidate only; production npm CI and release workflows are unchanged.
 name: Bun candidate qualification
-
 on:
-  workflow_dispatch:
-
+  workflow_dispatch: null
 permissions:
   contents: read
-
 env:
   NODE_VERSION: '22'
   BUN_QUALIFICATION_EVIDENCE: /tmp/kerf-bun-qualification
-
+  BUN_INSTALL_CACHE_DIR: /tmp/kerf-bun-cache
+  BUN_QUALIFICATION_CI_SHA256: 84e761644df75064e403d591a7a279dc57039f0a01e22af2ce131d4cf6e12197
 jobs:
-  wasi-resolution:
+  test:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+      - name: Install the exact candidate installer (not repository dependencies)
+        working-directory: .
+        run: npm install --global bun@1.4.4
+      - run: node "$GITHUB_WORKSPACE/scripts/bun-candidate-install.mjs" .
+      - run: npm test
+      - name: Retain exact candidate locks and input manifests
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: candidate-${{ github.job }}-${{ strategy.job-index }}-${{ github.sha }}
+          path: ${{ env.BUN_QUALIFICATION_EVIDENCE }}
+          if-no-files-found: warn
+  lint:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+      - name: Install the exact candidate installer (not repository dependencies)
+        working-directory: .
+        run: npm install --global bun@1.4.4
+      - run: node "$GITHUB_WORKSPACE/scripts/bun-candidate-install.mjs" .
+      - run: npm run lint
+      - name: Retain exact candidate locks and input manifests
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: candidate-${{ github.job }}-${{ strategy.job-index }}-${{ github.sha }}
+          path: ${{ env.BUN_QUALIFICATION_EVIDENCE }}
+          if-no-files-found: warn
+  typecheck:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+      - name: Install the exact candidate installer (not repository dependencies)
+        working-directory: .
+        run: npm install --global bun@1.4.4
+      - run: node "$GITHUB_WORKSPACE/scripts/bun-candidate-install.mjs" .
+      - run: npm run typecheck
+      - name: Retain exact candidate locks and input manifests
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: candidate-${{ github.job }}-${{ strategy.job-index }}-${{ github.sha }}
+          path: ${{ env.BUN_QUALIFICATION_EVIDENCE }}
+          if-no-files-found: warn
+  build:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+      - name: Install the exact candidate installer (not repository dependencies)
+        working-directory: .
+        run: npm install --global bun@1.4.4
+      - run: node "$GITHUB_WORKSPACE/scripts/bun-candidate-install.mjs" .
+      - run: npm run build
+      - run: npx --no-install vitest run --config vitest.config.dist.ts
+      - run: npx --no-install vitest run --config vitest.config.dist-full.ts
+      - run: npm pack --dry-run
+      - name: Retain exact candidate locks and input manifests
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: candidate-${{ github.job }}-${{ strategy.job-index }}-${{ github.sha }}
+          path: ${{ env.BUN_QUALIFICATION_EVIDENCE }}
+          if-no-files-found: warn
+  node-floor:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+      - name: Install the exact candidate installer (not repository dependencies)
+        working-directory: .
+        run: npm install --global bun@1.4.4
+      - run: node "$GITHUB_WORKSPACE/scripts/bun-candidate-install.mjs" .
+      - run: npm run build
+      - name: Pack kerfjs
+        run: |
+          mkdir -p "$RUNNER_TEMP/pack"
+          npm pack --pack-destination "$RUNNER_TEMP/pack"
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020
+        with:
+          node-version: '18'
+      - name: Install the tarball into a scratch consumer on Node 18
+        run: |
+          node --version
+          mkdir -p "$RUNNER_TEMP/consumer"
+          cd "$RUNNER_TEMP/consumer"
+          npm init -y > /dev/null
+          npm pkg set type=module
+          npm install --no-audit --no-fund "$RUNNER_TEMP"/pack/kerfjs-*.tgz
+      - name: Run the kerfjs setup dry run on Node 18
+        working-directory: ${{ runner.temp }}/consumer
+        run: npx --no-install kerfjs setup --core --resolve 'package.json#dependencies.kerfjs=keep'
+      - name: Render on the server from dist on Node 18
+        working-directory: ${{ runner.temp }}/consumer
+        run: |
+          node --input-type=module -e "
+            import { renderDocument, signal } from 'kerfjs';
+            import { jsx } from 'kerfjs/jsx-runtime';
+            const count = signal(2);
+            const page = jsx('html', { children: jsx('body', { children: jsx('p', { class: 'n', children: ['Count: ', count.value] }) }) });
+            const out = renderDocument(page);
+            const expected = '<!DOCTYPE html><html><body><p class=\"n\">Count: 2</p></body></html>';
+            if (out !== expected) { console.error('unexpected SSR output:', out); process.exit(1); }
+            console.log(out);
+          "
+      - name: Retain exact candidate locks and input manifests
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: candidate-${{ github.job }}-${{ strategy.job-index }}-${{ github.sha }}
+          path: ${{ env.BUN_QUALIFICATION_EVIDENCE }}
+          if-no-files-found: warn
+  gates:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+      - name: Install the exact candidate installer (not repository dependencies)
+        working-directory: .
+        run: npm install --global bun@1.4.4
+      - run: node "$GITHUB_WORKSPACE/scripts/bun-candidate-install.mjs" .
+      - run: npm --prefix site ci
+      - name: Run the check:core gates no other job covers
+        run: node scripts/run-check-steps.mjs check:core --skip lint,typecheck,test,vitest:dist,vitest:dist-full,check-package-gates
+      - name: Audit the published dependency tree (high and critical)
+        run: npm run --silent check:audit
+      - name: Retain exact candidate locks and input manifests
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: candidate-${{ github.job }}-${{ strategy.job-index }}-${{ github.sha }}
+          path: ${{ env.BUN_QUALIFICATION_EVIDENCE }}
+          if-no-files-found: warn
+  site:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            site/package-lock.json
+      - name: Install the exact candidate installer (not repository dependencies)
+        working-directory: .
+        run: npm install --global bun@1.4.4
+      - run: node "$GITHUB_WORKSPACE/scripts/bun-candidate-install.mjs" .
+      - run: npm run build
+      - run: node "$GITHUB_WORKSPACE/scripts/bun-candidate-install.mjs" site
+        working-directory: site
+      - name: Audit all site build dependencies (high and critical)
+        working-directory: site
+        run: npm run --silent check:audit
+      - name: Build site and reject route-collision warnings
+        working-directory: site
+        run: |
+          set -o pipefail
+          npm run build 2>&1 | tee "$RUNNER_TEMP/kerf-site-build.log"
+          node ../scripts/check-site-build-output.mjs < "$RUNNER_TEMP/kerf-site-build.log"
+      - name: Retain exact candidate locks and input manifests
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: candidate-${{ github.job }}-${{ strategy.job-index }}-${{ github.sha }}
+          path: ${{ env.BUN_QUALIFICATION_EVIDENCE }}
+          if-no-files-found: warn
+  eslint-plugin:
     runs-on: ubuntu-24.04
     strategy:
       fail-fast: false
       matrix:
-        installer: [npm, bun]
+        eslint:
+          - 9.39.5
+          - 10.8.0
+    defaults:
+      run:
+        working-directory: eslint-plugin
     steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
-        with: { node-version: '${{ env.NODE_VERSION }}' }
-      - name: Install the selected Bun toolchain
-        run: npm install --global bun@1.4.4
-      - name: Install exact root and site candidates
-        env:
-          INSTALLER: ${{ matrix.installer }}
-        run: |
-          if [[ "$INSTALLER" == bun ]]; then
-            node scripts/bun-candidate-install.mjs .
-            npm run build
-            node scripts/bun-candidate-install.mjs site
-          else
-            npm ci
-            npm run build
-            npm --prefix site ci
-          fi
-      - name: Probe native and strict WASI behavior from the actual loader
-        run: node scripts/bun-wasi-probe.mjs site native
-      - name: Explicitly provision WASI after preserving the native candidate evidence
-        run: |
-          cd site
-          npm install --force --ignore-scripts --no-audit --no-fund @bruits/satteri-wasm32-wasi@0.10.5 @napi-rs/wasm-runtime@1.2.4
-          node "$GITHUB_WORKSPACE/scripts/bun-wasi-probe.mjs" "$GITHUB_WORKSPACE/site" provisioned
-      - name: Upload inventories, lock hashes, and real consumer probe output
-        if: always()
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020
         with:
-          name: wasi-${{ matrix.installer }}-${{ github.sha }}
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: eslint-plugin/package-lock.json
+      - name: Install the exact candidate installer (not repository dependencies)
+        working-directory: .
+        run: npm install --global bun@1.4.4
+      - run: node "$GITHUB_WORKSPACE/scripts/bun-candidate-install.mjs" eslint-plugin
+      - run: npm run lint
+      - run: bun add --no-save eslint@${{ matrix.eslint }}
+      - run: node -e "console.log('eslint', require('eslint').ESLint.version)"
+      - run: npm run check
+      - name: Retain exact candidate locks and input manifests
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: candidate-${{ github.job }}-${{ strategy.job-index }}-${{ github.sha }}
           path: ${{ env.BUN_QUALIFICATION_EVIDENCE }}
+          if-no-files-found: warn
+  create-kerf-component:
+    runs-on: ubuntu-24.04
+    defaults:
+      run:
+        working-directory: create-kerf-component
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: create-kerf-component/package-lock.json
+      - name: Install the exact candidate installer (not repository dependencies)
+        working-directory: .
+        run: npm install --global bun@1.4.4
+      - run: node "$GITHUB_WORKSPACE/scripts/bun-candidate-install.mjs" create-kerf-component
+      - run: npm run lint
+      - run: npm test
+      - name: Retain exact candidate locks and input manifests
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: candidate-${{ github.job }}-${{ strategy.job-index }}-${{ github.sha }}
+          path: ${{ env.BUN_QUALIFICATION_EVIDENCE }}
+          if-no-files-found: warn
+  ui:
+    runs-on: ubuntu-24.04
+    defaults:
+      run:
+        working-directory: ui
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: ui/package-lock.json
+      - name: Install the exact candidate installer (not repository dependencies)
+        working-directory: .
+        run: npm install --global bun@1.4.4
+      - name: Install kerfjs build dependencies
+        working-directory: .
+        run: node "$GITHUB_WORKSPACE/scripts/bun-candidate-install.mjs" .
+      - name: Build the local kerfjs peer
+        working-directory: .
+        run: npm run build
+      - run: node "$GITHUB_WORKSPACE/scripts/bun-candidate-install.mjs" ui
+      - name: Cache UI Playwright browsers
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-ui-${{ runner.os }}-${{ hashFiles('ui/package-lock.json') }}
+          restore-keys: |
+            playwright-ui-${{ runner.os }}-
+      - run: npx --no-install playwright install --with-deps chromium firefox webkit
+      - run: npm run build
+      - run: npm run check
+      - name: Retain exact candidate locks and input manifests
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: candidate-${{ github.job }}-${{ strategy.job-index }}-${{ github.sha }}
+          path: ${{ env.BUN_QUALIFICATION_EVIDENCE }}
+          if-no-files-found: warn
+  editor:
+    runs-on: ubuntu-24.04
+    defaults:
+      run:
+        working-directory: editor
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: editor/package-lock.json
+      - name: Install the exact candidate installer (not repository dependencies)
+        working-directory: .
+        run: npm install --global bun@1.4.4
+      - name: Install kerfjs build dependencies
+        working-directory: .
+        run: node "$GITHUB_WORKSPACE/scripts/bun-candidate-install.mjs" .
+      - name: Build the local kerfjs peer
+        working-directory: .
+        run: npm run build
+      - name: Install and build @kerfjs/ui
+        working-directory: ui
+        run: node "$GITHUB_WORKSPACE/scripts/bun-candidate-install.mjs" ui && npm run build
+      - run: node "$GITHUB_WORKSPACE/scripts/bun-candidate-install.mjs" editor
+      - run: npm run check
+      - name: Retain exact candidate locks and input manifests
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: candidate-${{ github.job }}-${{ strategy.job-index }}-${{ github.sha }}
+          path: ${{ env.BUN_QUALIFICATION_EVIDENCE }}
+          if-no-files-found: warn
+  editor-browser:
+    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        browser:
+          - chromium
+          - firefox
+          - webkit
+        shard:
+          - 1
+          - 2
+          - 3
+          - 4
+    defaults:
+      run:
+        working-directory: editor
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: editor/package-lock.json
+      - name: Install the exact candidate installer (not repository dependencies)
+        working-directory: .
+        run: npm install --global bun@1.4.4
+      - name: Install kerfjs build dependencies
+        working-directory: .
+        run: node "$GITHUB_WORKSPACE/scripts/bun-candidate-install.mjs" .
+      - name: Build the local kerfjs peer
+        working-directory: .
+        run: npm run build
+      - name: Install and build @kerfjs/ui
+        working-directory: ui
+        run: node "$GITHUB_WORKSPACE/scripts/bun-candidate-install.mjs" ui && npm run build
+      - run: node "$GITHUB_WORKSPACE/scripts/bun-candidate-install.mjs" editor
+      - name: Use Ubuntu archive for browser dependencies
+        run: if [[ -f /etc/apt/apt-mirrors.txt ]]; then sudo sed -i 's#azure.archive.ubuntu.com#archive.ubuntu.com#g' /etc/apt/apt-mirrors.txt; fi
+      - run: npx --no-install playwright install --with-deps ${{ matrix.browser }}
+      - name: Run editor browser tests
+        id: editor_browser
+        run: npm run test:e2e -- --project=${{ matrix.browser }} --shard=${{ matrix.shard }}/4
+      - name: Upload failed editor browser evidence
+        if: ${{ !cancelled() && steps.editor_browser.outcome == 'failure' }}
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: editor-browser-failure-${{ matrix.browser }}-${{ matrix.shard }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            editor/test-results/**/trace.zip
+            editor/test-results/**/test-failed-*.png
+            editor/test-results/**/error-context.md
+      - name: Retain exact candidate locks and input manifests
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: candidate-${{ github.job }}-${{ strategy.job-index }}-${{ github.sha }}
+          path: ${{ env.BUN_QUALIFICATION_EVIDENCE }}
+          if-no-files-found: warn
+  ui-browser:
+    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        browser:
+          - chromium
+          - firefox
+          - webkit
+    defaults:
+      run:
+        working-directory: ui
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: ui/package-lock.json
+      - name: Install the exact candidate installer (not repository dependencies)
+        working-directory: .
+        run: npm install --global bun@1.4.4
+      - name: Install kerfjs build dependencies
+        working-directory: .
+        run: node "$GITHUB_WORKSPACE/scripts/bun-candidate-install.mjs" .
+      - name: Build the local kerfjs peer
+        working-directory: .
+        run: npm run build
+      - run: node "$GITHUB_WORKSPACE/scripts/bun-candidate-install.mjs" ui
+      - name: Cache UI Playwright browser
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-ui-${{ matrix.browser }}-${{ runner.os }}-${{ hashFiles('ui/package-lock.json') }}
+          restore-keys: |
+            playwright-ui-${{ matrix.browser }}-${{ runner.os }}-
+      - name: Use Ubuntu archive for browser dependencies
+        run: if [[ -f /etc/apt/apt-mirrors.txt ]]; then sudo sed -i 's#azure.archive.ubuntu.com#archive.ubuntu.com#g' /etc/apt/apt-mirrors.txt; fi
+      - run: npx --no-install playwright install --with-deps ${{ matrix.browser }}
+      - run: npm run build
+      - name: Run UI browser tests
+        id: ui_browser
+        run: npm run test:e2e -- --project=${{ matrix.browser }}
+      - name: Upload failed UI browser evidence
+        if: ${{ !cancelled() && steps.ui_browser.outcome == 'failure' }}
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: ui-browser-failure-${{ matrix.browser }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            ui/playwright-report/
+            ui/test-results/**/trace.zip
+            ui/test-results/**/test-failed-*.png
+            ui/test-results/**/error-context.md
+          if-no-files-found: warn
+          retention-days: 14
+      - name: Retain exact candidate locks and input manifests
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: candidate-${{ github.job }}-${{ strategy.job-index }}-${{ github.sha }}
+          path: ${{ env.BUN_QUALIFICATION_EVIDENCE }}
+          if-no-files-found: warn
+  ui-webawesome-latest:
+    runs-on: ubuntu-24.04
+    defaults:
+      run:
+        working-directory: ui
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: ui/package-lock.json
+      - name: Install the exact candidate installer (not repository dependencies)
+        working-directory: .
+        run: npm install --global bun@1.4.4
+      - name: Install kerfjs build dependencies
+        working-directory: .
+        run: node "$GITHUB_WORKSPACE/scripts/bun-candidate-install.mjs" .
+      - name: Build the local kerfjs peer
+        working-directory: .
+        run: npm run build
+      - run: node "$GITHUB_WORKSPACE/scripts/bun-candidate-install.mjs" ui
+      - name: Cache UI Playwright browser
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-ui-chromium-${{ runner.os }}-${{ hashFiles('ui/package-lock.json') }}
+          restore-keys: |
+            playwright-ui-chromium-${{ runner.os }}-
+      - run: npx --no-install playwright install --with-deps chromium
+      - run: npm run build
+      - name: Run the UI unit and Chromium suites against the newest Web Awesome 3.x
+        run: bun add --no-save @awesome.me/webawesome@^3 && node node_modules/vitest/vitest.mjs run tests/unit && KERF_WEBAWESOME_LATEST=1 node node_modules/playwright/cli.js test --project=chromium
+      - name: Upload Web Awesome browser failure evidence
+        if: failure()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: ui-webawesome-latest-failure
+          path: |
+            ui/test-results/**/trace.zip
+            ui/test-results/**/test-failed-*.png
+            ui/test-results/**/error-context.md
+          if-no-files-found: warn
+          retention-days: 14
+      - name: Retain exact candidate locks and input manifests
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: candidate-${{ github.job }}-${{ strategy.job-index }}-${{ github.sha }}
+          path: ${{ env.BUN_QUALIFICATION_EVIDENCE }}
+          if-no-files-found: warn
+  design-templates:
+    runs-on: macos-latest
+    defaults:
+      run:
+        working-directory: ui
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: ui/package-lock.json
+      - name: Install the exact candidate installer (not repository dependencies)
+        working-directory: .
+        run: npm install --global bun@1.4.4
+      - name: Install kerfjs build dependencies
+        working-directory: .
+        run: node "$GITHUB_WORKSPACE/scripts/bun-candidate-install.mjs" .
+      - name: Build the local kerfjs peer
+        working-directory: .
+        run: npm run build
+      - run: node "$GITHUB_WORKSPACE/scripts/bun-candidate-install.mjs" ui
+      - run: npx --no-install playwright install chromium
+      - run: npm run build
+      - name: Pin and report the capture browser's display preferences
+        run: |
+          defaults write com.apple.universalaccess reduceTransparency -bool false || true
+          defaults write com.apple.universalaccess increaseContrast -bool false || true
+          node scripts/report-capture-media.mjs
+      - run: npm run check:design-templates:drift
+      - name: Retain exact candidate locks and input manifests
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: candidate-${{ github.job }}-${{ strategy.job-index }}-${{ github.sha }}
+          path: ${{ env.BUN_QUALIFICATION_EVIDENCE }}
+          if-no-files-found: warn
+  browser:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+      - name: Install the exact candidate installer (not repository dependencies)
+        working-directory: .
+        run: npm install --global bun@1.4.4
+      - run: node "$GITHUB_WORKSPACE/scripts/bun-candidate-install.mjs" .
+      - name: Cache Playwright browsers
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+          restore-keys: |
+            playwright-${{ runner.os }}-
+      - run: npx --no-install playwright install --with-deps chromium firefox webkit
+      - run: npm run test:browser
+      - name: Retain exact candidate locks and input manifests
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: candidate-${{ github.job }}-${{ strategy.job-index }}-${{ github.sha }}
+          path: ${{ env.BUN_QUALIFICATION_EVIDENCE }}
+          if-no-files-found: warn
+  seventh-tree:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+      - run: npm install --global bun@1.4.4
+      - run: node scripts/bun-candidate-install.mjs . && npm run build && node scripts/bun-candidate-install.mjs examples/reactivity-demo
+      - run: npm run build
+        working-directory: examples/reactivity-demo
+      - if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: candidate-seventh-tree-${{ github.sha }}
+          path: ${{ env.BUN_QUALIFICATION_EVIDENCE }}
+  release-artifacts:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+      - run: npm install --global bun@1.4.4
+      - run: node scripts/bun-candidate-install.mjs . && npm run build && node scripts/bun-candidate-install.mjs ui && npm --prefix ui run build
+      - run: node node_modules/vitest/vitest.mjs run tests/unit/release-package.test.ts tests/unit/release-common.test.ts tests/unit/release-changelog.test.ts tests/unit/release-beta-plan.test.ts tests/unit/release-order.test.ts tests/integration/release-beta-auto.test.ts
+      - run: node scripts/bun-release-artifact-probe.mjs
+      - if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: candidate-release-artifacts-${{ github.sha }}
+          path: ${{ env.BUN_QUALIFICATION_EVIDENCE }}
+  wasi-resolution:
+    uses: ./.github/workflows/bun-wasi-resolution.yml

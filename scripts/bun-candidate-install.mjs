@@ -62,6 +62,7 @@ const manifest = {
   bun: version,
   platform: process.platform,
   arch: process.arch,
+  canonicalCiSha256: process.env.BUN_QUALIFICATION_CI_SHA256 ?? null,
   input: before,
   bunLock: candidateLock,
   moduleKiB: run('du', ['-sk', 'node_modules']).split(/\s+/)[0],

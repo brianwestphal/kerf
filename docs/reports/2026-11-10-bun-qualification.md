@@ -42,3 +42,49 @@ checks.
 
 Linux run results and the complete matrix are recorded after execution; until
 then neither ticket is qualified by this document alone.
+
+## Complete candidate matrix
+
+`scripts/sync-bun-qualification-workflow.mjs` derives the manual candidate job
+graph from the current `ci.yml`, retaining every canonical test command and
+browser/shard matrix. It replaces repository `npm ci` calls with the exact-lock
+Bun helper. npm remains the Node-runtime script runner, auditor, packer, and
+scratch tarball consumer; its only tool bootstrap installs the pinned Bun
+executable. Intentional latest-ESLint/Web Awesome variants use Bun to apply their
+post-frozen-install dependency variation. `npx --no-install` prevents silent
+replacement of missing candidate tools.
+
+The matrix covers root, UI, editor, plugin, scaffold, site, and the seventh
+reactivity-example tree. Browser suites retain Chromium/Firefox/WebKit and all
+four editor shards. Canonical Linux jobs use Ubuntu 24.04; the additional
+design-template job retains canonical macOS because its rendering baseline is
+platform-specific. That extra job is not represented as Linux evidence.
+
+The graph has a checked-in source fingerprint and a unit guard against missing
+canonical gates or unreviewed npm installation. Regenerate it after changing
+`ci.yml`; its ordinary unit test rejects stale output. Per-job artifacts retain
+input/generated lock hashes and tool versions, while Actions retains raw logs.
+
+Release coverage exercises real beta dry-run integration tests, shared release
+helpers, changelog/version planning, exact four-package metadata preparation,
+and tokenless pack-to-publish workflow isolation. An additional probe copies the
+already-built candidate publish surfaces into disposable stable/beta fixtures,
+packs all eight artifacts, asserts their versions and required emitted files,
+runs offline `npm publish --dry-run --ignore-scripts` against those same bytes,
+and verifies their SHA-256 identities did not change. No registry publication
+or OIDC token is requested.
+
+### Release qualification boundary
+
+`KF-Y9A9XE` records a discovered pre-existing safety gap: the interactive stable
+`release.sh` has no dry-run mode and ignores unrecognized arguments. It is never
+invoked with `--dry-run` by this harness. Stable artifact/metadata dry runs and
+helper tests can pass without proving the whole stable CLI dry-run path. Real
+OIDC registry provenance likewise requires a separately authorized publish of a
+Bun-built artifact. These limitations mean this work cannot by itself justify
+installer adoption, even if every executable matrix gate passes.
+
+Local harness checks additionally passed four matrix/parity/safety unit tests,
+root TypeScript checking, a real Bun 1.4.4 migration/frozen install against an
+isolated Satteri fixture, and all eight real stable/beta pack/offline-publish dry
+runs. These are harness checks on macOS, not substitutes for the Linux run.

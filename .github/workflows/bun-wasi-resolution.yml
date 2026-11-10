@@ -1,0 +1,52 @@
+name: Bun WASI resolution evidence
+
+on:
+  workflow_dispatch:
+  workflow_call:
+
+permissions:
+  contents: read
+
+env:
+  NODE_VERSION: '22'
+  BUN_QUALIFICATION_EVIDENCE: /tmp/kerf-bun-qualification
+
+jobs:
+  wasi-resolution:
+    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        installer: [npm, bun]
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with: { node-version: '${{ env.NODE_VERSION }}' }
+      - name: Install the selected Bun toolchain
+        run: npm install --global bun@1.4.4
+      - name: Install exact root and site candidates
+        env:
+          INSTALLER: ${{ matrix.installer }}
+        run: |
+          if [[ "$INSTALLER" == bun ]]; then
+            node scripts/bun-candidate-install.mjs .
+            npm run build
+            node scripts/bun-candidate-install.mjs site
+          else
+            npm ci
+            npm run build
+            npm --prefix site ci
+          fi
+      - name: Probe native and strict WASI behavior from the actual loader
+        run: node scripts/bun-wasi-probe.mjs site native
+      - name: Explicitly provision WASI after preserving the native candidate evidence
+        run: |
+          cd site
+          npm install --force --ignore-scripts --no-audit --no-fund @bruits/satteri-wasm32-wasi@0.10.5 @napi-rs/wasm-runtime@1.2.4
+          node "$GITHUB_WORKSPACE/scripts/bun-wasi-probe.mjs" "$GITHUB_WORKSPACE/site" provisioned
+      - name: Upload inventories, lock hashes, and real consumer probe output
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: wasi-${{ matrix.installer }}-${{ github.sha }}
+          path: ${{ env.BUN_QUALIFICATION_EVIDENCE }}
