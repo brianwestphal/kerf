@@ -1111,6 +1111,30 @@ application computes.
 
 ### 3.4 Params
 
+The Document **Params** rail shows each parameter's name and type. Selecting
+one opens a dialog with TypeScript text entry; a NavStack explores array items,
+object fields and union members. Edit the complete expression in the root view.
+The owning project's TypeScript language service supplies completion, live
+errors and automatic formatting on blur. Unique exported project types resolve
+inside expressions such as `Array<string | number | MyCustomType>`; ambiguous
+names require an explicit `import("./types.js").MyCustomType`. Named types are
+created in application source. Name, JSON default and removal share the dialog;
+saving is one undoable edit and cancellation leaves the document unchanged.
+
+Compiler-backed types retain the existing structural descriptor for navigation
+and add `typescript: { text, source, references }`: canonical TypeScript text,
+the project-relative owning document path, and compiler-derived import token
+spans. Generation rebases relative imports to the output document. Legacy
+descriptors remain supported. The structural `validateView` API reports
+`KUI-H002` when project checking is required; its navigation projection is not
+proof of assignability. The dev-server service and `kerf-ui-view` CLI re-resolve
+the actual project and compile generated bindings and default assertions. The
+editor blocks export while this check is pending, unavailable or unsuccessful.
+Custom storage hosts can supply `createEditor({ typeService })`; the default
+`devServerStorage()` uses the project's header-protected type endpoint. The
+TypeScript compiler stays on the Node server and is absent from browser bundles.
+
+
 `params` maps a camelCase name to `{ type, default?, optional?, description? }`.
 `type` is a descriptor in the component-props type grammar (`string`,
 `number`, `boolean`, `enum`, `content`, `array`, `object`). A param with no

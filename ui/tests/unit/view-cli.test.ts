@@ -16,6 +16,7 @@ import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
 import { buildPackageComponentProps } from '../../props/component-props.mjs';
 import { parseArguments, profileCatalogPaths, run } from '../../view/cli.mjs';
+import { createProjectTypeService } from '../../view/project-types.mjs';
 
 const root = resolve(import.meta.dirname, '../..');
 const fixture = resolve(root, 'tests/fixtures/view/inbox.kui.json');
@@ -41,6 +42,46 @@ describe('kerf-ui-view', () => {
       code: 0,
       output: expect.stringContaining('up to date'),
     });
+  });
+
+  it('checks real TypeScript defaults before generating or checking a module', () => {
+    writeFileSync(
+      join(folder, 'tsconfig.json'),
+      JSON.stringify({
+        compilerOptions: {
+          strict: true,
+          module: 'ESNext',
+          moduleResolution: 'Bundler',
+          target: 'ES2022',
+          paths: {
+            kerfjs: [resolve(root, '../dist/index.d.ts')],
+            'kerfjs/*': [resolve(root, '../dist/*')],
+            '@kerfjs/ui/*': [resolve(root, 'dist/*')],
+          },
+        },
+        include: ['*.ts'],
+      }),
+    );
+    const service = createProjectTypeService(folder);
+    const type = service.analyze({
+      source: 'inbox.kui.json',
+      text: 'number',
+    }).type!;
+    service.dispose();
+    const document = JSON.parse(readFileSync(documentPath, 'utf8'));
+    document.params.count = { type, default: 'wrong' };
+    writeFileSync(documentPath, JSON.stringify(document));
+    for (const action of ['generate', 'check']) {
+      const result = run([action, documentPath]);
+      expect(result.code).toBe(1);
+      expect(result.output).toContain('not assignable');
+    }
+    document.params.count.default = 1;
+    writeFileSync(documentPath, JSON.stringify(document));
+    expect(run(['generate', documentPath]).code).toBe(0);
+    expect(readFileSync(join(folder, 'inbox.view.ts'), 'utf8')).toContain(
+      'readonly count?: number',
+    );
   });
 
   it('reports missing, stale, and hand-edited modules', () => {

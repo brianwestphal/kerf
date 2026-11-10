@@ -9,6 +9,9 @@ export const ICON_NAME = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 
 /** Whether a value of type `from` (a param or binding) fits type `to`. */
 export function isAssignable(from, to, definitions = {}) {
+  // Project TypeScript types are checked by the Node language service against
+  // the generated module. The structural pass cannot prove TS assignability.
+  if (from?.typescript || to?.typescript) return true;
   // A component prop's type fits only that same component prop.
   if (from?.kind === 'prop' || to?.kind === 'prop')
     return (
@@ -93,6 +96,7 @@ export function literalOf(value, type, definitions, hooks) {
     ('$param' in value || '$bind' in value)
   )
     return hooks.dynamic(value, type);
+  if (type?.typescript) return true;
   const target = resolveType(type, definitions);
   if (value === null) return target.nullable === true;
   switch (target.kind) {

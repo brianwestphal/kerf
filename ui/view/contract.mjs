@@ -4,6 +4,7 @@
 // by the generator and the runtime interpreter so both compute the same digest.
 import { childKind } from './child-kind.mjs';
 import { eachTemplates, validateView } from './validate.mjs';
+import { typeExpressionText } from './type-expression.mjs';
 
 const MASK_64 = 0xffffffffffffffffn;
 const FNV_OFFSET = 0xcbf29ce484222325n;
@@ -41,6 +42,8 @@ export function viewDigest(text) {
 
 /** The TypeScript spelling of a document param or slot-input type. */
 export function typeText(type) {
+  if (type?.typescript)
+    return typeExpressionText(type, '__kerf_contract__.kui.json');
   switch (type?.kind) {
     case 'string':
     case 'number':

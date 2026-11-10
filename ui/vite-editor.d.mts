@@ -8,6 +8,8 @@ export declare const DEFAULT_FIELD_EDITORS: 'src/kerf-ui-field-editors.ts';
 export declare const KERF_UI_EDITOR_FILE_API: '/__kerf-ui-editor/api/file';
 /** Where the editor lists the project's documents (GET: a JSON array of paths). */
 export declare const KERF_UI_EDITOR_LIST_API: '/__kerf-ui-editor/api/files';
+/** Project TypeScript service; POST requires the editor header. */
+export declare const KERF_UI_EDITOR_TYPES_API: '/__kerf-ui-editor/api/types';
 /** The most documents the list answers. */
 export declare const KERF_UI_EDITOR_LIST_LIMIT: 5000;
 /** The project folder unsaved drafts autosave into; it ignores itself in git. */

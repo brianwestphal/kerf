@@ -8,6 +8,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Fixed
 
+- **Project TypeScript parameters (KF-26P9FT, KF-B8YSHV, KF-MB5FFZ, KF-AFW3ZA).** The Params rail shows compact name/type rows. A dialog provides TypeScript text entry, project symbol completion, automatic formatting and nested type navigation. The owning project compiler checks expressions, defaults and generated bindings before editor export or CLI generation; saved expressions preserve their import context.
+
 - **Library file icons (KF-CBA2H7).** Both document layouts show decorative Lucide folder icons and extension-specific file icons, with a generic file fallback.
 
 - **Library disclosure latency (KF-1XBJDT).** The document hierarchy stays stable across disclosure changes and TreeList offers explicit `keyedRows` reconciliation while default markup keeps nested-list composition. A 5,000-file Chromium check reduced collapse from about 421 ms to 91–95 ms; WebKit measured 733–770 ms after the change.

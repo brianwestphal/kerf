@@ -4,8 +4,15 @@
 // the writing (`@kerfjs/ui/vite-editor`'s file middleware).
 import { type ReadonlySignal, signal } from 'kerfjs';
 
+import {
+  devServerTypeService,
+  type ProjectTypeService,
+} from './project-type-service.js';
+
 /** Reads and writes documents by project-relative path. */
 export interface EditorStorage {
+  /** Optional project TypeScript compiler for parameter expressions. */
+  readonly types?: ProjectTypeService;
   /** The document's text, or undefined when there is none at `path`. */
   read(path: string): Promise<string | undefined>;
   write(path: string, text: string): Promise<void>;
@@ -39,6 +46,7 @@ export function devServerStorage(
   const failure = async (response: Response) =>
     new Error((await response.text()) || response.statusText);
   return {
+    types: devServerTypeService(),
     async read(path) {
       const response = await globalThis.fetch(url(path));
       if (response.status === 404) return undefined;

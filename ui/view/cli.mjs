@@ -4,7 +4,7 @@
 // formatter — never part of a consumer's build.
 import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
-import { basename, dirname, join, resolve } from 'node:path';
+import { basename, dirname, join, relative, resolve } from 'node:path';
 import process from 'node:process';
 import { fileURLToPath } from 'node:url';
 
@@ -19,6 +19,8 @@ import { contractOf, diffContracts } from './contract.mjs';
 import { generateView, readViewHeader, viewModulePath } from './generate.mjs';
 import { createViewCatalog } from './catalog.mjs';
 import { validateView } from './validate.mjs';
+import { createProjectTypeService, projectTypeRoot } from './project-types.mjs';
+import { hasTypeExpressions } from './type-expression.mjs';
 
 const USAGE = `Usage: kerf-ui-view <command> <document.kui.json...> [options]
 
@@ -181,10 +183,10 @@ export function run(argv) {
   try {
     for (const documentPath of documents) {
       const catalog = loadCatalog(options, documentPath);
-      const document = readJson(documentPath);
+      let document = readJson(documentPath);
       const resolveView = viewResolver(documentPath);
-      const validation = validateView(document, catalog, { resolveView });
-      if (!validation.valid) {
+      let validation = validateView(document, catalog, { resolveView });
+      if (!validation.valid && !hasTypeExpressions(document)) {
         failed = true;
         for (const item of validation.diagnostics) {
           lines.push(
@@ -193,14 +195,43 @@ export function run(argv) {
         }
         continue;
       }
+      let typeSource;
+      if (hasTypeExpressions(document)) {
+        const root = projectTypeRoot(documentPath);
+        typeSource = relative(root, resolve(documentPath))
+          .split('\\')
+          .join('/');
+        const service = createProjectTypeService(root);
+        let checked;
+        try {
+          checked = service.validateDocument(document, catalog, typeSource, {
+            resolveView,
+          });
+        } finally {
+          service.dispose();
+        }
+        if (checked.diagnostics.length) {
+          failed = true;
+          for (const item of checked.diagnostics)
+            lines.push(
+              `${documentPath}: ${item.code} ${item.path}: ${item.message}`,
+            );
+          continue;
+        }
+        document = checked.document;
+        validation = validateView(document, catalog, { resolveView });
+      }
       // Hints are advice: printed, never a failure.
-      for (const item of validation.hints)
+      for (const item of validation.hints.filter(
+        (item) => item.code !== 'KUI-H002',
+      ))
         lines.push(
           `${documentPath}: hint ${item.code} ${item.path}: ${item.message}`,
         );
       const modulePath = viewModulePath(documentPath, options.target);
       const generated = generateView(document, catalog, {
         source: basename(documentPath),
+        typeSource,
         resolveView,
         target: options.target,
         declarationsOnly: options.declarationsOnly,

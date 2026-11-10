@@ -310,3 +310,24 @@ A handler may also open an overlay. A handler that throws (or rejects) is
 logged, and the view keeps running. An action with no handler is only
 logged. The play bar's **Action log** counts the actions you haven't seen
 and lists them, newest first, with whether a handler ran.
+
+## Project TypeScript parameters
+
+The Params rail opens a text editor in a dialog. Its completions and live errors
+come from the owning project's TypeScript configuration and source exports.
+A unique exported name is saved as a portable inline `import()` type. Formatting
+runs on blur, and the dialog's NavStack explores object fields, array items and
+union members. Define new named types in application source.
+
+`devServerStorage()` includes the project compiler transport. The plugin serves
+`KERF_UI_EDITOR_TYPES_API` (`/__kerf-ui-editor/api/types`), a JSON POST endpoint
+requiring `X-Kerf-UI-Editor: 1`. Requests name a project-relative `.kui.json`
+source. Analysis requests carry `{ action: "analyze", source, text, cursor? }`;
+validation requests carry `{ action: "validate", source, document }`. The server
+uses TypeScript's Node API; compiler code never enters the browser bundle.
+
+A custom host can pass `createEditor({ typeService })`, a `ProjectTypeService`
+function that answers the same typed requests. Export of compiler-backed
+parameters waits for whole-document checking against actual generated bindings
+and defaults. An unavailable compiler or a failed check prevents that export.
+Legacy parameter descriptors continue to work without a compiler service.

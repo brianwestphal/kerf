@@ -20,6 +20,7 @@ import {
 import { childKind } from './child-kind.mjs';
 import { CSS_HELPERS, parseCssCall } from './css-grammar.mjs';
 import { ICON_NAME, isAssignable, isLiteralOf, literalOf } from './types.mjs';
+import { hasTypeExpressions, validTypeExpression } from './type-expression.mjs';
 
 export const VIEW_DOCUMENT_SCHEMA_ID = 'kerf-ui-document/v1';
 
@@ -55,6 +56,15 @@ function describe(type) {
 
 /** Validates one param or slot-input type in the document's own grammar. */
 function validateDeclaredType(ctx, type, path) {
+  if (type?.typescript !== undefined) {
+    if (!validTypeExpression(type))
+      ctx.report(
+        'KUI-V001',
+        path,
+        'invalid TypeScript expression or portable import context',
+      );
+    return;
+  }
   if (!isObject(type) || !PARAM_KINDS.has(type.kind)) {
     ctx.report(
       'KUI-V001',
@@ -132,9 +142,11 @@ function bindingType(ctx, path, scope, at) {
     );
     return undefined;
   }
+  const project = type.typescript;
   for (const segment of rest) {
     const prop = propsOf(type, {})?.find((item) => item.name === segment);
     if (!prop) {
+      if (project) return { kind: 'unknown', typescript: project };
       ctx.report(
         'KUI-V007',
         at,
@@ -144,7 +156,7 @@ function bindingType(ctx, path, scope, at) {
     }
     type = prop.type;
   }
-  return type;
+  return project ? { ...type, typescript: project } : type;
 }
 
 /**
@@ -1587,6 +1599,13 @@ export function runView(document, catalog, options, trace) {
     checkNode(ctx, document.root, '$.root', new Map(), false, undefined);
   }
   const hints = [];
+  if (hasTypeExpressions(document))
+    hints.push({
+      code: 'KUI-H002',
+      path: '$.params',
+      message:
+        'TypeScript parameter expressions require the owning project compiler; this pass checks structure only.',
+    });
   hintUnsizedLayouts(document.root, '$.root', true, hints, true);
   return { valid: diagnostics.length === 0, diagnostics, hints, actions };
 }

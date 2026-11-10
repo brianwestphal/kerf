@@ -1,377 +1,749 @@
-import { mount } from 'kerfjs';
-import { afterEach, describe, expect, it } from 'vitest';
+import type { ViewDocument, ViewType } from '@kerfjs/ui/view';
+import { mount, signal } from 'kerfjs';
+import { jsx } from 'kerfjs/jsx-runtime';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 
-import { documentParamsPanel } from '../../../src/editor/document-params-panel.js';
-import { controlOf } from '../../../src/editor/model/control-flow.js';
-import { createEditor, sample } from './kerf-catalog.js';
+import {
+  createParameterEditor,
+  PARAMETER_DIALOG,
+} from '../../../src/editor/parameter-editor.js';
+import {
+  type ProjectTypeResult,
+  type ProjectTypeService,
+} from '../../../src/editor/project-type-service.js';
+import { sample, viewCatalog } from './kerf-catalog.js';
 
-const COMPOSE = '01JB8Z1M6Q8E1X9V4S7K2R3T5D';
-let cleanup: (() => void) | undefined;
+const disposers: (() => void)[] = [];
 afterEach(() => {
-  cleanup?.();
-  cleanup = undefined;
+  while (disposers.length) disposers.pop()!();
   document.body.replaceChildren();
+  vi.restoreAllMocks();
 });
+const project = (text: string, shape: ViewType = { kind: text }): ViewType => ({
+  ...shape,
+  typescript: { text, source: 'views/inbox.kui.json', references: [] },
+});
+const deferred = <T>() => {
+  let resolve!: (value: T) => void;
+  const promise = new Promise<T>((yes) => {
+    resolve = yes;
+  });
+  return { promise, resolve };
+};
 
-function open(options: Parameters<typeof createEditor>[0] = {}) {
+function setup(
+  options: {
+    document?: ViewDocument;
+    service?: ProjectTypeService | false;
+  } = {},
+) {
   const root = document.createElement('div');
   document.body.append(root);
-  const editor = createEditor(options);
-  const stop = mount(root, editor.render);
-  const unwire = editor.wire(root);
-  cleanup = () => {
+  const doc = signal(globalThis.structuredClone(options.document ?? sample));
+  const source = signal('views/inbox.kui.json');
+  // Transport fixtures test lifecycle only; actual TS semantics have a real
+  // language-service suite in project-types.test.ts.
+  const api = vi.fn<ProjectTypeService>(async (request) =>
+    request.action === 'validate'
+      ? { document: request.document, diagnostics: [] }
+      : {
+          type: project(request.text, {
+            kind: ['number', 'boolean'].includes(request.text)
+              ? request.text
+              : 'string',
+          }),
+          diagnostics: [],
+        },
+  );
+  const commit = vi.fn((next: ViewDocument) => {
+    doc.value = next;
+  });
+  const refresh = vi.fn((next: ViewDocument) => {
+    doc.value = next;
+  });
+  const controller = createParameterEditor({
+    document: doc,
+    source: () => source.value,
+    catalog: viewCatalog,
+    commit,
+    refresh,
+    service: options.service === false ? undefined : (options.service ?? api),
+  });
+  const stop = mount(root, () =>
+    jsx('div', { children: [controller.panel(), controller.dialog()] }),
+  );
+  const unwire = controller.wire(root);
+  const dispose = () => {
+    const dialog = root.querySelector<HTMLDialogElement>(
+      `#${PARAMETER_DIALOG}`,
+    )!;
+    if (dialog.open) dialog.close();
     unwire();
     stop();
+    root.remove();
   };
-  root
-    .querySelector<HTMLElement>(
-      '[role="tab"][data-tab-id="editor-document-areas-params"]',
-    )!
-    .click();
-  return { root, editor };
-}
-
-function change(field: HTMLElement, value: string | boolean) {
-  if (field.localName === 'kui-select') {
-    field.setAttribute('value', String(value));
-    Object.defineProperty(field, 'value', {
-      configurable: true,
-      value: String(value),
-    });
-  } else {
-    const input = field.querySelector<HTMLInputElement>('input')!;
-    if (typeof value === 'boolean') input.checked = value;
-    else input.value = value;
-  }
-  field.dispatchEvent(new Event('change', { bubbles: true }));
-}
-
-const action = (root: HTMLElement, name: string, scope?: HTMLElement) =>
-  (scope ?? root)
-    .querySelector<HTMLElement>(`[data-action="${name}"]`)!
-    .click();
-
-const row = (root: HTMLElement, name: string) =>
-  root.querySelector<HTMLElement>(`[data-editor-param-row="${name}"]`)!;
-
-const field = (root: HTMLElement, name: string, part: string, index?: number) =>
-  [
-    ...root.querySelectorAll<HTMLElement>('[data-editor-document-param-edit]'),
-  ].find((element) => {
-    const at = JSON.parse(element.dataset.editorDocumentParamEdit!);
-    return at.name === name && at.part === part && at.index === index;
-  })!;
-
-function add(root: HTMLElement, name: string, kind: string) {
-  change(
-    root.querySelector<HTMLElement>('[data-editor-document-param-new="name"]')!,
-    name,
-  );
-  change(
-    root.querySelector<HTMLElement>('[data-editor-document-param-new="type"]')!,
-    kind,
-  );
-  action(root, 'editor-create-document-param');
-}
-
-function sendEdit(root: HTMLElement, at: object, value: string) {
-  const input = document.createElement('input');
-  input.setAttribute('data-editor-document-param-edit', JSON.stringify(at));
-  root.append(input);
-  input.value = value;
-  input.dispatchEvent(new Event('change', { bubbles: true }));
-  input.remove();
-}
-
-function sendAction(
-  root: HTMLElement,
-  name: string,
-  attrs: Record<string, string>,
-) {
-  const button = document.createElement('button');
-  button.setAttribute('data-action', name);
-  for (const [key, value] of Object.entries(attrs))
-    button.setAttribute(key, value);
-  root.append(button);
-  button.click();
-  button.remove();
-}
-
-describe('document Params authoring', () => {
-  it('creates a boolean for Show, edits its default, renames references, and undoes', () => {
-    const { root, editor } = open();
-    add(root, 'showDetails', 'boolean');
-    expect(editor.document.value.params?.showDetails).toEqual({
-      type: { kind: 'boolean' },
-    });
-    change(field(root, 'showDetails', 'defaultEnabled'), true);
-    change(field(root, 'showDetails', 'default'), 'true');
-    expect(editor.document.value.params?.showDetails?.default).toBe(true);
-
-    editor.selection.value = { kind: 'node', id: COMPOSE };
-    const condition = root.querySelector<HTMLElement>(
-      '[data-editor-control="condition"]',
+  disposers.push(dispose);
+  const dialog = root.querySelector<HTMLDialogElement>(`#${PARAMETER_DIALOG}`)!;
+  const button = (action: string) =>
+    root.querySelector<HTMLButtonElement>(
+      `[data-action="editor-parameter-${action}"]`,
     )!;
-    expect(condition.innerHTML).toContain('Param showDetails');
-    change(condition, JSON.stringify({ $param: 'showDetails' }));
-    expect(controlOf(editor.document.value, COMPOSE)?.condition).toEqual({
-      $param: 'showDetails',
-    });
-    change(field(root, 'showDetails', 'name'), 'showMore');
-    expect(controlOf(editor.document.value, COMPOSE)?.condition).toEqual({
-      $param: 'showMore',
-    });
-    expect(
-      action(root, 'editor-remove-document-param', row(root, 'showMore')),
-    ).toBeUndefined();
-    expect(editor.document.value.params?.showMore).toBeDefined();
-    action(root, 'editor-undo');
-    expect(editor.document.value.params?.showDetails).toBeDefined();
-    action(root, 'editor-redo');
-    expect(editor.document.value.params?.showMore).toBeDefined();
-  });
-
-  it('builds a list item schema for Repeat for each and rejects an invalid default', () => {
-    const { root, editor } = open();
-    add(root, 'cards', 'array');
-    action(root, 'editor-add-document-param-field', row(root, 'cards'));
-    change(field(root, 'cards', 'fieldName', 0), 'id');
-    action(root, 'editor-add-document-param-field', row(root, 'cards'));
-    change(field(root, 'cards', 'fieldName', 1), 'label');
-    expect(editor.document.value.params?.cards?.type.items).toEqual({
-      kind: 'object',
-      props: [
-        { name: 'id', type: { kind: 'string' }, required: true },
-        { name: 'label', type: { kind: 'string' }, required: true },
-      ],
-    });
-    change(field(root, 'cards', 'defaultEnabled'), true);
-    change(field(root, 'cards', 'default'), '[{"id":1}]');
-    expect(row(root, 'cards').textContent).toContain(
-      'the default is not a valid array',
-    );
-
-    editor.selection.value = { kind: 'node', id: COMPOSE };
-    const repeat = root.querySelector<HTMLElement>(
-      '[data-editor-control="repeat"]',
+  const field = (part: string) =>
+    root.querySelector<HTMLInputElement | HTMLTextAreaElement>(
+      `[data-parameter-draft="${part}"] input,[data-parameter-draft="${part}"] textarea`,
     )!;
-    expect(repeat.innerHTML).toContain('Param cards');
-    change(repeat, JSON.stringify({ $param: 'cards' }));
-    expect(controlOf(editor.document.value, COMPOSE)?.repeat?.source).toEqual({
-      $param: 'cards',
-    });
-    expect(row(root, 'cards').textContent).toContain(
-      'Remove this parameter’s bindings before deleting it.',
+  const input = (part: string, value: string) => {
+    const node = field(part);
+    node.value = value;
+    node.dispatchEvent(new Event('input', { bubbles: true }));
+  };
+  const open = async (name?: string) => {
+    root
+      .querySelector<HTMLElement>(
+        name ? `[data-editor-param-row="${name}"]` : '[data-editor-param-add]',
+      )!
+      .click();
+    await vi.waitFor(() =>
+      expect(dialog.textContent).not.toContain('Checking type…'),
     );
-  });
+  };
+  const ready = async () => {
+    await vi.waitFor(() => expect(button('save').disabled).toBe(false));
+  };
+  const save = async () => {
+    await ready();
+    button('save').click();
+    await vi.waitFor(() => expect(commit).toHaveBeenCalled());
+  };
+  return {
+    root,
+    doc,
+    source,
+    api,
+    commit,
+    refresh,
+    controller,
+    dialog,
+    button,
+    field,
+    input,
+    open,
+    ready,
+    save,
+    dispose,
+  };
+}
 
-  it('edits numeric defaults and reports malformed input without losing the document', () => {
-    const { root, editor } = open();
-    add(root, 'count', 'number');
-    change(field(root, 'count', 'defaultEnabled'), true);
-    change(field(root, 'count', 'default'), 'not a number');
-    expect(row(root, 'count').textContent).toContain('Enter a finite number.');
-    expect(editor.document.value.params?.count?.default).toBe(1);
-    change(field(root, 'count', 'default'), '12');
-    expect(editor.document.value.params?.count?.default).toBe(12);
-    change(field(root, 'count', 'defaultEnabled'), false);
-    expect(editor.document.value.params?.count?.default).toBeUndefined();
-    action(root, 'editor-remove-document-param', row(root, 'count'));
-    expect(editor.document.value.params?.count).toBeUndefined();
-  });
-
-  it('edits choice and literal types with validator feedback', () => {
-    const { root, editor } = open();
-    add(root, 'choice', 'enum');
-    change(field(root, 'choice', 'enumValues'), 'broken');
-    expect(row(root, 'choice').textContent).toContain(
-      'Enter a JSON array of choices.',
-    );
-    change(field(root, 'choice', 'enumValues'), '[]');
-    expect(row(root, 'choice').textContent).toContain(
-      'Enter a non-empty JSON array of choices.',
-    );
-    change(field(root, 'choice', 'enumValues'), '["red","blue"]');
-    expect(editor.document.value.params?.choice?.type).toEqual({
-      kind: 'enum',
-      values: ['red', 'blue'],
-    });
-    change(field(root, 'choice', 'defaultEnabled'), true);
-    change(field(root, 'choice', 'default'), 'not json');
-    expect(row(root, 'choice').textContent).toContain(
-      'Enter a valid JSON value.',
-    );
-    change(field(root, 'choice', 'default'), '"blue"');
-    expect(editor.document.value.params?.choice?.default).toBe('blue');
-    change(field(root, 'choice', 'defaultEnabled'), false);
-    change(field(root, 'choice', 'type'), 'literal');
-    change(field(root, 'choice', 'literalValue'), 'broken');
-    expect(row(root, 'choice').textContent).toContain(
-      'Enter a JSON string, number, or boolean.',
-    );
-    change(field(root, 'choice', 'literalValue'), '{}');
-    expect(row(root, 'choice').textContent).toContain(
-      'Enter a JSON string, number, or boolean.',
-    );
-    change(field(root, 'choice', 'literalValue'), '"blue"');
-    expect(editor.document.value.params?.choice?.type).toEqual({
-      kind: 'literal',
-      value: 'blue',
-    });
-  });
-
-  it('changes item and field schemas, refusing duplicate names and invalid edits', () => {
-    const { root, editor } = open();
-    add(root, 'entries', 'array');
-    change(field(root, 'entries', 'itemType'), 'string');
-    expect(editor.document.value.params?.entries?.type.items).toEqual({
-      kind: 'string',
-    });
-    change(field(root, 'entries', 'itemType'), 'object');
-    action(root, 'editor-add-document-param-field', row(root, 'entries'));
-    action(root, 'editor-add-document-param-field', row(root, 'entries'));
-    change(field(root, 'entries', 'fieldName', 0), 'id');
-    change(field(root, 'entries', 'fieldName', 1), 'id');
-    expect(row(root, 'entries').textContent).toContain(
-      'Field names must be unique camelCase identifiers.',
-    );
-    change(field(root, 'entries', 'fieldName', 1), 'label');
-    change(field(root, 'entries', 'fieldType', 1), 'number');
-    change(field(root, 'entries', 'fieldRequired', 1), false);
-    expect(editor.document.value.params?.entries?.type.items).toEqual({
-      kind: 'object',
-      props: [
-        { name: 'id', type: { kind: 'string' }, required: true },
-        { name: 'label', type: { kind: 'number' }, required: false },
-      ],
-    });
-    action(root, 'editor-remove-document-param-field', row(root, 'entries'));
+describe('compact parameter dialog', () => {
+  it('keeps rail rows compact and edits in a modal NavStack', async () => {
+    const f = setup();
     expect(
-      editor.document.value.params?.entries?.type.items?.props,
-    ).toHaveLength(1);
+      f.root.querySelector('[data-editor-document-params] input'),
+    ).toBeNull();
+    expect(
+      f.root.querySelector('[data-editor-param-row="title"]')!.textContent,
+    ).toContain('string');
+    await f.open('title');
+    expect(f.dialog.open).toBe(true);
+    expect(f.field('name').value).toBe('title');
+    expect(f.field('type').value).toBe('string');
+    expect(f.dialog.querySelector('[data-nav-stack-id]')).not.toBeNull();
+    expect(f.dialog.textContent).not.toContain('Item fields');
   });
-
-  it('reports invalid names and edits object fields without rewriting valid inputs', () => {
-    const { root, editor } = open();
-    add(root, 'Bad Name', 'string');
-    expect(root.textContent).toContain('camelCase identifier');
-    add(root, 'title', 'string');
-    expect(root.textContent).toContain('already a param named title');
-    add(root, 'record', 'object');
-    change(field(root, 'record', 'name'), 'title');
-    expect(row(root, 'record').textContent).toContain(
-      'already a param named title',
-    );
-    action(root, 'editor-add-document-param-field', row(root, 'record'));
-    change(field(root, 'record', 'fieldName', 0), 'Bad Name');
-    expect(row(root, 'record').textContent).toContain('unique camelCase');
-    change(field(root, 'record', 'fieldName', 0), 'id');
-    change(field(root, 'record', 'fieldType', 0), 'number');
-    change(field(root, 'record', 'fieldRequired', 0), false);
-    expect(editor.document.value.params?.record?.type.props).toEqual([
-      { name: 'id', type: { kind: 'number' }, required: false },
-    ]);
-    action(root, 'editor-remove-document-param-field', row(root, 'record'));
-    expect(editor.document.value.params?.record?.type.props).toEqual([]);
-    change(field(root, 'showEmpty', 'type'), 'string');
-    expect(row(root, 'showEmpty').textContent).toContain(
-      'the default is not a valid string',
-    );
+  it('creates a typed parameter/default in one document edit', async () => {
+    const f = setup();
+    await f.open();
+    f.input('name', 'showDetails');
+    f.input('type', 'boolean');
+    await f.ready();
+    const toggle = f.field('hasDefault') as HTMLInputElement;
+    toggle.checked = true;
+    toggle.dispatchEvent(new Event('change', { bubbles: true }));
+    f.input('default', 'true');
+    await f.save();
+    expect(f.doc.value.params?.showDetails).toMatchObject({
+      type: { kind: 'boolean', typescript: { text: 'boolean' } },
+      default: true,
+    });
+    expect(f.commit).toHaveBeenCalledTimes(1);
   });
-
-  it('ignores stale edits and prevents invalid defaults for application props', () => {
-    const { root, editor } = open({
+  it('renames references and preserves unrelated definitions', async () => {
+    const f = setup();
+    await f.open('title');
+    f.input('name', 'heading');
+    f.input('default', '"Subject"');
+    await f.save();
+    expect(f.doc.value.params?.title).toBeUndefined();
+    expect(f.doc.value.params?.heading?.default).toBe('Subject');
+    expect(JSON.stringify(f.doc.value.root)).toContain('"$param":"heading"');
+  });
+  it('removes an unused parameter and refuses a referenced one', async () => {
+    const f = setup({
+      document: {
+        ...sample,
+        params: { ...sample.params, unused: { type: { kind: 'number' } } },
+      },
+    });
+    await f.open('unused');
+    f.button('remove').click();
+    expect(f.doc.value.params?.unused).toBeUndefined();
+    await f.open('title');
+    expect(f.button('remove').disabled).toBe(true);
+    f.button('remove').disabled = false;
+    f.button('remove').click();
+    expect(f.doc.value.params?.title).toBeDefined();
+    expect(f.dialog.textContent).toContain('Remove its bindings first');
+  });
+  it('rejects invalid and duplicate names without mutation', async () => {
+    const f = setup();
+    await f.open();
+    f.input('name', 'Bad Name');
+    f.button('save').click();
+    expect(f.dialog.textContent).toContain('camelCase');
+    f.input('name', 'title');
+    f.button('save').click();
+    expect(f.dialog.textContent).toContain('already a param');
+    expect(f.commit).not.toHaveBeenCalled();
+  });
+  it('retains refused default drafts for correction', async () => {
+    const f = setup();
+    await f.open('title');
+    f.input('default', 'not json');
+    f.button('save').click();
+    expect(f.dialog.textContent).toContain('valid JSON');
+    f.input('default', '123');
+    f.api.mockImplementation(async (request) =>
+      request.action === 'validate'
+        ? { diagnostics: [{ message: 'number is not assignable to string' }] }
+        : { type: project(request.text), diagnostics: [] },
+    );
+    f.button('save').click();
+    await vi.waitFor(() =>
+      expect(f.dialog.textContent).toContain('not assignable'),
+    );
+    expect(f.field('default').value).toBe('123');
+    expect(f.commit).not.toHaveBeenCalled();
+  });
+  it('retains optionality and removes defaults explicitly', async () => {
+    const f = setup({
       document: {
         ...sample,
         params: {
           ...sample.params,
-          appValue: {
+          optionalValue: { type: { kind: 'string' }, optional: true },
+        },
+      },
+    });
+    await f.open('optionalValue');
+    await f.save();
+    expect(f.doc.value.params?.optionalValue?.optional).toBe(true);
+    f.commit.mockClear();
+    await f.open('title');
+    const toggle = f.field('hasDefault') as HTMLInputElement;
+    toggle.checked = false;
+    toggle.dispatchEvent(new Event('change', { bubbles: true }));
+    await f.save();
+    expect(f.doc.value.params?.title).not.toHaveProperty('default');
+  });
+  it('traverses array, object and union members in the dialog stack', async () => {
+    const shape: ViewType = {
+      kind: 'array',
+      items: {
+        kind: 'object',
+        props: [
+          {
+            name: 'choice',
+            required: true,
             type: {
-              kind: 'prop',
-              component: '@kerfjs/ui:select',
-              prop: 'renderSelected',
+              kind: 'union',
+              members: [{ kind: 'string' }, { kind: 'number' }],
             },
           },
-          bareObject: { type: { kind: 'object' } },
-        },
+        ],
       },
-    });
-    sendEdit(root, { name: 'missing', part: 'type' }, 'boolean');
-    sendEdit(root, { name: 'title', part: 'itemType' }, 'string');
-    sendEdit(root, { name: 'title', part: 'fieldName', index: 0 }, 'x');
-    sendEdit(root, { name: 'items', part: 'fieldName', index: 99 }, 'x');
-    sendEdit(root, { name: 'bareObject', part: 'fieldName', index: 0 }, 'x');
-    sendEdit(root, { name: 'appValue', part: 'defaultEnabled' }, 'true');
-    expect(row(root, 'appValue').textContent).toContain(
-      'no editable example default',
-    );
-    sendAction(root, 'editor-remove-document-param', {});
-    sendAction(root, 'editor-remove-document-param', {
-      'data-editor-document-param-remove': 'title',
-    });
-    expect(row(root, 'title').textContent).toContain(
-      'Remove its bindings first',
-    );
-    sendAction(root, 'editor-add-document-param-field', {});
-    sendAction(root, 'editor-add-document-param-field', {
-      'data-editor-document-param-field': JSON.stringify({ name: 'missing' }),
-    });
-    sendAction(root, 'editor-add-document-param-field', {
-      'data-editor-document-param-field': JSON.stringify({ name: 'title' }),
-    });
-    sendAction(root, 'editor-add-document-param-field', {
-      'data-editor-document-param-field': JSON.stringify({
-        name: 'bareObject',
-      }),
-    });
-    sendAction(root, 'editor-remove-document-param-field', {});
-    sendAction(root, 'editor-remove-document-param-field', {
-      'data-editor-document-param-field': JSON.stringify({
-        name: 'missing',
-        index: 0,
-      }),
-    });
-    sendAction(root, 'editor-remove-document-param-field', {
-      'data-editor-document-param-field': JSON.stringify({
-        name: 'items',
-        index: 99,
-      }),
-    });
-    add(root, 'body', 'content');
-    change(field(root, 'body', 'defaultEnabled'), true);
-    expect(row(root, 'body').textContent).toContain(
-      'the default is not a valid content',
-    );
-    expect(editor.document.value.params?.body?.default).toBeUndefined();
-    expect(editor.document.value.params?.appValue?.default).toBeUndefined();
-    change(field(root, 'title', 'default'), 'Inbox renamed');
-    expect(editor.document.value.params?.title?.default).toBe('Inbox renamed');
+    };
+    const api: ProjectTypeService = async (request) =>
+      request.action === 'analyze'
+        ? { type: project(request.text, shape), diagnostics: [] }
+        : { document: request.document, diagnostics: [] };
+    const f = setup({ service: api });
+    await f.open();
+    const navigate = (path: string[]) =>
+      f.dialog
+        .querySelector<HTMLElement>(
+          `[data-action="editor-parameter-navigate"][data-item-id='${JSON.stringify(path)}']`,
+        )!
+        .click();
+    navigate(['items']);
+    navigate(['items', 'field:0']);
+    navigate(['items', 'field:0', 'member:1']);
+    expect(
+      f.dialog.querySelector<HTMLTextAreaElement>(
+        '[data-nav-active="true"] textarea',
+      )!.value,
+    ).toBe('number');
+    expect(
+      f.dialog.querySelector<HTMLTextAreaElement>(
+        '[data-nav-active="true"] textarea',
+      )!.readOnly,
+    ).toBe(true);
+    f.dialog.querySelector<HTMLElement>('[data-nav-back]')!.click();
+    expect(
+      f.dialog.querySelector('[data-nav-active="true"]')!.textContent,
+    ).toContain('Member 1');
   });
+});
 
-  it('renders incomplete imported schemas so the author can repair them', () => {
-    const root = document.createElement('div');
-    document.body.append(root);
-    const incomplete = {
-      ...sample,
-      params: {
-        bareObject: { type: { kind: 'object' } },
-        bareArray: { type: { kind: 'array' } },
-        bareEnum: {
-          type: { kind: 'enum', default: undefined },
-          default: undefined,
+describe('live TypeScript drafts', () => {
+  it('reports compiler errors and blocks invalid saves', async () => {
+    const f = setup();
+    await f.open();
+    f.api.mockResolvedValue({
+      diagnostics: [
+        { message: 'Cannot find name MissingType', start: 0, length: 11 },
+      ],
+    });
+    f.input('type', 'MissingType');
+    await vi.waitFor(() =>
+      expect(f.dialog.textContent).toContain('Cannot find name'),
+    );
+    expect(f.button('save').disabled).toBe(true);
+  });
+  it('ignores out-of-order responses and discarded drafts', async () => {
+    const f = setup();
+    await f.open();
+    const first = deferred<ProjectTypeResult>();
+    const second = deferred<ProjectTypeResult>();
+    f.api
+      .mockReturnValueOnce(first.promise)
+      .mockReturnValueOnce(second.promise);
+    f.input('type', 'number');
+    await vi.waitFor(() =>
+      expect(f.api.mock.calls.at(-1)![0]).toMatchObject({ text: 'number' }),
+    );
+    f.input('type', 'boolean');
+    await vi.waitFor(() =>
+      expect(f.api.mock.calls.at(-1)![0]).toMatchObject({ text: 'boolean' }),
+    );
+    second.resolve({ type: project('boolean'), diagnostics: [] });
+    await f.ready();
+    first.resolve({ diagnostics: [{ message: 'Old failure' }] });
+    await Promise.resolve();
+    expect(f.field('type').value).toBe('boolean');
+    expect(f.dialog.textContent).not.toContain('Old failure');
+    const late = deferred<ProjectTypeResult>();
+    f.api.mockReturnValueOnce(late.promise);
+    f.input('type', 'number');
+    await vi.waitFor(() =>
+      expect(f.api.mock.calls.at(-1)![0]).toMatchObject({ text: 'number' }),
+    );
+    f.dialog.close();
+    late.resolve({ diagnostics: [{ message: 'Discarded failure' }] });
+    await Promise.resolve();
+    expect(f.root.textContent).not.toContain('Discarded failure');
+  });
+  it('inserts host completions and makes them keyboard reachable', async () => {
+    const f = setup();
+    await f.open();
+    f.api.mockImplementation(async (request) =>
+      request.action === 'analyze'
+        ? {
+            type: project(request.text),
+            diagnostics: [],
+            suggestions: [
+              {
+                name: 'MyType',
+                source: './src/types.js',
+                text: 'Array<MyType>',
+                cursor: 12,
+              },
+            ],
+          }
+        : { document: request.document, diagnostics: [] },
+    );
+    f.input('type', 'Array<My');
+    await vi.waitFor(() =>
+      expect(f.dialog.querySelector('[data-type-suggestion]')).not.toBeNull(),
+    );
+    f.field('type').dispatchEvent(
+      new KeyboardEvent('keydown', { key: 'ArrowDown', bubbles: true }),
+    );
+    expect(document.activeElement).toBe(
+      f.dialog.querySelector('[data-type-suggestion]'),
+    );
+    f.dialog.querySelector<HTMLElement>('[data-type-suggestion]')!.click();
+    expect(f.field('type').value).toBe('Array<MyType>');
+    expect(f.field('type').selectionStart).toBe(12);
+    await vi.waitFor(() =>
+      expect(f.dialog.querySelector('[data-type-suggestion]')).not.toBeNull(),
+    );
+    const escape = new KeyboardEvent('keydown', {
+      key: 'Escape',
+      bubbles: true,
+      cancelable: true,
+    });
+    f.field('type').dispatchEvent(escape);
+    expect(escape.defaultPrevented).toBe(true);
+    expect(f.dialog.querySelector('[data-type-suggestion]')).toBeNull();
+  });
+  it('formats on blur without a second blocking request', async () => {
+    const f = setup();
+    await f.open();
+    f.api.mockResolvedValue({
+      type: project('Array<string | number>', {
+        kind: 'array',
+        items: { kind: 'string' },
+      }),
+      diagnostics: [],
+    });
+    f.input('type', 'Array<string|number>');
+    await f.ready();
+    f.field('type').dispatchEvent(
+      new FocusEvent('focusout', { bubbles: true }),
+    );
+    expect(f.field('type').value).toBe('Array<string | number>');
+    expect(f.button('save').disabled).toBe(false);
+  });
+  it('finishes a pending type draft with compiler formatting when focus leaves', async () => {
+    const f = setup();
+    await f.open();
+    f.api.mockResolvedValue({
+      type: project('Array<string | number>', {
+        kind: 'array',
+        items: { kind: 'string' },
+      }),
+      diagnostics: [],
+    });
+    f.input('type', 'Array<string|number>');
+    f.field('type').dispatchEvent(
+      new FocusEvent('focusout', { bubbles: true }),
+    );
+    await f.ready();
+    expect(f.field('type').value).toBe('Array<string | number>');
+  });
+  it('keeps failed network drafts editable', async () => {
+    const f = setup();
+    await f.open();
+    f.api.mockRejectedValue(new Error('Project unavailable'));
+    f.input('type', 'number');
+    await vi.waitFor(() =>
+      expect(f.dialog.textContent).toContain('Project unavailable'),
+    );
+    expect(f.field('type').value).toBe('number');
+    f.field('type').dispatchEvent(
+      new FocusEvent('focusout', { bubbles: true }),
+    );
+    await vi.waitFor(() =>
+      expect(f.dialog.textContent).toContain('Project unavailable'),
+    );
+  });
+  it('refuses stale saves after external edits or closing', async () => {
+    const f = setup();
+    await f.open();
+    f.input('name', 'fresh');
+    const pending = deferred<ProjectTypeResult>();
+    f.api.mockReturnValueOnce(pending.promise);
+    f.button('save').click();
+    f.doc.value = { ...f.doc.value, name: 'Changed' };
+    pending.resolve({ document: f.doc.value, diagnostics: [] });
+    await vi.waitFor(() =>
+      expect(f.dialog.textContent).toContain('document changed'),
+    );
+    expect(f.commit).not.toHaveBeenCalled();
+    await f.open();
+    f.input('name', 'fresh');
+    const closed = deferred<ProjectTypeResult>();
+    f.api.mockReturnValueOnce(closed.promise);
+    f.button('save').click();
+    f.dialog.close();
+    closed.resolve({ document: f.doc.value, diagnostics: [] });
+    await Promise.resolve();
+    expect(f.commit).not.toHaveBeenCalled();
+  });
+  it('reports save transport errors and cancels pending input on disposal', async () => {
+    const f = setup();
+    await f.open();
+    f.input('name', 'fresh');
+    f.api.mockRejectedValueOnce('offline');
+    f.button('save').click();
+    await vi.waitFor(() => expect(f.dialog.textContent).toContain('offline'));
+    f.input('type', 'boolean');
+    f.dispose();
+    expect(() => f.dispose()).not.toThrow();
+    disposers.pop();
+  });
+});
+
+describe('draft boundary cases', () => {
+  it('renders authored display text and repairs an incomplete legacy type', async () => {
+    const f = setup({
+      document: {
+        ...sample,
+        params: {
+          display: { type: { kind: 'unknown', text: 'ExistingProjectType' } },
+          broken: { type: { kind: 'array' } },
         },
       },
-    } as never;
-    const stop = mount(root, () =>
-      documentParamsPanel(incomplete, '', 'string', {}),
+    });
+    expect(f.root.textContent).toContain('ExistingProjectType');
+    expect(
+      f.root.querySelector('[data-editor-param-row="broken"]')!.textContent,
+    ).toContain('unknown[]');
+    await f.open('broken');
+    f.input('type', 'string');
+    await f.save();
+    expect(f.doc.value.params!.broken.type.kind).toBe('string');
+  });
+  it('ignores closed form events and preserves completion through focus transfer', async () => {
+    const f = setup();
+    // A queued submit delivered after closing must not resurrect a draft.
+    f.button('save').disabled = false;
+    f.button('save').dispatchEvent(new MouseEvent('click', { bubbles: true }));
+    await f.open();
+    f.api.mockResolvedValue({
+      type: project('string'),
+      diagnostics: [],
+      suggestions: [{ name: 'string', text: 'string', cursor: 6 }],
+    });
+    f.input('type', 'str');
+    await vi.waitFor(() =>
+      expect(f.root.querySelector('[data-type-suggestion]')).not.toBeNull(),
     );
-    cleanup = stop;
-    expect(row(root, 'bareObject').textContent).toContain('Add field');
-    expect(row(root, 'bareArray').textContent).toContain('Item type');
-    expect(row(root, 'bareEnum').textContent).toContain('Choices');
-    stop();
-    const empty = { ...sample, params: undefined };
-    cleanup = mount(root, () => documentParamsPanel(empty, '', 'string', {}));
-    expect(root.textContent).toContain('Add parameter');
+    const suggestion = f.root.querySelector<HTMLElement>(
+      '[data-type-suggestion]',
+    )!;
+    f.field('type').dispatchEvent(
+      new FocusEvent('focusout', { bubbles: true, relatedTarget: suggestion }),
+    );
+    expect(f.root.querySelector('[data-type-suggestion]')).not.toBeNull();
+    suggestion.click();
+    await f.ready();
+    f.controller.close();
+    expect(f.commit).not.toHaveBeenCalled();
+  });
+  it('retains the parameter when a changed legacy type breaks an existing binding', async () => {
+    const f = setup();
+    await f.open('title');
+    f.api.mockResolvedValue({ type: { kind: 'number' }, diagnostics: [] });
+    f.input('type', 'number');
+    await f.ready();
+    f.button('save').click();
+    await vi.waitFor(() =>
+      expect(f.dialog.textContent).toContain('not a valid number'),
+    );
+    expect(f.commit).not.toHaveBeenCalled();
+  });
+});
+
+describe('project context changes during drafts', () => {
+  it('ignores a type result from the previous document path', async () => {
+    let resolve!: (value: ProjectTypeResult) => void;
+    const pending = new Promise<ProjectTypeResult>((yes) => {
+      resolve = yes;
+    });
+    const f = setup();
+    await f.open();
+    f.api.mockReturnValueOnce(pending);
+    f.input('type', 'OldProjectType');
+    await vi.waitFor(() =>
+      expect(f.api).toHaveBeenCalledWith(
+        expect.objectContaining({ text: 'OldProjectType' }),
+      ),
+    );
+    f.source.value = 'moved/inbox.kui.json';
+    resolve({ type: project('OldProjectType'), diagnostics: [] });
+    await Promise.resolve();
+    expect(f.button('save').disabled).toBe(true);
+  });
+  it('ignores a closed request failure and handles thrown non-Error values', async () => {
+    let reject!: (error: unknown) => void;
+    const pending = new Promise<ProjectTypeResult>((_yes, no) => {
+      reject = no;
+    });
+    const f = setup();
+    await f.open();
+    f.api.mockReturnValueOnce(pending);
+    f.input('type', 'ProjectType');
+    await vi.waitFor(() =>
+      expect(f.api).toHaveBeenCalledWith(
+        expect.objectContaining({ text: 'ProjectType' }),
+      ),
+    );
+    f.controller.close();
+    reject('old failure');
+    await Promise.resolve();
+    await f.open();
+    f.api.mockRejectedValueOnce('offline');
+    f.input('type', 'number');
+    await vi.waitFor(() => expect(f.dialog.textContent).toContain('offline'));
+  });
+  it('supports empty documents and host validators that leave the document unchanged', async () => {
+    const f = setup({ document: { ...sample, params: undefined } });
+    expect(f.root.querySelectorAll('[data-editor-param-row]')).toHaveLength(0);
+    await f.open();
+    f.input('name', 'fresh');
+    f.api.mockResolvedValueOnce({ diagnostics: [] });
+    await f.save();
+    expect(f.doc.value.params?.fresh).toBeDefined();
+    f.api.mockResolvedValueOnce({ diagnostics: [] });
+    expect(await f.controller.validateNow()).toBe(f.doc.peek());
+  });
+});
+
+describe('compiler projection lifecycle', () => {
+  it('accepts opaque object and union projections and discards stale navigation', async () => {
+    const f = setup({
+      document: {
+        ...sample,
+        params: {
+          list: {
+            type: project('ReadonlyArray<string>', {
+              kind: 'array',
+              items: { kind: 'string' },
+            }),
+          },
+        },
+      },
+    });
+    const pending = deferred<ProjectTypeResult>();
+    f.api.mockReturnValueOnce(pending.promise);
+    f.root
+      .querySelector<HTMLElement>('[data-editor-param-row="list"]')!
+      .click();
+    f.root
+      .querySelector<HTMLElement>('[data-action="editor-parameter-navigate"]')!
+      .click();
+    pending.resolve({
+      type: project('OpaqueObject', { kind: 'object' }),
+      diagnostics: [],
+    });
+    await f.ready();
+    expect(
+      f.root.querySelector('[data-nav-stack-id]')!.getAttribute('data-depth'),
+    ).toBe('1');
+    f.api.mockResolvedValueOnce({
+      type: project('OpaqueUnion', { kind: 'union' }),
+      diagnostics: [],
+    });
+    f.input('type', 'OpaqueUnion');
+    await f.ready();
+    expect(
+      f.root.querySelector('[data-nav-stack-id]')!.getAttribute('data-depth'),
+    ).toBe('1');
+  });
+  it('ignores failed validation after disposal and failed saves after cancellation', async () => {
+    let reject!: (error: unknown) => void;
+    const pending = new Promise<ProjectTypeResult>((_yes, no) => {
+      reject = no;
+    });
+    const f = setup();
+    await f.open();
+    f.input('name', 'fresh');
+    f.api.mockReturnValueOnce(pending);
+    f.button('save').click();
+    f.controller.close();
+    reject(new Error('old failure'));
+    await Promise.resolve();
+    await f.open();
+    f.input('name', 'fresh');
+    f.api.mockRejectedValueOnce(new Error('save failed'));
+    f.button('save').click();
+    await vi.waitFor(() =>
+      expect(f.dialog.textContent).toContain('save failed'),
+    );
+    f.controller.close();
+    f.doc.value = { ...sample, params: { title: { type: project('string') } } };
+    await vi.waitFor(() => expect(f.controller.checking.value).toBe(false));
+    let fail!: (error: unknown) => void;
+    const late = new Promise<ProjectTypeResult>((_yes, no) => {
+      fail = no;
+    });
+    f.api.mockReturnValueOnce(late);
+    const result = f.controller.validateNow();
+    f.dispose();
+    disposers.pop();
+    fail(new Error('disposed failure'));
+    expect(await result).toBeUndefined();
+  });
+});
+
+describe('whole-document semantic validation', () => {
+  const typed = (): ViewDocument => ({
+    ...sample,
+    params: {
+      ...sample.params,
+      title: { type: project('string'), default: 'Inbox' },
+    },
+  });
+  it('reports project errors, refreshes projections and rechecks on focus', async () => {
+    const f = setup({ document: typed() });
+    await vi.waitFor(() => expect(f.controller.checking.value).toBe(false));
+    f.api.mockResolvedValueOnce({
+      diagnostics: [
+        {
+          code: 'KUI-V018',
+          path: '$.params.title.type',
+          message: 'Binding mismatch',
+        } as never,
+      ],
+    });
+    await f.controller.validateNow();
+    expect(f.controller.semanticProblems.value[0].message).toBe(
+      'Binding mismatch',
+    );
+    const next = {
+      ...f.doc.value,
+      params: {
+        ...f.doc.value.params,
+        refreshed: { type: { kind: 'boolean' } },
+      },
+    };
+    f.api.mockResolvedValueOnce({ document: next, diagnostics: [] });
+    window.dispatchEvent(new Event('focus'));
+    await vi.waitFor(() => expect(f.refresh).toHaveBeenCalled());
+    expect(f.controller.semanticProblems.value).toEqual([]);
+  });
+  it('ignores validations for previous sources and disposed controllers', async () => {
+    const f = setup({ document: typed() });
+    await vi.waitFor(() => expect(f.controller.checking.value).toBe(false));
+    const stale = deferred<ProjectTypeResult>();
+    f.api.mockReturnValueOnce(stale.promise);
+    const result = f.controller.validateNow();
+    f.source.value = 'other/inbox.kui.json';
+    stale.resolve({ diagnostics: [{ message: 'Stale source' }] });
+    expect(await result).toBeUndefined();
+    expect(
+      f.controller.semanticProblems.value.map((item) => item.message),
+    ).not.toContain('Stale source');
+    const late = deferred<ProjectTypeResult>();
+    f.api.mockReturnValueOnce(late.promise);
+    const pending = f.controller.validateNow();
+    f.dispose();
+    disposers.pop();
+    late.resolve({ diagnostics: [] });
+    expect(await pending).toBeUndefined();
+  });
+  it('keeps compiler unavailability visible instead of accepting a cache as proof', async () => {
+    const f = setup({ document: typed(), service: false });
+    expect(await f.controller.validateNow()).toBeUndefined();
+    expect(f.controller.semanticProblems.value[0].message).toContain(
+      'unavailable',
+    );
+    await f.open('title');
+    expect(f.dialog.textContent).toContain('unavailable');
+    expect(f.button('save').disabled).toBe(true);
+  });
+  it('reports validation failures and clears them for legacy documents', async () => {
+    const f = setup({ document: typed() });
+    await vi.waitFor(() => expect(f.controller.checking.value).toBe(false));
+    f.api.mockRejectedValueOnce(new Error('No compiler'));
+    expect(await f.controller.validateNow()).toBeUndefined();
+    expect(f.controller.semanticProblems.value[0].message).toBe('No compiler');
+    f.api.mockRejectedValueOnce('offline');
+    expect(await f.controller.validateNow()).toBeUndefined();
+    expect(f.controller.semanticProblems.value[0].message).toBe('offline');
+    f.doc.value = sample;
+    expect(await f.controller.validateNow()).toBe(sample);
+    expect(f.controller.semanticProblems.value).toEqual([]);
   });
 });

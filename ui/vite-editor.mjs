@@ -25,8 +25,10 @@ import {
 } from 'node:path';
 import process from 'node:process';
 import { URL } from 'node:url';
+import { fileURLToPath } from 'node:url';
 
 import { profileCatalogPaths } from './view/cli.mjs';
+import { createViewCatalog } from './view/catalog.mjs';
 
 /** Where the editor is served unless `route` says otherwise. */
 export const KERF_UI_EDITOR_ROUTE = '/__kerf-ui-editor/';
@@ -45,6 +47,8 @@ export const KERF_UI_EDITOR_FILE_API = '/__kerf-ui-editor/api/file';
  * existing document): GET answers a JSON array of `.kui.json` paths.
  */
 export const KERF_UI_EDITOR_LIST_API = '/__kerf-ui-editor/api/files';
+/** Node-only project language-service endpoint; POST requires the editor header. */
+export const KERF_UI_EDITOR_TYPES_API = '/__kerf-ui-editor/api/types';
 /** The most documents the list answers. */
 export const KERF_UI_EDITOR_LIST_LIMIT = 5000;
 /** Folders the list never walks, beside every dot-folder. */
@@ -144,8 +148,92 @@ const send = (response, status, body, type = 'text/plain; charset=utf-8') => {
  * itself in git.
  */
 export function editorFileMiddleware(root) {
+  let projectTypes;
+  const typeService = async () => {
+    const { createProjectTypeService } =
+      await import('./view/project-types.mjs');
+    return (projectTypes ??= createProjectTypeService(root));
+  };
+  const typeCatalog = () => {
+    const app = applicationCatalogs(root);
+    return createViewCatalog({
+      props: [
+        readJson(
+          fileURLToPath(new URL('./ai/component-props.json', import.meta.url)),
+        ),
+        ...app.props,
+      ],
+      composition: [
+        readJson(
+          fileURLToPath(
+            new URL('./ai/component-composition.json', import.meta.url),
+          ),
+        ),
+        ...app.composition,
+      ],
+    });
+  };
   return async (request, response, next) => {
     const url = new URL(request.url ?? '/', 'http://localhost');
+    if (url.pathname === KERF_UI_EDITOR_TYPES_API) {
+      if (request.method !== 'POST') {
+        send(response, 405, 'Use POST.');
+        return;
+      }
+      if (request.headers[KERF_UI_EDITOR_HEADER] !== '1') {
+        send(response, 403, 'Type requests come from the editor only.');
+        return;
+      }
+      let text = '';
+      try {
+        for await (const chunk of request) {
+          text += chunk;
+          if (Buffer.byteLength(text) > 1024 * 1024) {
+            send(response, 413, 'Type request is too large.');
+            return;
+          }
+        }
+        const body = JSON.parse(text);
+        if (
+          !editorFilePath(root, body.source) ||
+          !['analyze', 'validate'].includes(body.action) ||
+          (body.action === 'analyze' &&
+            (typeof body.text !== 'string' ||
+              (body.cursor !== undefined && !Number.isInteger(body.cursor)))) ||
+          (body.action === 'validate' &&
+            (!body.document ||
+              typeof body.document !== 'object' ||
+              Array.isArray(body.document)))
+        ) {
+          send(
+            response,
+            400,
+            'Name a project document and a valid type request.',
+          );
+          return;
+        }
+        const service = await typeService();
+        const result =
+          body.action === 'analyze'
+            ? service.analyze({
+                ...body,
+                ...(body.declared ? { catalog: typeCatalog() } : {}),
+              })
+            : service.validateDocument(
+                body.document,
+                typeCatalog(),
+                body.source,
+              );
+        send(response, 200, JSON.stringify(result), 'application/json');
+      } catch (error) {
+        send(
+          response,
+          400,
+          error instanceof Error ? error.message : String(error),
+        );
+      }
+      return;
+    }
     if (url.pathname === KERF_UI_EDITOR_LIST_API) {
       if (request.method !== 'GET') {
         send(response, 405, 'Use GET.');

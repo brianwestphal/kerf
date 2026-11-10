@@ -35,11 +35,13 @@ export function exportModule(
   kind: ExportKind,
   /** KF-5N26H6: loads a `#view`'s document, as `kerf-ui-view` does. */
   resolveView?: (src: string, path: string) => unknown,
+  source?: string,
 ): ExportResult {
   const generated = generateView(document, catalog, {
     source: documentFileName(document),
     declarationsOnly: kind === 'declarations',
     resolveView,
+    typeSource: source,
   });
   return {
     fileName: moduleFileName(document),

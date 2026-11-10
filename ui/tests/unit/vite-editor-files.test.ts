@@ -22,6 +22,7 @@ import {
   editorFilePath,
   KERF_UI_EDITOR_FILE_API,
   KERF_UI_EDITOR_LIST_API,
+  KERF_UI_EDITOR_TYPES_API,
 } from '../../vite-editor.mjs';
 
 let root: string;
@@ -185,5 +186,66 @@ describe('editorDocuments and the list endpoint', () => {
     const get = await call('GET', null, { url: KERF_UI_EDITOR_LIST_API });
     expect(get.response.statusCode).toBe(500);
     expect(get.response.body).toMatch(/ENOENT/);
+  });
+});
+
+describe('project type endpoint', () => {
+  it('resolves actual project types and enforces editor request boundaries', async () => {
+    writeFileSync(
+      join(root, 'types.ts'),
+      'export interface MyCustomType { id: string }',
+    );
+    writeFileSync(
+      join(root, 'tsconfig.json'),
+      JSON.stringify({ compilerOptions: { strict: true }, include: ['*.ts'] }),
+    );
+    const body = JSON.stringify({
+      action: 'analyze',
+      source: 'card.kui.json',
+      text: 'Array<MyCustomType>',
+    });
+    const request = (body: string, header = true, method = 'POST') =>
+      call(method, null, { url: KERF_UI_EDITOR_TYPES_API, body, header });
+    const result = await request(body);
+    expect(result.response.statusCode).toBe(200);
+    expect(JSON.parse(result.response.body).type.typescript.text).toContain(
+      'MyCustomType',
+    );
+    expect((await request(body, false)).response.statusCode).toBe(403);
+    expect((await request(body, true, 'GET')).response.statusCode).toBe(405);
+    expect((await request('{')).response.statusCode).toBe(400);
+    expect(
+      (
+        await request(
+          JSON.stringify({
+            action: 'analyze',
+            source: '../outside.kui.json',
+            text: 'string',
+          }),
+        )
+      ).response.statusCode,
+    ).toBe(400);
+    expect(
+      (
+        await request(
+          JSON.stringify({
+            action: 'analyze',
+            source: 'card.kui.json',
+            text: 'string',
+            cursor: 'bad',
+          }),
+        )
+      ).response.statusCode,
+    ).toBe(400);
+    const invalid = await request(
+      JSON.stringify({
+        action: 'analyze',
+        source: 'card.kui.json',
+        text: 'MissingType',
+      }),
+    );
+    expect(JSON.parse(invalid.response.body).diagnostics[0].message).toContain(
+      'Cannot find name',
+    );
   });
 });

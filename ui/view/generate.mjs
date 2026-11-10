@@ -21,6 +21,7 @@ import {
 import { childKind } from './child-kind.mjs';
 import { parseCssCall } from './css-grammar.mjs';
 import { composedViewPath, eachNodes } from './validate.mjs';
+import { typeExpressionText } from './type-expression.mjs';
 
 export const GENERATOR_VERSION = 1;
 const HEADER_LINES = 3;
@@ -686,6 +687,11 @@ export function generateView(document, catalog, options = {}) {
   // A prop-typed input is that component prop's own type, read from the
   // component function so the app's value is checked against it (KF-H3CB2P).
   const types = typesBlock(name, contract, (input) => {
+    if (input.shape.typescript)
+      return typeExpressionText(
+        input.shape,
+        options.typeSource ?? input.shape.typescript.source,
+      );
     if (input.shape.kind !== 'prop') return input.type;
     const owner = catalog.components.get(input.shape.component).component;
     imports.type(

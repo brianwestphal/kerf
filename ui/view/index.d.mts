@@ -18,6 +18,18 @@ export interface ViewType {
   component?: string;
   /** `kind: 'prop'`: that component's prop. */
   prop?: string;
+  /** Project-checked expression; the other fields are a navigation projection. */
+  typescript?: {
+    readonly text: string;
+    /** Project-relative source used to resolve inline import() types. */
+    readonly source: string;
+    /** Compiler-identified module literal tokens, including their quotes. */
+    readonly references: readonly {
+      start: number;
+      length: number;
+      module: string;
+    }[];
+  };
 }
 
 /** A value in a node's `props`, a `$each` source, or a `$slot` input. */
@@ -382,6 +394,8 @@ export function generateView(
   options?: {
     /** The document file name recorded in the header. */
     source?: string;
+    /** Project-relative output source for rebasing TypeScript type imports. */
+    typeSource?: string;
     resolveView?: (src: string, path: string) => unknown;
     target?: 'ts' | 'js';
     declarationsOnly?: boolean;
