@@ -155,6 +155,7 @@ describe('UI browser failure evidence', () => {
             id?: string;
             if?: string;
             run?: string;
+            'timeout-minutes'?: number;
             uses?: string;
             with?: Record<string, unknown>;
           }>;
@@ -172,13 +173,18 @@ describe('UI browser failure evidence', () => {
     expect(workflow.jobs['ui-browser'].strategy['fail-fast']).toBe(false);
     const steps = workflow.jobs['ui-browser'].steps;
     const mirrorStep = steps.find((step) =>
-      step.run?.includes('archive.ubuntu.com'),
+      step.run?.includes('configure-browser-apt.mjs'),
     );
     const installStep = steps.find((step) =>
       step.run?.startsWith('npx playwright install --with-deps'),
     );
     expect(mirrorStep?.if).toBeUndefined();
-    expect(mirrorStep?.run).toContain('/etc/apt/apt-mirrors.txt');
+    expect(mirrorStep?.run).toContain(
+      'sudo "$(command -v node)" "$GITHUB_WORKSPACE/scripts/configure-browser-apt.mjs"',
+    );
+    expect(mirrorStep?.run).toContain('apt-config dump');
+    expect(mirrorStep?.['timeout-minutes']).toBe(2);
+    expect(installStep?.['timeout-minutes']).toBe(15);
     expect(steps.indexOf(mirrorStep!)).toBeLessThan(
       steps.indexOf(installStep!),
     );

@@ -46,7 +46,7 @@ describe(
       const candidate = candidateFrom(source);
       expect(candidate.on.workflow_dispatch.inputs.scope).toMatchObject({
         type: 'choice',
-        options: ['full', 'release-artifacts'],
+        options: ['full', 'release-artifacts', 'browser-apt'],
         default: 'full',
       });
       expect(candidate.permissions).toEqual({ contents: 'read' });
@@ -67,13 +67,15 @@ describe(
     it('limits release-only dispatch without dropping the default full graph', () => {
       const candidate = candidateFrom(source);
       const release = candidate.jobs['release-artifacts'];
-      expect(release.if).toBeUndefined();
+      expect(release.if).toBe("${{ inputs.scope != 'browser-apt' }}");
       expect(release.needs).toBeUndefined();
       for (const [name, job] of Object.entries(candidate.jobs) as Array<
         [string, { if?: string }]
       >) {
-        if (name !== 'release-artifacts')
-          expect(job.if).toBe("${{ inputs.scope != 'release-artifacts' }}");
+        if (name !== 'release-artifacts' && name !== 'browser-apt')
+          expect(job.if).toBe(
+            "${{ inputs.scope != 'release-artifacts' && inputs.scope != 'browser-apt' }}",
+          );
       }
       expect(
         release.steps
@@ -108,9 +110,36 @@ describe(
             ? guard.slice(3, -2).trim()
             : String(guard);
         expect(candidate.jobs.test.if).toBe(
-          `\${{ (${prior}) && inputs.scope != 'release-artifacts' }}`,
+          `\${{ (${prior}) && inputs.scope != 'release-artifacts' && inputs.scope != 'browser-apt' }}`,
         );
       }
+    });
+
+    it('runs a bounded three-engine APT probe only for its explicit scope', () => {
+      const candidate = candidateFrom(source);
+      const probe = candidate.jobs['browser-apt'];
+      expect(probe.if).toBe("${{ inputs.scope == 'browser-apt' }}");
+      expect(probe.needs).toBeUndefined();
+      expect(probe['timeout-minutes']).toBe(20);
+      expect(
+        probe.steps.find((step: { run?: string }) =>
+          step.run?.includes('configure-browser-apt.mjs'),
+        )['timeout-minutes'],
+      ).toBe(2);
+      expect(
+        probe.steps.find((step: { run?: string }) =>
+          step.run?.includes('playwright install'),
+        ),
+      ).toMatchObject({
+        run: 'npx --no-install playwright install --with-deps chromium firefox webkit',
+        'timeout-minutes': 15,
+      });
+      const launch = probe.steps.find((step: { run?: string }) =>
+        step.run?.includes('engine.launch()'),
+      );
+      expect(launch.run).toContain('chromium, firefox, webkit');
+      expect(launch.run).toContain('await browser.close()');
+      expect(launch['timeout-minutes']).toBe(3);
     });
 
     it('records dependency-variation trees before their tests can fail', () => {

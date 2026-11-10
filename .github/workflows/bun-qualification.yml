@@ -1,5 +1,5 @@
 # Generated from ci.yml by scripts/sync-bun-qualification-workflow.mjs.
-# Manual candidate only; production npm CI and release workflows are unchanged.
+# Manual qualification only; production installation and publishing remain npm.
 name: Bun candidate qualification
 on:
   workflow_dispatch:
@@ -10,6 +10,7 @@ on:
         options:
           - full
           - release-artifacts
+          - browser-apt
         default: full
 permissions:
   contents: read
@@ -17,7 +18,7 @@ env:
   NODE_VERSION: '22'
   BUN_QUALIFICATION_EVIDENCE: /tmp/kerf-bun-qualification
   BUN_INSTALL_CACHE_DIR: /tmp/kerf-bun-cache
-  BUN_QUALIFICATION_CI_SHA256: 84e761644df75064e403d591a7a279dc57039f0a01e22af2ce131d4cf6e12197
+  BUN_QUALIFICATION_CI_SHA256: 2f54cabb6e409c676c091e5b05693730f0c74ce39f3f9eb0d715711584fa033e
 jobs:
   test:
     runs-on: ubuntu-24.04
@@ -39,7 +40,7 @@ jobs:
           name: candidate-${{ github.job }}-${{ strategy.job-index }}-${{ github.sha }}
           path: ${{ env.BUN_QUALIFICATION_EVIDENCE }}
           if-no-files-found: warn
-    if: ${{ inputs.scope != 'release-artifacts' }}
+    if: ${{ inputs.scope != 'release-artifacts' && inputs.scope != 'browser-apt' }}
   lint:
     runs-on: ubuntu-24.04
     steps:
@@ -60,7 +61,7 @@ jobs:
           name: candidate-${{ github.job }}-${{ strategy.job-index }}-${{ github.sha }}
           path: ${{ env.BUN_QUALIFICATION_EVIDENCE }}
           if-no-files-found: warn
-    if: ${{ inputs.scope != 'release-artifacts' }}
+    if: ${{ inputs.scope != 'release-artifacts' && inputs.scope != 'browser-apt' }}
   typecheck:
     runs-on: ubuntu-24.04
     steps:
@@ -81,7 +82,7 @@ jobs:
           name: candidate-${{ github.job }}-${{ strategy.job-index }}-${{ github.sha }}
           path: ${{ env.BUN_QUALIFICATION_EVIDENCE }}
           if-no-files-found: warn
-    if: ${{ inputs.scope != 'release-artifacts' }}
+    if: ${{ inputs.scope != 'release-artifacts' && inputs.scope != 'browser-apt' }}
   build:
     runs-on: ubuntu-24.04
     steps:
@@ -105,7 +106,7 @@ jobs:
           name: candidate-${{ github.job }}-${{ strategy.job-index }}-${{ github.sha }}
           path: ${{ env.BUN_QUALIFICATION_EVIDENCE }}
           if-no-files-found: warn
-    if: ${{ inputs.scope != 'release-artifacts' }}
+    if: ${{ inputs.scope != 'release-artifacts' && inputs.scope != 'browser-apt' }}
   node-floor:
     runs-on: ubuntu-24.04
     steps:
@@ -157,7 +158,7 @@ jobs:
           name: candidate-${{ github.job }}-${{ strategy.job-index }}-${{ github.sha }}
           path: ${{ env.BUN_QUALIFICATION_EVIDENCE }}
           if-no-files-found: warn
-    if: ${{ inputs.scope != 'release-artifacts' }}
+    if: ${{ inputs.scope != 'release-artifacts' && inputs.scope != 'browser-apt' }}
   gates:
     runs-on: ubuntu-24.04
     steps:
@@ -182,7 +183,7 @@ jobs:
           name: candidate-${{ github.job }}-${{ strategy.job-index }}-${{ github.sha }}
           path: ${{ env.BUN_QUALIFICATION_EVIDENCE }}
           if-no-files-found: warn
-    if: ${{ inputs.scope != 'release-artifacts' }}
+    if: ${{ inputs.scope != 'release-artifacts' && inputs.scope != 'browser-apt' }}
   site:
     runs-on: ubuntu-24.04
     steps:
@@ -217,7 +218,7 @@ jobs:
           name: candidate-${{ github.job }}-${{ strategy.job-index }}-${{ github.sha }}
           path: ${{ env.BUN_QUALIFICATION_EVIDENCE }}
           if-no-files-found: warn
-    if: ${{ inputs.scope != 'release-artifacts' }}
+    if: ${{ inputs.scope != 'release-artifacts' && inputs.scope != 'browser-apt' }}
   eslint-plugin:
     runs-on: ubuntu-24.04
     strategy:
@@ -251,7 +252,7 @@ jobs:
           name: candidate-${{ github.job }}-${{ strategy.job-index }}-${{ github.sha }}
           path: ${{ env.BUN_QUALIFICATION_EVIDENCE }}
           if-no-files-found: warn
-    if: ${{ inputs.scope != 'release-artifacts' }}
+    if: ${{ inputs.scope != 'release-artifacts' && inputs.scope != 'browser-apt' }}
   create-kerf-component:
     runs-on: ubuntu-24.04
     defaults:
@@ -277,7 +278,7 @@ jobs:
           name: candidate-${{ github.job }}-${{ strategy.job-index }}-${{ github.sha }}
           path: ${{ env.BUN_QUALIFICATION_EVIDENCE }}
           if-no-files-found: warn
-    if: ${{ inputs.scope != 'release-artifacts' }}
+    if: ${{ inputs.scope != 'release-artifacts' && inputs.scope != 'browser-apt' }}
   ui:
     runs-on: ubuntu-24.04
     defaults:
@@ -307,7 +308,13 @@ jobs:
           key: playwright-ui-${{ runner.os }}-${{ hashFiles('ui/package-lock.json') }}
           restore-keys: |
             playwright-ui-${{ runner.os }}-
+      - name: Configure bounded HTTPS browser dependencies
+        timeout-minutes: 2
+        run: |
+          sudo "$(command -v node)" "$GITHUB_WORKSPACE/scripts/configure-browser-apt.mjs"
+          apt-config dump Acquire::Retries Acquire::http::Timeout Acquire::https::Timeout
       - run: npx --no-install playwright install --with-deps chromium firefox webkit
+        timeout-minutes: 15
       - run: npm run build
       - run: npm run check
       - name: Retain exact candidate locks and input manifests
@@ -317,7 +324,7 @@ jobs:
           name: candidate-${{ github.job }}-${{ strategy.job-index }}-${{ github.sha }}
           path: ${{ env.BUN_QUALIFICATION_EVIDENCE }}
           if-no-files-found: warn
-    if: ${{ inputs.scope != 'release-artifacts' }}
+    if: ${{ inputs.scope != 'release-artifacts' && inputs.scope != 'browser-apt' }}
   editor:
     runs-on: ubuntu-24.04
     defaults:
@@ -351,7 +358,7 @@ jobs:
           name: candidate-${{ github.job }}-${{ strategy.job-index }}-${{ github.sha }}
           path: ${{ env.BUN_QUALIFICATION_EVIDENCE }}
           if-no-files-found: warn
-    if: ${{ inputs.scope != 'release-artifacts' }}
+    if: ${{ inputs.scope != 'release-artifacts' && inputs.scope != 'browser-apt' }}
   editor-browser:
     runs-on: ubuntu-24.04
     strategy:
@@ -389,9 +396,13 @@ jobs:
         working-directory: ui
         run: node "$GITHUB_WORKSPACE/scripts/bun-candidate-install.mjs" ui && npm run build
       - run: node "$GITHUB_WORKSPACE/scripts/bun-candidate-install.mjs" editor
-      - name: Use Ubuntu archive for browser dependencies
-        run: if [[ -f /etc/apt/apt-mirrors.txt ]]; then sudo sed -i 's#azure.archive.ubuntu.com#archive.ubuntu.com#g' /etc/apt/apt-mirrors.txt; fi
+      - name: Configure bounded HTTPS browser dependencies
+        timeout-minutes: 2
+        run: |
+          sudo "$(command -v node)" "$GITHUB_WORKSPACE/scripts/configure-browser-apt.mjs"
+          apt-config dump Acquire::Retries Acquire::http::Timeout Acquire::https::Timeout
       - run: npx --no-install playwright install --with-deps ${{ matrix.browser }}
+        timeout-minutes: 15
       - name: Run editor browser tests
         id: editor_browser
         run: npm run test:e2e -- --project=${{ matrix.browser }} --shard=${{ matrix.shard }}/4
@@ -411,7 +422,7 @@ jobs:
           name: candidate-${{ github.job }}-${{ strategy.job-index }}-${{ github.sha }}
           path: ${{ env.BUN_QUALIFICATION_EVIDENCE }}
           if-no-files-found: warn
-    if: ${{ inputs.scope != 'release-artifacts' }}
+    if: ${{ inputs.scope != 'release-artifacts' && inputs.scope != 'browser-apt' }}
   ui-browser:
     runs-on: ubuntu-24.04
     strategy:
@@ -448,9 +459,13 @@ jobs:
           key: playwright-ui-${{ matrix.browser }}-${{ runner.os }}-${{ hashFiles('ui/package-lock.json') }}
           restore-keys: |
             playwright-ui-${{ matrix.browser }}-${{ runner.os }}-
-      - name: Use Ubuntu archive for browser dependencies
-        run: if [[ -f /etc/apt/apt-mirrors.txt ]]; then sudo sed -i 's#azure.archive.ubuntu.com#archive.ubuntu.com#g' /etc/apt/apt-mirrors.txt; fi
+      - name: Configure bounded HTTPS browser dependencies
+        timeout-minutes: 2
+        run: |
+          sudo "$(command -v node)" "$GITHUB_WORKSPACE/scripts/configure-browser-apt.mjs"
+          apt-config dump Acquire::Retries Acquire::http::Timeout Acquire::https::Timeout
       - run: npx --no-install playwright install --with-deps ${{ matrix.browser }}
+        timeout-minutes: 15
       - run: npm run build
       - name: Run UI browser tests
         id: ui_browser
@@ -474,7 +489,7 @@ jobs:
           name: candidate-${{ github.job }}-${{ strategy.job-index }}-${{ github.sha }}
           path: ${{ env.BUN_QUALIFICATION_EVIDENCE }}
           if-no-files-found: warn
-    if: ${{ inputs.scope != 'release-artifacts' }}
+    if: ${{ inputs.scope != 'release-artifacts' && inputs.scope != 'browser-apt' }}
   ui-webawesome-latest:
     runs-on: ubuntu-24.04
     defaults:
@@ -504,7 +519,13 @@ jobs:
           key: playwright-ui-chromium-${{ runner.os }}-${{ hashFiles('ui/package-lock.json') }}
           restore-keys: |
             playwright-ui-chromium-${{ runner.os }}-
+      - name: Configure bounded HTTPS browser dependencies
+        timeout-minutes: 2
+        run: |
+          sudo "$(command -v node)" "$GITHUB_WORKSPACE/scripts/configure-browser-apt.mjs"
+          apt-config dump Acquire::Retries Acquire::http::Timeout Acquire::https::Timeout
       - run: npx --no-install playwright install --with-deps chromium
+        timeout-minutes: 15
       - run: npm run build
       - name: Run the UI unit and Chromium suites against the newest Web Awesome 3.x
         run: bun add --no-save @awesome.me/webawesome@^3 && bun pm ls --all > "$BUN_QUALIFICATION_EVIDENCE/ui-webawesome-latest-final-packages.txt" && cp bun.lock "$BUN_QUALIFICATION_EVIDENCE/ui-webawesome-latest-final.bun.lock" && cp package.json "$BUN_QUALIFICATION_EVIDENCE/ui-webawesome-latest-final-package.json" && node node_modules/vitest/vitest.mjs run tests/unit && KERF_WEBAWESOME_LATEST=1 node node_modules/playwright/cli.js test --project=chromium
@@ -526,7 +547,7 @@ jobs:
           name: candidate-${{ github.job }}-${{ strategy.job-index }}-${{ github.sha }}
           path: ${{ env.BUN_QUALIFICATION_EVIDENCE }}
           if-no-files-found: warn
-    if: ${{ inputs.scope != 'release-artifacts' }}
+    if: ${{ inputs.scope != 'release-artifacts' && inputs.scope != 'browser-apt' }}
   design-templates:
     runs-on: macos-latest
     defaults:
@@ -564,7 +585,7 @@ jobs:
           name: candidate-${{ github.job }}-${{ strategy.job-index }}-${{ github.sha }}
           path: ${{ env.BUN_QUALIFICATION_EVIDENCE }}
           if-no-files-found: warn
-    if: ${{ inputs.scope != 'release-artifacts' }}
+    if: ${{ inputs.scope != 'release-artifacts' && inputs.scope != 'browser-apt' }}
   browser:
     runs-on: ubuntu-24.04
     steps:
@@ -584,7 +605,13 @@ jobs:
           key: playwright-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
           restore-keys: |
             playwright-${{ runner.os }}-
+      - name: Configure bounded HTTPS browser dependencies
+        timeout-minutes: 2
+        run: |
+          sudo "$(command -v node)" "$GITHUB_WORKSPACE/scripts/configure-browser-apt.mjs"
+          apt-config dump Acquire::Retries Acquire::http::Timeout Acquire::https::Timeout
       - run: npx --no-install playwright install --with-deps chromium firefox webkit
+        timeout-minutes: 15
       - run: npm run test:browser
       - name: Retain exact candidate locks and input manifests
         if: always()
@@ -593,7 +620,7 @@ jobs:
           name: candidate-${{ github.job }}-${{ strategy.job-index }}-${{ github.sha }}
           path: ${{ env.BUN_QUALIFICATION_EVIDENCE }}
           if-no-files-found: warn
-    if: ${{ inputs.scope != 'release-artifacts' }}
+    if: ${{ inputs.scope != 'release-artifacts' && inputs.scope != 'browser-apt' }}
   seventh-tree:
     runs-on: ubuntu-24.04
     steps:
@@ -610,7 +637,7 @@ jobs:
         with:
           name: candidate-seventh-tree-${{ github.sha }}
           path: ${{ env.BUN_QUALIFICATION_EVIDENCE }}
-    if: ${{ inputs.scope != 'release-artifacts' }}
+    if: ${{ inputs.scope != 'release-artifacts' && inputs.scope != 'browser-apt' }}
   release-artifacts:
     runs-on: ubuntu-24.04
     steps:
@@ -629,6 +656,47 @@ jobs:
         with:
           name: candidate-release-artifacts-${{ github.sha }}
           path: ${{ env.BUN_QUALIFICATION_EVIDENCE }}
+    if: ${{ inputs.scope != 'browser-apt' }}
   wasi-resolution:
     uses: ./.github/workflows/bun-wasi-resolution.yml
-    if: ${{ inputs.scope != 'release-artifacts' }}
+    if: ${{ inputs.scope != 'release-artifacts' && inputs.scope != 'browser-apt' }}
+  browser-apt:
+    if: ${{ inputs.scope == 'browser-apt' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+      - run: npm install --global bun@1.4.4
+      - run: node scripts/bun-candidate-install.mjs .
+      - name: Configure and record HTTPS Ubuntu dependencies
+        timeout-minutes: 2
+        run: |-
+          sudo "$(command -v node)" "$GITHUB_WORKSPACE/scripts/configure-browser-apt.mjs" > "$BUN_QUALIFICATION_EVIDENCE/browser-apt-sources.json"
+          cat "$BUN_QUALIFICATION_EVIDENCE/browser-apt-sources.json"
+          apt-config dump Acquire::Retries Acquire::http::Timeout Acquire::https::Timeout > "$BUN_QUALIFICATION_EVIDENCE/browser-apt-effective.conf"
+          cat "$BUN_QUALIFICATION_EVIDENCE/browser-apt-effective.conf"
+      - run: npx --no-install playwright install --with-deps chromium firefox webkit
+        timeout-minutes: 15
+      - name: Launch and render with all three installed browsers
+        timeout-minutes: 3
+        run: |-
+          node --input-type=module <<'JS'
+          import { chromium, firefox, webkit } from 'playwright';
+          for (const [name, engine] of Object.entries({ chromium, firefox, webkit })) {
+            const browser = await engine.launch();
+            try {
+              const page = await browser.newPage();
+              await page.setContent('<h1>APT smoke</h1>');
+              if (await page.locator('h1').textContent() !== 'APT smoke') throw new Error(name + ': rendering failed');
+              console.log(name + ': launch and page rendering passed');
+            } finally { await browser.close(); }
+          }
+          JS
+      - if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: browser-apt-${{ github.sha }}
+          path: ${{ env.BUN_QUALIFICATION_EVIDENCE }}

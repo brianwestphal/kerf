@@ -145,8 +145,59 @@ export function qualificationWorkflow(source) {
   jobs['wasi-resolution'] = {
     uses: './.github/workflows/bun-wasi-resolution.yml',
   };
+  jobs['browser-apt'] = {
+    if: "${{ inputs.scope == 'browser-apt' }}",
+    'runs-on': 'ubuntu-24.04',
+    'timeout-minutes': 20,
+    steps: [
+      { uses: canonical.jobs.test.steps[0].uses },
+      {
+        uses: canonical.jobs.test.steps[1].uses,
+        with: { 'node-version': '${{ env.NODE_VERSION }}' },
+      },
+      { run: 'npm install --global bun@1.4.4' },
+      { run: 'node scripts/bun-candidate-install.mjs .' },
+      {
+        name: 'Configure and record HTTPS Ubuntu dependencies',
+        'timeout-minutes': 2,
+        run: 'sudo "$(command -v node)" "$GITHUB_WORKSPACE/scripts/configure-browser-apt.mjs" > "$BUN_QUALIFICATION_EVIDENCE/browser-apt-sources.json"\ncat "$BUN_QUALIFICATION_EVIDENCE/browser-apt-sources.json"\napt-config dump Acquire::Retries Acquire::http::Timeout Acquire::https::Timeout > "$BUN_QUALIFICATION_EVIDENCE/browser-apt-effective.conf"\ncat "$BUN_QUALIFICATION_EVIDENCE/browser-apt-effective.conf"',
+      },
+      {
+        run: 'npx --no-install playwright install --with-deps chromium firefox webkit',
+        'timeout-minutes': 15,
+      },
+      {
+        name: 'Launch and render with all three installed browsers',
+        'timeout-minutes': 3,
+        run: `node --input-type=module <<'JS'
+import { chromium, firefox, webkit } from 'playwright';
+for (const [name, engine] of Object.entries({ chromium, firefox, webkit })) {
+  const browser = await engine.launch();
+  try {
+    const page = await browser.newPage();
+    await page.setContent('<h1>APT smoke</h1>');
+    if (await page.locator('h1').textContent() !== 'APT smoke') throw new Error(name + ': rendering failed');
+    console.log(name + ': launch and page rendering passed');
+  } finally { await browser.close(); }
+}
+JS`,
+      },
+      {
+        if: 'always()',
+        uses: upload,
+        with: {
+          name: 'browser-apt-${{ github.sha }}',
+          path: '${{ env.BUN_QUALIFICATION_EVIDENCE }}',
+        },
+      },
+    ],
+  };
   for (const [name, job] of Object.entries(jobs)) {
-    if (name === 'release-artifacts') continue;
+    if (name === 'browser-apt') continue;
+    const scope =
+      name === 'release-artifacts'
+        ? "inputs.scope != 'browser-apt'"
+        : "inputs.scope != 'release-artifacts' && inputs.scope != 'browser-apt'";
     let prior = job.if;
     if (typeof prior === 'string') {
       prior = prior.trim();
@@ -155,8 +206,8 @@ export function qualificationWorkflow(source) {
     }
     job.if =
       prior === undefined
-        ? "${{ inputs.scope != 'release-artifacts' }}"
-        : `\${{ (${prior}) && inputs.scope != 'release-artifacts' }}`;
+        ? `\${{ ${scope} }}`
+        : `\${{ (${prior}) && ${scope} }}`;
   }
   return {
     name: 'Bun candidate qualification',
@@ -167,7 +218,7 @@ export function qualificationWorkflow(source) {
             description:
               'Qualification scope (full retains every canonical lane)',
             type: 'choice',
-            options: ['full', 'release-artifacts'],
+            options: ['full', 'release-artifacts', 'browser-apt'],
             default: 'full',
           },
         },
@@ -194,7 +245,7 @@ async function main() {
     'utf8',
   );
   const raw =
-    '# Generated from ci.yml by scripts/sync-bun-qualification-workflow.mjs.\n# Manual candidate only; production npm CI and release workflows are unchanged.\n' +
+    '# Generated from ci.yml by scripts/sync-bun-qualification-workflow.mjs.\n# Manual qualification only; production installation and publishing remain npm.\n' +
     YAML.stringify(qualificationWorkflow(source), { lineWidth: 0 });
   const releases = new Map(
     [

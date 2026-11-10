@@ -225,7 +225,13 @@ jobs:
           restore-keys: |
             playwright-ui-${{ runner.os }}-
       # `npm run check` also runs evaluator integration tests in all engines.
+      - name: Configure bounded HTTPS browser dependencies
+        timeout-minutes: 2
+        run: |
+          sudo "$(command -v node)" "$GITHUB_WORKSPACE/scripts/configure-browser-apt.mjs"
+          apt-config dump Acquire::Retries Acquire::http::Timeout Acquire::https::Timeout
       - run: npx playwright install --with-deps chromium firefox webkit
+        timeout-minutes: 15
       - run: npm run build
       - run: npm run check
 
@@ -288,11 +294,14 @@ jobs:
         working-directory: ui
         run: npm ci && npm run build
       - run: npm ci
-      # KF-CKCT2J: Azure's Ubuntu mirror intermittently delays browser OS
-      # packages; use the primary Ubuntu archive.
-      - name: Use Ubuntu archive for browser dependencies
-        run: sudo sed -i 's#azure.archive.ubuntu.com#archive.ubuntu.com#g' /etc/apt/apt-mirrors.txt
+      # KF-7RRYQ8: HTTP mirror retries dominated browser dependency installs.
+      - name: Configure bounded HTTPS browser dependencies
+        timeout-minutes: 2
+        run: |
+          sudo "$(command -v node)" "$GITHUB_WORKSPACE/scripts/configure-browser-apt.mjs"
+          apt-config dump Acquire::Retries Acquire::http::Timeout Acquire::https::Timeout
       - run: npx playwright install --with-deps ${{ matrix.browser }}
+        timeout-minutes: 15
       - name: Run editor browser tests
         id: editor_browser
         run: npm run test:e2e -- --project=${{ matrix.browser }} --shard=${{ matrix.shard }}/4
@@ -338,12 +347,13 @@ jobs:
           key: playwright-ui-${{ matrix.browser }}-${{ runner.os }}-${{ hashFiles('ui/package-lock.json') }}
           restore-keys: |
             playwright-ui-${{ matrix.browser }}-${{ runner.os }}-
-      # KF-CKCT2J: Azure's Ubuntu mirror intermittently delayed browser OS
-      # packages by 10–40m. Keep the host browser environment and use the
-      # primary Ubuntu archive for every engine.
-      - name: Use Ubuntu archive for browser dependencies
-        run: sudo sed -i 's#azure.archive.ubuntu.com#archive.ubuntu.com#g' /etc/apt/apt-mirrors.txt
+      - name: Configure bounded HTTPS browser dependencies
+        timeout-minutes: 2
+        run: |
+          sudo "$(command -v node)" "$GITHUB_WORKSPACE/scripts/configure-browser-apt.mjs"
+          apt-config dump Acquire::Retries Acquire::http::Timeout Acquire::https::Timeout
       - run: npx playwright install --with-deps ${{ matrix.browser }}
+        timeout-minutes: 15
       - run: npm run build
       - name: Run UI browser tests
         id: ui_browser
@@ -395,7 +405,13 @@ jobs:
           key: playwright-ui-chromium-${{ runner.os }}-${{ hashFiles('ui/package-lock.json') }}
           restore-keys: |
             playwright-ui-chromium-${{ runner.os }}-
+      - name: Configure bounded HTTPS browser dependencies
+        timeout-minutes: 2
+        run: |
+          sudo "$(command -v node)" "$GITHUB_WORKSPACE/scripts/configure-browser-apt.mjs"
+          apt-config dump Acquire::Retries Acquire::http::Timeout Acquire::https::Timeout
       - run: npx playwright install --with-deps chromium
+        timeout-minutes: 15
       - run: npm run build
       - name: Run the UI unit and Chromium suites against the newest Web Awesome 3.x
         run: npm run test:webawesome-latest
@@ -462,5 +478,11 @@ jobs:
           key: playwright-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
           restore-keys: |
             playwright-${{ runner.os }}-
+      - name: Configure bounded HTTPS browser dependencies
+        timeout-minutes: 2
+        run: |
+          sudo "$(command -v node)" "$GITHUB_WORKSPACE/scripts/configure-browser-apt.mjs"
+          apt-config dump Acquire::Retries Acquire::http::Timeout Acquire::https::Timeout
       - run: npx playwright install --with-deps chromium firefox webkit
+        timeout-minutes: 15
       - run: npm run test:browser
