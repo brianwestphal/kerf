@@ -8,11 +8,13 @@ import {
   mkdirSync,
   mkdtempSync,
   readFileSync,
+  realpathSync,
   rmSync,
   writeFileSync,
 } from 'node:fs';
+import { createRequire } from 'node:module';
 import { tmpdir } from 'node:os';
-import { join, resolve } from 'node:path';
+import { join, relative, resolve } from 'node:path';
 import process from 'node:process';
 import { pathToFileURL } from 'node:url';
 
@@ -21,6 +23,7 @@ import {
   inputHashes,
   installedGraph,
   markdownProbes,
+  packageLocation,
 } from './bun-pure-wasi-probe.mjs';
 
 const digest = (bytes) => createHash('sha256').update(bytes).digest('hex');
@@ -63,6 +66,40 @@ export function assertResolutionOutcome(execution, bundled404) {
       execution.stderr,
       /GET https:\/\/registry\.npmjs\.org\/@domotion%2ftext-engine - 404[\s\S]*@domotion\/text-engine@0\.35\.0 failed to resolve/,
     );
+}
+
+export function siteTooling(site) {
+  site = realpathSync(resolve(site));
+  const from = join(site, 'package.json');
+  const require = createRequire(from);
+  const portable = (path) => relative(site, path).split('\\').join('/');
+  return ['typescript', 'vite', '@playwright/test', 'astro'].map((name) => {
+    const path = packageLocation(from, name);
+    assert.ok(path, `Site tooling manifest missing: ${name}`);
+    const entry = require.resolve(name);
+    const manifest = json(path);
+    assert.equal(
+      manifest.name,
+      name,
+      `Unexpected site tooling package: ${name}`,
+    );
+    return {
+      name,
+      entry: portable(entry),
+      manifestPath: portable(path),
+      realManifestPath: portable(realpathSync(path)),
+      manifest,
+      sha256: digest(readFileSync(path)),
+    };
+  });
+}
+
+export function assertToolingRetained(baseline, restored) {
+  assert.deepEqual(
+    restored,
+    baseline,
+    'Frozen restore changed or lost site tooling',
+  );
 }
 
 export function assertCanonicalInputs(before, after) {
@@ -166,6 +203,7 @@ export async function runBundledResolutionProbe(
       save(join(evidence, 'bundled-resolution.json'), result);
       assertResolutionOutcome(execution, false);
     }
+    result.baselineTooling = siteTooling(site);
     const baseline = join(scratch, 'baseline');
     cpSync(site, baseline, { recursive: true });
     const add = [
@@ -240,6 +278,8 @@ export async function runBundledResolutionProbe(
           ['install', '--frozen-lockfile', '--ignore-scripts'],
           false,
         );
+        result.restoredTooling = siteTooling(cwd);
+        assertToolingRetained(result.baselineTooling, result.restoredTooling);
         const probes = markdownProbes(cwd);
         assertMarkdownResults(probes);
         result.productionProbes = probes;

@@ -28,3 +28,17 @@ export function runBundledResolutionProbe(
   evidence: string,
   bun?: string,
 ): Promise<unknown>;
+
+export interface SiteTooling {
+  name: string;
+  entry: string;
+  manifestPath: string;
+  realManifestPath: string;
+  manifest: Record<string, unknown>;
+  sha256: string;
+}
+export function siteTooling(site: string): SiteTooling[];
+export function assertToolingRetained(
+  baseline: SiteTooling[],
+  restored: SiteTooling[],
+): void;

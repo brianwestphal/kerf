@@ -1,5 +1,11 @@
 // @vitest-environment node
-import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
+import {
+  mkdirSync,
+  mkdtempSync,
+  rmSync,
+  symlinkSync,
+  writeFileSync,
+} from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
@@ -8,7 +14,9 @@ import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import {
   assertCanonicalInputs,
   assertResolutionOutcome,
+  assertToolingRetained,
   bundledManifestEvidence,
+  siteTooling,
 } from '../../scripts/bun-bundled-resolution-probe.mjs';
 
 let root: string;
@@ -82,6 +90,45 @@ describe('bundled resolution evidence (KF-C6HCET)', () => {
     expect(() =>
       assertResolutionOutcome({ ...failure, status: 0, stderr: '' }, false),
     ).not.toThrow();
+  });
+
+  it('resolves real site tooling and rejects missing or replaced restored packages', () => {
+    manifest(root, { name: 'site', version: '1.0.0' });
+    for (const name of ['typescript', 'vite', '@playwright/test', 'astro']) {
+      const path = join(root, 'node_modules', name);
+      manifest(path, { name, version: '1.2.3', main: 'entry.js' });
+      writeFileSync(join(path, 'entry.js'), 'module.exports = {};');
+    }
+    const baseline = siteTooling(root);
+    symlinkSync('.', join(root, 'site-alias'));
+    expect(() =>
+      assertToolingRetained(baseline, siteTooling(join(root, 'site-alias'))),
+    ).not.toThrow();
+    expect(baseline.map((tool) => tool.name)).toEqual([
+      'typescript',
+      'vite',
+      '@playwright/test',
+      'astro',
+    ]);
+    expect(
+      baseline.every(
+        (tool) =>
+          tool.entry.endsWith('/entry.js') && tool.manifest.version === '1.2.3',
+      ),
+    ).toBe(true);
+    expect(() =>
+      assertToolingRetained(baseline, siteTooling(root)),
+    ).not.toThrow();
+    manifest(join(root, 'node_modules/vite'), {
+      name: 'vite',
+      version: '2.0.0',
+      main: 'entry.js',
+    });
+    expect(() => assertToolingRetained(baseline, siteTooling(root))).toThrow(
+      'changed or lost',
+    );
+    rmSync(join(root, 'node_modules/astro'), { recursive: true });
+    expect(() => siteTooling(root)).toThrow('manifest missing: astro');
   });
 
   it('rejects canonical changes even when disposable add is permitted to change its own graph', () => {
