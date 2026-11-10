@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 164600,
-  "totalJavaScriptGzip": 469600,
-  "measuredLargestJavaScriptGzip": 164547,
-  "measuredTotalJavaScriptGzip": 469530,
+  "totalJavaScriptGzip": 469700,
+  "measuredLargestJavaScriptGzip": 164546,
+  "measuredTotalJavaScriptGzip": 469676,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -7219,6 +7219,22 @@
         "measuredTotalJavaScriptGzip": 469530,
         "largestJavaScriptGzip": 164600,
         "totalJavaScriptGzip": 469600
+      }
+    },
+    {
+      "at": "2026-11-10T04:50:21.842Z",
+      "reason": "KF-1XBJDT: explicit keyedRows opt-in preserves TreeList default composition while retaining Library branch reuse; Node 22 measures reviewed committed demo growth from 469530 to 469676 bytes gzip.",
+      "old": {
+        "measuredLargestJavaScriptGzip": 164547,
+        "measuredTotalJavaScriptGzip": 469530,
+        "largestJavaScriptGzip": 164600,
+        "totalJavaScriptGzip": 469600
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 164546,
+        "measuredTotalJavaScriptGzip": 469676,
+        "largestJavaScriptGzip": 164600,
+        "totalJavaScriptGzip": 469700
       }
     }
   ]
