@@ -1,0 +1,76 @@
+{
+  "run": "https://github.com/brianwestphal/kerf/actions/runs/42777529099",
+  "commit": "56e4394d992a1ab27d4cfde47676720a7ba3a352",
+  "result": "success",
+  "selectedJob": 129699432792,
+  "skippedGroups": 19,
+  "rootInput": {
+    "package": ".",
+    "commit": "56e4394d992a1ab27d4cfde47676720a7ba3a352",
+    "node": "v22.23.4",
+    "npm": "10.9.9",
+    "bun": "1.4.4",
+    "platform": "linux",
+    "arch": "x64",
+    "canonicalCiSha256": "2f54cabb6e409c676c091e5b05693730f0c74ce39f3f9eb0d715711584fa033e",
+    "input": {
+      "manifest": "acca6cd5646cf25666ec561d35585f7f89f7d827e554099439526475718144c9",
+      "npmLock": "5e833638ed0529875f869a6499860107fd3158cfcee2a93a0247f97701ee39c8"
+    },
+    "bunLock": "029e3005684924115881a9f274fcf889afa36740378683a059222a45449d4ef9",
+    "moduleKiB": "480808",
+    "lifecyclePolicy": "Bun default trust policy; no trust overrides"
+  },
+  "ubuntuSources": {
+    "sources": [
+      {
+        "path": "etc/apt/apt-mirrors.txt",
+        "changed": true,
+        "ubuntuUrls": [
+          "https://archive.ubuntu.com/ubuntu",
+          "https://security.ubuntu.com/ubuntu"
+        ]
+      },
+      {
+        "path": "etc/apt/sources.list",
+        "changed": false,
+        "ubuntuUrls": []
+      },
+      {
+        "path": "etc/apt/sources.list.d/ubuntu.sources",
+        "changed": false,
+        "ubuntuUrls": []
+      }
+    ],
+    "settingsPath": "etc/apt/apt.conf.d/zzzz-kerf-browser-downloads",
+    "settings": "Acquire::Retries \"1\";\nAcquire::http::Timeout \"15\";\nAcquire::https::Timeout \"15\";\n"
+  },
+  "effectiveAcquire": {
+    "retries": 1,
+    "httpTimeoutSeconds": 15,
+    "httpsTimeoutSeconds": 15
+  },
+  "httpUbuntuFetchOrIgnoreLines": 0,
+  "installSeconds": 65,
+  "smokeSeconds": 7,
+  "aptTransfers": ["13.0 MB index in 5s", "114 MB packages in 32s"],
+  "smoke": ["chromium", "firefox", "webkit"],
+  "downloadedBrowsers": [
+    "Chrome for Testing 153.0.8010.12 / chromium 1243",
+    "Firefox 155.0 / firefox 1543",
+    "WebKit 26.6 / webkit 2359"
+  ],
+  "rawLogSha256": "25f07efe03e386ee62a3c11967eada15f9a8c57b0f248f46840053c8cc4c7d47",
+  "configurationSha256": "0c21b1954807974c2d023e93c6ff62bffb52c55a4e1ad3cd8322e01a9c19f64b",
+  "sourceReportSha256": "6eae81ab0a641cededa3fc2d276b4fd87da7036097fd0327ceed4a659e989b42",
+  "comparison": {
+    "run": "https://github.com/brianwestphal/kerf/actions/runs/42757076917",
+    "job": 129633817062,
+    "commit": "d5adc44f8aaf7e9a92261ea3cdfa036e46b3fdfa",
+    "sameRunnerImage": "20261101.360.1",
+    "sameRootManifestNpmLockAndBunLock": true,
+    "aptIndex": "13.0 MB in 1s",
+    "aptPackages": "114 MB in 13m04s",
+    "caveat": "Single-run observation; network conditions vary. Not Bun adoption or application-matrix qualification."
+  }
+}
