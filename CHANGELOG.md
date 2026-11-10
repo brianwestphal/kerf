@@ -10,6 +10,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 - Stable release CLI rejects unknown options and supports an explicit noninteractive dry-run plan without altering release state or metadata, fetching/creating tags, committing, pushing, or publishing (KF-Y9A9XE).
 
+- **Shared generated component runtime (KF-4DR6XR).** Generated TypeScript and JavaScript views import one lightweight `@kerfjs/ui/view-runtime` helper instead of repeating it in every module. The curried boundary preserves component prop checking and linear catalog bundling analysis; declarations-only and component-free views add no runtime import.
+
 - **Project TypeScript parameters (KF-26P9FT, KF-B8YSHV, KF-MB5FFZ, KF-AFW3ZA).** The Params rail shows compact name/type rows. A dialog provides TypeScript text entry, project symbol completion, automatic formatting and nested type navigation. The owning project compiler checks expressions, defaults and generated bindings before editor export or CLI generation; saved expressions preserve their import context.
 
 - **Library file icons (KF-CBA2H7).** Both document layouts show decorative Lucide folder icons and extension-specific file icons, with a generic file fallback.

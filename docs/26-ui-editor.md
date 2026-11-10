@@ -1697,6 +1697,14 @@ and every handler live in application files. The document may declare which
 wiring a composition needs, through its components' catalog entries, but it
 never implements behavior.
 
+Generated component calls use `kuiComponent(Component)(props)` from the lightweight
+`@kerfjs/ui/view-runtime` entry (KF-4DR6XR). Its generic prop and `SafeHtml`
+contract matches a direct call, while the curried boundary keeps Rollup's effect
+analysis linear across large generated catalog trees. Both TypeScript and
+JavaScript targets import the shared helper only when they render Kerf
+components. Declarations-only and component-free modules omit that runtime
+import. The helper imports no generator, interpreter or Node compiler code.
+
 ### 5.2 Enforcement
 
 - `eslint-plugin-kerfjs` gains a rule, `kerfjs/no-generated-view-edits`, that

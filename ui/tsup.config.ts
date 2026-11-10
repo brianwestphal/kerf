@@ -2,6 +2,7 @@ import { defineConfig } from 'tsup';
 
 const entries = [
   'index',
+  'view-runtime',
   'badge',
   'chip',
   'css-values',
@@ -128,7 +129,7 @@ const entries = [
 export default defineConfig({
   entry: entries.map(
     (entry) =>
-      `src/${entry}.${entry === 'index' || entry === 'css-values' || entry.endsWith('-register') || entry === 'webawesome' || entry === 'device-class' || entry === 'catalog-resources' || entry === 'search-field-model' || entry === 'selection' || entry.startsWith('wire-') ? 'ts' : 'tsx'}`,
+      `src/${entry}.${entry === 'index' || entry === 'view-runtime' || entry === 'css-values' || entry.endsWith('-register') || entry === 'webawesome' || entry === 'device-class' || entry === 'catalog-resources' || entry === 'search-field-model' || entry === 'selection' || entry.startsWith('wire-') ? 'ts' : 'tsx'}`,
   ),
   format: ['esm'],
   outDir: 'dist',

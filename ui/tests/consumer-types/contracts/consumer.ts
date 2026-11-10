@@ -1361,3 +1361,12 @@ UI.Pane({
   // @ts-expect-error Pane protects its chrome-divider attribute.
   rootAttributes: { 'data-chrome-dividers': 'always' },
 });
+
+// KF-4DR6XR: the generated runtime boundary keeps the component's prop contract.
+import { kuiComponent } from '@kerfjs/ui/view-runtime';
+
+kuiComponent(Badge)({ children: 'Ready', tone: 'danger' });
+// @ts-expect-error the wrapper does not widen component props
+kuiComponent(Badge)({ children: 'Ready', tone: 'not-a-tone' });
+// @ts-expect-error components must return SafeHtml
+kuiComponent((props: { count: number }) => props.count);

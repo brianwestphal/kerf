@@ -333,7 +333,10 @@ describe('generateView: targets and node kinds', () => {
     expect(code).toContain(
       'export function renderInbox(inputs, slots, rowKey)',
     );
-    expect(code).toContain('function kuiComponent(component)');
+    expect(code).toContain(
+      "import { kuiComponent } from '@kerfjs/ui/view-runtime';",
+    );
+    expect(code).not.toContain('function kuiComponent(');
     expect(code).toContain('kuiComponent(Pane)({');
     expect(declarations).toContain('export interface InboxInputs');
     expect(declarations).toContain(
@@ -343,14 +346,38 @@ describe('generateView: targets and node kinds', () => {
     expect(readViewHeader(declarations!)!.intact).toBe(true);
   });
 
+  it('imports one shared helper for TS component calls and none for custom-element-only documents', () => {
+    const { code } = generate(inbox());
+    expect(code).toContain(
+      "import { kuiComponent } from '@kerfjs/ui/view-runtime';",
+    );
+    expect(code).not.toContain('function kuiComponent(');
+    const text = {
+      schema: 'kerf-ui-document/v1',
+      name: 'TextOnly',
+      catalogs: ['@kerfjs/ui'],
+      root: {
+        id: '01JB8Z1M6Q8E1X9V4S7K2R3T8A',
+        type: '@kerfjs/ui:wa-accordion',
+      },
+    };
+    for (const target of ['ts', 'js'])
+      expect(generate(text, { target }).code).not.toContain(
+        '@kerfjs/ui/view-runtime',
+      );
+  });
+
   it('omits render for declarations-only modules', () => {
     const { code } = generate(inbox(), { declarationsOnly: true });
     expect(code).not.toContain('renderInbox');
     expect(code).not.toContain('function kuiComponent(');
+    expect(code).not.toContain('@kerfjs/ui/view-runtime');
     expect(code).not.toContain("from '@kerfjs/ui/button'");
     expect(code).toContain('export function wireInbox');
     const js = generate(inbox(), { declarationsOnly: true, target: 'js' });
     expect(js.declarations).not.toContain('renderInbox');
+    expect(js.code).not.toContain('@kerfjs/ui/view-runtime');
+    expect(js.declarations).not.toContain('@kerfjs/ui/view-runtime');
   });
 
   it('defaults optional inputs and empty slots, and handles an action-free view', () => {

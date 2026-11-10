@@ -98,6 +98,22 @@ function styledClasses(css: string): Set<string> {
 // the first one pays esbuild's cold start and exceeded the 5s default under
 // concurrent load (KF-NWCH9K: bundle cases need headroom, not retries).
 describe('consumer bundle boundaries', { timeout: 30_000 }, () => {
+  it('keeps the shared generated runtime independent of compiler and generator code', async () => {
+    const result = await bundle(
+      "export { kuiComponent } from '@kerfjs/ui/view-runtime';",
+    );
+    const inputs = Object.keys(result.metafile!.inputs);
+    expect(inputs.some((path) => path.includes('view-runtime'))).toBe(true);
+    expect(
+      inputs.some((path) =>
+        /(?:typescript|view\/generate|view\/project-types|props\/component-props)/.test(
+          path,
+        ),
+      ),
+    ).toBe(false);
+    expect(output(result, '.js').length).toBeLessThan(500);
+  });
+
   it('ships the static analyzer as an explicit Node-only subpath', async () => {
     const result = await nodeBundle(
       "import { analyzeUiProject, formatUiAnalysisSarif } from '@kerfjs/ui/analyzer'; console.log(analyzeUiProject, formatUiAnalysisSarif);",

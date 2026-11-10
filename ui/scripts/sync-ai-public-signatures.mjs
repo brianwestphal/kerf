@@ -11,6 +11,7 @@ const webAwesomeOutputPath = resolve(
 );
 const check = process.argv.includes('--check');
 const curatedEntries = [
+  ['@kerfjs/ui/view-runtime', 'dist/view-runtime.d.ts'],
   ['@kerfjs/ui/css-values', 'dist/css-values.d.ts'],
   ['@kerfjs/ui/disclosure-arrow', 'dist/disclosure-arrow.d.ts'],
   ['@kerfjs/ui/toolbar', 'dist/toolbar.d.ts'],

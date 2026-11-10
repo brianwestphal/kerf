@@ -701,11 +701,8 @@ export function generateView(document, catalog, options = {}) {
     return `Parameters<typeof ${owner.export}>[0][${literal(input.shape.prop)}]`;
   });
   const contractLine = `export const ${camel}Contract = ${literal(digest)};`;
-  const componentHelper = usesKerfComponent
-    ? target === 'ts'
-      ? 'function kuiComponent<P>(component: (props: P) => SafeHtml): (props: P) => SafeHtml {\n  return (props) => component(props);\n}'
-      : 'function kuiComponent(component) {\n  return (props) => component(props);\n}'
-    : undefined;
+  if (usesKerfComponent)
+    imports.value('@kerfjs/ui/view-runtime', 'kuiComponent');
 
   const assemble = (body) =>
     `${header(sourceName, contract, sourceDigest, body)}\n${body}`;
@@ -714,7 +711,6 @@ export function generateView(document, catalog, options = {}) {
       imports.render(true),
       types,
       contractLine,
-      componentHelper,
       functionsBlock(name, contract, rootExpr, true),
     ]
       .filter(Boolean)
@@ -724,7 +720,6 @@ export function generateView(document, catalog, options = {}) {
   const code = [
     imports.render(false),
     contractLine,
-    componentHelper,
     functionsBlock(name, contract, rootExpr, false),
   ]
     .filter(Boolean)

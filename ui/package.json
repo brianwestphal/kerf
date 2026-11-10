@@ -59,6 +59,10 @@
       "types": "./catalog-projection.d.mts",
       "import": "./catalog-projection.mjs"
     },
+    "./view-runtime": {
+      "types": "./dist/view-runtime.d.ts",
+      "import": "./dist/view-runtime.js"
+    },
     "./view": {
       "types": "./view/index.d.mts",
       "import": "./view/index.mjs"

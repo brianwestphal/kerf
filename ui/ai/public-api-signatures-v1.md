@@ -2,6 +2,20 @@
 
 Generated from emitted declarations for `@kerfjs/ui@5.0.0` and `kerfjs@5.0.0-beta.105`. This bounded reference covers only APIs used by the seven-task corpus. It is interface evidence, not an implementation or runtime guarantee.
 
+## `@kerfjs/ui/view-runtime`
+
+```ts
+import { SafeHtml } from 'kerfjs';
+
+/**
+ * Preserve component prop inference behind a curried call boundary. Rollup's
+ * effect analysis stays linear through large generated component trees.
+ */
+declare function kuiComponent<P>(component: (props: P) => SafeHtml): (props: P) => SafeHtml;
+
+export { kuiComponent };
+```
+
 ## `@kerfjs/ui/css-values`
 
 ```ts
