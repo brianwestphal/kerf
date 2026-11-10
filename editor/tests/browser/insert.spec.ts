@@ -242,7 +242,17 @@ test('navigates document columns by pointer and keyboard and remembers the layou
     `[data-editor-palette-document="${folder}/message-row.kui.json"]`,
   );
   await expect(file).toBeVisible();
-  await library.getByRole('button', { name: 'Parent folder' }).click();
+  await expect(
+    library.getByRole('button', { name: 'Parent folder' }),
+  ).toHaveCount(0);
+  await expect(
+    library.locator('.kui-column-explorer .kui-list-header'),
+  ).toHaveText(['Project', 'pw-documents', folder.split('/').at(-1)!]);
+  await library.screenshot({
+    path: info.outputPath('KF-MGAP67-library-columns-navigation.png'),
+    animations: 'disabled',
+  });
+  await file.press('ArrowLeft');
   const folderRow = library.locator(`[data-item-id="folder:${folder}/"]`);
   await folderRow.focus();
   await folderRow.press('ArrowRight');
@@ -303,9 +313,20 @@ for (const width of [2048, 390]) {
       ),
     ).toBeVisible();
     await library.screenshot({
-      path: info.outputPath(`kf-d4xzxg-library-columns-${width}.png`),
+      path: info.outputPath(`KF-MGAP67-library-columns-${width}.png`),
     });
-    await library.getByRole('button', { name: 'Parent folder' }).click();
+    await expect(
+      library.locator('.kui-column-explorer .kui-list-header'),
+    ).toHaveText(['Project', 'pw-documents', folder.split('/').at(-1)!]);
+    await page.screenshot({
+      path: info.outputPath(`KF-MGAP67-editor-columns-${width}.png`),
+      animations: 'disabled',
+    });
+    await library
+      .locator(
+        `[data-editor-palette-document="${folder}/message-row.kui.json"]`,
+      )
+      .press('ArrowLeft');
     const folderRow = library.locator(`[data-item-id="folder:${folder}/"]`);
     await expect(folderRow).toBeVisible();
     await folderRow.focus();

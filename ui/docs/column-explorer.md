@@ -73,3 +73,5 @@ The `ColumnTrack` owns the sideways scroll, the column width, and the paged
 layout; each column is a scrollable `List` of `ListItem` rows, which own their
 insets, hover, and selected tint. The explorer fills its parent's height, so
 give it a container with a height.
+
+`rootHeading="Project"` adds a quiet `ListHeader` at the top of every column: the root name in the first column and the chosen parent folder name in later columns. Each heading moves with its column; omit it for the existing headerless presentation.

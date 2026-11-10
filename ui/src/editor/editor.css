@@ -583,26 +583,3 @@
   pointer-events: none;
   color: var(--kui-color-text-quiet);
 }
-
-/* The explorer owns horizontal scrolling; the Library body owns the vertical
-   list when the tree presentation is active. */
-.kui-editor__document-columns {
-  display: flex;
-  flex-direction: column;
-  block-size: 100%;
-  min-block-size: 0;
-}
-
-.kui-editor__document-location {
-  display: flex;
-  align-items: center;
-  gap: var(--kui-layout-item-gap, 8px);
-  min-block-size: 40px;
-  padding-inline: var(--kui-layout-inline-margin, 8px);
-  min-inline-size: 0;
-}
-
-.kui-editor__document-explorer {
-  flex: 1;
-  min-block-size: 0;
-}

@@ -129,6 +129,24 @@ describe('ColumnExplorer markup', () => {
     ).toBe(true);
   });
 
+  it('keeps optional parent headings inside their own columns', () => {
+    expect(render().querySelector('.kui-list-header')).toBeNull();
+    const explorer = render({ rootHeading: 'Project' });
+    const lists = [
+      ...explorer.querySelectorAll('[data-column-explorer-level].kui-list'),
+    ];
+    expect(
+      lists.map((list) =>
+        list.querySelector('.kui-list-header')?.textContent?.trim(),
+      ),
+    ).toEqual(['Project', 'Documents', 'Work']);
+    expect(
+      lists.every((list) =>
+        list.firstElementChild?.classList.contains('kui-list-header'),
+      ),
+    ).toBe(true);
+  });
+
   it('adds a preview column for a chosen leaf only', () => {
     const preview = raw('<p data-preview>plan.md, 2 KB</p>');
     const leaf = render({ path: ['docs', 'work', 'plan'], preview });

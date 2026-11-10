@@ -1379,8 +1379,11 @@ composing document belongs beside its rows before they render.
     path, ignoring case) over a list of the project's documents, without the
     current document's own file and drafts. Each row leads with its file
     name, under its folder. While the listing loads it says so; an empty
+
+    The Documents column view uses `ColumnExplorer rootHeading="Project"`: quiet parent-folder headings travel with their columns, replacing the shared path label and Back control (KF-MGAP67). Keyboard Left returns to the previous column.
     project, no match, and a failed listing each show an empty state with
     the reason. Choosing a row inserts it.
+
   - Without `list()` (a custom storage), the dialog asks for a **Path**
     instead, with an Insert button, as Extract does.
   - Inserting reads the document through `storage.read` and puts a `#view`

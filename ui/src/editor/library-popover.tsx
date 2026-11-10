@@ -1,7 +1,6 @@
 // The editor's component and document Library popover and its palette views.
 import { raw, type Signal } from 'kerfjs';
 import {
-  ArrowLeft,
   Columns3,
   Component,
   LayoutGrid,
@@ -9,7 +8,6 @@ import {
   ListTree,
 } from 'lucide';
 
-import { Button } from '../components/actions/button/button.js';
 import { ColumnExplorer } from '../components/collections/column-explorer/column-explorer.js';
 import { List } from '../components/collections/list/list.js';
 import { ListHeader } from '../components/collections/list-header/list-header.js';
@@ -28,7 +26,6 @@ import { px } from '../shared/styles/css-values.js';
 import { HOOK } from './dom-hooks.js';
 import type { EditorContext } from './editor-context.js';
 import {
-  DOCUMENT_BACK_ACTION,
   DOCUMENT_ROW_ACTION,
   DOCUMENT_TOGGLE_ACTION,
   DOCUMENT_VIEW_ACTION,
@@ -173,32 +170,15 @@ export function createLibraryPopover(
   const libraryDocumentGroup = (documents: readonly string[]) => {
     const nodes = libraryDocumentTree(documents);
     return documentView.value === 'columns' ? (
-      <div class="kui-editor__document-columns">
-        <div class="kui-editor__document-location">
-          {documentPath.value.length ? (
-            <Button
-              icon={<LucideIcon icon={ArrowLeft} name="back" />}
-              ariaLabel="Parent folder"
-              action={DOCUMENT_BACK_ACTION}
-              size="compact"
-            />
-          ) : undefined}
-          <Text variant="span" size="compact" wrap="truncate">
-            {documentPath.value.length
-              ? `Project / ${documentPath.value.at(-1)!.slice('folder:'.length)}`
-              : 'Project'}
-          </Text>
-        </div>
-        <ColumnExplorer
-          id="editor-library-documents-columns"
-          label={LIBRARY_DOCUMENTS}
-          nodes={nodes}
-          path={documentPath.value}
-          action={DOCUMENT_ROW_ACTION}
-          layout="paged"
-          className="kui-editor__document-explorer"
-        />
-      </div>
+      <ColumnExplorer
+        id="editor-library-documents-columns"
+        label={LIBRARY_DOCUMENTS}
+        nodes={nodes}
+        path={documentPath.value}
+        action={DOCUMENT_ROW_ACTION}
+        layout="paged"
+        rootHeading="Project"
+      />
     ) : (
       <TreeList
         id="editor-library-documents-tree"

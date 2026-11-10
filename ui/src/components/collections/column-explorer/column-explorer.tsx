@@ -9,6 +9,7 @@ import type { CssLength } from '../../../shared/styles/css-values.js';
 import { ColumnTrack } from '../../layout/column-track/column-track.js';
 import { LucideIcon } from '../../media/lucide-icon/lucide-icon.js';
 import { List } from '../list/list.js';
+import { ListHeader } from '../list-header/list-header.js';
 import { ListItem } from '../list-item/list-item.js';
 import {
   isExpandable,
@@ -52,6 +53,8 @@ export interface ColumnExplorerProps {
   minColumnWidth?: CssLength;
   /** How much of the next column a paged layout shows. */
   peek?: CssLength;
+  /** Show a quiet parent heading in every column, starting with this root name. */
+  rootHeading?: string;
   /** Row density: `default` or `compact`. */
   density?: 'default' | 'compact' | /** @deprecated Use default. */ 'standard';
   className?: string;
@@ -79,6 +82,7 @@ export function ColumnExplorer({
   layout,
   minColumnWidth,
   peek,
+  rootHeading,
   density = 'default',
   className = '',
   rootAttributes = {},
@@ -115,6 +119,15 @@ export function ColumnExplorer({
                 'data-column-explorer-level': String(column.level),
               }}
             >
+              {rootHeading !== undefined ? (
+                <ListHeader
+                  label={
+                    column.parent ? String(column.parent.label) : rootHeading
+                  }
+                  size="xs"
+                  density="compact"
+                />
+              ) : null}
               {column.nodes.map((node) => (
                 <ListItem
                   action={action}

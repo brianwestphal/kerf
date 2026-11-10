@@ -17,7 +17,6 @@ export const LIBRARY_MODE_ACTION = 'editor-library-mode';
 export const DOCUMENT_VIEW_ACTION = 'editor-document-view';
 export const DOCUMENT_ROW_ACTION = 'editor-document-row';
 export const DOCUMENT_TOGGLE_ACTION = 'editor-document-toggle';
-export const DOCUMENT_BACK_ACTION = 'editor-document-back';
 export type LibraryMode = 'components' | 'documents';
 export type DocumentView = 'columns' | 'tree';
 const DOCUMENT_VIEW_KEY = 'kerf-ui-editor:document-view';

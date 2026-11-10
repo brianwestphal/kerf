@@ -175,12 +175,14 @@ describe('the Library’s documents', () => {
       library.querySelector<HTMLElement>('[data-item-id="folder:views/"]')!,
     );
     expect(documents(library)).toContain(ROW_PATH);
-    click(
-      library.querySelector<HTMLElement>(
-        '[data-action="editor-document-back"]',
-      )!,
-    );
-    expect(documents(library)).toEqual(['app.kui.json']);
+    expect(
+      library.querySelector('[data-action="editor-document-back"]'),
+    ).toBeNull();
+    expect(
+      [
+        ...library.querySelectorAll('.kui-column-explorer .kui-list-header'),
+      ].map((heading) => heading.textContent?.trim()),
+    ).toEqual(['Project', 'views']);
   });
 
   it('collapses and expands a folder without losing its file paths', async () => {

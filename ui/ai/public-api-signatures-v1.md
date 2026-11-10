@@ -6228,6 +6228,8 @@ interface ColumnExplorerProps {
     minColumnWidth?: CssLength;
     /** How much of the next column a paged layout shows. */
     peek?: CssLength;
+    /** Show a quiet parent heading in every column, starting with this root name. */
+    rootHeading?: string;
     /** Row density: `default` or `compact`. */
     density?: 'default' | 'compact' | /** @deprecated Use default. */ 'standard';
     className?: string;
@@ -6242,7 +6244,7 @@ interface ColumnExplorerProps {
  * its children. The application owns the nodes and the chosen path and
  * handles `action`; wire the keyboard with `wireColumnExplorer`.
  */
-declare function ColumnExplorer({ id, label, nodes, path, action, preview, layout, minColumnWidth, peek, density, className, rootAttributes, slot, }: ColumnExplorerProps): SafeHtml;
+declare function ColumnExplorer({ id, label, nodes, path, action, preview, layout, minColumnWidth, peek, rootHeading, density, className, rootAttributes, slot, }: ColumnExplorerProps): SafeHtml;
 
 export { ColumnExplorer, type ColumnExplorerProps, type ExplorerColumn, explorerChosen, explorerColumns };
 ```

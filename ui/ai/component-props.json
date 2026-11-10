@@ -2649,6 +2649,12 @@
           "description": "How much of the next column a paged layout shows."
         },
         {
+          "name": "rootHeading",
+          "type": { "kind": "string", "text": "string", "nullable": true },
+          "required": false,
+          "description": "Show a quiet parent heading in every column, starting with this root name."
+        },
+        {
           "name": "density",
           "type": {
             "kind": "enum",

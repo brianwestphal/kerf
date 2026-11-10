@@ -144,7 +144,6 @@ import {
 import { createInspectorControls } from './inspector-controls.js';
 import { createLibraryDrag, type LibraryRead } from './library-drag.js';
 import {
-  DOCUMENT_BACK_ACTION,
   DOCUMENT_ROW_ACTION,
   DOCUMENT_TOGGLE_ACTION,
   DOCUMENT_VIEW_ACTION,
@@ -4121,9 +4120,6 @@ export function createEditor(options: EditorOptions) {
         : path.slice(0, -1);
       if (!isDocumentFolderId(id))
         void insertFromLibrary(root, id, (event as MouseEvent).altKey);
-    },
-    [DOCUMENT_BACK_ACTION]: () => {
-      documentLibraryPath.value = documentLibraryPath.peek().slice(0, -1);
     },
     [DOCUMENT_TOGGLE_ACTION]: (_event, target) => {
       const id = target.dataset.itemId!;
