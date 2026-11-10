@@ -1,0 +1,301 @@
+{
+  "run": "https://github.com/brianwestphal/kerf/actions/runs/42757076917",
+  "commit": "d5adc44f8aaf7e9a92261ea3cdfa036e46b3fdfa",
+  "platform": "linux",
+  "arch": "x64",
+  "node": "22.23.4",
+  "npm": "10.9.9",
+  "bun": "1.4.4",
+  "provisioning": "npm-augmented diagnostic control; not pure Bun WASI evidence",
+  "results": [
+    {
+      "installer": "npm",
+      "phase": "native",
+      "rawArtifact": "wasi-npm-d5adc44f8aaf7e9a92261ea3cdfa036e46b3fdfa/wasi-native.json",
+      "sha256": "e7076d36264af289b52ed5aeff4c542a850e3dee2a1bec88d1a4f9e5ae320f8e",
+      "inputs": {
+        "manifest": "eed4e3acc0997daeb21942dadd15293858baeeed0f96de3670d0a0ec47cc3249",
+        "npmLock": "3d9f1d30172935aaeb2be7e85609bf4c517ea1287fa1f24e7210f6c6d78633e0",
+        "bunLock": null
+      },
+      "native": {
+        "status": 0,
+        "signal": null,
+        "stdout": "<h1>WASM probe</h1>\n<p><strong>works</strong></p>\n\n"
+      },
+      "strict": {
+        "status": 1,
+        "signal": null,
+        "stdout": "",
+        "missingBinding": true
+      },
+      "inventory": [
+        {
+          "name": "@emnapi/core",
+          "version": "1.11.3"
+        },
+        {
+          "name": "@emnapi/runtime",
+          "version": "1.11.3"
+        },
+        {
+          "name": "@emnapi/wasi-threads",
+          "version": "1.2.3"
+        },
+        {
+          "name": "@napi-rs/wasm-runtime",
+          "version": "1.2.4"
+        },
+        {
+          "name": "@emnapi/runtime",
+          "version": "1.11.3"
+        }
+      ],
+      "loaderResolution": [
+        {
+          "name": "@bruits/satteri-wasm32-wasi",
+          "unresolved": true,
+          "code": "MODULE_NOT_FOUND"
+        },
+        {
+          "name": "@emnapi/core",
+          "unresolved": true,
+          "code": "ERR_PACKAGE_PATH_NOT_EXPORTED"
+        },
+        {
+          "name": "@emnapi/runtime",
+          "unresolved": true,
+          "code": "ERR_PACKAGE_PATH_NOT_EXPORTED"
+        },
+        {
+          "name": "@emnapi/wasi-threads",
+          "unresolved": true,
+          "code": "ERR_PACKAGE_PATH_NOT_EXPORTED"
+        },
+        {
+          "name": "@napi-rs/wasm-runtime",
+          "unresolved": true,
+          "code": "ERR_PACKAGE_PATH_NOT_EXPORTED"
+        }
+      ]
+    },
+    {
+      "installer": "npm",
+      "phase": "provisioned",
+      "rawArtifact": "wasi-npm-d5adc44f8aaf7e9a92261ea3cdfa036e46b3fdfa/wasi-provisioned.json",
+      "sha256": "6d69cc81d6a2ab4e5fc6a9b6757bb52d0955095d7cbfe09990af78d30409e933",
+      "inputs": {
+        "manifest": "5fda2f5b86ef6ae3b87eecf5af08eba748e7528d8167dcca0e8b1c7f29f792c7",
+        "npmLock": "5ba1516d600c6f95b536d27c796607fc3bccdc7f943d3629606a976d74b1569c",
+        "bunLock": null
+      },
+      "native": {
+        "status": 0,
+        "signal": null,
+        "stdout": "<h1>WASM probe</h1>\n<p><strong>works</strong></p>\n\n"
+      },
+      "strict": {
+        "status": 0,
+        "signal": null,
+        "stdout": "<h1>WASM probe</h1>\n<p><strong>works</strong></p>\n\n",
+        "missingBinding": false
+      },
+      "inventory": [
+        {
+          "name": "@bruits/satteri-wasm32-wasi",
+          "version": "0.10.5"
+        },
+        {
+          "name": "@emnapi/core",
+          "version": "1.11.1"
+        },
+        {
+          "name": "@emnapi/runtime",
+          "version": "1.11.1"
+        },
+        {
+          "name": "@emnapi/wasi-threads",
+          "version": "1.2.2"
+        },
+        {
+          "name": "@emnapi/core",
+          "version": "1.11.3"
+        },
+        {
+          "name": "@emnapi/runtime",
+          "version": "1.11.3"
+        },
+        {
+          "name": "@emnapi/wasi-threads",
+          "version": "1.2.3"
+        },
+        {
+          "name": "@napi-rs/wasm-runtime",
+          "version": "1.2.4"
+        },
+        {
+          "name": "@emnapi/runtime",
+          "version": "1.11.3"
+        }
+      ],
+      "loaderResolution": [
+        {
+          "name": "@bruits/satteri-wasm32-wasi",
+          "version": "0.10.5"
+        },
+        {
+          "name": "@emnapi/core",
+          "unresolved": true,
+          "code": "ERR_PACKAGE_PATH_NOT_EXPORTED"
+        },
+        {
+          "name": "@emnapi/runtime",
+          "unresolved": true,
+          "code": "ERR_PACKAGE_PATH_NOT_EXPORTED"
+        },
+        {
+          "name": "@emnapi/wasi-threads",
+          "unresolved": true,
+          "code": "ERR_PACKAGE_PATH_NOT_EXPORTED"
+        },
+        {
+          "name": "@napi-rs/wasm-runtime",
+          "unresolved": true,
+          "code": "ERR_PACKAGE_PATH_NOT_EXPORTED"
+        }
+      ]
+    },
+    {
+      "installer": "bun",
+      "phase": "native",
+      "rawArtifact": "wasi-bun-d5adc44f8aaf7e9a92261ea3cdfa036e46b3fdfa/wasi-native.json",
+      "sha256": "088747d082a4bd25595973abd2ddf031f437448c0f3cf129438870c7fdf31554",
+      "inputs": {
+        "manifest": "eed4e3acc0997daeb21942dadd15293858baeeed0f96de3670d0a0ec47cc3249",
+        "npmLock": "3d9f1d30172935aaeb2be7e85609bf4c517ea1287fa1f24e7210f6c6d78633e0",
+        "bunLock": "76183ae67fa44c02de2363c50f5a0cdd2da96476ad37be3a36784dfa757bbfb3"
+      },
+      "native": {
+        "status": 0,
+        "signal": null,
+        "stdout": "<h1>WASM probe</h1>\n<p><strong>works</strong></p>\n\n"
+      },
+      "strict": {
+        "status": 1,
+        "signal": null,
+        "stdout": "",
+        "missingBinding": true
+      },
+      "inventory": [],
+      "loaderResolution": [
+        {
+          "name": "@bruits/satteri-wasm32-wasi",
+          "unresolved": true,
+          "code": "MODULE_NOT_FOUND"
+        },
+        {
+          "name": "@emnapi/core",
+          "unresolved": true,
+          "code": "MODULE_NOT_FOUND"
+        },
+        {
+          "name": "@emnapi/runtime",
+          "unresolved": true,
+          "code": "MODULE_NOT_FOUND"
+        },
+        {
+          "name": "@emnapi/wasi-threads",
+          "unresolved": true,
+          "code": "MODULE_NOT_FOUND"
+        },
+        {
+          "name": "@napi-rs/wasm-runtime",
+          "unresolved": true,
+          "code": "MODULE_NOT_FOUND"
+        }
+      ]
+    },
+    {
+      "installer": "bun",
+      "phase": "provisioned",
+      "rawArtifact": "wasi-bun-d5adc44f8aaf7e9a92261ea3cdfa036e46b3fdfa/wasi-provisioned.json",
+      "sha256": "1acba12059b2b600f088d21184f11df76037df2264ec9d09d26fc24924ddd551",
+      "inputs": {
+        "manifest": "5fda2f5b86ef6ae3b87eecf5af08eba748e7528d8167dcca0e8b1c7f29f792c7",
+        "npmLock": "5ba1516d600c6f95b536d27c796607fc3bccdc7f943d3629606a976d74b1569c",
+        "bunLock": "76183ae67fa44c02de2363c50f5a0cdd2da96476ad37be3a36784dfa757bbfb3"
+      },
+      "native": {
+        "status": 0,
+        "signal": null,
+        "stdout": "<h1>WASM probe</h1>\n<p><strong>works</strong></p>\n\n"
+      },
+      "strict": {
+        "status": 0,
+        "signal": null,
+        "stdout": "<h1>WASM probe</h1>\n<p><strong>works</strong></p>\n\n",
+        "missingBinding": false
+      },
+      "inventory": [
+        {
+          "name": "@bruits/satteri-wasm32-wasi",
+          "version": "0.10.5"
+        },
+        {
+          "name": "@emnapi/core",
+          "version": "1.11.1"
+        },
+        {
+          "name": "@emnapi/runtime",
+          "version": "1.11.1"
+        },
+        {
+          "name": "@emnapi/wasi-threads",
+          "version": "1.2.2"
+        },
+        {
+          "name": "@emnapi/core",
+          "version": "1.11.3"
+        },
+        {
+          "name": "@emnapi/runtime",
+          "version": "1.11.3"
+        },
+        {
+          "name": "@emnapi/wasi-threads",
+          "version": "1.2.3"
+        },
+        {
+          "name": "@napi-rs/wasm-runtime",
+          "version": "1.2.4"
+        }
+      ],
+      "loaderResolution": [
+        {
+          "name": "@bruits/satteri-wasm32-wasi",
+          "version": "0.10.5"
+        },
+        {
+          "name": "@emnapi/core",
+          "unresolved": true,
+          "code": "ERR_PACKAGE_PATH_NOT_EXPORTED"
+        },
+        {
+          "name": "@emnapi/runtime",
+          "unresolved": true,
+          "code": "ERR_PACKAGE_PATH_NOT_EXPORTED"
+        },
+        {
+          "name": "@emnapi/wasi-threads",
+          "unresolved": true,
+          "code": "ERR_PACKAGE_PATH_NOT_EXPORTED"
+        },
+        {
+          "name": "@napi-rs/wasm-runtime",
+          "unresolved": true,
+          "code": "ERR_PACKAGE_PATH_NOT_EXPORTED"
+        }
+      ]
+    }
+  ]
+}
