@@ -256,6 +256,7 @@ describe('TreeList markup', () => {
         expanded: false,
         selected: false,
         focusable: true,
+        density: 'standard',
         action: 'pick',
         toggleAction: 'toggle',
         rootAttributes: {
