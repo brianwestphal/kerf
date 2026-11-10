@@ -144,6 +144,8 @@ The same typed projection derives repository-relative paths for focused demo,
 recipe, Web Awesome, and first-party component source, then pairs them with canonical
 guidance paths in visible, deploy-safe detail links.
 
+`scripts/bun-pure-wasi-probe.mjs` archives committed HEAD into a disposable full-site fixture and records exact toolchains, immutable canonical hashes, full installed graphs, supported Bun architecture/provisioning attempts, actual Satteri-loader package locations, and native/strict-WASI Markdown exit results. `tests/unit/bun-pure-wasi-probe.test.ts` pins hidden-export inventory, nested/symlink graph edges, input mutation boundaries, and clean-process assertions. The policy and local evidence live in `docs/reports/2026-11-10-bun-pure-wasi.md`: native-only experimental candidate; no forced-WASI, Bun-runtime, or production-installer adoption claim (KF-AT2EEZ).
+
 `editor/samples/*.kui.json` (KF-JN4PF5: build every ux-demo configuration in the editor) holds one loadable view document per demo configuration the editor builds. `editor/tests/browser/demo-builds/*.spec.ts` builds each one through palette drags, outline and canvas clicks, and Inspector fields, and their Chromium runs save each export there through `exported()`/`saveSample` in `editor/tests/browser/build.ts`. Names come from `sampleName()` (`editor/tests/browser/sample-name.ts`), and node ids are renumbered so an unchanged build rewrites the same bytes. `editor/tests/unit/samples.test.ts` requires exactly one valid sample per build; `editor/tests/browser/samples.spec.ts` opens each through Open.
 
 `ui/ai-regressions/` is the internal deterministic AI-choice regression
