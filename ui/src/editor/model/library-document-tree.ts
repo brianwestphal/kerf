@@ -1,5 +1,9 @@
+import { Folder as FolderIcon } from 'lucide';
+
 import type { TreeListNode } from '../../components/collections/tree-list/model/tree-rows.js';
+import { LucideIcon } from '../../components/media/lucide-icon/lucide-icon.js';
 import { documentName } from './insert-view.js';
+import { libraryDocumentIcon } from './library-document-icon.js';
 
 export const documentFolderId = (path: string) => `folder:${path}`;
 export const isDocumentFolderId = (id: string) =>
@@ -40,6 +44,7 @@ export function libraryDocumentTree(paths: readonly string[]): TreeListNode[] {
       .map((child) => ({
         id: documentFolderId(child.path),
         label: child.name,
+        icon: LucideIcon({ icon: FolderIcon, name: 'folder' }),
         children: rows(child),
       })),
     ...folder.files
@@ -47,6 +52,7 @@ export function libraryDocumentTree(paths: readonly string[]): TreeListNode[] {
       .map((path) => ({
         id: path,
         label: documentName(path),
+        icon: libraryDocumentIcon(path),
         rootAttributes: { 'data-editor-palette-document': path },
       })),
   ];
