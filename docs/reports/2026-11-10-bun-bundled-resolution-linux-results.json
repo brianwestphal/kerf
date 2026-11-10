@@ -1,0 +1,2404 @@
+{
+  "schema": "kerf-bun-bundled-resolution-linux/v1",
+  "result": "Full-development bundled resolution remains unsupported by tested Bun1.4.4 controls. A limited production-only add followed by normal frozen restore succeeds and retains exact site tooling; strict WASI remains unsupported. No adoption.",
+  "run": {
+    "id": 42787309811,
+    "url": "https://github.com/brianwestphal/kerf/actions/runs/42787309811",
+    "headSha": "feff2523c2105239eb9ff086923117b0fb1d8509",
+    "jobs": [
+      {
+        "id": 129731671759,
+        "name": "bundled-dependency",
+        "status": "completed",
+        "conclusion": "success",
+        "startedAt": "2026-11-10T09:04:07Z",
+        "completedAt": "2026-11-10T09:05:46Z"
+      },
+      {
+        "id": 129731673323,
+        "name": "browser",
+        "status": "completed",
+        "conclusion": "skipped",
+        "startedAt": "2026-11-10T09:02:08Z",
+        "completedAt": "2026-11-10T09:02:07Z"
+      },
+      {
+        "id": 129731673359,
+        "name": "test",
+        "status": "completed",
+        "conclusion": "skipped",
+        "startedAt": "2026-11-10T09:02:08Z",
+        "completedAt": "2026-11-10T09:02:07Z"
+      },
+      {
+        "id": 129731673542,
+        "name": "typecheck",
+        "status": "completed",
+        "conclusion": "skipped",
+        "startedAt": "2026-11-10T09:02:08Z",
+        "completedAt": "2026-11-10T09:02:07Z"
+      },
+      {
+        "id": 129731673564,
+        "name": "editor",
+        "status": "completed",
+        "conclusion": "skipped",
+        "startedAt": "2026-11-10T09:02:08Z",
+        "completedAt": "2026-11-10T09:02:07Z"
+      },
+      {
+        "id": 129731673586,
+        "name": "ui-webawesome-latest",
+        "status": "completed",
+        "conclusion": "skipped",
+        "startedAt": "2026-11-10T09:02:08Z",
+        "completedAt": "2026-11-10T09:02:07Z"
+      },
+      {
+        "id": 129731673624,
+        "name": "seventh-tree",
+        "status": "completed",
+        "conclusion": "skipped",
+        "startedAt": "2026-11-10T09:02:08Z",
+        "completedAt": "2026-11-10T09:02:07Z"
+      },
+      {
+        "id": 129731673679,
+        "name": "node-floor",
+        "status": "completed",
+        "conclusion": "skipped",
+        "startedAt": "2026-11-10T09:02:08Z",
+        "completedAt": "2026-11-10T09:02:07Z"
+      },
+      {
+        "id": 129731673712,
+        "name": "eslint-plugin",
+        "status": "completed",
+        "conclusion": "skipped",
+        "startedAt": "2026-11-10T09:02:08Z",
+        "completedAt": "2026-11-10T09:02:07Z"
+      },
+      {
+        "id": 129731673794,
+        "name": "site",
+        "status": "completed",
+        "conclusion": "skipped",
+        "startedAt": "2026-11-10T09:02:08Z",
+        "completedAt": "2026-11-10T09:02:07Z"
+      },
+      {
+        "id": 129731673839,
+        "name": "build",
+        "status": "completed",
+        "conclusion": "skipped",
+        "startedAt": "2026-11-10T09:02:08Z",
+        "completedAt": "2026-11-10T09:02:07Z"
+      },
+      {
+        "id": 129731673875,
+        "name": "design-templates",
+        "status": "completed",
+        "conclusion": "skipped",
+        "startedAt": "2026-11-10T09:02:08Z",
+        "completedAt": "2026-11-10T09:02:07Z"
+      },
+      {
+        "id": 129731673880,
+        "name": "local-peer",
+        "status": "completed",
+        "conclusion": "skipped",
+        "startedAt": "2026-11-10T09:02:08Z",
+        "completedAt": "2026-11-10T09:02:07Z"
+      },
+      {
+        "id": 129731674030,
+        "name": "library-performance",
+        "status": "completed",
+        "conclusion": "skipped",
+        "startedAt": "2026-11-10T09:02:08Z",
+        "completedAt": "2026-11-10T09:02:07Z"
+      },
+      {
+        "id": 129731674433,
+        "name": "ui",
+        "status": "completed",
+        "conclusion": "skipped",
+        "startedAt": "2026-11-10T09:02:08Z",
+        "completedAt": "2026-11-10T09:02:07Z"
+      },
+      {
+        "id": 129731674564,
+        "name": "editor-browser",
+        "status": "completed",
+        "conclusion": "skipped",
+        "startedAt": "2026-11-10T09:02:08Z",
+        "completedAt": "2026-11-10T09:02:07Z"
+      },
+      {
+        "id": 129731674620,
+        "name": "stable-plan",
+        "status": "completed",
+        "conclusion": "skipped",
+        "startedAt": "2026-11-10T09:02:08Z",
+        "completedAt": "2026-11-10T09:02:07Z"
+      },
+      {
+        "id": 129731718876,
+        "name": "wasi-resolution",
+        "status": "completed",
+        "conclusion": "skipped",
+        "startedAt": "2026-11-10T09:02:14Z",
+        "completedAt": "2026-11-10T09:02:07Z"
+      },
+      {
+        "id": 129731721915,
+        "name": "browser-apt",
+        "status": "completed",
+        "conclusion": "skipped",
+        "startedAt": "2026-11-10T09:02:14Z",
+        "completedAt": "2026-11-10T09:02:07Z"
+      },
+      {
+        "id": 129731735233,
+        "name": "create-kerf-component",
+        "status": "completed",
+        "conclusion": "skipped",
+        "startedAt": "2026-11-10T09:02:16Z",
+        "completedAt": "2026-11-10T09:02:07Z"
+      },
+      {
+        "id": 129731739538,
+        "name": "gates",
+        "status": "completed",
+        "conclusion": "skipped",
+        "startedAt": "2026-11-10T09:02:16Z",
+        "completedAt": "2026-11-10T09:02:07Z"
+      },
+      {
+        "id": 129731740504,
+        "name": "ui-browser",
+        "status": "completed",
+        "conclusion": "skipped",
+        "startedAt": "2026-11-10T09:02:17Z",
+        "completedAt": "2026-11-10T09:02:07Z"
+      },
+      {
+        "id": 129731741373,
+        "name": "lint",
+        "status": "completed",
+        "conclusion": "skipped",
+        "startedAt": "2026-11-10T09:02:17Z",
+        "completedAt": "2026-11-10T09:02:07Z"
+      },
+      {
+        "id": 129731744620,
+        "name": "release-artifacts",
+        "status": "completed",
+        "conclusion": "skipped",
+        "startedAt": "2026-11-10T09:02:17Z",
+        "completedAt": "2026-11-10T09:02:07Z"
+      },
+      {
+        "id": 129731748753,
+        "name": "pure-wasi",
+        "status": "completed",
+        "conclusion": "skipped",
+        "startedAt": "2026-11-10T09:02:18Z",
+        "completedAt": "2026-11-10T09:02:07Z"
+      }
+    ]
+  },
+  "toolchain": {
+    "node": "v22.23.4",
+    "npm": "10.9.9",
+    "bun": "1.4.4",
+    "bunRevision": "1.4.4+38afee6c8",
+    "sourceSha": "feff2523c2105239eb9ff086923117b0fb1d8509",
+    "platform": "linux",
+    "arch": "x64"
+  },
+  "artifacts": [
+    {
+      "id": 13749439820,
+      "node_id": "MDg6QXJ0aWZhY3QxMzc0OTQzOTgyMA==",
+      "name": "bundled-dependency-feff2523c2105239eb9ff086923117b0fb1d8509",
+      "size_in_bytes": 2348492,
+      "url": "https://api.github.com/repos/brianwestphal/kerf/actions/artifacts/13749439820",
+      "archive_download_url": "https://api.github.com/repos/brianwestphal/kerf/actions/artifacts/13749439820/zip",
+      "expired": false,
+      "digest": "sha256:64bd5beb85a04af9b4a80337c22d4baa1c4459fa078b10edde622b782e669ce4",
+      "created_at": "2026-11-10T09:05:42Z",
+      "updated_at": "2026-11-10T09:05:42Z",
+      "expires_at": "2027-02-08T09:02:07Z",
+      "workflow_run": {
+        "id": 42787309811,
+        "repository_id": 1231460256,
+        "head_repository_id": 1231460256,
+        "head_branch": "main",
+        "head_sha": "feff2523c2105239eb9ff086923117b0fb1d8509"
+      }
+    }
+  ],
+  "canonicalInputs": {
+    "package.json": "acca6cd5646cf25666ec561d35585f7f89f7d827e554099439526475718144c9",
+    "package-lock.json": "5e833638ed0529875f869a6499860107fd3158cfcee2a93a0247f97701ee39c8",
+    "site/package.json": "eed4e3acc0997daeb21942dadd15293858baeeed0f96de3670d0a0ec47cc3249",
+    "site/package-lock.json": "3d9f1d30172935aaeb2be7e85609bf4c517ea1287fa1f24e7210f6c6d78633e0"
+  },
+  "cachePolicy": {
+    "independentParentArchivesAndFixtureGraphs": true,
+    "oneProbePrivateCacheSharedAcrossControls": true,
+    "coldCachePerControl": false,
+    "explicitBypassControl": "no-cache-add"
+  },
+  "attempts": [
+    {
+      "name": "migration",
+      "command": ["bun", "pm", "migrate"],
+      "status": 0,
+      "signal": null,
+      "error": null,
+      "inputHashesBefore": null,
+      "inputHashesAfter": null,
+      "inputsUnchanged": null,
+      "beforeNodes": null,
+      "afterNodes": null,
+      "physicalGraphUnchanged": null,
+      "stdout": "",
+      "stderr": "[2.17ms] migrated lockfile from package-lock.json\n"
+    },
+    {
+      "name": "native-baseline",
+      "command": ["bun", "install", "--frozen-lockfile", "--ignore-scripts"],
+      "status": 0,
+      "signal": null,
+      "error": null,
+      "inputHashesBefore": null,
+      "inputHashesAfter": null,
+      "inputsUnchanged": null,
+      "beforeNodes": null,
+      "afterNodes": null,
+      "physicalGraphUnchanged": null,
+      "stdout": "bun install v1.4.4 (38afee6c8)\n\n+ @playwright/test@1.63.0\n+ typescript@6.0.3\n+ vite@8.3.4\n+ @astrojs/starlight@0.42.0\n+ astro@7.3.2\n+ dompurify@3.4.17\n+ kerfjs@..\n+ marked@15.0.12\n+ sharp@0.35.5\n\n363 packages installed [1007.00ms]\n",
+      "stderr": "warn: dependencies in ../package.json changed since lockfile was saved (run 'bun install')\n"
+    },
+    {
+      "name": "default-add",
+      "command": [
+        "bun",
+        "add",
+        "--exact",
+        "--ignore-scripts",
+        "@bruits/satteri-wasm32-wasi@0.10.5"
+      ],
+      "status": 1,
+      "signal": null,
+      "error": null,
+      "inputHashesBefore": {
+        "package.json": "eed4e3acc0997daeb21942dadd15293858baeeed0f96de3670d0a0ec47cc3249",
+        "package-lock.json": "3d9f1d30172935aaeb2be7e85609bf4c517ea1287fa1f24e7210f6c6d78633e0",
+        "bun.lock": "76183ae67fa44c02de2363c50f5a0cdd2da96476ad37be3a36784dfa757bbfb3"
+      },
+      "inputHashesAfter": {
+        "package.json": "eed4e3acc0997daeb21942dadd15293858baeeed0f96de3670d0a0ec47cc3249",
+        "package-lock.json": "3d9f1d30172935aaeb2be7e85609bf4c517ea1287fa1f24e7210f6c6d78633e0",
+        "bun.lock": "76183ae67fa44c02de2363c50f5a0cdd2da96476ad37be3a36784dfa757bbfb3"
+      },
+      "inputsUnchanged": true,
+      "beforeNodes": 372,
+      "afterNodes": 372,
+      "physicalGraphUnchanged": true,
+      "stdout": "bun add v1.4.4 (38afee6c8)\n",
+      "stderr": "Resolving dependencies\nResolved, downloaded and extracted [1387]\nerror: GET https://registry.npmjs.org/@domotion%2ftext-engine - 404\nerror: @domotion/text-engine@0.35.0 failed to resolve\n"
+    },
+    {
+      "name": "production-add",
+      "command": [
+        "bun",
+        "add",
+        "--exact",
+        "--ignore-scripts",
+        "@bruits/satteri-wasm32-wasi@0.10.5",
+        "--production"
+      ],
+      "status": 0,
+      "signal": null,
+      "error": null,
+      "inputHashesBefore": {
+        "package.json": "eed4e3acc0997daeb21942dadd15293858baeeed0f96de3670d0a0ec47cc3249",
+        "package-lock.json": "3d9f1d30172935aaeb2be7e85609bf4c517ea1287fa1f24e7210f6c6d78633e0",
+        "bun.lock": "76183ae67fa44c02de2363c50f5a0cdd2da96476ad37be3a36784dfa757bbfb3"
+      },
+      "inputHashesAfter": {
+        "package.json": "920675a05fc0d9c2d9eb8916dd3212386e8f713dc56105d00ceded557e50900d",
+        "package-lock.json": "3d9f1d30172935aaeb2be7e85609bf4c517ea1287fa1f24e7210f6c6d78633e0",
+        "bun.lock": "76183ae67fa44c02de2363c50f5a0cdd2da96476ad37be3a36784dfa757bbfb3"
+      },
+      "inputsUnchanged": false,
+      "beforeNodes": 372,
+      "afterNodes": 372,
+      "physicalGraphUnchanged": false,
+      "stdout": "bun add v1.4.4 (38afee6c8)\n\n+ kerfjs@..\n\nskipped @bruits/satteri-wasm32-wasi@0.10.5 (unsupported platform)\n\n1 package installed [118.00ms]\n",
+      "stderr": "warn: dependencies in ../package.json changed since lockfile was saved (run 'bun install')\nwarn: skipping @bruits/satteri-wasm32-wasi@0.10.5: unsupported platform (wants cpu \"none\")\n"
+    },
+    {
+      "name": "production-frozen-restore",
+      "command": ["bun", "install", "--frozen-lockfile", "--ignore-scripts"],
+      "status": 0,
+      "signal": null,
+      "error": null,
+      "inputHashesBefore": {
+        "package.json": "920675a05fc0d9c2d9eb8916dd3212386e8f713dc56105d00ceded557e50900d",
+        "package-lock.json": "3d9f1d30172935aaeb2be7e85609bf4c517ea1287fa1f24e7210f6c6d78633e0",
+        "bun.lock": "76183ae67fa44c02de2363c50f5a0cdd2da96476ad37be3a36784dfa757bbfb3"
+      },
+      "inputHashesAfter": {
+        "package.json": "920675a05fc0d9c2d9eb8916dd3212386e8f713dc56105d00ceded557e50900d",
+        "package-lock.json": "3d9f1d30172935aaeb2be7e85609bf4c517ea1287fa1f24e7210f6c6d78633e0",
+        "bun.lock": "76183ae67fa44c02de2363c50f5a0cdd2da96476ad37be3a36784dfa757bbfb3"
+      },
+      "inputsUnchanged": true,
+      "beforeNodes": 372,
+      "afterNodes": 372,
+      "physicalGraphUnchanged": false,
+      "stdout": "bun install v1.4.4 (38afee6c8)\n\nChecked 363 installs across 461 packages (no changes) [18.00ms]\n",
+      "stderr": "warn: dependencies in ../package.json changed since lockfile was saved (run 'bun install')\nwarn: skipping @bruits/satteri-wasm32-wasi@0.10.5: unsupported platform (wants cpu \"none\")\n"
+    },
+    {
+      "name": "isolated-add",
+      "command": [
+        "bun",
+        "add",
+        "--exact",
+        "--ignore-scripts",
+        "@bruits/satteri-wasm32-wasi@0.10.5",
+        "--linker=isolated"
+      ],
+      "status": 1,
+      "signal": null,
+      "error": null,
+      "inputHashesBefore": {
+        "package.json": "eed4e3acc0997daeb21942dadd15293858baeeed0f96de3670d0a0ec47cc3249",
+        "package-lock.json": "3d9f1d30172935aaeb2be7e85609bf4c517ea1287fa1f24e7210f6c6d78633e0",
+        "bun.lock": "76183ae67fa44c02de2363c50f5a0cdd2da96476ad37be3a36784dfa757bbfb3"
+      },
+      "inputHashesAfter": {
+        "package.json": "eed4e3acc0997daeb21942dadd15293858baeeed0f96de3670d0a0ec47cc3249",
+        "package-lock.json": "3d9f1d30172935aaeb2be7e85609bf4c517ea1287fa1f24e7210f6c6d78633e0",
+        "bun.lock": "76183ae67fa44c02de2363c50f5a0cdd2da96476ad37be3a36784dfa757bbfb3"
+      },
+      "inputsUnchanged": true,
+      "beforeNodes": 372,
+      "afterNodes": 372,
+      "physicalGraphUnchanged": true,
+      "stdout": "bun add v1.4.4 (38afee6c8)\n",
+      "stderr": "Resolving dependencies\nResolved, downloaded and extracted [1]\nerror: GET https://registry.npmjs.org/@domotion%2ftext-engine - 404\nerror: @domotion/text-engine@0.35.0 failed to resolve\n"
+    },
+    {
+      "name": "no-cache-add",
+      "command": [
+        "bun",
+        "add",
+        "--exact",
+        "--ignore-scripts",
+        "@bruits/satteri-wasm32-wasi@0.10.5",
+        "--no-cache"
+      ],
+      "status": 1,
+      "signal": null,
+      "error": null,
+      "inputHashesBefore": {
+        "package.json": "eed4e3acc0997daeb21942dadd15293858baeeed0f96de3670d0a0ec47cc3249",
+        "package-lock.json": "3d9f1d30172935aaeb2be7e85609bf4c517ea1287fa1f24e7210f6c6d78633e0",
+        "bun.lock": "76183ae67fa44c02de2363c50f5a0cdd2da96476ad37be3a36784dfa757bbfb3"
+      },
+      "inputHashesAfter": {
+        "package.json": "eed4e3acc0997daeb21942dadd15293858baeeed0f96de3670d0a0ec47cc3249",
+        "package-lock.json": "3d9f1d30172935aaeb2be7e85609bf4c517ea1287fa1f24e7210f6c6d78633e0",
+        "bun.lock": "76183ae67fa44c02de2363c50f5a0cdd2da96476ad37be3a36784dfa757bbfb3"
+      },
+      "inputsUnchanged": true,
+      "beforeNodes": 372,
+      "afterNodes": 372,
+      "physicalGraphUnchanged": true,
+      "stdout": "bun add v1.4.4 (38afee6c8)\n",
+      "stderr": "Resolving dependencies\nResolved, downloaded and extracted [799]\nerror: GET https://registry.npmjs.org/@domotion%2ftext-engine - 404\nerror: @domotion/text-engine@0.35.0 failed to resolve\n"
+    },
+    {
+      "name": "lock-only-add",
+      "command": [
+        "bun",
+        "add",
+        "--exact",
+        "--ignore-scripts",
+        "@bruits/satteri-wasm32-wasi@0.10.5",
+        "--lockfile-only"
+      ],
+      "status": 1,
+      "signal": null,
+      "error": null,
+      "inputHashesBefore": {
+        "package.json": "eed4e3acc0997daeb21942dadd15293858baeeed0f96de3670d0a0ec47cc3249",
+        "package-lock.json": "3d9f1d30172935aaeb2be7e85609bf4c517ea1287fa1f24e7210f6c6d78633e0",
+        "bun.lock": "76183ae67fa44c02de2363c50f5a0cdd2da96476ad37be3a36784dfa757bbfb3"
+      },
+      "inputHashesAfter": {
+        "package.json": "eed4e3acc0997daeb21942dadd15293858baeeed0f96de3670d0a0ec47cc3249",
+        "package-lock.json": "3d9f1d30172935aaeb2be7e85609bf4c517ea1287fa1f24e7210f6c6d78633e0",
+        "bun.lock": "76183ae67fa44c02de2363c50f5a0cdd2da96476ad37be3a36784dfa757bbfb3"
+      },
+      "inputsUnchanged": true,
+      "beforeNodes": 372,
+      "afterNodes": 372,
+      "physicalGraphUnchanged": true,
+      "stdout": "bun add v1.4.4 (38afee6c8)\n",
+      "stderr": "Resolving dependencies\nResolved, downloaded and extracted [1]\nerror: GET https://registry.npmjs.org/@domotion%2ftext-engine - 404\nerror: @domotion/text-engine@0.35.0 failed to resolve\n"
+    },
+    {
+      "name": "registry-domotion",
+      "command": [
+        "bun",
+        "add",
+        "--exact",
+        "--ignore-scripts",
+        "domotion-svg@0.35.0"
+      ],
+      "status": 1,
+      "signal": null,
+      "error": null,
+      "inputHashesBefore": {
+        "package.json": "d458ef03f0af9dca1001f56cf9b4b462bd7c0c77aa1f1cb651bcbc92d567d395",
+        "package-lock.json": null,
+        "bun.lock": null
+      },
+      "inputHashesAfter": {
+        "package.json": "d458ef03f0af9dca1001f56cf9b4b462bd7c0c77aa1f1cb651bcbc92d567d395",
+        "package-lock.json": null,
+        "bun.lock": null
+      },
+      "inputsUnchanged": true,
+      "beforeNodes": 0,
+      "afterNodes": 0,
+      "physicalGraphUnchanged": true,
+      "stdout": "bun add v1.4.4 (38afee6c8)\n",
+      "stderr": "Resolving dependencies\nResolved, downloaded and extracted [92]\nerror: GET https://registry.npmjs.org/@domotion%2ftext-engine - 404\nerror: @domotion/text-engine@0.35.0 failed to resolve\n"
+    },
+    {
+      "name": "tarball-domotion",
+      "command": [
+        "bun",
+        "add",
+        "--exact",
+        "--ignore-scripts",
+        "https://registry.npmjs.org/domotion-svg/-/domotion-svg-0.35.0.tgz"
+      ],
+      "status": 1,
+      "signal": null,
+      "error": null,
+      "inputHashesBefore": {
+        "package.json": "d458ef03f0af9dca1001f56cf9b4b462bd7c0c77aa1f1cb651bcbc92d567d395",
+        "package-lock.json": null,
+        "bun.lock": null
+      },
+      "inputHashesAfter": {
+        "package.json": "d458ef03f0af9dca1001f56cf9b4b462bd7c0c77aa1f1cb651bcbc92d567d395",
+        "package-lock.json": null,
+        "bun.lock": null
+      },
+      "inputsUnchanged": true,
+      "beforeNodes": 0,
+      "afterNodes": 0,
+      "physicalGraphUnchanged": true,
+      "stdout": "bun add v1.4.4 (38afee6c8)\n",
+      "stderr": "Resolving dependencies\nResolved, downloaded and extracted [2]\nerror: GET https://registry.npmjs.org/@domotion%2ftext-engine - 404\nerror: @domotion/text-engine@0.35.0 failed to resolve\n"
+    }
+  ],
+  "baselineTooling": [
+    {
+      "name": "typescript",
+      "entry": "node_modules/typescript/lib/typescript.js",
+      "manifestPath": "node_modules/typescript/package.json",
+      "realManifestPath": "node_modules/typescript/package.json",
+      "manifest": {
+        "name": "typescript",
+        "author": "Microsoft Corp.",
+        "homepage": "https://www.typescriptlang.org/",
+        "version": "6.0.3",
+        "license": "Apache-2.0",
+        "description": "TypeScript is a language for application scale JavaScript development",
+        "keywords": [
+          "TypeScript",
+          "Microsoft",
+          "compiler",
+          "language",
+          "javascript"
+        ],
+        "bugs": {
+          "url": "https://github.com/microsoft/TypeScript/issues"
+        },
+        "repository": {
+          "type": "git",
+          "url": "https://github.com/microsoft/TypeScript.git"
+        },
+        "main": "./lib/typescript.js",
+        "typings": "./lib/typescript.d.ts",
+        "bin": {
+          "tsc": "./bin/tsc",
+          "tsserver": "./bin/tsserver"
+        },
+        "engines": {
+          "node": ">=14.17"
+        },
+        "files": [
+          "bin",
+          "lib",
+          "!lib/enu",
+          "LICENSE.txt",
+          "README.md",
+          "SECURITY.md",
+          "ThirdPartyNoticeText.txt",
+          "!**/.gitattributes"
+        ],
+        "devDependencies": {
+          "@dprint/formatter": "^0.4.1",
+          "@dprint/typescript": "0.93.4",
+          "@esfx/canceltoken": "^1.0.0",
+          "@eslint/js": "^10.0.1",
+          "@octokit/rest": "^22.0.1",
+          "@types/chai": "^4.3.20",
+          "@types/minimist": "^1.2.5",
+          "@types/mocha": "^10.0.10",
+          "@types/ms": "^2.1.0",
+          "@types/node": "latest",
+          "@types/source-map-support": "^0.5.10",
+          "@types/which": "^3.0.4",
+          "@typescript-eslint/rule-tester": "^8.56.1",
+          "@typescript-eslint/type-utils": "^8.56.1",
+          "@typescript-eslint/utils": "^8.56.1",
+          "azure-devops-node-api": "^15.1.3",
+          "c8": "^10.1.3",
+          "chai": "^4.5.0",
+          "chokidar": "^4.0.3",
+          "diff": "^8.0.3",
+          "dprint": "^0.49.1",
+          "esbuild": "^0.27.3",
+          "eslint": "^10.0.2",
+          "eslint-plugin-regexp": "^3.0.0",
+          "fast-xml-parser": "^5.4.1",
+          "glob": "^10.5.0",
+          "globals": "^17.4.0",
+          "hereby": "^1.12.0",
+          "jsonc-parser": "^3.3.1",
+          "knip": "^5.85.0",
+          "minimist": "^1.2.8",
+          "mocha": "^10.8.2",
+          "mocha-fivemat-progress-reporter": "^0.1.0",
+          "monocart-coverage-reports": "^2.12.9",
+          "ms": "^2.1.3",
+          "picocolors": "^1.1.1",
+          "playwright": "^1.58.2",
+          "source-map-support": "^0.5.21",
+          "tslib": "^2.8.1",
+          "typescript": "^5.9.3",
+          "typescript-eslint": "^8.56.1",
+          "which": "^3.0.1"
+        },
+        "overrides": {
+          "typescript@*": "$typescript"
+        },
+        "scripts": {
+          "test": "hereby runtests-parallel --light=false",
+          "test:eslint-rules": "hereby run-eslint-rules-tests",
+          "build": "npm run build:compiler && npm run build:tests",
+          "build:compiler": "hereby local",
+          "build:tests": "hereby tests",
+          "build:tests:notypecheck": "hereby tests --no-typecheck",
+          "clean": "hereby clean",
+          "gulp": "hereby",
+          "lint": "hereby lint",
+          "knip": "hereby knip",
+          "format": "dprint fmt",
+          "setup-hooks": "node scripts/link-hooks.mjs"
+        },
+        "browser": {
+          "fs": false,
+          "os": false,
+          "path": false,
+          "crypto": false,
+          "buffer": false,
+          "source-map-support": false,
+          "inspector": false,
+          "perf_hooks": false
+        },
+        "packageManager": "npm@8.19.4",
+        "volta": {
+          "node": "22.22.0",
+          "npm": "8.19.4"
+        },
+        "gitHead": "050880ce59e30b356b686bd3144efe24f875ebc8"
+      },
+      "sha256": "9332e97c30d3e53ed54910b89207ed657fb444066484df6e5b6965bf130865e9"
+    },
+    {
+      "name": "vite",
+      "entry": "node_modules/vite/dist/node/index.js",
+      "manifestPath": "node_modules/vite/package.json",
+      "realManifestPath": "node_modules/vite/package.json",
+      "manifest": {
+        "name": "vite",
+        "version": "8.3.4",
+        "description": "Native-ESM powered web dev build tool",
+        "keywords": [
+          "build-tool",
+          "dev-server",
+          "framework",
+          "frontend",
+          "hmr",
+          "vite"
+        ],
+        "homepage": "https://vite.dev",
+        "bugs": {
+          "url": "https://github.com/vitejs/vite/issues"
+        },
+        "license": "MIT",
+        "author": "Evan You",
+        "repository": {
+          "type": "git",
+          "url": "git+https://github.com/vitejs/vite.git",
+          "directory": "packages/vite"
+        },
+        "funding": "https://github.com/vitejs/vite?sponsor=1",
+        "bin": {
+          "vite": "bin/vite.js"
+        },
+        "files": ["bin", "dist", "misc/**/*.js", "client.d.ts", "types"],
+        "type": "module",
+        "imports": {
+          "#module-sync-enabled": {
+            "module-sync": "./misc/true.js",
+            "default": "./misc/false.js"
+          },
+          "#types/*": "./types/*.d.ts",
+          "#dep-types/*": "./src/types/*.d.ts"
+        },
+        "exports": {
+          ".": "./dist/node/index.js",
+          "./client": {
+            "types": "./client.d.ts"
+          },
+          "./module-runner": "./dist/node/module-runner.js",
+          "./internal": "./dist/node/internal.js",
+          "./dist/client/*": "./dist/client/*",
+          "./types/*": {
+            "types": "./types/*"
+          },
+          "./types/internal/*": null,
+          "./package.json": "./package.json"
+        },
+        "dependencies": {
+          "lightningcss": "^1.33.0",
+          "picomatch": "^4.0.7",
+          "postcss": "^8.5.29",
+          "rolldown": "~1.2.12",
+          "tinyglobby": "^0.2.17"
+        },
+        "devDependencies": {
+          "@babel/parser": "^7.29.9",
+          "@jridgewell/remapping": "^2.3.5",
+          "@jridgewell/trace-mapping": "^0.3.31",
+          "@polka/compression": "^1.0.0-next.25",
+          "@rollup/plugin-alias": "^6.0.0",
+          "@rollup/plugin-dynamic-import-vars": "2.1.4",
+          "@rollup/pluginutils": "^5.4.0",
+          "@types/escape-html": "^1.0.4",
+          "@types/pnpapi": "^0.0.5",
+          "@vercel/detect-agent": "^1.2.5",
+          "@vitejs/devtools": "^0.7.6",
+          "@vitest/utils": "^4.1.11",
+          "@voidzero-dev/vite-task-client": "^0.2.0",
+          "artichokie": "^0.4.5",
+          "baseline-browser-mapping": "^2.11.27",
+          "cac": "^7.0.0",
+          "chokidar": "^3.6.0",
+          "connect": "^3.7.0",
+          "convert-source-map": "^2.0.0",
+          "cors": "^2.8.6",
+          "dotenv-expand": "^13.0.0",
+          "es-module-lexer": "^2.3.2",
+          "esbuild": "^0.28.2",
+          "escape-html": "^1.0.3",
+          "estree-walker": "^3.0.3",
+          "etag": "^1.8.1",
+          "fresh-import": "^0.2.1",
+          "host-validation-middleware": "^0.1.4",
+          "http-proxy-3": "^1.23.3",
+          "launch-editor-middleware": "^2.14.2",
+          "magic-string": "^1.4.3",
+          "mlly": "^1.8.2",
+          "mrmime": "^2.0.1",
+          "nanoid": "^5.1.16",
+          "obug": "^1.0.2",
+          "open": "^10.2.0",
+          "parse5": "^8.0.1",
+          "pathe": "^2.0.3",
+          "periscopic": "^4.0.3",
+          "picocolors": "^1.1.1",
+          "postcss-import": "^16.2.0",
+          "postcss-load-config": "^6.0.1",
+          "postcss-modules": "^9.0.1",
+          "premove": "^4.0.0",
+          "resolve.exports": "^2.0.3",
+          "rolldown-plugin-dts": "^0.28.6",
+          "rollup": "^4.59.0",
+          "rollup-plugin-license": "^3.7.1",
+          "sass": "^1.105.1",
+          "sass-embedded": "^1.105.1",
+          "sirv": "^3.0.2",
+          "strip-literal": "^4.0.0",
+          "terser": "^5.51.2",
+          "tinyexec": "^1.3.1",
+          "ufo": "^1.6.4",
+          "ws": "^8.22.0"
+        },
+        "peerDependencies": {
+          "@types/node": "^20.19.0 || >=22.12.0",
+          "@vitejs/devtools": "^0.7.1",
+          "esbuild": "^0.27.0 || ^0.28.0",
+          "jiti": ">=1.21.0",
+          "less": "^4.0.0",
+          "sass": "^1.70.0",
+          "sass-embedded": "^1.70.0",
+          "stylus": ">=0.54.8",
+          "sugarss": "^5.0.0",
+          "terser": "^5.16.0",
+          "tsx": "^4.8.1",
+          "yaml": "^2.4.2"
+        },
+        "peerDependenciesMeta": {
+          "@types/node": {
+            "optional": true
+          },
+          "@vitejs/devtools": {
+            "optional": true
+          },
+          "esbuild": {
+            "optional": true
+          },
+          "jiti": {
+            "optional": true
+          },
+          "sass": {
+            "optional": true
+          },
+          "sass-embedded": {
+            "optional": true
+          },
+          "stylus": {
+            "optional": true
+          },
+          "less": {
+            "optional": true
+          },
+          "sugarss": {
+            "optional": true
+          },
+          "terser": {
+            "optional": true
+          },
+          "tsx": {
+            "optional": true
+          },
+          "yaml": {
+            "optional": true
+          }
+        },
+        "optionalDependencies": {
+          "fsevents": "~2.3.3"
+        },
+        "engines": {
+          "node": "^20.19.0 || >=22.12.0"
+        },
+        "//": "READ CONTRIBUTING.md to understand what to put under deps vs. devDeps!",
+        "scripts": {
+          "dev": "premove dist && pnpm build-bundle -w",
+          "build": "premove dist && pnpm build-bundle && pnpm build-types",
+          "build-bundle": "rolldown --config rolldown.config.ts",
+          "build-types": "pnpm build-types-roll && pnpm build-types-check",
+          "build-types-roll": "rolldown --config rolldown.dts.config.ts",
+          "build-types-check": "tsc --project tsconfig.check.json",
+          "typecheck": "tsc && tsc -p src/node && tsc -p src/client && tsc -p src/module-runner && tsc -p src/shared && tsc -p src/node/__tests_dts__ && tsc -p src/module-runner/__tests_dts__",
+          "lint": "eslint --cache --ext .ts src/**",
+          "format": "oxfmt",
+          "generate-target": "tsx scripts/generateTarget.ts"
+        }
+      },
+      "sha256": "260a0a7a96a35e1b657480014c0f3b592b70061e42099edefc8fe97972f05fd4"
+    },
+    {
+      "name": "@playwright/test",
+      "entry": "node_modules/@playwright/test/index.js",
+      "manifestPath": "node_modules/@playwright/test/package.json",
+      "realManifestPath": "node_modules/@playwright/test/package.json",
+      "manifest": {
+        "name": "@playwright/test",
+        "version": "1.63.0",
+        "description": "A high-level API to automate web browsers",
+        "repository": {
+          "type": "git",
+          "url": "git+https://github.com/microsoft/playwright.git"
+        },
+        "homepage": "https://playwright.dev",
+        "engines": {
+          "node": ">=20"
+        },
+        "author": {
+          "name": "Microsoft Corporation"
+        },
+        "license": "Apache-2.0",
+        "exports": {
+          ".": {
+            "types": "./index.d.ts",
+            "import": "./index.mjs",
+            "require": "./index.js",
+            "default": "./index.js"
+          },
+          "./cli": "./cli.js",
+          "./package.json": "./package.json",
+          "./reporter": "./reporter.js"
+        },
+        "bin": {
+          "playwright": "cli.js"
+        },
+        "scripts": {},
+        "dependencies": {
+          "playwright": "1.63.0"
+        }
+      },
+      "sha256": "5587f932b8979b6889654b60e3c28aeb7ca0abbac00eec8c176c939a16149536"
+    },
+    {
+      "name": "astro",
+      "entry": "node_modules/astro/dist/index.js",
+      "manifestPath": "node_modules/astro/package.json",
+      "realManifestPath": "node_modules/astro/package.json",
+      "manifest": {
+        "name": "astro",
+        "version": "7.3.2",
+        "description": "Astro is a modern site builder with web best practices, performance, and DX front-of-mind.",
+        "type": "module",
+        "author": "withastro",
+        "license": "MIT",
+        "repository": {
+          "type": "git",
+          "url": "git+https://github.com/withastro/astro.git",
+          "directory": "packages/astro"
+        },
+        "bugs": "https://github.com/withastro/astro/issues",
+        "homepage": "https://astro.build",
+        "exports": {
+          ".": "./dist/index.js",
+          "./env": "./env.d.ts",
+          "./env/runtime": "./dist/env/runtime.js",
+          "./env/setup": "./dist/env/setup.js",
+          "./types": "./types.d.ts",
+          "./client": "./client.d.ts",
+          "./astro-jsx": "./astro-jsx.d.ts",
+          "./tsconfigs/*.json": "./tsconfigs/*",
+          "./tsconfigs/*": "./tsconfigs/*.json",
+          "./jsx-runtime": {
+            "types": "./jsx-runtime.d.ts",
+            "default": "./dist/jsx-runtime/index.js"
+          },
+          "./jsx-dev-runtime": {
+            "types": "./jsx-runtime.d.ts",
+            "default": "./dist/jsx-runtime/index.js"
+          },
+          "./compiler-runtime": "./dist/runtime/compiler/index.js",
+          "./markdown": "./dist/markdown/index.js",
+          "./runtime/*": "./dist/runtime/*",
+          "./config": "./dist/config/entrypoint.js",
+          "./container": "./dist/container/index.js",
+          "./app": "./dist/core/app/entrypoints/index.js",
+          "./app/node": "./dist/core/app/entrypoints/node.js",
+          "./app/entrypoint": "./dist/core/app/entrypoints/virtual/index.js",
+          "./app/entrypoint/dev": "./dist/core/app/entrypoints/virtual/dev.js",
+          "./app/entrypoint/prod": "./dist/core/app/entrypoints/virtual/prod.js",
+          "./app/manifest": "./dist/core/app/entrypoints/manifest.js",
+          "./app/fetch/default-handler": "./dist/core/fetch/default-handler.js",
+          "./entrypoints/prerender": "./dist/entrypoints/prerender.js",
+          "./entrypoints/legacy": "./dist/entrypoints/legacy.js",
+          "./client/*": "./dist/runtime/client/*",
+          "./components": "./components/index.ts",
+          "./components/*": "./components/*",
+          "./toolbar": "./dist/toolbar/index.js",
+          "./actions/runtime/entrypoints/*": "./dist/actions/runtime/entrypoints/*",
+          "./assets": "./dist/assets/index.js",
+          "./assets/runtime": "./dist/assets/runtime.js",
+          "./assets/utils": "./dist/assets/utils/index.js",
+          "./assets/utils/node": "./dist/assets/utils/node.js",
+          "./assets/utils/inferRemoteSize.js": "./dist/assets/utils/remoteProbe.js",
+          "./assets/endpoint/*": "./dist/assets/endpoint/*.js",
+          "./assets/services/sharp": "./dist/assets/services/sharp.js",
+          "./assets/services/noop": "./dist/assets/services/noop.js",
+          "./cache/memory": "./dist/core/cache/memory-provider.js",
+          "./cache/provider-utils": "./dist/core/cache/provider-utils.js",
+          "./fetch": "./dist/core/fetch/index.js",
+          "./hono": "./dist/core/hono/index.js",
+          "./assets/fonts/runtime.js": "./dist/assets/fonts/runtime.js",
+          "./loaders": "./dist/content/loaders/index.js",
+          "./content/config": "./dist/content/config.js",
+          "./content/runtime": "./dist/content/runtime.js",
+          "./content/runtime-assets": "./dist/content/runtime-assets.js",
+          "./debug": "./components/Debug.astro",
+          "./package.json": "./package.json",
+          "./zod": "./dist/zod.js",
+          "./errors": "./dist/core/errors/userError.js",
+          "./middleware": "./dist/core/middleware/index.js",
+          "./virtual-modules/*": "./dist/virtual-modules/*",
+          "./logger": "./dist/core/logger/public.js",
+          "./logger/json": "./dist/core/logger/impls/json.js",
+          "./logger/node": "./dist/core/logger/impls/node.js",
+          "./logger/compose": "./dist/core/logger/impls/compose.js",
+          "./logger/console": "./dist/core/logger/impls/console.js"
+        },
+        "imports": {
+          "#astro-internal/ambient-manifest": {
+            "types": "./src/core/manifest/ambient-source.ts",
+            "default": "./dist/core/manifest/ambient-source.js"
+          }
+        },
+        "bin": {
+          "astro": "./bin/astro.mjs"
+        },
+        "files": [
+          "components/*.{astro,css,ts}",
+          "tsconfigs",
+          "dist",
+          "types",
+          "src/core/manifest/ambient-source.ts",
+          "bin",
+          "env.d.ts",
+          "client.d.ts",
+          "jsx-runtime.d.ts",
+          "templates",
+          "astro-jsx.d.ts",
+          "types.d.ts",
+          "README.md"
+        ],
+        "dependencies": {
+          "@astrojs/compiler-rs": "^0.4.0",
+          "@capsizecss/unpack": "^4.0.0",
+          "@clack/prompts": "^1.1.0",
+          "@oslojs/encoding": "^1.1.0",
+          "am-i-vibing": "^0.4.0",
+          "aria-query": "^5.3.2",
+          "axobject-query": "^4.1.0",
+          "ci-info": "^4.4.0",
+          "clsx": "^2.1.1",
+          "common-ancestor-path": "^2.0.0",
+          "cookie": "^2.0.1",
+          "devalue": "^5.8.1",
+          "diff": "^9.0.0",
+          "dset": "^3.1.4",
+          "es-module-lexer": "^2.0.0",
+          "esbuild": "^0.28.0",
+          "find-proc": "0.1.0",
+          "flattie": "^1.1.1",
+          "fontace": "~0.4.1",
+          "get-tsconfig": "5.0.0-beta.4",
+          "github-slugger": "^2.0.0",
+          "html-escaper": "3.0.3",
+          "http-cache-semantics": "^4.2.0",
+          "js-yaml": "^4.3.0",
+          "jsonc-parser": "^3.3.1",
+          "magic-string": "^1.0.0",
+          "magicast": "^0.5.2",
+          "mrmime": "^2.0.1",
+          "neotraverse": "^1.0.1",
+          "obug": "^2.1.1",
+          "p-limit": "^7.3.0",
+          "p-queue": "^9.1.0",
+          "package-manager-detector": "^1.6.0",
+          "piccolore": "^0.1.3",
+          "picomatch": "^4.0.4",
+          "semver": "^7.7.4",
+          "shiki": "^4.0.2",
+          "smol-toml": "^1.6.0",
+          "svgo": "^4.0.1",
+          "tinyclip": "^0.1.12",
+          "tinyexec": "^1.0.4",
+          "tinyglobby": "^0.2.15",
+          "ultrahtml": "^1.6.0",
+          "unifont": "~0.7.5",
+          "unstorage": "^1.17.5",
+          "vite": "^8.0.13",
+          "vitefu": "^1.1.2",
+          "xxhash-wasm": "^1.1.0",
+          "yargs-parser": "^22.0.0",
+          "zod": "^4.5.4",
+          "@astrojs/internal-helpers": "0.11.0",
+          "@astrojs/markdown-satteri": "0.4.1",
+          "@astrojs/telemetry": "3.3.3"
+        },
+        "optionalDependencies": {
+          "sharp": "^0.35.4"
+        },
+        "peerDependencies": {
+          "@astrojs/markdown-remark": "^7.3.0"
+        },
+        "peerDependenciesMeta": {
+          "@astrojs/markdown-remark": {
+            "optional": true
+          }
+        },
+        "devDependencies": {
+          "@playwright/test": "1.58.2",
+          "@types/aria-query": "^5.0.4",
+          "@types/html-escaper": "3.0.4",
+          "@types/http-cache-semantics": "^4.2.0",
+          "@types/js-yaml": "^4.0.9",
+          "@types/parse-srcset": "^1.0.0",
+          "@types/picomatch": "^4.0.2",
+          "@types/semver": "^7.7.1",
+          "@types/yargs-parser": "^21.0.3",
+          "cheerio": "1.2.0",
+          "eol": "^0.10.0",
+          "expect-type": "^1.3.0",
+          "fs-fixture": "^2.13.0",
+          "hono": "^4.12.14",
+          "node-mocks-http": "^1.17.2",
+          "parse-srcset": "^1.0.2",
+          "rehype-autolink-headings": "^7.1.0",
+          "rehype-slug": "^6.0.0",
+          "rehype-toc": "^3.0.2",
+          "remark-code-titles": "^0.1.2",
+          "sass": "^1.98.0",
+          "typescript": "^6.0.3",
+          "undici": "^7.22.0",
+          "vitest": "^4.1.0",
+          "@astrojs/check": "0.9.10",
+          "@astrojs/markdown-remark": "7.3.1",
+          "astro-scripts": "0.0.14"
+        },
+        "engines": {
+          "node": ">=22.12.0",
+          "npm": ">=9.6.5",
+          "pnpm": ">=7.1.0"
+        },
+        "publishConfig": {
+          "provenance": true
+        },
+        "funding": {
+          "type": "opencollective",
+          "url": "https://opencollective.com/astrodotbuild"
+        },
+        "scripts": {
+          "prebuild": "astro-scripts prebuild --to-string \"src/runtime/server/astro-island.ts\" \"src/runtime/client/{idle,load,media,only,visible}.ts\"",
+          "build": "pnpm run prebuild && astro-scripts build \"src/**/*.{ts,js}\" --copy-wasm && tsc -b && astro-check -- -- --tsconfig ./tsconfig.components.json",
+          "build:ci": "pnpm run prebuild && astro-scripts build \"src/**/*.{ts,js}\" --copy-wasm",
+          "dev": "astro-scripts dev --copy-wasm --prebuild \"src/runtime/server/astro-island.ts\" --prebuild \"src/runtime/client/{idle,load,media,only,visible}.ts\" \"src/**/*.{ts,js}\"",
+          "test": "pnpm run test:unit && pnpm run test:integration && pnpm run test:types",
+          "test:match": "astro-scripts test \"test/**/*.test.ts\" --match",
+          "test:cli": "astro-scripts test \"test/**/cli.test.ts\"",
+          "test:e2e": "pnpm test:e2e:chrome && pnpm test:e2e:firefox",
+          "test:e2e:match": "playwright test -g",
+          "test:e2e:chrome": "playwright test",
+          "test:e2e:firefox": "playwright test --config playwright.firefox.config.js",
+          "test:types": "tsc --build test/types/tsconfig.json",
+          "test:unit": "astro-scripts test \"test/units/**/*.test.ts\" --strip-types --teardown ./test/units/teardown.ts",
+          "test:integration": "astro-scripts test \"test/*.test.ts\" --parallel --strip-types"
+        }
+      },
+      "sha256": "0039b2a29047b4d8072f4263e00ee4e8dc2cedf618a82c805a351ede2f87a184"
+    }
+  ],
+  "restoredTooling": [
+    {
+      "name": "typescript",
+      "entry": "node_modules/typescript/lib/typescript.js",
+      "manifestPath": "node_modules/typescript/package.json",
+      "realManifestPath": "node_modules/typescript/package.json",
+      "manifest": {
+        "name": "typescript",
+        "author": "Microsoft Corp.",
+        "homepage": "https://www.typescriptlang.org/",
+        "version": "6.0.3",
+        "license": "Apache-2.0",
+        "description": "TypeScript is a language for application scale JavaScript development",
+        "keywords": [
+          "TypeScript",
+          "Microsoft",
+          "compiler",
+          "language",
+          "javascript"
+        ],
+        "bugs": {
+          "url": "https://github.com/microsoft/TypeScript/issues"
+        },
+        "repository": {
+          "type": "git",
+          "url": "https://github.com/microsoft/TypeScript.git"
+        },
+        "main": "./lib/typescript.js",
+        "typings": "./lib/typescript.d.ts",
+        "bin": {
+          "tsc": "./bin/tsc",
+          "tsserver": "./bin/tsserver"
+        },
+        "engines": {
+          "node": ">=14.17"
+        },
+        "files": [
+          "bin",
+          "lib",
+          "!lib/enu",
+          "LICENSE.txt",
+          "README.md",
+          "SECURITY.md",
+          "ThirdPartyNoticeText.txt",
+          "!**/.gitattributes"
+        ],
+        "devDependencies": {
+          "@dprint/formatter": "^0.4.1",
+          "@dprint/typescript": "0.93.4",
+          "@esfx/canceltoken": "^1.0.0",
+          "@eslint/js": "^10.0.1",
+          "@octokit/rest": "^22.0.1",
+          "@types/chai": "^4.3.20",
+          "@types/minimist": "^1.2.5",
+          "@types/mocha": "^10.0.10",
+          "@types/ms": "^2.1.0",
+          "@types/node": "latest",
+          "@types/source-map-support": "^0.5.10",
+          "@types/which": "^3.0.4",
+          "@typescript-eslint/rule-tester": "^8.56.1",
+          "@typescript-eslint/type-utils": "^8.56.1",
+          "@typescript-eslint/utils": "^8.56.1",
+          "azure-devops-node-api": "^15.1.3",
+          "c8": "^10.1.3",
+          "chai": "^4.5.0",
+          "chokidar": "^4.0.3",
+          "diff": "^8.0.3",
+          "dprint": "^0.49.1",
+          "esbuild": "^0.27.3",
+          "eslint": "^10.0.2",
+          "eslint-plugin-regexp": "^3.0.0",
+          "fast-xml-parser": "^5.4.1",
+          "glob": "^10.5.0",
+          "globals": "^17.4.0",
+          "hereby": "^1.12.0",
+          "jsonc-parser": "^3.3.1",
+          "knip": "^5.85.0",
+          "minimist": "^1.2.8",
+          "mocha": "^10.8.2",
+          "mocha-fivemat-progress-reporter": "^0.1.0",
+          "monocart-coverage-reports": "^2.12.9",
+          "ms": "^2.1.3",
+          "picocolors": "^1.1.1",
+          "playwright": "^1.58.2",
+          "source-map-support": "^0.5.21",
+          "tslib": "^2.8.1",
+          "typescript": "^5.9.3",
+          "typescript-eslint": "^8.56.1",
+          "which": "^3.0.1"
+        },
+        "overrides": {
+          "typescript@*": "$typescript"
+        },
+        "scripts": {
+          "test": "hereby runtests-parallel --light=false",
+          "test:eslint-rules": "hereby run-eslint-rules-tests",
+          "build": "npm run build:compiler && npm run build:tests",
+          "build:compiler": "hereby local",
+          "build:tests": "hereby tests",
+          "build:tests:notypecheck": "hereby tests --no-typecheck",
+          "clean": "hereby clean",
+          "gulp": "hereby",
+          "lint": "hereby lint",
+          "knip": "hereby knip",
+          "format": "dprint fmt",
+          "setup-hooks": "node scripts/link-hooks.mjs"
+        },
+        "browser": {
+          "fs": false,
+          "os": false,
+          "path": false,
+          "crypto": false,
+          "buffer": false,
+          "source-map-support": false,
+          "inspector": false,
+          "perf_hooks": false
+        },
+        "packageManager": "npm@8.19.4",
+        "volta": {
+          "node": "22.22.0",
+          "npm": "8.19.4"
+        },
+        "gitHead": "050880ce59e30b356b686bd3144efe24f875ebc8"
+      },
+      "sha256": "9332e97c30d3e53ed54910b89207ed657fb444066484df6e5b6965bf130865e9"
+    },
+    {
+      "name": "vite",
+      "entry": "node_modules/vite/dist/node/index.js",
+      "manifestPath": "node_modules/vite/package.json",
+      "realManifestPath": "node_modules/vite/package.json",
+      "manifest": {
+        "name": "vite",
+        "version": "8.3.4",
+        "description": "Native-ESM powered web dev build tool",
+        "keywords": [
+          "build-tool",
+          "dev-server",
+          "framework",
+          "frontend",
+          "hmr",
+          "vite"
+        ],
+        "homepage": "https://vite.dev",
+        "bugs": {
+          "url": "https://github.com/vitejs/vite/issues"
+        },
+        "license": "MIT",
+        "author": "Evan You",
+        "repository": {
+          "type": "git",
+          "url": "git+https://github.com/vitejs/vite.git",
+          "directory": "packages/vite"
+        },
+        "funding": "https://github.com/vitejs/vite?sponsor=1",
+        "bin": {
+          "vite": "bin/vite.js"
+        },
+        "files": ["bin", "dist", "misc/**/*.js", "client.d.ts", "types"],
+        "type": "module",
+        "imports": {
+          "#module-sync-enabled": {
+            "module-sync": "./misc/true.js",
+            "default": "./misc/false.js"
+          },
+          "#types/*": "./types/*.d.ts",
+          "#dep-types/*": "./src/types/*.d.ts"
+        },
+        "exports": {
+          ".": "./dist/node/index.js",
+          "./client": {
+            "types": "./client.d.ts"
+          },
+          "./module-runner": "./dist/node/module-runner.js",
+          "./internal": "./dist/node/internal.js",
+          "./dist/client/*": "./dist/client/*",
+          "./types/*": {
+            "types": "./types/*"
+          },
+          "./types/internal/*": null,
+          "./package.json": "./package.json"
+        },
+        "dependencies": {
+          "lightningcss": "^1.33.0",
+          "picomatch": "^4.0.7",
+          "postcss": "^8.5.29",
+          "rolldown": "~1.2.12",
+          "tinyglobby": "^0.2.17"
+        },
+        "devDependencies": {
+          "@babel/parser": "^7.29.9",
+          "@jridgewell/remapping": "^2.3.5",
+          "@jridgewell/trace-mapping": "^0.3.31",
+          "@polka/compression": "^1.0.0-next.25",
+          "@rollup/plugin-alias": "^6.0.0",
+          "@rollup/plugin-dynamic-import-vars": "2.1.4",
+          "@rollup/pluginutils": "^5.4.0",
+          "@types/escape-html": "^1.0.4",
+          "@types/pnpapi": "^0.0.5",
+          "@vercel/detect-agent": "^1.2.5",
+          "@vitejs/devtools": "^0.7.6",
+          "@vitest/utils": "^4.1.11",
+          "@voidzero-dev/vite-task-client": "^0.2.0",
+          "artichokie": "^0.4.5",
+          "baseline-browser-mapping": "^2.11.27",
+          "cac": "^7.0.0",
+          "chokidar": "^3.6.0",
+          "connect": "^3.7.0",
+          "convert-source-map": "^2.0.0",
+          "cors": "^2.8.6",
+          "dotenv-expand": "^13.0.0",
+          "es-module-lexer": "^2.3.2",
+          "esbuild": "^0.28.2",
+          "escape-html": "^1.0.3",
+          "estree-walker": "^3.0.3",
+          "etag": "^1.8.1",
+          "fresh-import": "^0.2.1",
+          "host-validation-middleware": "^0.1.4",
+          "http-proxy-3": "^1.23.3",
+          "launch-editor-middleware": "^2.14.2",
+          "magic-string": "^1.4.3",
+          "mlly": "^1.8.2",
+          "mrmime": "^2.0.1",
+          "nanoid": "^5.1.16",
+          "obug": "^1.0.2",
+          "open": "^10.2.0",
+          "parse5": "^8.0.1",
+          "pathe": "^2.0.3",
+          "periscopic": "^4.0.3",
+          "picocolors": "^1.1.1",
+          "postcss-import": "^16.2.0",
+          "postcss-load-config": "^6.0.1",
+          "postcss-modules": "^9.0.1",
+          "premove": "^4.0.0",
+          "resolve.exports": "^2.0.3",
+          "rolldown-plugin-dts": "^0.28.6",
+          "rollup": "^4.59.0",
+          "rollup-plugin-license": "^3.7.1",
+          "sass": "^1.105.1",
+          "sass-embedded": "^1.105.1",
+          "sirv": "^3.0.2",
+          "strip-literal": "^4.0.0",
+          "terser": "^5.51.2",
+          "tinyexec": "^1.3.1",
+          "ufo": "^1.6.4",
+          "ws": "^8.22.0"
+        },
+        "peerDependencies": {
+          "@types/node": "^20.19.0 || >=22.12.0",
+          "@vitejs/devtools": "^0.7.1",
+          "esbuild": "^0.27.0 || ^0.28.0",
+          "jiti": ">=1.21.0",
+          "less": "^4.0.0",
+          "sass": "^1.70.0",
+          "sass-embedded": "^1.70.0",
+          "stylus": ">=0.54.8",
+          "sugarss": "^5.0.0",
+          "terser": "^5.16.0",
+          "tsx": "^4.8.1",
+          "yaml": "^2.4.2"
+        },
+        "peerDependenciesMeta": {
+          "@types/node": {
+            "optional": true
+          },
+          "@vitejs/devtools": {
+            "optional": true
+          },
+          "esbuild": {
+            "optional": true
+          },
+          "jiti": {
+            "optional": true
+          },
+          "sass": {
+            "optional": true
+          },
+          "sass-embedded": {
+            "optional": true
+          },
+          "stylus": {
+            "optional": true
+          },
+          "less": {
+            "optional": true
+          },
+          "sugarss": {
+            "optional": true
+          },
+          "terser": {
+            "optional": true
+          },
+          "tsx": {
+            "optional": true
+          },
+          "yaml": {
+            "optional": true
+          }
+        },
+        "optionalDependencies": {
+          "fsevents": "~2.3.3"
+        },
+        "engines": {
+          "node": "^20.19.0 || >=22.12.0"
+        },
+        "//": "READ CONTRIBUTING.md to understand what to put under deps vs. devDeps!",
+        "scripts": {
+          "dev": "premove dist && pnpm build-bundle -w",
+          "build": "premove dist && pnpm build-bundle && pnpm build-types",
+          "build-bundle": "rolldown --config rolldown.config.ts",
+          "build-types": "pnpm build-types-roll && pnpm build-types-check",
+          "build-types-roll": "rolldown --config rolldown.dts.config.ts",
+          "build-types-check": "tsc --project tsconfig.check.json",
+          "typecheck": "tsc && tsc -p src/node && tsc -p src/client && tsc -p src/module-runner && tsc -p src/shared && tsc -p src/node/__tests_dts__ && tsc -p src/module-runner/__tests_dts__",
+          "lint": "eslint --cache --ext .ts src/**",
+          "format": "oxfmt",
+          "generate-target": "tsx scripts/generateTarget.ts"
+        }
+      },
+      "sha256": "260a0a7a96a35e1b657480014c0f3b592b70061e42099edefc8fe97972f05fd4"
+    },
+    {
+      "name": "@playwright/test",
+      "entry": "node_modules/@playwright/test/index.js",
+      "manifestPath": "node_modules/@playwright/test/package.json",
+      "realManifestPath": "node_modules/@playwright/test/package.json",
+      "manifest": {
+        "name": "@playwright/test",
+        "version": "1.63.0",
+        "description": "A high-level API to automate web browsers",
+        "repository": {
+          "type": "git",
+          "url": "git+https://github.com/microsoft/playwright.git"
+        },
+        "homepage": "https://playwright.dev",
+        "engines": {
+          "node": ">=20"
+        },
+        "author": {
+          "name": "Microsoft Corporation"
+        },
+        "license": "Apache-2.0",
+        "exports": {
+          ".": {
+            "types": "./index.d.ts",
+            "import": "./index.mjs",
+            "require": "./index.js",
+            "default": "./index.js"
+          },
+          "./cli": "./cli.js",
+          "./package.json": "./package.json",
+          "./reporter": "./reporter.js"
+        },
+        "bin": {
+          "playwright": "cli.js"
+        },
+        "scripts": {},
+        "dependencies": {
+          "playwright": "1.63.0"
+        }
+      },
+      "sha256": "5587f932b8979b6889654b60e3c28aeb7ca0abbac00eec8c176c939a16149536"
+    },
+    {
+      "name": "astro",
+      "entry": "node_modules/astro/dist/index.js",
+      "manifestPath": "node_modules/astro/package.json",
+      "realManifestPath": "node_modules/astro/package.json",
+      "manifest": {
+        "name": "astro",
+        "version": "7.3.2",
+        "description": "Astro is a modern site builder with web best practices, performance, and DX front-of-mind.",
+        "type": "module",
+        "author": "withastro",
+        "license": "MIT",
+        "repository": {
+          "type": "git",
+          "url": "git+https://github.com/withastro/astro.git",
+          "directory": "packages/astro"
+        },
+        "bugs": "https://github.com/withastro/astro/issues",
+        "homepage": "https://astro.build",
+        "exports": {
+          ".": "./dist/index.js",
+          "./env": "./env.d.ts",
+          "./env/runtime": "./dist/env/runtime.js",
+          "./env/setup": "./dist/env/setup.js",
+          "./types": "./types.d.ts",
+          "./client": "./client.d.ts",
+          "./astro-jsx": "./astro-jsx.d.ts",
+          "./tsconfigs/*.json": "./tsconfigs/*",
+          "./tsconfigs/*": "./tsconfigs/*.json",
+          "./jsx-runtime": {
+            "types": "./jsx-runtime.d.ts",
+            "default": "./dist/jsx-runtime/index.js"
+          },
+          "./jsx-dev-runtime": {
+            "types": "./jsx-runtime.d.ts",
+            "default": "./dist/jsx-runtime/index.js"
+          },
+          "./compiler-runtime": "./dist/runtime/compiler/index.js",
+          "./markdown": "./dist/markdown/index.js",
+          "./runtime/*": "./dist/runtime/*",
+          "./config": "./dist/config/entrypoint.js",
+          "./container": "./dist/container/index.js",
+          "./app": "./dist/core/app/entrypoints/index.js",
+          "./app/node": "./dist/core/app/entrypoints/node.js",
+          "./app/entrypoint": "./dist/core/app/entrypoints/virtual/index.js",
+          "./app/entrypoint/dev": "./dist/core/app/entrypoints/virtual/dev.js",
+          "./app/entrypoint/prod": "./dist/core/app/entrypoints/virtual/prod.js",
+          "./app/manifest": "./dist/core/app/entrypoints/manifest.js",
+          "./app/fetch/default-handler": "./dist/core/fetch/default-handler.js",
+          "./entrypoints/prerender": "./dist/entrypoints/prerender.js",
+          "./entrypoints/legacy": "./dist/entrypoints/legacy.js",
+          "./client/*": "./dist/runtime/client/*",
+          "./components": "./components/index.ts",
+          "./components/*": "./components/*",
+          "./toolbar": "./dist/toolbar/index.js",
+          "./actions/runtime/entrypoints/*": "./dist/actions/runtime/entrypoints/*",
+          "./assets": "./dist/assets/index.js",
+          "./assets/runtime": "./dist/assets/runtime.js",
+          "./assets/utils": "./dist/assets/utils/index.js",
+          "./assets/utils/node": "./dist/assets/utils/node.js",
+          "./assets/utils/inferRemoteSize.js": "./dist/assets/utils/remoteProbe.js",
+          "./assets/endpoint/*": "./dist/assets/endpoint/*.js",
+          "./assets/services/sharp": "./dist/assets/services/sharp.js",
+          "./assets/services/noop": "./dist/assets/services/noop.js",
+          "./cache/memory": "./dist/core/cache/memory-provider.js",
+          "./cache/provider-utils": "./dist/core/cache/provider-utils.js",
+          "./fetch": "./dist/core/fetch/index.js",
+          "./hono": "./dist/core/hono/index.js",
+          "./assets/fonts/runtime.js": "./dist/assets/fonts/runtime.js",
+          "./loaders": "./dist/content/loaders/index.js",
+          "./content/config": "./dist/content/config.js",
+          "./content/runtime": "./dist/content/runtime.js",
+          "./content/runtime-assets": "./dist/content/runtime-assets.js",
+          "./debug": "./components/Debug.astro",
+          "./package.json": "./package.json",
+          "./zod": "./dist/zod.js",
+          "./errors": "./dist/core/errors/userError.js",
+          "./middleware": "./dist/core/middleware/index.js",
+          "./virtual-modules/*": "./dist/virtual-modules/*",
+          "./logger": "./dist/core/logger/public.js",
+          "./logger/json": "./dist/core/logger/impls/json.js",
+          "./logger/node": "./dist/core/logger/impls/node.js",
+          "./logger/compose": "./dist/core/logger/impls/compose.js",
+          "./logger/console": "./dist/core/logger/impls/console.js"
+        },
+        "imports": {
+          "#astro-internal/ambient-manifest": {
+            "types": "./src/core/manifest/ambient-source.ts",
+            "default": "./dist/core/manifest/ambient-source.js"
+          }
+        },
+        "bin": {
+          "astro": "./bin/astro.mjs"
+        },
+        "files": [
+          "components/*.{astro,css,ts}",
+          "tsconfigs",
+          "dist",
+          "types",
+          "src/core/manifest/ambient-source.ts",
+          "bin",
+          "env.d.ts",
+          "client.d.ts",
+          "jsx-runtime.d.ts",
+          "templates",
+          "astro-jsx.d.ts",
+          "types.d.ts",
+          "README.md"
+        ],
+        "dependencies": {
+          "@astrojs/compiler-rs": "^0.4.0",
+          "@capsizecss/unpack": "^4.0.0",
+          "@clack/prompts": "^1.1.0",
+          "@oslojs/encoding": "^1.1.0",
+          "am-i-vibing": "^0.4.0",
+          "aria-query": "^5.3.2",
+          "axobject-query": "^4.1.0",
+          "ci-info": "^4.4.0",
+          "clsx": "^2.1.1",
+          "common-ancestor-path": "^2.0.0",
+          "cookie": "^2.0.1",
+          "devalue": "^5.8.1",
+          "diff": "^9.0.0",
+          "dset": "^3.1.4",
+          "es-module-lexer": "^2.0.0",
+          "esbuild": "^0.28.0",
+          "find-proc": "0.1.0",
+          "flattie": "^1.1.1",
+          "fontace": "~0.4.1",
+          "get-tsconfig": "5.0.0-beta.4",
+          "github-slugger": "^2.0.0",
+          "html-escaper": "3.0.3",
+          "http-cache-semantics": "^4.2.0",
+          "js-yaml": "^4.3.0",
+          "jsonc-parser": "^3.3.1",
+          "magic-string": "^1.0.0",
+          "magicast": "^0.5.2",
+          "mrmime": "^2.0.1",
+          "neotraverse": "^1.0.1",
+          "obug": "^2.1.1",
+          "p-limit": "^7.3.0",
+          "p-queue": "^9.1.0",
+          "package-manager-detector": "^1.6.0",
+          "piccolore": "^0.1.3",
+          "picomatch": "^4.0.4",
+          "semver": "^7.7.4",
+          "shiki": "^4.0.2",
+          "smol-toml": "^1.6.0",
+          "svgo": "^4.0.1",
+          "tinyclip": "^0.1.12",
+          "tinyexec": "^1.0.4",
+          "tinyglobby": "^0.2.15",
+          "ultrahtml": "^1.6.0",
+          "unifont": "~0.7.5",
+          "unstorage": "^1.17.5",
+          "vite": "^8.0.13",
+          "vitefu": "^1.1.2",
+          "xxhash-wasm": "^1.1.0",
+          "yargs-parser": "^22.0.0",
+          "zod": "^4.5.4",
+          "@astrojs/internal-helpers": "0.11.0",
+          "@astrojs/markdown-satteri": "0.4.1",
+          "@astrojs/telemetry": "3.3.3"
+        },
+        "optionalDependencies": {
+          "sharp": "^0.35.4"
+        },
+        "peerDependencies": {
+          "@astrojs/markdown-remark": "^7.3.0"
+        },
+        "peerDependenciesMeta": {
+          "@astrojs/markdown-remark": {
+            "optional": true
+          }
+        },
+        "devDependencies": {
+          "@playwright/test": "1.58.2",
+          "@types/aria-query": "^5.0.4",
+          "@types/html-escaper": "3.0.4",
+          "@types/http-cache-semantics": "^4.2.0",
+          "@types/js-yaml": "^4.0.9",
+          "@types/parse-srcset": "^1.0.0",
+          "@types/picomatch": "^4.0.2",
+          "@types/semver": "^7.7.1",
+          "@types/yargs-parser": "^21.0.3",
+          "cheerio": "1.2.0",
+          "eol": "^0.10.0",
+          "expect-type": "^1.3.0",
+          "fs-fixture": "^2.13.0",
+          "hono": "^4.12.14",
+          "node-mocks-http": "^1.17.2",
+          "parse-srcset": "^1.0.2",
+          "rehype-autolink-headings": "^7.1.0",
+          "rehype-slug": "^6.0.0",
+          "rehype-toc": "^3.0.2",
+          "remark-code-titles": "^0.1.2",
+          "sass": "^1.98.0",
+          "typescript": "^6.0.3",
+          "undici": "^7.22.0",
+          "vitest": "^4.1.0",
+          "@astrojs/check": "0.9.10",
+          "@astrojs/markdown-remark": "7.3.1",
+          "astro-scripts": "0.0.14"
+        },
+        "engines": {
+          "node": ">=22.12.0",
+          "npm": ">=9.6.5",
+          "pnpm": ">=7.1.0"
+        },
+        "publishConfig": {
+          "provenance": true
+        },
+        "funding": {
+          "type": "opencollective",
+          "url": "https://opencollective.com/astrodotbuild"
+        },
+        "scripts": {
+          "prebuild": "astro-scripts prebuild --to-string \"src/runtime/server/astro-island.ts\" \"src/runtime/client/{idle,load,media,only,visible}.ts\"",
+          "build": "pnpm run prebuild && astro-scripts build \"src/**/*.{ts,js}\" --copy-wasm && tsc -b && astro-check -- -- --tsconfig ./tsconfig.components.json",
+          "build:ci": "pnpm run prebuild && astro-scripts build \"src/**/*.{ts,js}\" --copy-wasm",
+          "dev": "astro-scripts dev --copy-wasm --prebuild \"src/runtime/server/astro-island.ts\" --prebuild \"src/runtime/client/{idle,load,media,only,visible}.ts\" \"src/**/*.{ts,js}\"",
+          "test": "pnpm run test:unit && pnpm run test:integration && pnpm run test:types",
+          "test:match": "astro-scripts test \"test/**/*.test.ts\" --match",
+          "test:cli": "astro-scripts test \"test/**/cli.test.ts\"",
+          "test:e2e": "pnpm test:e2e:chrome && pnpm test:e2e:firefox",
+          "test:e2e:match": "playwright test -g",
+          "test:e2e:chrome": "playwright test",
+          "test:e2e:firefox": "playwright test --config playwright.firefox.config.js",
+          "test:types": "tsc --build test/types/tsconfig.json",
+          "test:unit": "astro-scripts test \"test/units/**/*.test.ts\" --strip-types --teardown ./test/units/teardown.ts",
+          "test:integration": "astro-scripts test \"test/*.test.ts\" --parallel --strip-types"
+        }
+      },
+      "sha256": "0039b2a29047b4d8072f4263e00ee4e8dc2cedf618a82c805a351ede2f87a184"
+    }
+  ],
+  "restoredToolingExactlyMatches": true,
+  "productionProbes": {
+    "entry": "node_modules/satteri/dist/index.js",
+    "loader": "node_modules/satteri/dist/binding.js",
+    "resolutions": [
+      {
+        "name": "@bruits/satteri-wasm32-wasi",
+        "path": null,
+        "version": null
+      },
+      {
+        "name": "@emnapi/core",
+        "path": null,
+        "version": null
+      },
+      {
+        "name": "@emnapi/runtime",
+        "path": null,
+        "version": null
+      },
+      {
+        "name": "@emnapi/wasi-threads",
+        "path": null,
+        "version": null
+      },
+      {
+        "name": "@napi-rs/wasm-runtime",
+        "path": null,
+        "version": null
+      }
+    ],
+    "native": {
+      "status": 0,
+      "signal": null,
+      "error": null,
+      "stdout": "<h1>WASM probe</h1>\n<p><strong>works</strong></p>\n\n",
+      "stderr": ""
+    },
+    "strict": {
+      "status": 1,
+      "signal": null,
+      "error": null,
+      "stdout": "",
+      "stderr": "file://<fixture>/site/node_modules/satteri/index.js:569\n    const error = new Error('WASI binding not found and NAPI_RS_FORCE_WASI is set to error')\n                  ^\n\nError: WASI binding not found and NAPI_RS_FORCE_WASI is set to error\n    at file://<fixture>/site/node_modules/satteri/index.js:569:19\n    at ModuleJob.run (node:internal/modules/esm/module_job:343:25)\n    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:681:26)\n    at async file://<fixture>/site/[eval1]:1:28 {\n  cause: Error: Cannot find module './satteri_napi.wasi.cjs'\n  Require stack:\n  - <fixture>/site/node_modules/satteri/index.js\n      at Function._resolveFilename (node:internal/modules/cjs/loader:1430:15)\n      ... 5 lines matching cause stack trace ...\n      at require (node:internal/modules/helpers:147:16)\n      at file://<fixture>/site/node_modules/satteri/index.js:546:19\n      at ModuleJob.run (node:internal/modules/esm/module_job:343:25)\n      at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:681:26) {\n    code: 'MODULE_NOT_FOUND',\n    requireStack: [\n      '<fixture>/site/node_modules/satteri/index.js'\n    ],\n    cause: Error: Cannot find module '@bruits/satteri-wasm32-wasi'\n    Require stack:\n    - <fixture>/site/node_modules/satteri/index.js\n        at Function._resolveFilename (node:internal/modules/cjs/loader:1430:15)\n        at defaultResolveImpl (node:internal/modules/cjs/loader:1040:19)\n        at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1045:22)\n        at Function._load (node:internal/modules/cjs/loader:1216:25)\n        at wrapModuleLoad (node:internal/modules/cjs/loader:254:19)\n        at Module.require (node:internal/modules/cjs/loader:1527:12)\n        at require (node:internal/modules/helpers:147:16)\n        at file://<fixture>/site/node_modules/satteri/index.js:555:21\n        at ModuleJob.run (node:internal/modules/esm/module_job:343:25)\n        at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:681:26) {\n      code: 'MODULE_NOT_FOUND',\n      requireStack: [\n        '<fixture>/site/node_modules/satteri/index.js'\n      ]\n    }\n  }\n}\n\nNode.js v22.23.4\n"
+    }
+  },
+  "publishedBundle": {
+    "tarballSha256": "a242acd46feb81b389b9cb0caa314bc178b2e9f3408a4cb06fb523df42e49cb3",
+    "integrity": "sha512-Ni0ES77kOv4QbObVh+NSvAR20knj9V8M8GF9Nygf866JABk61re3cEqemW/ebrQaQQhrXaFwc5VgCDh3ScJa/g==",
+    "manifest": {
+      "name": "domotion-svg",
+      "version": "0.35.0",
+      "description": "DOM-to-animated-SVG renderer. Captures HTML/CSS via Playwright Chromium and converts it to self-contained SVG with CSS animations — pixel-faithful demos that scale crisply and load lazily.",
+      "license": "MIT",
+      "author": "Brian Westphal",
+      "repository": {
+        "type": "git",
+        "url": "git+https://github.com/brianwestphal/domotion.git"
+      },
+      "homepage": "https://github.com/brianwestphal/domotion#readme",
+      "bugs": {
+        "url": "https://github.com/brianwestphal/domotion/issues"
+      },
+      "type": "module",
+      "workspaces": ["packages/*"],
+      "main": "dist/index.js",
+      "types": "dist/index.d.ts",
+      "exports": {
+        ".": {
+          "types": "./dist/index.d.ts",
+          "default": "./dist/index.js"
+        },
+        "./dist/index.js": {
+          "types": "./dist/index.d.ts",
+          "default": "./dist/index.js"
+        },
+        "./capture": {
+          "types": "./dist/capture/public.d.ts",
+          "default": "./dist/capture/public.js"
+        },
+        "./scroll": {
+          "types": "./dist/scroll/public.d.ts",
+          "default": "./dist/scroll/public.js"
+        },
+        "./render": {
+          "types": "./dist/render/index.d.ts",
+          "default": "./dist/render/index.js"
+        },
+        "./animation": {
+          "types": "./dist/animation/index.d.ts",
+          "default": "./dist/animation/index.js"
+        },
+        "./tree-ops": {
+          "types": "./dist/tree-ops/index.d.ts",
+          "default": "./dist/tree-ops/index.js"
+        },
+        "./templates": {
+          "types": "./dist/templates/index.d.ts",
+          "default": "./dist/templates/index.js"
+        },
+        "./studio": {
+          "types": "./dist/studio/index.d.ts",
+          "default": "./dist/studio/index.js"
+        },
+        "./post-processing": {
+          "types": "./dist/post-processing/index.d.ts",
+          "default": "./dist/post-processing/index.js"
+        },
+        "./schemas/*": "./schemas/*",
+        "./package.json": "./package.json"
+      },
+      "bin": {
+        "domotion": "dist/cli/index.js",
+        "svg-to-video": "dist/cli/svg-to-video.js",
+        "svg-to-image": "dist/cli/svg-to-image.js",
+        "svg-review": "dist/cli/review.js",
+        "svg-scrubber": "dist/cli/scrubber.js",
+        "domotion-studio": "dist/cli/studio.js"
+      },
+      "files": [
+        "dist",
+        "assets",
+        "schemas",
+        "FEATURES.md",
+        "LICENSE",
+        "README.md",
+        "llms.txt"
+      ],
+      "scripts": {
+        "clean:dist": "node scripts/clean-dist.mjs",
+        "check:package-dist": "node scripts/check-package-dist.mjs",
+        "check:pack-contents": "node scripts/check-pack-contents.mjs",
+        "smoke:pack-install": "node scripts/pack-install-smoke.mjs",
+        "build:text-engine": "npm run build --workspace @domotion/text-engine",
+        "build:capture-script": "npm run build:text-engine && node scripts/build-capture-script.mjs && node scripts/build-compare-pngs-browser.mjs",
+        "build:compare-pngs-browser": "node scripts/build-compare-pngs-browser.mjs",
+        "build:review-client": "node scripts/build-review-client.mjs",
+        "build:scrubber-client": "node scripts/build-scrubber-client.mjs",
+        "build:studio-client": "node scripts/build-studio-client.mjs",
+        "docs:index:generate": "node scripts/documentation-index.mjs --write",
+        "docs:index:check": "node scripts/documentation-index.mjs",
+        "build:animate-schema": "node --import tsx scripts/generate-animate-schema.ts",
+        "build:composite-schema": "node --import tsx scripts/generate-composite-schema.ts",
+        "build:storyboard-schema": "node --import tsx scripts/generate-storyboard-schema.ts",
+        "build:studio-project-schema": "node --import tsx scripts/generate-studio-project-schema.ts",
+        "mathml:operator-dictionary:generate": "node tools/generate-mathml-operator-dictionary.mjs",
+        "mathml:operator-dictionary:check": "node tools/generate-mathml-operator-dictionary.mjs --check",
+        "unicode:cjk-property:generate": "node tools/generate-cjk-ideograph-or-symbol-ranges.mjs",
+        "unicode:cjk-property:check": "node tools/generate-cjk-ideograph-or-symbol-ranges.mjs --check",
+        "unicode:vertical-orientation:generate": "node tools/generate-vertical-orientation-ranges.mjs",
+        "unicode:vertical-orientation:check": "node tools/generate-vertical-orientation-ranges.mjs --check",
+        "unicode:vertical-orientation:oracle": "node --import tsx tools/vertical-orientation-oracle.ts",
+        "build": "npm run clean:dist && npm run build:capture-script && npm run build:review-client && npm run build:scrubber-client && npm run build:studio-client && npm run build:animate-schema && npm run build:composite-schema && npm run build:storyboard-schema && npm run build:studio-project-schema && node scripts/run-typescript.mjs -p tsconfig.build.json && npm run check:package-dist",
+        "prepack": "npm run build",
+        "prepare": "node scripts/prepare-git-install.mjs",
+        "postinstall": "node assets/git-install-postinstall.mjs",
+        "smoke:git-install": "node scripts/pack-install-smoke.mjs --git",
+        "test:git-prepare": "node --test scripts/prepare-git-install.test.mjs scripts/run-typescript.test.mjs",
+        "prepublishOnly": "npm run check:pack-contents",
+        "typecheck": "npm run build:capture-script && npm run build:review-client && npm run build:scrubber-client && npm run build:studio-client && npm run typecheck --workspace @domotion/text-engine && node scripts/run-typescript.mjs --noEmit && node scripts/run-typescript.mjs -p tsconfig.tools.json",
+        "format": "prettier --write .",
+        "format:check": "prettier --check .",
+        "lint": "npm run format:check && eslint . --max-warnings 0 && npm run check:american-english",
+        "check:american-english": "node scripts/check-american-english.mjs",
+        "capture": "npm run build:capture-script && tsx src/cli/index.ts",
+        "test": "npm run test:text-engine && npm run build:capture-script && vitest run",
+        "test:text-engine": "npm test --workspace @domotion/text-engine",
+        "sources:materialize": "node scripts/materialize-source-authorities.mjs",
+        "test:e2e": "npm run build:text-engine && npm run build:capture-script && node scripts/run-e2e-tests.mjs",
+        "test:coverage": "npm run build:text-engine && npm run build:capture-script && vitest run --coverage",
+        "test:coverage:all": "npm run build:text-engine && npm run build:capture-script && node tools/coverage-all.mjs",
+        "test:coverage:full": "npm run build:text-engine && npm run build:capture-script && node tools/coverage-all.mjs --full",
+        "release": "bash scripts/release.sh",
+        "release:beta": "bash scripts/release.sh --beta",
+        "commit-msg": "gitgist --staged --commit-message",
+        "test:watch": "npm run build:capture-script && vitest",
+        "benchmark:glassbox": "npm run build:capture-script && tsx benchmarks/glassbox/run.ts --simulate-ui-change",
+        "benchmark:glassbox:quick": "npm run build:capture-script && tsx benchmarks/glassbox/run.ts --simulate-ui-change --no-video --no-publish",
+        "typecheck:glassbox-benchmark": "tsc --noEmit -p benchmarks/glassbox/tsconfig.json",
+        "test:linux-docker": "bash scripts/test-linux-docker.sh",
+        "test:linux-system-ui-alternate": "FONTCONFIG_FILE=/work/tests/fontconfig/alternate-system-ui.conf CMD='apt-get update && apt-get install -y --no-install-recommends fonts-dejavu-core build-essential cmake pkg-config libfreetype-dev libfontconfig-dev && bash packages/text-engine/tools/linux-glyph-extractor/build.sh && npx tsx tools/assert-linux-system-ui-profile.ts && npm run fonts:conformance -- --stack-filter system-ui --range 0020-007f,0600-06ff,4e00-4e7f --max-rows 2000 --reset-every 1 --out tests/output/font-conformance-system-ui-alternate' bash scripts/test-linux-docker.sh",
+        "test:linux-fallback-diagnostics": "CMD='apt-get update && apt-get install -y --no-install-recommends build-essential cmake pkg-config libfreetype-dev libfontconfig-dev && bash packages/text-engine/tools/linux-glyph-extractor/build.sh && npx tsx tools/probe-linux-fallback-diagnostics.ts' bash scripts/test-linux-docker.sh",
+        "demos:test": "npm run build:capture-script && tsx tests/features.ts",
+        "demos:test:showcase": "npm run build:capture-script && tsx tests/showcase.tsx",
+        "demos:test:html": "npm run build:capture-script && tsx tests/html-test-suite.tsx",
+        "demos:test:unicode": "npm run build:capture-script && HTML_TEST_DIR=${HTML_TEST_DIR:-../html-test/unicode} HTML_TEST_OUTPUT_DIR=${HTML_TEST_OUTPUT_DIR:-tests/output/html-test-unicode} tsx tests/html-test-suite.tsx",
+        "demos:test:real-world": "npm run build:capture-script && tsx tests/real-world.tsx",
+        "demos:test:snapshot-isolation": "npm run build:capture-script && tsx tests/snapshot-isolation.tsx",
+        "demos:test:animate": "npm run build:capture-script && tsx tests/animate-examples.tsx",
+        "demos:test:ci-fast": "node scripts/ci-run-fast-visuals.mjs",
+        "parity:composed-corpus": "node scripts/run-composed-parity.mjs",
+        "demos:test:all": "npm run build:capture-script && (tsx tests/features.ts ; tsx tests/snapshot-isolation.tsx ; tsx tests/showcase.tsx ; tsx tests/animate-examples.tsx ; tsx tests/html-test-suite.tsx ; tsx tests/real-world.tsx)",
+        "demos:review": "tsx tests/review-server.tsx",
+        "fonts:conformance": "tsx tools/font-conformance.ts",
+        "fonts:icu-conformance": "tsx tools/icu-conformance.ts",
+        "fonts:linux-arm64-release": "node --import tsx tools/linux-arm64-release-evidence.ts",
+        "fonts:generic-preferences": "node --import tsx tools/generic-family-preference-oracle.ts",
+        "fonts:generic-profile-target": "node --import tsx tools/generic-profile-target-oracle.ts",
+        "fonts:system-ui-preferences": "node --import tsx tools/system-ui-preference-route-oracle.ts",
+        "fonts:generic-family-semantics": "node --import tsx tools/generic-family-semantics-audit.ts",
+        "fonts:emoji-presentation-ownership-audit": "node --import tsx tools/emoji-presentation-ownership-audit.ts",
+        "fonts:palette-ownership-audit": "node --import tsx tools/font-palette-ownership-audit.ts",
+        "fonts:palette-paint-gate": "node --import tsx tools/font-palette-paint-gate.ts",
+        "fonts:conformance:iterate": "node scripts/font-conformance-iterate.mjs",
+        "fonts:conformance:stacks": "tsx tools/font-conformance.ts --extract-stacks",
+        "fonts:cluster-conformance": "tsx tools/cluster-conformance.ts",
+        "fonts:inventory": "node tools/font-inventory.mjs",
+        "fonts:shaping": "tsx tools/shaping-conformance.ts",
+        "text-engine:conformance": "npm run fonts:conformance && npm run fonts:shaping && npm run decorations:oracle",
+        "fonts:shaping:runs": "tsx tools/shaping-conformance.ts --extract-runs",
+        "fonts:shaping:unicode": "tsx tools/shaping-unicode-corpus.ts",
+        "fonts:shaper-ab": "tsx tools/shape-agreement.ts",
+        "fonts:shaping:exact": "tsx tools/exact-shaping-oracle.ts",
+        "fonts:shaping:unified": "tsx tools/unified-shaping-oracle.ts",
+        "fonts:browser-harfbuzz-substitutions": "node --import tsx tools/browser-harfbuzz-substitution-oracle.ts",
+        "fonts:renderer-route": "tsx tools/renderer-font-route-oracle.ts",
+        "fonts:shaped-origin": "tsx tools/shaped-origin-oracle.ts",
+        "fonts:mixed-bidi-logical": "node --import tsx tools/mixed-bidi-logical-oracle.ts",
+        "fonts:synthetic-bold-paint": "node --import tsx tools/synthetic-bold-paint-oracle.ts",
+        "fonts:mathml-italic": "npm run build:capture-script && vitest run --config vitest.e2e.config.ts tests/mathml-italic-token.e2e.test.ts",
+        "fonts:layout:oracle": "tsx tools/layout-stage-oracle.ts",
+        "fonts:ideograph-cache:oracle": "tsx tools/ideograph-fallback-cache-oracle.ts",
+        "fonts:family-match": "tsx tools/family-match-conformance.ts",
+        "fonts:family-match:linux": "tsx tools/family-match-conformance-linux.ts",
+        "fonts:family-match:win32": "tsx tools/family-match-conformance-win32.ts",
+        "decorations:oracle": "tsx tools/decoration-oracle.ts",
+        "decorations:vertical-oracle": "vitest run tests/vertical-decoration-oracle.test.ts tests/vertical-decoration-browser-oracle.test.ts",
+        "borders:phase-oracle": "tsx tools/border-phase-oracle.ts",
+        "borders:phase-ratify": "tsx tools/border-phase-ratifier.ts",
+        "borders:collapsed-fragmentation-audit": "node --import tsx tools/collapsed-border-fragmentation-oracle.ts",
+        "borders:fragmented-release-gate": "node --import tsx tools/fragmented-collapsed-table-release-gate.ts",
+        "paint:geometry-oracle": "tsx tools/paint-geometry-oracle.ts",
+        "paint:geometry-browser-oracle": "tsx tools/paint-geometry-browser-oracle.ts",
+        "paint:svg-effect-combinations": "node --import tsx tools/svg-effect-combination-oracle.ts",
+        "transform:geometry-oracle": "tsx tools/transform-geometry-oracle.ts",
+        "culling:animated-geometry-oracle": "tsx tools/animated-culling-geometry-oracle.ts",
+        "transform:text-geometry-audit": "tsx tools/text-transform-geometry-audit.ts",
+        "transform:text-parity-gate": "tsx tools/text-transform-geometry-audit.ts",
+        "transform:text-baseline-protocol": "node --import tsx tools/text-affine-baseline-protocol-oracle.ts",
+        "animation:raf-clock-ownership": "vitest run --config vitest.e2e.config.ts tests/raf-clock.e2e.test.ts tests/raf-clock-workflow.test.ts",
+        "transform:text-fragment-spans": "npm run build:capture-script && node --import tsx tools/text-fragment-span-oracle.ts",
+        "transform:text-fragment-protocol": "npm run build:capture-script && vitest run src/capture/text-fragment-geometry.test.ts && vitest run --config vitest.e2e.config.ts tests/text-paint-geometry.e2e.test.ts",
+        "transform:inline-svg-3d-audit": "tsx tools/inline-svg-3d-audit.ts",
+        "transform:animated-3d-frame-gate": "tsx tools/animated-projective-frame-oracle.ts",
+        "transform:nested-projective-owner-audit": "node --import tsx tools/nested-projective-ownership-audit.ts",
+        "transform:projective-owner-producer": "node --import tsx tools/projective-owner-release-producer.ts",
+        "transform:projective-owner-release": "node --import tsx tools/check-projective-owner-release.ts",
+        "pseudo:fragment-geometry-oracle": "node --import tsx tools/pseudo-fragment-geometry-oracle.ts",
+        "pseudo:fragment-render-oracle": "node --import tsx tools/pseudo-fragment-render-oracle.ts",
+        "pseudo:backdrop-source-oracle": "node --import tsx tools/pseudo-backdrop-source-oracle.ts",
+        "paint:summary-marker-oracle": "npm run build:capture-script && vitest run --config vitest.e2e.config.ts tests/summary-disclosure-marker.e2e.test.ts",
+        "forms:native-fallback-gate": "node --import tsx tools/native-control-fallback-gate.ts",
+        "forms:native-fallback-browser": "npm run build:capture-script && vitest run --config vitest.e2e.config.ts tests/native-control-fallback-activation.e2e.test.ts tests/effective-appearance.e2e.test.ts tests/native-control-decoration.e2e.test.ts tests/native-control-source-frame.e2e.test.ts tests/checkable-pseudo-indicators.e2e.test.ts tests/summary-disclosure-marker.e2e.test.ts",
+        "background:url-geometry-audit": "tsx tools/url-background-geometry-audit.ts",
+        "background:clip-text-oracle": "node --import tsx tools/background-clip-text-oracle.ts",
+        "media:frame-ownership-audit": "node --import tsx tools/live-replaced-media-ownership-audit.ts",
+        "media:animated-image-frame-audit": "node --import tsx tools/animated-image-frame-selection-audit-cli.ts",
+        "media:animated-image-production-release": "node --import tsx tools/animated-image-production-release-gate-cli.ts",
+        "mask:origin-clip-oracle": "npm run build:capture-script && vitest run --config vitest.e2e.config.ts tests/mask-origin-clip.e2e.test.ts tests/mask-url-repeat-geometry.e2e.test.ts",
+        "scrollbars:ownership-audit": "tsx tools/native-scrollbar-ownership-audit.ts",
+        "scrollbars:parity-gate": "tsx tools/check-native-scrollbar-release.ts",
+        "paint:order-oracle": "tsx tools/paint-order-oracle.ts",
+        "paint:blend-filter-stage": "node --import tsx tools/blend-filter-pixel-stage-oracle.ts",
+        "paint:mixed-color-space-stage": "node --import tsx tools/mixed-reference-color-space-oracle.ts",
+        "paint:backdrop-source-audit": "node --import tsx tools/backdrop-source-surface-audit.ts --strict",
+        "replaced:geometry-oracle": "node --import tsx tools/replaced-geometry-oracle.ts",
+        "replaced:ownership-gate": "node --import tsx tools/replaced-geometry-oracle.ts --dpr 1,2",
+        "raster:boundary-oracle": "tsx tools/raster-boundary-oracle.ts",
+        "broken-image:hybrid-e2e": "vitest run --config vitest.e2e.config.ts src/capture/broken-image-fallback.e2e.test.ts tests/broken-image-fallback-render.e2e.test.ts",
+        "broken-image:parity-gate": "tsx tools/broken-image-fallback-oracle.ts",
+        "fonts:macos-terminal-raster": "tsx tools/macos-terminal-raster-oracle.ts",
+        "fonts:linux-terminal-mask": "tsx tools/linux-terminal-mask-oracle.ts",
+        "fonts:paths-raster:collect": "tsx tools/paths-native-raster-collector.ts",
+        "fonts:paths-raster:produce": "tsx tools/paths-native-raster-producer.ts",
+        "fonts:paths-raster:adjudicate": "tsx tools/paths-native-raster-gate.ts",
+        "fonts:paths-raster:aggregate": "tsx tools/paths-native-raster-aggregate.ts",
+        "fonts:paths-raster:linux-mathml:collect": "tsx tools/linux-mathml-greek-raster-collector.ts",
+        "fonts:paths-raster:linux-mathml:gate": "tsx tools/linux-mathml-greek-raster-gate.ts",
+        "fonts:sfns-mask-baseline": "npm run build:capture-script && tsx tools/sfns-mask-baseline-oracle.ts",
+        "fonts:sfns-outline:adjudicate": "node --import tsx tools/sfns-outline-parity-gate.ts",
+        "fonts:sfns-pinned-ots:build": "node tools/build-sfns-pinned-ots-sanitizer.mjs",
+        "fonts:sfns-pinned-skia:build": "node tools/build-sfns-pinned-skia-collector.mjs",
+        "fonts:sfns-pinned-skia:collect": "node --import tsx tools/sfns-pinned-skia-mask-collector.ts",
+        "fonts:sfns-pinned-skia:validate": "vitest run tests/sfns-terminal-mask-manifest.test.ts tests/sfns-pinned-skia-mask-schema.test.ts",
+        "fonts:sfns-pinned-chromium:build": "node tools/build-sfns-pinned-chromium-validator.mjs",
+        "fonts:sfns-pinned-chromium:collect": "node --import tsx tools/sfns-pinned-chromium-validation-collector.ts",
+        "fonts:sfns-pinned-chromium:validate": "vitest run tests/sfns-pinned-chromium-validation-schema.test.ts",
+        "fonts:sfns-terminal-mask:adjudicate": "node --import tsx tools/sfns-terminal-mask-adjudicator.ts",
+        "fonts:sfns-terminal-mask:validate": "vitest run tests/sfns-terminal-mask-manifest.test.ts tests/sfns-pinned-skia-mask-schema.test.ts tests/sfns-pinned-chromium-validation-schema.test.ts tests/sfns-terminal-mask-adjudicator.test.ts",
+        "stage:evidence:collect": "tsx tools/collect-stage-evidence.ts",
+        "stage:evidence:build": "tsx tools/build-stage-evidence.ts",
+        "stage:evidence:compare-roll": "tsx tools/compare-roll-evidence.ts",
+        "stage:evidence:source-drift": "tsx tools/source-drift-evidence.ts",
+        "demos:examples": "npm run build:capture-script && tsx examples/terminal-demo.ts && tsx examples/terminal-onboarding.ts && tsx examples/progress-install.ts && tsx examples/hero-product-demo.ts && tsx examples/showcase-rendering.ts && tsx examples/showcase-transitions.ts && tsx examples/transition-tour.ts && tsx examples/transition-mixed.ts && tsx examples/svg-to-video-demo.ts && tsx examples/templates-demo.ts && tsx examples/brand-capture-demo.ts && tsx examples/kinetic-over-capture.ts && tsx examples/format-capture-demo.ts && tsx examples/terminal-window-scroll.ts && tsx examples/storyboard-demo.ts",
+        "check:features": "tsx tools/check-feature-coverage.ts",
+        "check:parity-program": "node tools/check-parity-program.mjs",
+        "check:semantic-coverage": "tsx tools/check-semantic-coverage.ts",
+        "check:activation-coverage": "tsx tools/check-activation-coverage.ts",
+        "check:workflow-contexts": "node tools/check-github-workflows.mjs",
+        "gate:parity-release": "tsx tools/check-parity-release.ts",
+        "site:dev": "cd site && npm install && npm run dev",
+        "site:build": "cd site && npm install && npm run build",
+        "site:preview": "cd site && npm install && npm run preview"
+      },
+      "dependencies": {
+        "@domotion/text-engine": "0.35.0",
+        "@playwright/test": "^1.59.1",
+        "@xterm/headless": "^6.0.0",
+        "bidi-js": "^1.0.3",
+        "fontkit": "^2.0.4",
+        "kerfjs": "^4.4.0",
+        "sharp": "^0.35.5",
+        "svg2ttf": "^6.1.0",
+        "svgo": "^4.1.0",
+        "wawoff2": "^2.0.1",
+        "zod": "^4.4.3"
+      },
+      "bundledDependencies": ["@domotion/text-engine"],
+      "devDependencies": {
+        "@kerfjs/ui": "^4.4.1",
+        "@types/node": "^25.6.0",
+        "@typescript-eslint/parser": "^8.59.4",
+        "@vitest/coverage-v8": "^5.0.5",
+        "c8": "^11.0.0",
+        "esbuild": "^0.28.1",
+        "eslint": "^10.8.0",
+        "eslint-plugin-kerfjs": "^4.1.0",
+        "gitgist": "^1.2.0",
+        "happy-dom": "^20.11.1",
+        "istanbul-lib-coverage": "^3.2.2",
+        "istanbul-lib-report": "^3.0.1",
+        "istanbul-reports": "^3.2.0",
+        "lucide": "^1.69.0",
+        "opentype.js": "^2.0.0",
+        "prettier": "^3.9.8",
+        "tsx": "^4.23.1",
+        "typescript": "^5.8.3",
+        "v8-to-istanbul": "^9.3.0",
+        "vitest": "^5.0.5",
+        "yaml": "^2.9.0"
+      },
+      "optionalDependencies": {
+        "node-pty": "^1.1.0"
+      }
+    },
+    "sha256": "745b4798abc4a678793ac1f7728b905d3f42b5808b753fa58c5bb5c254e8c810",
+    "bundles": [
+      {
+        "name": "@domotion/text-engine",
+        "declared": "0.35.0",
+        "present": true,
+        "manifest": {
+          "name": "@domotion/text-engine",
+          "version": "0.35.0",
+          "private": true,
+          "description": "Domotion's browser-faithful font resolution, shaping, and SVG text emission engine.",
+          "license": "MIT",
+          "type": "module",
+          "main": "dist/index.js",
+          "types": "dist/index.d.ts",
+          "exports": {
+            ".": {
+              "types": "./dist/index.d.ts",
+              "default": "./dist/index.js"
+            },
+            "./font-resolution": {
+              "types": "./dist/font-resolution.d.ts",
+              "default": "./dist/font-resolution.js"
+            },
+            "./text": {
+              "types": "./dist/text.d.ts",
+              "default": "./dist/text.js"
+            },
+            "./capture": {
+              "types": "./dist/capture.d.ts",
+              "default": "./dist/capture.js"
+            },
+            "./helpers": {
+              "types": "./dist/helpers.d.ts",
+              "default": "./dist/helpers.js"
+            },
+            "./format": {
+              "types": "./dist/format.d.ts",
+              "default": "./dist/format.js"
+            },
+            "./diagnostics": {
+              "types": "./dist/diagnostics.d.ts",
+              "default": "./dist/diagnostics.js"
+            },
+            "./testing": {
+              "types": "./dist/testing.d.ts",
+              "default": "./dist/testing.js"
+            }
+          },
+          "files": ["dist", "assets", "tools", "vendor", "README.md"],
+          "scripts": {
+            "clean": "node ../../scripts/run-typescript.mjs -b tsconfig.build.json --clean",
+            "build": "npm run clean && node ../../scripts/run-typescript.mjs -p tsconfig.build.json && node tools/check-runtime-import.mjs",
+            "prepare": "npm run build",
+            "typecheck": "node ../../scripts/run-typescript.mjs --noEmit -p tsconfig.json",
+            "lint": "prettier --ignore-path ../../.prettierignore --check src tools/check-runtime-import.mjs tools/font-env-cassette.mjs README.md package.json && eslint src tools/check-runtime-import.mjs tools/font-env-cassette.mjs --max-warnings 0 --rule kerfjs/ai-assistant-configs:off",
+            "test": "npm run build && npm run test:unit && npm run test:transport-performance",
+            "test:unit": "vitest run --config vitest.config.ts",
+            "test:transport-performance": "vitest run --config vitest.performance.config.ts",
+            "conformance": "npm run build && npm run text-engine:conformance --prefix ../.."
+          },
+          "dependencies": {
+            "bidi-js": "^1.0.3",
+            "fontkit": "^2.0.4",
+            "svg2ttf": "^6.1.0",
+            "unicode-properties": "^1.4.1"
+          },
+          "devDependencies": {
+            "@types/node": "^25.6.0",
+            "typescript": "^5.8.3",
+            "vitest": "^5.0.1"
+          }
+        },
+        "sha256": "4ee4eae9020d5f0921815d4e2add1182f336231039b8f3f877010a047f4fbf9d"
+      }
+    ]
+  },
+  "lockedDomotion": {
+    "version": "0.35.0",
+    "resolved": "https://registry.npmjs.org/domotion-svg/-/domotion-svg-0.35.0.tgz",
+    "integrity": "sha512-Ni0ES77kOv4QbObVh+NSvAR20knj9V8M8GF9Nygf866JABk61re3cEqemW/ebrQaQQhrXaFwc5VgCDh3ScJa/g==",
+    "bundleDependencies": ["@domotion/text-engine"],
+    "dev": true,
+    "hasInstallScript": true,
+    "license": "MIT",
+    "workspaces": ["packages/*"],
+    "dependencies": {
+      "@domotion/text-engine": "0.35.0",
+      "@playwright/test": "^1.59.1",
+      "@xterm/headless": "^6.0.0",
+      "bidi-js": "^1.0.3",
+      "fontkit": "^2.0.4",
+      "kerfjs": "^4.4.0",
+      "sharp": "^0.35.5",
+      "svg2ttf": "^6.1.0",
+      "svgo": "^4.1.0",
+      "wawoff2": "^2.0.1",
+      "zod": "^4.4.3"
+    },
+    "bin": {
+      "domotion": "dist/cli/index.js",
+      "domotion-studio": "dist/cli/studio.js",
+      "svg-review": "dist/cli/review.js",
+      "svg-scrubber": "dist/cli/scrubber.js",
+      "svg-to-image": "dist/cli/svg-to-image.js",
+      "svg-to-video": "dist/cli/svg-to-video.js"
+    },
+    "optionalDependencies": {
+      "node-pty": "^1.1.0"
+    }
+  },
+  "limitations": [
+    "Production-only add is a separate bounded policy that bypasses parent development resolution, not a general bundled-dependency fix.",
+    "Full graph inventories show copied metadata changes even when package counts match; equal counts alone are not preservation evidence.",
+    "WASI cpu:none is skipped in both successful commands; native0/strictclean1 supplies no positive WASI support.",
+    "Root/site canonical npm inputs remain unchanged; only the production-add disposable site manifest/Bun lock are allowed policy changes.",
+    "No npm repository provisioning, metadata rewrite, private peer addition, upstream message or production installer change occurred.",
+    "Full future link/native-only candidate qualification is tracked by KF-477J4X; future full-development resolver remedy by KF-Z0FQZ2; physical variation inventories by KF-1EH00H."
+  ],
+  "rawFiles": [
+    {
+      "name": "bun-add-help.txt",
+      "bytes": 5873,
+      "sha256": "8dd3f0c01278fd62fe668288e4b84fa870e457b277ca3c8dce6a5ab21ae37921"
+    },
+    {
+      "name": "bundled-resolution.json",
+      "bytes": 85086,
+      "sha256": "2df20f5ab411a8eb442d0ca75e51c2bc95cc47355218d3254ad6328d1e488cd6"
+    },
+    {
+      "name": "canonical-package-lock.json",
+      "bytes": 252216,
+      "sha256": "5e833638ed0529875f869a6499860107fd3158cfcee2a93a0247f97701ee39c8"
+    },
+    {
+      "name": "canonical-package.json",
+      "bytes": 9501,
+      "sha256": "acca6cd5646cf25666ec561d35585f7f89f7d827e554099439526475718144c9"
+    },
+    {
+      "name": "canonical-site-package-lock.json",
+      "bytes": 251734,
+      "sha256": "3d9f1d30172935aaeb2be7e85609bf4c517ea1287fa1f24e7210f6c6d78633e0"
+    },
+    {
+      "name": "canonical-site-package.json",
+      "bytes": 1598,
+      "sha256": "eed4e3acc0997daeb21942dadd15293858baeeed0f96de3670d0a0ec47cc3249"
+    },
+    {
+      "name": "default-add-bun.lock",
+      "bytes": 117561,
+      "sha256": "76183ae67fa44c02de2363c50f5a0cdd2da96476ad37be3a36784dfa757bbfb3"
+    },
+    {
+      "name": "default-add-graph-after.json",
+      "bytes": 1104233,
+      "sha256": "9c10197d5f8869650f18a0cc1381b087f7d7065a7da675dcdcdb6fd56711325b"
+    },
+    {
+      "name": "default-add-graph-before.json",
+      "bytes": 1104233,
+      "sha256": "9c10197d5f8869650f18a0cc1381b087f7d7065a7da675dcdcdb6fd56711325b"
+    },
+    {
+      "name": "default-add-package-lock.json",
+      "bytes": 251734,
+      "sha256": "3d9f1d30172935aaeb2be7e85609bf4c517ea1287fa1f24e7210f6c6d78633e0"
+    },
+    {
+      "name": "default-add-package.json",
+      "bytes": 1598,
+      "sha256": "eed4e3acc0997daeb21942dadd15293858baeeed0f96de3670d0a0ec47cc3249"
+    },
+    {
+      "name": "isolated-add-bun.lock",
+      "bytes": 117561,
+      "sha256": "76183ae67fa44c02de2363c50f5a0cdd2da96476ad37be3a36784dfa757bbfb3"
+    },
+    {
+      "name": "isolated-add-graph-after.json",
+      "bytes": 1104233,
+      "sha256": "9c10197d5f8869650f18a0cc1381b087f7d7065a7da675dcdcdb6fd56711325b"
+    },
+    {
+      "name": "isolated-add-graph-before.json",
+      "bytes": 1104233,
+      "sha256": "9c10197d5f8869650f18a0cc1381b087f7d7065a7da675dcdcdb6fd56711325b"
+    },
+    {
+      "name": "isolated-add-package-lock.json",
+      "bytes": 251734,
+      "sha256": "3d9f1d30172935aaeb2be7e85609bf4c517ea1287fa1f24e7210f6c6d78633e0"
+    },
+    {
+      "name": "isolated-add-package.json",
+      "bytes": 1598,
+      "sha256": "eed4e3acc0997daeb21942dadd15293858baeeed0f96de3670d0a0ec47cc3249"
+    },
+    {
+      "name": "lock-only-add-bun.lock",
+      "bytes": 117561,
+      "sha256": "76183ae67fa44c02de2363c50f5a0cdd2da96476ad37be3a36784dfa757bbfb3"
+    },
+    {
+      "name": "lock-only-add-graph-after.json",
+      "bytes": 1104233,
+      "sha256": "9c10197d5f8869650f18a0cc1381b087f7d7065a7da675dcdcdb6fd56711325b"
+    },
+    {
+      "name": "lock-only-add-graph-before.json",
+      "bytes": 1104233,
+      "sha256": "9c10197d5f8869650f18a0cc1381b087f7d7065a7da675dcdcdb6fd56711325b"
+    },
+    {
+      "name": "lock-only-add-package-lock.json",
+      "bytes": 251734,
+      "sha256": "3d9f1d30172935aaeb2be7e85609bf4c517ea1287fa1f24e7210f6c6d78633e0"
+    },
+    {
+      "name": "lock-only-add-package.json",
+      "bytes": 1598,
+      "sha256": "eed4e3acc0997daeb21942dadd15293858baeeed0f96de3670d0a0ec47cc3249"
+    },
+    {
+      "name": "no-cache-add-bun.lock",
+      "bytes": 117561,
+      "sha256": "76183ae67fa44c02de2363c50f5a0cdd2da96476ad37be3a36784dfa757bbfb3"
+    },
+    {
+      "name": "no-cache-add-graph-after.json",
+      "bytes": 1104233,
+      "sha256": "9c10197d5f8869650f18a0cc1381b087f7d7065a7da675dcdcdb6fd56711325b"
+    },
+    {
+      "name": "no-cache-add-graph-before.json",
+      "bytes": 1104233,
+      "sha256": "9c10197d5f8869650f18a0cc1381b087f7d7065a7da675dcdcdb6fd56711325b"
+    },
+    {
+      "name": "no-cache-add-package-lock.json",
+      "bytes": 251734,
+      "sha256": "3d9f1d30172935aaeb2be7e85609bf4c517ea1287fa1f24e7210f6c6d78633e0"
+    },
+    {
+      "name": "no-cache-add-package.json",
+      "bytes": 1598,
+      "sha256": "eed4e3acc0997daeb21942dadd15293858baeeed0f96de3670d0a0ec47cc3249"
+    },
+    {
+      "name": "production-add-bun.lock",
+      "bytes": 117561,
+      "sha256": "76183ae67fa44c02de2363c50f5a0cdd2da96476ad37be3a36784dfa757bbfb3"
+    },
+    {
+      "name": "production-add-graph-after.json",
+      "bytes": 1104009,
+      "sha256": "933429b2a5c1c02481c3da332898c53a92eff1ac8ef2bffe7a0c007cf8f36102"
+    },
+    {
+      "name": "production-add-graph-before.json",
+      "bytes": 1104233,
+      "sha256": "9c10197d5f8869650f18a0cc1381b087f7d7065a7da675dcdcdb6fd56711325b"
+    },
+    {
+      "name": "production-add-package-lock.json",
+      "bytes": 251734,
+      "sha256": "3d9f1d30172935aaeb2be7e85609bf4c517ea1287fa1f24e7210f6c6d78633e0"
+    },
+    {
+      "name": "production-add-package.json",
+      "bytes": 1643,
+      "sha256": "920675a05fc0d9c2d9eb8916dd3212386e8f713dc56105d00ceded557e50900d"
+    },
+    {
+      "name": "production-frozen-restore-bun.lock",
+      "bytes": 117561,
+      "sha256": "76183ae67fa44c02de2363c50f5a0cdd2da96476ad37be3a36784dfa757bbfb3"
+    },
+    {
+      "name": "production-frozen-restore-graph-after.json",
+      "bytes": 1103971,
+      "sha256": "5bb3bbfd8a70cb06fb5d7af5aa093c27d79d6c081cdb419103f49768f7dfd635"
+    },
+    {
+      "name": "production-frozen-restore-graph-before.json",
+      "bytes": 1104009,
+      "sha256": "933429b2a5c1c02481c3da332898c53a92eff1ac8ef2bffe7a0c007cf8f36102"
+    },
+    {
+      "name": "production-frozen-restore-package-lock.json",
+      "bytes": 251734,
+      "sha256": "3d9f1d30172935aaeb2be7e85609bf4c517ea1287fa1f24e7210f6c6d78633e0"
+    },
+    {
+      "name": "production-frozen-restore-package.json",
+      "bytes": 1643,
+      "sha256": "920675a05fc0d9c2d9eb8916dd3212386e8f713dc56105d00ceded557e50900d"
+    },
+    {
+      "name": "published-bundle.json",
+      "bytes": 24996,
+      "sha256": "3fd5373ba289486b27f8598176c33254d401270685c3f8006c8677fb0e2ab59b"
+    },
+    {
+      "name": "registry-domotion-graph-after.json",
+      "bytes": 33,
+      "sha256": "05ee36caa80ba420e33e2ddd50325bd129528a629b1050f85a9693e5b8d0192c"
+    },
+    {
+      "name": "registry-domotion-graph-before.json",
+      "bytes": 33,
+      "sha256": "05ee36caa80ba420e33e2ddd50325bd129528a629b1050f85a9693e5b8d0192c"
+    },
+    {
+      "name": "registry-domotion-package.json",
+      "bytes": 70,
+      "sha256": "d458ef03f0af9dca1001f56cf9b4b462bd7c0c77aa1f1cb651bcbc92d567d395"
+    },
+    {
+      "name": "tarball-domotion-graph-after.json",
+      "bytes": 33,
+      "sha256": "05ee36caa80ba420e33e2ddd50325bd129528a629b1050f85a9693e5b8d0192c"
+    },
+    {
+      "name": "tarball-domotion-graph-before.json",
+      "bytes": 33,
+      "sha256": "05ee36caa80ba420e33e2ddd50325bd129528a629b1050f85a9693e5b8d0192c"
+    },
+    {
+      "name": "tarball-domotion-package.json",
+      "bytes": 70,
+      "sha256": "d458ef03f0af9dca1001f56cf9b4b462bd7c0c77aa1f1cb651bcbc92d567d395"
+    },
+    {
+      "name": "toolchain.json",
+      "bytes": 196,
+      "sha256": "eed5998c4b60934f6227ec6acd210fdd3c3c0a508b52faf2b2eb6d69f75e772b"
+    }
+  ],
+  "jobLog": {
+    "name": "kerf-42787309811.log",
+    "sha256": "c4a521d5cf0a2e711868ebdda0bc857d5c6d480651dad21c520ff3a355ca7056"
+  }
+}
