@@ -82,3 +82,30 @@ This supplies the requested Linux performance evidence without a threshold
 increase, retries, arbitrary sleeps or a production installer change. Full
 canonical CI remains independently tracked by the integrator. These npm
 controls are not Bun installer or runtime qualification.
+
+## Remaining native flow cost and second repair
+
+Canonical run `42794785275` at `9a26630ed92b9c4057534de726c6f486625a20ce` failed Firefox's visible-frame budget with task samples 828/861/797/862 ms and visible-frame samples 832/862/800/1007 ms. All four retained the exact 25-row mutation and unrelated-branch identity contracts. The last sample added 145 ms after its task marker. This identifies the remaining symptom; it does not alone attribute contention or tracing.
+
+New bounded current-product controls used the same macOS machine, exact editor browser versions, four real clicks and identical 5,000 final-icon rows. All table rows are native timing diagnostics, not measurements from the canonical Linux runner:
+
+| Control                           | Firefox visible-frame samples | Firefox forced native layout |
+| --------------------------------- | ----------------------------- | ---------------------------- |
+| Guarded-divider flex baseline     | 144/147/147/149 ms            | 126–127 ms                   |
+| Remove remaining divider selector | 146/148/146/147 ms            | 126–132 ms                   |
+| Positive-class divider selector   | 145/148/148/147 ms            | 126–132 ms                   |
+| Normal block flow                 | 93/96/80/98 ms                | 67–75 ms                     |
+| Flex baseline with tracing        | 221/176/164/137 ms            | 126–130 ms                   |
+| Block flow with tracing           | 135/85/105/71 ms              | 60–71 ms                     |
+
+Removing the selector again or replacing its negative guard with a positive class did not improve the post-repair case, so there is no additional marker/API change. Each disclosure's whole-root thumbnail query measured below the Firefox clock's 1 ms resolution. The click phase made 42 attribute reads and 4–5 writes, rather than traversing 5,000 rows for roving focus. Those scans did not dominate these measured operations. Native layout forced by the scrollTop read remained dominant. Caching that read had already failed to improve actual rendering, so it remains unchanged.
+
+Normal block flow also improved Chromium from 137–145 ms visible to 99–103 ms. WebKit's control changed from 130–215 ms to 129–195 ms, a smaller improvement. These are paired local controls, not cross-CPU Linux speedup claims. Tracing can add frame latency locally, but no evidence here attributes the canonical failure solely to tracing or another worker.
+
+TreeList rows already use grid layout and own their widths, density minimums, indentation and natural heights. Removing the containing flex-column algorithm avoids its whole-list layout cost on a keyed branch change. The repair changes only TreeList's owned CSS flow; it introduces no API, fixed row-height assumption, virtualization, observer shortcut or benchmark scheduling change. Both 1,000 ms budgets, every engine, raw metrics, row mutations and identity assertions remain required.
+
+Regression verification includes natural variable-height rows via public minimum-height tokens, both densities, scroll extent, focus-driven End/Home scrolling at wide/narrow widths, existing pointer/keyboard/drag behavior, and the unchanged 5,000-file test. The final exact-source canonical CI result remains the integration gate.
+
+The repaired local build passes the unchanged scale test in all three engines with canonical tracing: maximum task/visible-frame timings are Chromium 107/107 ms, Firefox 80/138 ms, and WebKit 171/196 ms. Every operation retains the 25-row and unrelated-branch identity assertions. The three-engine TreeList browser suite passes 16 tests with eight unchanged Chromium-only capture skips in other engines; variable-height/density/scroll checks, keyboard navigation, and internal/external drag behavior all pass. The complete UI change gate, scoped lint and strict UI types pass; the demo is +4 gzip bytes versus the reviewed baseline without any budget update.
+
+New Firefox Library captures at 1440/867/390/960 and a focused Chromium TreeList crop were inspected for hierarchy, natural spacing, final SVG alignment, readable labels, focus and clipping. They preserve the existing geometry and normal scroll continuation. Canonical CI on this additional product repair is still required before completion.

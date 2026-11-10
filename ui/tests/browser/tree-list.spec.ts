@@ -59,6 +59,87 @@ test('TreeList opens, navigates, and chooses with the pointer and keyboard', asy
   await expect(row('src')).toHaveAttribute('tabindex', '-1');
 });
 
+// KF-1XBJDT: flow layout must preserve real variable row heights and native
+// focus scrolling; the large-project benchmark must not assume fixed rows.
+test('TreeList preserves variable heights, density and focus scrolling', async ({
+  page,
+}) => {
+  for (const width of [1280, 390]) {
+    await page.setViewportSize({ width, height: 900 });
+    await page.goto('/?component=tree-list');
+    const tree = page.getByRole('tree', { name: 'Files' });
+    const rows = tree.getByRole('treeitem');
+    await tree.evaluate((element) => {
+      const tree = element as HTMLElement;
+      tree.style.width = '240px';
+      tree.style.height = '150px';
+      tree.style.overflow = 'auto';
+      const rows = Array.from(tree.children) as HTMLElement[];
+      for (const [index, height] of [80, 44, 104].entries())
+        rows[index]!.style.setProperty(
+          '--kui-list-item-min-height',
+          `${height}px`,
+        );
+    });
+    for (const density of ['default', 'compact']) {
+      await rows.evaluateAll((elements, density) => {
+        for (const row of elements) row.setAttribute('data-density', density);
+      }, density);
+      const layout = await tree.evaluate((element) => {
+        const tree = element as HTMLElement;
+        const box = tree.getBoundingClientRect();
+        return {
+          width: box.width,
+          clientHeight: tree.clientHeight,
+          scrollHeight: tree.scrollHeight,
+          rows: Array.from(tree.children, (row) => {
+            const rect = row.getBoundingClientRect();
+            return {
+              height: rect.height,
+              width: rect.width,
+              top: rect.top,
+              bottom: rect.bottom,
+            };
+          }),
+        };
+      });
+      expect(layout.rows.slice(0, 3).map((row) => row.height)).toEqual([
+        80, 44, 104,
+      ]);
+      expect(
+        layout.rows
+          .slice(3)
+          .every((row) => row.height >= (density === 'compact' ? 36 : 44)),
+      ).toBe(true);
+      expect(layout.rows.at(-1)!.height).toBe(density === 'compact' ? 36 : 44);
+      for (let index = 1; index < layout.rows.length; index++)
+        expect(layout.rows[index]!.top).toBeCloseTo(
+          layout.rows[index - 1]!.bottom,
+          1,
+        );
+      expect(
+        layout.rows.every((row) => row.width > 0 && row.width < layout.width),
+      ).toBe(true);
+      expect(layout.scrollHeight).toBeCloseTo(
+        layout.rows.reduce((height, row) => height + row.height, 0),
+        0,
+      );
+      expect(layout.scrollHeight).toBeGreaterThan(layout.clientHeight);
+      await rows.first().focus();
+      await page.keyboard.press('End');
+      await expect(rows.last()).toBeFocused();
+      await expect
+        .poll(() => tree.evaluate((element) => element.scrollTop))
+        .toBeGreaterThan(0);
+      await page.keyboard.press('Home');
+      await expect(rows.first()).toBeFocused();
+      await expect
+        .poll(() => tree.evaluate((element) => element.scrollTop))
+        .toBe(0);
+    }
+  }
+});
+
 for (const scheme of ['light', 'dark'] as const) {
   for (const width of [1280, 390]) {
     test(`captures the TreeList demo, ${scheme} at ${width}px`, async ({

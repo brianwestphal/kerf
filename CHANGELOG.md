@@ -20,7 +20,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 - **Library file icons (KF-CBA2H7).** Both document layouts show decorative Lucide folder icons and extension-specific file icons, with a generic file fallback.
 
-- **Library disclosure latency (KF-1XBJDT).** The document hierarchy stays stable across disclosure changes and TreeList offers explicit `keyedRows` reconciliation while default markup keeps nested-list composition. With the final file icons, a 5,000-file check measured Chromium disclosure turns at 158–174 ms; the pre-optimization collapse baseline was about 421 ms. WebKit measured 732–814 ms; no pre-change WebKit baseline was measured.
+- **Library disclosure latency (KF-1XBJDT).** The document hierarchy stays stable across disclosure changes and TreeList offers explicit `keyedRows` reconciliation while default markup keeps nested-list composition. Divider matching excludes internal divider-free tree rows, and normal block flow avoids full-column flex layout on a branch change. The initial keyed-row plus final-icon measurement phase recorded 158–174 ms Chromium disclosure turns (about 421 ms before that optimization) and 732–814 ms in WebKit, with no pre-change WebKit baseline; these are earlier-phase figures, not final block-flow results. Same-machine rendering controls and later exact-source Linux results are recorded separately in the performance reports.
 
 - **Library minimum size (KF-GC3PRB).** Shrinking the Library keeps its search and result rows visible through a public, viewport-capped PinnablePopoverSurface `minHeight` option. Keyboard resize remembers the actual constrained height without pinning.
 
