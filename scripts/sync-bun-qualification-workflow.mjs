@@ -15,6 +15,10 @@ export function qualificationWorkflow(source) {
   const canonical = YAML.parse(source);
   const jobs = structuredClone(canonical.jobs);
   for (const [name, job] of Object.entries(jobs)) {
+    const recordVariation =
+      `bun pm ls --all > "$BUN_QUALIFICATION_EVIDENCE/${name}-final-packages.txt" && ` +
+      `cp bun.lock "$BUN_QUALIFICATION_EVIDENCE/${name}-final.bun.lock" && ` +
+      `cp package.json "$BUN_QUALIFICATION_EVIDENCE/${name}-final-package.json"`;
     if (job['runs-on'] === 'ubuntu-latest') job['runs-on'] = 'ubuntu-24.04';
     delete job.permissions;
     const defaults = job.defaults?.run?.['working-directory'] ?? '.';
@@ -38,9 +42,12 @@ export function qualificationWorkflow(source) {
         'npm install --no-save eslint@',
         'bun add --no-save eslint@',
       );
+      if (step.run.startsWith('bun add --no-save eslint@'))
+        step.run += ` && ${recordVariation}`;
       if (step.run === 'npm run test:webawesome-latest') {
         step.run =
-          'bun add --no-save @awesome.me/webawesome@^3 && node node_modules/vitest/vitest.mjs run tests/unit && KERF_WEBAWESOME_LATEST=1 node node_modules/playwright/cli.js test --project=chromium';
+          `bun add --no-save @awesome.me/webawesome@^3 && ${recordVariation} && ` +
+          'node node_modules/vitest/vitest.mjs run tests/unit && KERF_WEBAWESOME_LATEST=1 node node_modules/playwright/cli.js test --project=chromium';
       }
       step.run = step.run.replaceAll(
         /\bnpx (?!--no-install\b)/g,

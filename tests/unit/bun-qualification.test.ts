@@ -49,6 +49,22 @@ describe('disposable Bun qualification workflow', () => {
     expect(text).toContain('bun-candidate-install.mjs');
   });
 
+  it('records dependency-variation trees before their tests can fail', () => {
+    const candidate = candidateFrom(source);
+    for (const name of ['eslint-plugin', 'ui-webawesome-latest']) {
+      const step = candidate.jobs[name].steps.find((step: { run?: string }) =>
+        step.run?.startsWith('bun add --no-save'),
+      );
+      expect(step.run).toContain('bun pm ls --all');
+      expect(step.run).toContain(`${name}-final.bun.lock`);
+      expect(step.run).toContain(`${name}-final-package.json`);
+      if (name === 'ui-webawesome-latest')
+        expect(step.run.indexOf('bun pm ls --all')).toBeLessThan(
+          step.run.indexOf('vitest.mjs run'),
+        );
+    }
+  });
+
   it('rejects a new unreviewed npm installer instead of silently qualifying it', () => {
     const canonical = YAML.parse(source);
     canonical.jobs.test.steps.push({ run: 'npm install unrelated-package' });
