@@ -1,0 +1,151 @@
+{
+  "run": "https://github.com/brianwestphal/kerf/actions/runs/42764691224",
+  "commit": "b7273e3cbe92235597b68de2cfac2166da78a8b1",
+  "scope": "release-artifacts only",
+  "jobId": 129658299966,
+  "result": "success",
+  "releaseTestsPassed": 35,
+  "rawArtifact": "candidate-release-artifacts-b7273e3cbe92235597b68de2cfac2166da78a8b1",
+  "rawReportSha256": "73e51c3ef57a5450ec72e8cc7f65abba54b3aacab5e7166f0feba9a1f6f5daa2",
+  "inputs": [
+    {
+      "package": ".",
+      "commit": "b7273e3cbe92235597b68de2cfac2166da78a8b1",
+      "node": "v22.23.4",
+      "npm": "10.9.9",
+      "bun": "1.4.4",
+      "platform": "linux",
+      "arch": "x64",
+      "canonicalCiSha256": "84e761644df75064e403d591a7a279dc57039f0a01e22af2ce131d4cf6e12197",
+      "input": {
+        "manifest": "acca6cd5646cf25666ec561d35585f7f89f7d827e554099439526475718144c9",
+        "npmLock": "5e833638ed0529875f869a6499860107fd3158cfcee2a93a0247f97701ee39c8"
+      },
+      "bunLock": "029e3005684924115881a9f274fcf889afa36740378683a059222a45449d4ef9",
+      "moduleKiB": "480808",
+      "lifecyclePolicy": "Bun default trust policy; no trust overrides"
+    },
+    {
+      "package": "ui",
+      "commit": "b7273e3cbe92235597b68de2cfac2166da78a8b1",
+      "node": "v22.23.4",
+      "npm": "10.9.9",
+      "bun": "1.4.4",
+      "platform": "linux",
+      "arch": "x64",
+      "canonicalCiSha256": "84e761644df75064e403d591a7a279dc57039f0a01e22af2ce131d4cf6e12197",
+      "input": {
+        "manifest": "151dc411935ce3c7c109c896f18c7f60498e945274d1948e9adda6128eb8c189",
+        "npmLock": "6f76f128bc62c9362ae8b64720a6ad0876f38752dce486004c0b296bf4ccb346"
+      },
+      "bunLock": "fd05bb117f2db34b18a8551db1e0c86c49131615af7990d5883cb60c9c15313f",
+      "moduleKiB": "459576",
+      "lifecyclePolicy": "Bun default trust policy; no trust overrides"
+    }
+  ],
+  "artifacts": [
+    {
+      "name": "kerfjs",
+      "version": "5.0.0",
+      "artifact": "packed/5.0.0/kerfjs/kerfjs-5.0.0.tgz",
+      "sizeBytes": 660070,
+      "sha256": "0f1f6ba99f924d65a00732308c2025870253fd0510b720d214205bbdc122829b",
+      "integrity": "sha512-dilXmM/X3R9bIZz3mvuV8xbKpWAhCjEx6ixW9yVK47NrYGIwyTFPzhyWPBlksVbtpCqCewezrS8sCkJToIVFBg==",
+      "peerDependencies": {},
+      "offlinePublishDryRunPassed": true
+    },
+    {
+      "name": "@kerfjs/ui",
+      "version": "5.0.0",
+      "artifact": "packed/5.0.0/@kerfjs-ui/kerfjs-ui-5.0.0.tgz",
+      "sizeBytes": 15412402,
+      "sha256": "70c3a64e67005f03740741d0499f9b502b932ea58c8a937af71ca09c75f99bc4",
+      "integrity": "sha512-E6z0HYVuGfzUzuQhjXj9Pp7VwgRZgHrVoIYfQeqt9tRO+wRibCsDaeeRMzEgUvgEyyTija1Gg1xQtuDg4cYw2g==",
+      "peerDependencies": {
+        "@awesome.me/webawesome": "^3.14.0",
+        "kerfjs": "^5.0.0",
+        "lucide": "^1.43.0",
+        "playwright": "^1.63.0"
+      },
+      "offlinePublishDryRunPassed": true
+    },
+    {
+      "name": "eslint-plugin-kerfjs",
+      "version": "5.0.0",
+      "artifact": "packed/5.0.0/eslint-plugin-kerfjs/eslint-plugin-kerfjs-5.0.0.tgz",
+      "sizeBytes": 60692,
+      "sha256": "4c526cb7e1442d8409337ff8703406ab972256234bd301e15af4d168a7930b8d",
+      "integrity": "sha512-Nb2otxUAHRgyZsHd/Q5RCruFsRPebtkBAiyQjMXSDp4ETh4M+uAK6JWOOhbUd8/ba4wb252mJPiTU84E0UJTjw==",
+      "peerDependencies": {
+        "eslint": "^9.0.0 || ^10.0.0"
+      },
+      "offlinePublishDryRunPassed": true
+    },
+    {
+      "name": "create-kerf-component",
+      "version": "5.0.0",
+      "artifact": "packed/5.0.0/create-kerf-component/create-kerf-component-5.0.0.tgz",
+      "sizeBytes": 32815,
+      "sha256": "864f140b718b5f888e561c70485599f8541a3723e8f3d1ba79ba4c12afe43e85",
+      "integrity": "sha512-/ZgdGfhwYvBf0VNOBgUIRmYpvaiYnAfJrXrafd1v9ioKZ6eh1Frsvn03eiEK4myfPRi4H7FzaAg0ZoG1idpZ2A==",
+      "peerDependencies": {
+        "typescript": "^5.0.0 || ^6.0.0"
+      },
+      "offlinePublishDryRunPassed": true
+    },
+    {
+      "name": "kerfjs",
+      "version": "5.0.0-beta.999999",
+      "artifact": "packed/5.0.0-beta.999999/kerfjs/kerfjs-5.0.0-beta.999999.tgz",
+      "sizeBytes": 660087,
+      "sha256": "0bdc0b51305ac6dba2a5fabc9d9864bffaa1b97e80bedc9e5db6350eb495bfab",
+      "integrity": "sha512-JYkfUaJqFvtNGNts34ZJuioEhbXk78uhH3sngS+oZc7lc55Bez9mVtfPS/DOAzTiGGuQNwCgKpbMDJYvTkGsKg==",
+      "peerDependencies": {},
+      "offlinePublishDryRunPassed": true
+    },
+    {
+      "name": "@kerfjs/ui",
+      "version": "5.0.0-beta.999999",
+      "artifact": "packed/5.0.0-beta.999999/@kerfjs-ui/kerfjs-ui-5.0.0-beta.999999.tgz",
+      "sizeBytes": 15412420,
+      "sha256": "0913e22bef3c3eee1ba057d32fdfcf962a0244ac3406fd653b812c98a060a194",
+      "integrity": "sha512-1Jcr3ZrxbBOI3+p9JB1QXPACJWrzWkdgB7qfzSL/pd7gByK3oAI1cCM29fZB+5I4TU13N6Rivnbe8Mhr4CNe0w==",
+      "peerDependencies": {
+        "@awesome.me/webawesome": "^3.14.0",
+        "kerfjs": "^5.0.0-0",
+        "lucide": "^1.43.0",
+        "playwright": "^1.63.0"
+      },
+      "offlinePublishDryRunPassed": true
+    },
+    {
+      "name": "eslint-plugin-kerfjs",
+      "version": "5.0.0-beta.999999",
+      "artifact": "packed/5.0.0-beta.999999/eslint-plugin-kerfjs/eslint-plugin-kerfjs-5.0.0-beta.999999.tgz",
+      "sizeBytes": 60706,
+      "sha256": "dc527d06dcf55138923cf99158d95dfc302b81efb074e2418e23e84127fef36e",
+      "integrity": "sha512-FBAdirRyLuHtJXO3j3qjOultkrHF85aEkM2xsGCyX9tGpkqY8q2araQw5lICls/W4LkDHlb/4XYS7y751dJrmg==",
+      "peerDependencies": {
+        "eslint": "^9.0.0 || ^10.0.0"
+      },
+      "offlinePublishDryRunPassed": true
+    },
+    {
+      "name": "create-kerf-component",
+      "version": "5.0.0-beta.999999",
+      "artifact": "packed/5.0.0-beta.999999/create-kerf-component/create-kerf-component-5.0.0-beta.999999.tgz",
+      "sizeBytes": 32832,
+      "sha256": "c213ab58abeed949f1c68cc8cd266db22d62dcecd6eae2ae5c888d67ecb1999e",
+      "integrity": "sha512-651u+pDlIUwLT2tJSnfDAiCLwHFGYKU+CHBP8cVpO6SDoIw7lmcQVh0PUxTCJpM4uxS/GzQgHmsC1sPI1Y4sSQ==",
+      "peerDependencies": {
+        "typescript": "^5.0.0 || ^6.0.0"
+      },
+      "offlinePublishDryRunPassed": true
+    }
+  ],
+  "limits": [
+    "Original full matrix used a different SHA and remains NO GO",
+    "Whole stable CLI dry-run unavailable (KF-Y9A9XE)",
+    "No real registry publish or OIDC provenance exercised"
+  ]
+}

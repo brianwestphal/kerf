@@ -1,0 +1,846 @@
+{
+  "run": "https://github.com/brianwestphal/kerf/actions/runs/42757076917",
+  "commit": "d5adc44f8aaf7e9a92261ea3cdfa036e46b3fdfa",
+  "result": "NO GO; full run failed",
+  "workflowSource": "https://github.com/brianwestphal/kerf/blob/d5adc44f8aaf7e9a92261ea3cdfa036e46b3fdfa/.github/workflows/bun-qualification.yml",
+  "canonicalCiSha256": "84e761644df75064e403d591a7a279dc57039f0a01e22af2ce131d4cf6e12197",
+  "counts": {
+    "total": 34,
+    "success": 32,
+    "failure": 2,
+    "linuxBunCandidate": {
+      "total": 32,
+      "success": 30,
+      "failure": 2
+    },
+    "linuxNpmControl": {
+      "total": 1,
+      "success": 1
+    },
+    "macOSBunDesignBaseline": {
+      "total": 1,
+      "success": 1
+    }
+  },
+  "fullRawLogSha256": "56144c242873e059184da41ae3ca4435d6eafa91d25e3ae25cf17c8257aaa20f",
+  "inputs": [
+    {
+      "package": ".",
+      "input": {
+        "manifest": "acca6cd5646cf25666ec561d35585f7f89f7d827e554099439526475718144c9",
+        "npmLock": "5e833638ed0529875f869a6499860107fd3158cfcee2a93a0247f97701ee39c8"
+      },
+      "migratedBunLockHashes": [
+        "029e3005684924115881a9f274fcf889afa36740378683a059222a45449d4ef9"
+      ],
+      "observations": 29,
+      "toolchains": [
+        "linux/x64, Node v22.23.4, npm 10.9.9, Bun 1.4.4",
+        "darwin/arm64, Node v22.23.4, npm 10.9.9, Bun 1.4.4"
+      ],
+      "artifactNames": [
+        "candidate-browser-0-d5adc44f8aaf7e9a92261ea3cdfa036e46b3fdfa",
+        "candidate-build-0-d5adc44f8aaf7e9a92261ea3cdfa036e46b3fdfa",
+        "candidate-design-templates-0-d5adc44f8aaf7e9a92261ea3cdfa036e46b3fdfa",
+        "candidate-editor-0-d5adc44f8aaf7e9a92261ea3cdfa036e46b3fdfa",
+        "candidate-editor-browser-0-d5adc44f8aaf7e9a92261ea3cdfa036e46b3fdfa",
+        "candidate-editor-browser-1-d5adc44f8aaf7e9a92261ea3cdfa036e46b3fdfa",
+        "candidate-editor-browser-10-d5adc44f8aaf7e9a92261ea3cdfa036e46b3fdfa",
+        "candidate-editor-browser-11-d5adc44f8aaf7e9a92261ea3cdfa036e46b3fdfa",
+        "candidate-editor-browser-2-d5adc44f8aaf7e9a92261ea3cdfa036e46b3fdfa",
+        "candidate-editor-browser-3-d5adc44f8aaf7e9a92261ea3cdfa036e46b3fdfa",
+        "candidate-editor-browser-4-d5adc44f8aaf7e9a92261ea3cdfa036e46b3fdfa",
+        "candidate-editor-browser-5-d5adc44f8aaf7e9a92261ea3cdfa036e46b3fdfa",
+        "candidate-editor-browser-6-d5adc44f8aaf7e9a92261ea3cdfa036e46b3fdfa",
+        "candidate-editor-browser-7-d5adc44f8aaf7e9a92261ea3cdfa036e46b3fdfa",
+        "candidate-editor-browser-8-d5adc44f8aaf7e9a92261ea3cdfa036e46b3fdfa",
+        "candidate-editor-browser-9-d5adc44f8aaf7e9a92261ea3cdfa036e46b3fdfa",
+        "candidate-gates-0-d5adc44f8aaf7e9a92261ea3cdfa036e46b3fdfa",
+        "candidate-lint-0-d5adc44f8aaf7e9a92261ea3cdfa036e46b3fdfa",
+        "candidate-node-floor-0-d5adc44f8aaf7e9a92261ea3cdfa036e46b3fdfa",
+        "candidate-release-artifacts-d5adc44f8aaf7e9a92261ea3cdfa036e46b3fdfa",
+        "candidate-seventh-tree-d5adc44f8aaf7e9a92261ea3cdfa036e46b3fdfa",
+        "candidate-site-0-d5adc44f8aaf7e9a92261ea3cdfa036e46b3fdfa",
+        "candidate-test-0-d5adc44f8aaf7e9a92261ea3cdfa036e46b3fdfa",
+        "candidate-typecheck-0-d5adc44f8aaf7e9a92261ea3cdfa036e46b3fdfa",
+        "candidate-ui-0-d5adc44f8aaf7e9a92261ea3cdfa036e46b3fdfa",
+        "candidate-ui-browser-0-d5adc44f8aaf7e9a92261ea3cdfa036e46b3fdfa",
+        "candidate-ui-browser-1-d5adc44f8aaf7e9a92261ea3cdfa036e46b3fdfa",
+        "candidate-ui-browser-2-d5adc44f8aaf7e9a92261ea3cdfa036e46b3fdfa",
+        "candidate-ui-webawesome-latest-0-d5adc44f8aaf7e9a92261ea3cdfa036e46b3fdfa"
+      ]
+    },
+    {
+      "package": "create-kerf-component",
+      "input": {
+        "manifest": "9cbf6131138ef047231b3acfc9f9aaae6bc4c61e51ef2ed35c1fc41ecc46de81",
+        "npmLock": "1813c99b4617760c6cc18c5b946de25d2010781a9c4bfe678986cdf468137e76"
+      },
+      "migratedBunLockHashes": [
+        "afc5fce4a16d20d3a084a2fe36707c72318a968bca67aaa44c2675ee2635c4d9"
+      ],
+      "observations": 1,
+      "toolchains": ["linux/x64, Node v22.23.4, npm 10.9.9, Bun 1.4.4"],
+      "artifactNames": [
+        "candidate-create-kerf-component-0-d5adc44f8aaf7e9a92261ea3cdfa036e46b3fdfa"
+      ]
+    },
+    {
+      "package": "editor",
+      "input": {
+        "manifest": "888e1b552cb8a7643c0e7b7a91877d31f9348503a43118386940fab0c2aa538d",
+        "npmLock": "b5739ec99b535ab5d53b36e5cb626675d1a9976a1e5dad723217c882ba5172fe"
+      },
+      "migratedBunLockHashes": [
+        "754c5a1df81442f13460c95061f868b46f2dcea49dbec2fd87313fce5d509cdf"
+      ],
+      "observations": 13,
+      "toolchains": ["linux/x64, Node v22.23.4, npm 10.9.9, Bun 1.4.4"],
+      "artifactNames": [
+        "candidate-editor-0-d5adc44f8aaf7e9a92261ea3cdfa036e46b3fdfa",
+        "candidate-editor-browser-0-d5adc44f8aaf7e9a92261ea3cdfa036e46b3fdfa",
+        "candidate-editor-browser-1-d5adc44f8aaf7e9a92261ea3cdfa036e46b3fdfa",
+        "candidate-editor-browser-10-d5adc44f8aaf7e9a92261ea3cdfa036e46b3fdfa",
+        "candidate-editor-browser-11-d5adc44f8aaf7e9a92261ea3cdfa036e46b3fdfa",
+        "candidate-editor-browser-2-d5adc44f8aaf7e9a92261ea3cdfa036e46b3fdfa",
+        "candidate-editor-browser-3-d5adc44f8aaf7e9a92261ea3cdfa036e46b3fdfa",
+        "candidate-editor-browser-4-d5adc44f8aaf7e9a92261ea3cdfa036e46b3fdfa",
+        "candidate-editor-browser-5-d5adc44f8aaf7e9a92261ea3cdfa036e46b3fdfa",
+        "candidate-editor-browser-6-d5adc44f8aaf7e9a92261ea3cdfa036e46b3fdfa",
+        "candidate-editor-browser-7-d5adc44f8aaf7e9a92261ea3cdfa036e46b3fdfa",
+        "candidate-editor-browser-8-d5adc44f8aaf7e9a92261ea3cdfa036e46b3fdfa",
+        "candidate-editor-browser-9-d5adc44f8aaf7e9a92261ea3cdfa036e46b3fdfa"
+      ]
+    },
+    {
+      "package": "eslint-plugin",
+      "input": {
+        "manifest": "1c03717e925d857edd4b20431af988abb5b796491fbd66a0d7506e6543cd3299",
+        "npmLock": "1242d9ddfe19b1dda7b5a5a2ec886733c85b13734e67967b653bb9d9550ca0c9"
+      },
+      "migratedBunLockHashes": [
+        "275d25520fd2b0c289bff9925128ecba472db291ccc51f6e40047d764b47e639"
+      ],
+      "observations": 2,
+      "toolchains": ["linux/x64, Node v22.23.4, npm 10.9.9, Bun 1.4.4"],
+      "artifactNames": [
+        "candidate-eslint-plugin-0-d5adc44f8aaf7e9a92261ea3cdfa036e46b3fdfa",
+        "candidate-eslint-plugin-1-d5adc44f8aaf7e9a92261ea3cdfa036e46b3fdfa"
+      ]
+    },
+    {
+      "package": "examples/reactivity-demo",
+      "input": {
+        "manifest": "aad2cc3b5b635b9bd8275f88e3225111ac8e8ff0de052b9eaef88956508de3da",
+        "npmLock": "89ed440a15bfaa44390eff5c26f45fcf96ea98ea3c426e777d2e45de55304bdd"
+      },
+      "migratedBunLockHashes": [
+        "5a14a01507aab2692451ed8d80040d9afff1848d29ace8bdfbc119667f92892e"
+      ],
+      "observations": 1,
+      "toolchains": ["linux/x64, Node v22.23.4, npm 10.9.9, Bun 1.4.4"],
+      "artifactNames": [
+        "candidate-seventh-tree-d5adc44f8aaf7e9a92261ea3cdfa036e46b3fdfa"
+      ]
+    },
+    {
+      "package": "site",
+      "input": {
+        "manifest": "eed4e3acc0997daeb21942dadd15293858baeeed0f96de3670d0a0ec47cc3249",
+        "npmLock": "3d9f1d30172935aaeb2be7e85609bf4c517ea1287fa1f24e7210f6c6d78633e0"
+      },
+      "migratedBunLockHashes": [
+        "76183ae67fa44c02de2363c50f5a0cdd2da96476ad37be3a36784dfa757bbfb3"
+      ],
+      "observations": 2,
+      "toolchains": ["linux/x64, Node v22.23.4, npm 10.9.9, Bun 1.4.4"],
+      "artifactNames": [
+        "candidate-gates-0-d5adc44f8aaf7e9a92261ea3cdfa036e46b3fdfa",
+        "candidate-site-0-d5adc44f8aaf7e9a92261ea3cdfa036e46b3fdfa"
+      ]
+    },
+    {
+      "package": "ui",
+      "input": {
+        "manifest": "151dc411935ce3c7c109c896f18c7f60498e945274d1948e9adda6128eb8c189",
+        "npmLock": "6f76f128bc62c9362ae8b64720a6ad0876f38752dce486004c0b296bf4ccb346"
+      },
+      "migratedBunLockHashes": [
+        "fd05bb117f2db34b18a8551db1e0c86c49131615af7990d5883cb60c9c15313f"
+      ],
+      "observations": 20,
+      "toolchains": [
+        "darwin/arm64, Node v22.23.4, npm 10.9.9, Bun 1.4.4",
+        "linux/x64, Node v22.23.4, npm 10.9.9, Bun 1.4.4"
+      ],
+      "artifactNames": [
+        "candidate-design-templates-0-d5adc44f8aaf7e9a92261ea3cdfa036e46b3fdfa",
+        "candidate-editor-0-d5adc44f8aaf7e9a92261ea3cdfa036e46b3fdfa",
+        "candidate-editor-browser-0-d5adc44f8aaf7e9a92261ea3cdfa036e46b3fdfa",
+        "candidate-editor-browser-1-d5adc44f8aaf7e9a92261ea3cdfa036e46b3fdfa",
+        "candidate-editor-browser-10-d5adc44f8aaf7e9a92261ea3cdfa036e46b3fdfa",
+        "candidate-editor-browser-11-d5adc44f8aaf7e9a92261ea3cdfa036e46b3fdfa",
+        "candidate-editor-browser-2-d5adc44f8aaf7e9a92261ea3cdfa036e46b3fdfa",
+        "candidate-editor-browser-3-d5adc44f8aaf7e9a92261ea3cdfa036e46b3fdfa",
+        "candidate-editor-browser-4-d5adc44f8aaf7e9a92261ea3cdfa036e46b3fdfa",
+        "candidate-editor-browser-5-d5adc44f8aaf7e9a92261ea3cdfa036e46b3fdfa",
+        "candidate-editor-browser-6-d5adc44f8aaf7e9a92261ea3cdfa036e46b3fdfa",
+        "candidate-editor-browser-7-d5adc44f8aaf7e9a92261ea3cdfa036e46b3fdfa",
+        "candidate-editor-browser-8-d5adc44f8aaf7e9a92261ea3cdfa036e46b3fdfa",
+        "candidate-editor-browser-9-d5adc44f8aaf7e9a92261ea3cdfa036e46b3fdfa",
+        "candidate-release-artifacts-d5adc44f8aaf7e9a92261ea3cdfa036e46b3fdfa",
+        "candidate-ui-0-d5adc44f8aaf7e9a92261ea3cdfa036e46b3fdfa",
+        "candidate-ui-browser-0-d5adc44f8aaf7e9a92261ea3cdfa036e46b3fdfa",
+        "candidate-ui-browser-1-d5adc44f8aaf7e9a92261ea3cdfa036e46b3fdfa",
+        "candidate-ui-browser-2-d5adc44f8aaf7e9a92261ea3cdfa036e46b3fdfa",
+        "candidate-ui-webawesome-latest-0-d5adc44f8aaf7e9a92261ea3cdfa036e46b3fdfa"
+      ]
+    }
+  ],
+  "dependencyVariations": [
+    {
+      "artifact": "candidate-eslint-plugin-0-d5adc44f8aaf7e9a92261ea3cdfa036e46b3fdfa",
+      "files": [
+        "eslint-plugin-final-packages.txt",
+        "eslint-plugin-final-package.json",
+        "eslint-plugin-final.bun.lock"
+      ],
+      "reportedPmGraphSha256": "6814d75cb0b40b3b37168c12bd2018388143ac35188698fcc06a7523b80b8f46",
+      "manifestSha256": "1c03717e925d857edd4b20431af988abb5b796491fbd66a0d7506e6543cd3299",
+      "bunLockSha256": "275d25520fd2b0c289bff9925128ecba472db291ccc51f6e40047d764b47e639",
+      "reportedGraphVersions": ["eslint@9.39.4"],
+      "nodeRuntimeVersion": {
+        "package": "eslint",
+        "version": "9.39.5",
+        "job": "eslint-plugin (9.39.5)"
+      },
+      "physicalGraphVerified": false,
+      "limitation": "pm/lock snapshots are not complete physical post-no-save inventories; rerun with a filesystem collector under KF-1EH00H"
+    },
+    {
+      "artifact": "candidate-eslint-plugin-1-d5adc44f8aaf7e9a92261ea3cdfa036e46b3fdfa",
+      "files": [
+        "eslint-plugin-final-packages.txt",
+        "eslint-plugin-final-package.json",
+        "eslint-plugin-final.bun.lock"
+      ],
+      "reportedPmGraphSha256": "4b184ce236980dd7e2b0247aaa3dc6861090e15a9a7cbbc1d55d067c0e7f1cc5",
+      "manifestSha256": "1c03717e925d857edd4b20431af988abb5b796491fbd66a0d7506e6543cd3299",
+      "bunLockSha256": "275d25520fd2b0c289bff9925128ecba472db291ccc51f6e40047d764b47e639",
+      "reportedGraphVersions": ["eslint@9.39.4"],
+      "nodeRuntimeVersion": {
+        "package": "eslint",
+        "version": "10.8.0",
+        "job": "eslint-plugin (10.8.0)"
+      },
+      "physicalGraphVerified": false,
+      "limitation": "pm/lock snapshots are not complete physical post-no-save inventories; rerun with a filesystem collector under KF-1EH00H"
+    },
+    {
+      "artifact": "candidate-ui-webawesome-latest-0-d5adc44f8aaf7e9a92261ea3cdfa036e46b3fdfa",
+      "files": [
+        "ui-webawesome-latest-final-packages.txt",
+        "ui-webawesome-latest-final-package.json",
+        "ui-webawesome-latest-final.bun.lock"
+      ],
+      "reportedPmGraphSha256": "9d44e56f9ec391dd280fc18e0f1dc3bd18e2ef777cc84c3104371e7fae5f350c",
+      "manifestSha256": "151dc411935ce3c7c109c896f18c7f60498e945274d1948e9adda6128eb8c189",
+      "bunLockSha256": "fd05bb117f2db34b18a8551db1e0c86c49131615af7990d5883cb60c9c15313f",
+      "reportedGraphVersions": [
+        "@awesome.me/webawesome@3.14.0",
+        "eslint@10.10.0"
+      ],
+      "physicalGraphVerified": false,
+      "limitation": "pm/lock snapshots are not complete physical post-no-save inventories; rerun with a filesystem collector under KF-1EH00H"
+    }
+  ],
+  "jobs": [
+    {
+      "name": "build",
+      "id": 129633816785,
+      "result": "success",
+      "url": "https://github.com/brianwestphal/kerf/actions/runs/42757076917/job/129633816785",
+      "platform": "Linux",
+      "baseInstaller": "Bun candidate",
+      "durationSeconds": 73
+    },
+    {
+      "name": "lint",
+      "id": 129633817039,
+      "result": "success",
+      "url": "https://github.com/brianwestphal/kerf/actions/runs/42757076917/job/129633817039",
+      "platform": "Linux",
+      "baseInstaller": "Bun candidate",
+      "durationSeconds": 85
+    },
+    {
+      "name": "browser",
+      "id": 129633817062,
+      "result": "success",
+      "url": "https://github.com/brianwestphal/kerf/actions/runs/42757076917/job/129633817062",
+      "platform": "Linux",
+      "baseInstaller": "Bun candidate",
+      "durationSeconds": 1094
+    },
+    {
+      "name": "editor-browser (webkit, 1)",
+      "id": 129633817119,
+      "result": "success",
+      "url": "https://github.com/brianwestphal/kerf/actions/runs/42757076917/job/129633817119",
+      "platform": "Linux",
+      "baseInstaller": "Bun candidate",
+      "durationSeconds": 7828
+    },
+    {
+      "name": "wasi-resolution / wasi-resolution (npm)",
+      "id": 129633817149,
+      "result": "success",
+      "url": "https://github.com/brianwestphal/kerf/actions/runs/42757076917/job/129633817149",
+      "platform": "Linux",
+      "baseInstaller": "npm control",
+      "durationSeconds": 58
+    },
+    {
+      "name": "node-floor",
+      "id": 129633817151,
+      "result": "success",
+      "url": "https://github.com/brianwestphal/kerf/actions/runs/42757076917/job/129633817151",
+      "platform": "Linux",
+      "baseInstaller": "Bun candidate",
+      "durationSeconds": 31
+    },
+    {
+      "name": "test",
+      "id": 129633817158,
+      "result": "success",
+      "url": "https://github.com/brianwestphal/kerf/actions/runs/42757076917/job/129633817158",
+      "platform": "Linux",
+      "baseInstaller": "Bun candidate",
+      "durationSeconds": 145
+    },
+    {
+      "name": "gates",
+      "id": 129633817190,
+      "result": "failure",
+      "url": "https://github.com/brianwestphal/kerf/actions/runs/42757076917/job/129633817190",
+      "platform": "Linux",
+      "baseInstaller": "Bun candidate",
+      "durationSeconds": 32,
+      "unsuccessfulSteps": [
+        {
+          "name": "Run the check:core gates no other job covers",
+          "conclusion": "failure"
+        },
+        {
+          "name": "Audit the published dependency tree (high and critical)",
+          "conclusion": "skipped"
+        },
+        {
+          "name": "Post Run actions/setup-node@820762786026740c76f36085b0efc47a31fe5020",
+          "conclusion": "skipped"
+        }
+      ]
+    },
+    {
+      "name": "editor-browser (webkit, 2)",
+      "id": 129633817194,
+      "result": "success",
+      "url": "https://github.com/brianwestphal/kerf/actions/runs/42757076917/job/129633817194",
+      "platform": "Linux",
+      "baseInstaller": "Bun candidate",
+      "durationSeconds": 7070
+    },
+    {
+      "name": "editor-browser (webkit, 4)",
+      "id": 129633817201,
+      "result": "success",
+      "url": "https://github.com/brianwestphal/kerf/actions/runs/42757076917/job/129633817201",
+      "platform": "Linux",
+      "baseInstaller": "Bun candidate",
+      "durationSeconds": 5824
+    },
+    {
+      "name": "editor-browser (webkit, 3)",
+      "id": 129633817202,
+      "result": "success",
+      "url": "https://github.com/brianwestphal/kerf/actions/runs/42757076917/job/129633817202",
+      "platform": "Linux",
+      "baseInstaller": "Bun candidate",
+      "durationSeconds": 4487
+    },
+    {
+      "name": "wasi-resolution / wasi-resolution (bun)",
+      "id": 129633817212,
+      "result": "success",
+      "url": "https://github.com/brianwestphal/kerf/actions/runs/42757076917/job/129633817212",
+      "platform": "Linux",
+      "baseInstaller": "Bun candidate",
+      "durationSeconds": 28
+    },
+    {
+      "name": "editor",
+      "id": 129633817246,
+      "result": "success",
+      "url": "https://github.com/brianwestphal/kerf/actions/runs/42757076917/job/129633817246",
+      "platform": "Linux",
+      "baseInstaller": "Bun candidate",
+      "durationSeconds": 53
+    },
+    {
+      "name": "ui-browser (chromium)",
+      "id": 129633817275,
+      "result": "success",
+      "url": "https://github.com/brianwestphal/kerf/actions/runs/42757076917/job/129633817275",
+      "platform": "Linux",
+      "baseInstaller": "Bun candidate",
+      "durationSeconds": 1845
+    },
+    {
+      "name": "design-templates",
+      "id": 129633817302,
+      "result": "success",
+      "url": "https://github.com/brianwestphal/kerf/actions/runs/42757076917/job/129633817302",
+      "platform": "macOS",
+      "baseInstaller": "Bun candidate",
+      "durationSeconds": 1087
+    },
+    {
+      "name": "ui-webawesome-latest",
+      "id": 129633817307,
+      "result": "success",
+      "url": "https://github.com/brianwestphal/kerf/actions/runs/42757076917/job/129633817307",
+      "platform": "Linux",
+      "baseInstaller": "Bun candidate",
+      "durationSeconds": 1252
+    },
+    {
+      "name": "eslint-plugin (10.8.0)",
+      "id": 129633817321,
+      "result": "success",
+      "url": "https://github.com/brianwestphal/kerf/actions/runs/42757076917/job/129633817321",
+      "platform": "Linux",
+      "baseInstaller": "Bun candidate",
+      "durationSeconds": 19
+    },
+    {
+      "name": "site",
+      "id": 129633817361,
+      "result": "success",
+      "url": "https://github.com/brianwestphal/kerf/actions/runs/42757076917/job/129633817361",
+      "platform": "Linux",
+      "baseInstaller": "Bun candidate",
+      "durationSeconds": 57
+    },
+    {
+      "name": "eslint-plugin (9.39.5)",
+      "id": 129633817381,
+      "result": "success",
+      "url": "https://github.com/brianwestphal/kerf/actions/runs/42757076917/job/129633817381",
+      "platform": "Linux",
+      "baseInstaller": "Bun candidate",
+      "durationSeconds": 35
+    },
+    {
+      "name": "ui-browser (webkit)",
+      "id": 129633817406,
+      "result": "success",
+      "url": "https://github.com/brianwestphal/kerf/actions/runs/42757076917/job/129633817406",
+      "platform": "Linux",
+      "baseInstaller": "Bun candidate",
+      "durationSeconds": 5588
+    },
+    {
+      "name": "create-kerf-component",
+      "id": 129633817436,
+      "result": "success",
+      "url": "https://github.com/brianwestphal/kerf/actions/runs/42757076917/job/129633817436",
+      "platform": "Linux",
+      "baseInstaller": "Bun candidate",
+      "durationSeconds": 29
+    },
+    {
+      "name": "ui",
+      "id": 129633817437,
+      "result": "success",
+      "url": "https://github.com/brianwestphal/kerf/actions/runs/42757076917/job/129633817437",
+      "platform": "Linux",
+      "baseInstaller": "Bun candidate",
+      "durationSeconds": 508
+    },
+    {
+      "name": "ui-browser (firefox)",
+      "id": 129633817439,
+      "result": "success",
+      "url": "https://github.com/brianwestphal/kerf/actions/runs/42757076917/job/129633817439",
+      "platform": "Linux",
+      "baseInstaller": "Bun candidate",
+      "durationSeconds": 4032
+    },
+    {
+      "name": "release-artifacts",
+      "id": 129633817444,
+      "result": "failure",
+      "url": "https://github.com/brianwestphal/kerf/actions/runs/42757076917/job/129633817444",
+      "platform": "Linux",
+      "baseInstaller": "Bun candidate",
+      "durationSeconds": 49,
+      "unsuccessfulSteps": [
+        {
+          "name": "Run node node_modules/vitest/vitest.mjs run tests/unit/release-package.test.ts tests/unit/release-common.test.ts tests/unit/release-changelog.test.ts tests/unit/release-beta-plan.test.ts tests/unit/release-order.test.ts tests/integration/release-beta-auto.test.ts",
+          "conclusion": "failure"
+        },
+        {
+          "name": "Run node scripts/bun-release-artifact-probe.mjs",
+          "conclusion": "skipped"
+        },
+        {
+          "name": "Post Run actions/setup-node@820762786026740c76f36085b0efc47a31fe5020",
+          "conclusion": "skipped"
+        }
+      ]
+    },
+    {
+      "name": "editor-browser (firefox, 2)",
+      "id": 129633817456,
+      "result": "success",
+      "url": "https://github.com/brianwestphal/kerf/actions/runs/42757076917/job/129633817456",
+      "platform": "Linux",
+      "baseInstaller": "Bun candidate",
+      "durationSeconds": 3511
+    },
+    {
+      "name": "editor-browser (firefox, 1)",
+      "id": 129633817464,
+      "result": "success",
+      "url": "https://github.com/brianwestphal/kerf/actions/runs/42757076917/job/129633817464",
+      "platform": "Linux",
+      "baseInstaller": "Bun candidate",
+      "durationSeconds": 4501
+    },
+    {
+      "name": "typecheck",
+      "id": 129633817483,
+      "result": "success",
+      "url": "https://github.com/brianwestphal/kerf/actions/runs/42757076917/job/129633817483",
+      "platform": "Linux",
+      "baseInstaller": "Bun candidate",
+      "durationSeconds": 22
+    },
+    {
+      "name": "seventh-tree",
+      "id": 129633817488,
+      "result": "success",
+      "url": "https://github.com/brianwestphal/kerf/actions/runs/42757076917/job/129633817488",
+      "platform": "Linux",
+      "baseInstaller": "Bun candidate",
+      "durationSeconds": 35
+    },
+    {
+      "name": "editor-browser (chromium, 1)",
+      "id": 129633817498,
+      "result": "success",
+      "url": "https://github.com/brianwestphal/kerf/actions/runs/42757076917/job/129633817498",
+      "platform": "Linux",
+      "baseInstaller": "Bun candidate",
+      "durationSeconds": 3146
+    },
+    {
+      "name": "editor-browser (firefox, 4)",
+      "id": 129633817503,
+      "result": "success",
+      "url": "https://github.com/brianwestphal/kerf/actions/runs/42757076917/job/129633817503",
+      "platform": "Linux",
+      "baseInstaller": "Bun candidate",
+      "durationSeconds": 2654
+    },
+    {
+      "name": "editor-browser (chromium, 2)",
+      "id": 129633817552,
+      "result": "success",
+      "url": "https://github.com/brianwestphal/kerf/actions/runs/42757076917/job/129633817552",
+      "platform": "Linux",
+      "baseInstaller": "Bun candidate",
+      "durationSeconds": 2132
+    },
+    {
+      "name": "editor-browser (firefox, 3)",
+      "id": 129633817553,
+      "result": "success",
+      "url": "https://github.com/brianwestphal/kerf/actions/runs/42757076917/job/129633817553",
+      "platform": "Linux",
+      "baseInstaller": "Bun candidate",
+      "durationSeconds": 2750
+    },
+    {
+      "name": "editor-browser (chromium, 3)",
+      "id": 129633817559,
+      "result": "success",
+      "url": "https://github.com/brianwestphal/kerf/actions/runs/42757076917/job/129633817559",
+      "platform": "Linux",
+      "baseInstaller": "Bun candidate",
+      "durationSeconds": 1493
+    },
+    {
+      "name": "editor-browser (chromium, 4)",
+      "id": 129633817582,
+      "result": "success",
+      "url": "https://github.com/brianwestphal/kerf/actions/runs/42757076917/job/129633817582",
+      "platform": "Linux",
+      "baseInstaller": "Bun candidate",
+      "durationSeconds": 1601
+    }
+  ],
+  "artifacts": [
+    {
+      "id": 13741800635,
+      "name": "candidate-ui-browser-2-d5adc44f8aaf7e9a92261ea3cdfa036e46b3fdfa",
+      "sizeBytes": 88351,
+      "archiveDigest": "sha256:792e8620f5c1cac6c49174834f2d437f870b3369f7b6666650aedeaac611feb9",
+      "url": "https://github.com/brianwestphal/kerf/actions/runs/42757076917/artifacts/13741800635"
+    },
+    {
+      "id": 13741483312,
+      "name": "candidate-editor-browser-8-d5adc44f8aaf7e9a92261ea3cdfa036e46b3fdfa",
+      "sizeBytes": 109933,
+      "archiveDigest": "sha256:e5271972348d7c40430aa16a8a27646ddd520b3cc18cce65f958ef4d337a1b29",
+      "url": "https://github.com/brianwestphal/kerf/actions/runs/42757076917/artifacts/13741483312"
+    },
+    {
+      "id": 13741098333,
+      "name": "candidate-editor-browser-9-d5adc44f8aaf7e9a92261ea3cdfa036e46b3fdfa",
+      "sizeBytes": 109934,
+      "archiveDigest": "sha256:2f33434e8dda231ec8a3827620d70be4b912718500a6f7a0b544ba6dcedd8d58",
+      "url": "https://github.com/brianwestphal/kerf/actions/runs/42757076917/artifacts/13741098333"
+    },
+    {
+      "id": 13740426370,
+      "name": "candidate-ui-browser-1-d5adc44f8aaf7e9a92261ea3cdfa036e46b3fdfa",
+      "sizeBytes": 88351,
+      "archiveDigest": "sha256:dc586da72fd7c454dff97a0e2ea8a3e4a105b02ce3908cbc124b26a3e300dafc",
+      "url": "https://github.com/brianwestphal/kerf/actions/runs/42757076917/artifacts/13740426370"
+    },
+    {
+      "id": 13740420190,
+      "name": "candidate-editor-browser-6-d5adc44f8aaf7e9a92261ea3cdfa036e46b3fdfa",
+      "sizeBytes": 109934,
+      "archiveDigest": "sha256:9c13eb36d9f846afde07a673bfa69b98d60f4c6a4d84bdc4cf7ae2de2ee64920",
+      "url": "https://github.com/brianwestphal/kerf/actions/runs/42757076917/artifacts/13740420190"
+    },
+    {
+      "id": 13740177524,
+      "name": "candidate-editor-browser-10-d5adc44f8aaf7e9a92261ea3cdfa036e46b3fdfa",
+      "sizeBytes": 109934,
+      "archiveDigest": "sha256:b85a177053879724e00cb36d113f225789d0e801ad47b838655cc1c103521641",
+      "url": "https://github.com/brianwestphal/kerf/actions/runs/42757076917/artifacts/13740177524"
+    },
+    {
+      "id": 13739911453,
+      "name": "candidate-editor-browser-0-d5adc44f8aaf7e9a92261ea3cdfa036e46b3fdfa",
+      "sizeBytes": 109934,
+      "archiveDigest": "sha256:69cf18e48d122a98cee3e18a0147804f9c4ba8d8b1e9d09b6f14122b3db7c832",
+      "url": "https://github.com/brianwestphal/kerf/actions/runs/42757076917/artifacts/13739911453"
+    },
+    {
+      "id": 13739860363,
+      "name": "candidate-editor-browser-1-d5adc44f8aaf7e9a92261ea3cdfa036e46b3fdfa",
+      "sizeBytes": 109934,
+      "archiveDigest": "sha256:1eeb0c6723c8b8914b60dc5f3bc50e8ddef4345bfb600b9b770319ca245cb0f4",
+      "url": "https://github.com/brianwestphal/kerf/actions/runs/42757076917/artifacts/13739860363"
+    },
+    {
+      "id": 13739784167,
+      "name": "candidate-editor-browser-11-d5adc44f8aaf7e9a92261ea3cdfa036e46b3fdfa",
+      "sizeBytes": 109934,
+      "archiveDigest": "sha256:6e683f256eab5d8f65cd521f18ebd0a61ac26fd74de4f521188bb90be146aaa8",
+      "url": "https://github.com/brianwestphal/kerf/actions/runs/42757076917/artifacts/13739784167"
+    },
+    {
+      "id": 13739778436,
+      "name": "candidate-editor-browser-4-d5adc44f8aaf7e9a92261ea3cdfa036e46b3fdfa",
+      "sizeBytes": 109934,
+      "archiveDigest": "sha256:e82c951c2fcb60c94ba71222b866eb40d9a5055f8a465d129ce649c89fb36de6",
+      "url": "https://github.com/brianwestphal/kerf/actions/runs/42757076917/artifacts/13739778436"
+    },
+    {
+      "id": 13739614548,
+      "name": "candidate-editor-browser-5-d5adc44f8aaf7e9a92261ea3cdfa036e46b3fdfa",
+      "sizeBytes": 109934,
+      "archiveDigest": "sha256:2c5384e873a0a4200ef8bdff6e6ae2095a0312903014c46e949444a5a3a3b9fc",
+      "url": "https://github.com/brianwestphal/kerf/actions/runs/42757076917/artifacts/13739614548"
+    },
+    {
+      "id": 13739235962,
+      "name": "candidate-editor-browser-2-d5adc44f8aaf7e9a92261ea3cdfa036e46b3fdfa",
+      "sizeBytes": 109933,
+      "archiveDigest": "sha256:10fb5b5d7c8933858dfa925511868427c2b619b2e88a8c3ce31670641e5b788f",
+      "url": "https://github.com/brianwestphal/kerf/actions/runs/42757076917/artifacts/13739235962"
+    },
+    {
+      "id": 13739221371,
+      "name": "candidate-editor-browser-3-d5adc44f8aaf7e9a92261ea3cdfa036e46b3fdfa",
+      "sizeBytes": 109934,
+      "archiveDigest": "sha256:62341c42f150708a68d58952bf7126c16e4a654f55115f10ea466a7de0f544a8",
+      "url": "https://github.com/brianwestphal/kerf/actions/runs/42757076917/artifacts/13739221371"
+    },
+    {
+      "id": 13739144154,
+      "name": "candidate-editor-browser-7-d5adc44f8aaf7e9a92261ea3cdfa036e46b3fdfa",
+      "sizeBytes": 109933,
+      "archiveDigest": "sha256:d4e60c0210f7feed372fd0d43325bddf30211247266d3887b3c2896a5d2b4d28",
+      "url": "https://github.com/brianwestphal/kerf/actions/runs/42757076917/artifacts/13739144154"
+    },
+    {
+      "id": 13738380873,
+      "name": "candidate-ui-0-d5adc44f8aaf7e9a92261ea3cdfa036e46b3fdfa",
+      "sizeBytes": 88352,
+      "archiveDigest": "sha256:aba01bc912c1c3408474e994f6282289ff8628471e767a7692f51d569678eaee",
+      "url": "https://github.com/brianwestphal/kerf/actions/runs/42757076917/artifacts/13738380873"
+    },
+    {
+      "id": 13738270448,
+      "name": "candidate-seventh-tree-d5adc44f8aaf7e9a92261ea3cdfa036e46b3fdfa",
+      "sizeBytes": 53853,
+      "archiveDigest": "sha256:b6c0c04e19392f7c380a9cee87259b069af0837a116b4233064774c767eb93b8",
+      "url": "https://github.com/brianwestphal/kerf/actions/runs/42757076917/artifacts/13738270448"
+    },
+    {
+      "id": 13738075520,
+      "name": "candidate-create-kerf-component-0-d5adc44f8aaf7e9a92261ea3cdfa036e46b3fdfa",
+      "sizeBytes": 9179,
+      "archiveDigest": "sha256:33fff13d26d65b2edbb592a3886eb8859c1eb30d1fe8e8ccc8068e20e313a1b4",
+      "url": "https://github.com/brianwestphal/kerf/actions/runs/42757076917/artifacts/13738075520"
+    },
+    {
+      "id": 13737995314,
+      "name": "candidate-site-0-d5adc44f8aaf7e9a92261ea3cdfa036e46b3fdfa",
+      "sizeBytes": 92008,
+      "archiveDigest": "sha256:2826a275cfaf7fe8a4281a1dfb5a5477842c2422126aa127aba6aa207cf14aa1",
+      "url": "https://github.com/brianwestphal/kerf/actions/runs/42757076917/artifacts/13737995314"
+    },
+    {
+      "id": 13737671172,
+      "name": "candidate-ui-browser-0-d5adc44f8aaf7e9a92261ea3cdfa036e46b3fdfa",
+      "sizeBytes": 88351,
+      "archiveDigest": "sha256:13c444b940440147d1709183a3fa8e4ee886ca4dc2c581c3f256af0660cc33ba",
+      "url": "https://github.com/brianwestphal/kerf/actions/runs/42757076917/artifacts/13737671172"
+    },
+    {
+      "id": 13737567859,
+      "name": "candidate-release-artifacts-d5adc44f8aaf7e9a92261ea3cdfa036e46b3fdfa",
+      "sizeBytes": 88352,
+      "archiveDigest": "sha256:3229763fce15395267c3b99c4c80e042c7eb901dcf22124184619292a7ff0d10",
+      "url": "https://github.com/brianwestphal/kerf/actions/runs/42757076917/artifacts/13737567859"
+    },
+    {
+      "id": 13737396631,
+      "name": "candidate-design-templates-0-d5adc44f8aaf7e9a92261ea3cdfa036e46b3fdfa",
+      "sizeBytes": 88355,
+      "archiveDigest": "sha256:e66d466dfbac94292a2c8a9fb9565fad4f5ede0dacd6f3c0ca65a5c03a2a86e5",
+      "url": "https://github.com/brianwestphal/kerf/actions/runs/42757076917/artifacts/13737396631"
+    },
+    {
+      "id": 13737313513,
+      "name": "candidate-typecheck-0-d5adc44f8aaf7e9a92261ea3cdfa036e46b3fdfa",
+      "sizeBytes": 46925,
+      "archiveDigest": "sha256:8b51fddaad0abfd5b029a4806ecdced3107bb871997260f1e4b450472d265d57",
+      "url": "https://github.com/brianwestphal/kerf/actions/runs/42757076917/artifacts/13737313513"
+    },
+    {
+      "id": 13737295262,
+      "name": "candidate-browser-0-d5adc44f8aaf7e9a92261ea3cdfa036e46b3fdfa",
+      "sizeBytes": 46925,
+      "archiveDigest": "sha256:ba344840484931813c176d3243e99d83f45d33745590c78a4684fdaa51d836b1",
+      "url": "https://github.com/brianwestphal/kerf/actions/runs/42757076917/artifacts/13737295262"
+    },
+    {
+      "id": 13737276270,
+      "name": "candidate-ui-webawesome-latest-0-d5adc44f8aaf7e9a92261ea3cdfa036e46b3fdfa",
+      "sizeBytes": 138218,
+      "archiveDigest": "sha256:27a0d8e93bc7b7992908b93ac21e007771ea003665e31f1699a87a075355e0b6",
+      "url": "https://github.com/brianwestphal/kerf/actions/runs/42757076917/artifacts/13737276270"
+    },
+    {
+      "id": 13736690247,
+      "name": "candidate-gates-0-d5adc44f8aaf7e9a92261ea3cdfa036e46b3fdfa",
+      "sizeBytes": 92008,
+      "archiveDigest": "sha256:c1b1e84bbb174b23433a860b4bc1c59b430e6329b743400767d352bfb44af64a",
+      "url": "https://github.com/brianwestphal/kerf/actions/runs/42757076917/artifacts/13736690247"
+    },
+    {
+      "id": 13736672776,
+      "name": "candidate-eslint-plugin-0-d5adc44f8aaf7e9a92261ea3cdfa036e46b3fdfa",
+      "sizeBytes": 22899,
+      "archiveDigest": "sha256:53f3e53000e9f15ccac84f7755558938233a0619479d6b828873529954ac3009",
+      "url": "https://github.com/brianwestphal/kerf/actions/runs/42757076917/artifacts/13736672776"
+    },
+    {
+      "id": 13736560922,
+      "name": "candidate-test-0-d5adc44f8aaf7e9a92261ea3cdfa036e46b3fdfa",
+      "sizeBytes": 46925,
+      "archiveDigest": "sha256:929ac14cc583ddf558f20a56c2a26af111d99fcbe69472c61a36421e3a862044",
+      "url": "https://github.com/brianwestphal/kerf/actions/runs/42757076917/artifacts/13736560922"
+    },
+    {
+      "id": 13736475871,
+      "name": "candidate-lint-0-d5adc44f8aaf7e9a92261ea3cdfa036e46b3fdfa",
+      "sizeBytes": 46925,
+      "archiveDigest": "sha256:1413fc0f1c0202e76ecc4bcc0098c51fbb8f6bceca7a23ccfc99276bee899429",
+      "url": "https://github.com/brianwestphal/kerf/actions/runs/42757076917/artifacts/13736475871"
+    },
+    {
+      "id": 13736465702,
+      "name": "candidate-build-0-d5adc44f8aaf7e9a92261ea3cdfa036e46b3fdfa",
+      "sizeBytes": 46925,
+      "archiveDigest": "sha256:469a05329c7fa6bf8d33137d9137aacbec83dd9e76b5b196ffe5418584f1793b",
+      "url": "https://github.com/brianwestphal/kerf/actions/runs/42757076917/artifacts/13736465702"
+    },
+    {
+      "id": 13736346037,
+      "name": "wasi-npm-d5adc44f8aaf7e9a92261ea3cdfa036e46b3fdfa",
+      "sizeBytes": 2217,
+      "archiveDigest": "sha256:89f2871651eb630cce43d8196baaac142eeb692d37df2a8e60d9774225b6a18f",
+      "url": "https://github.com/brianwestphal/kerf/actions/runs/42757076917/artifacts/13736346037"
+    },
+    {
+      "id": 13736241668,
+      "name": "wasi-bun-d5adc44f8aaf7e9a92261ea3cdfa036e46b3fdfa",
+      "sizeBytes": 94117,
+      "archiveDigest": "sha256:835d28920b0e0d8f329832c2c5136cefc06e49eeac97a13aefc9c9a6f868243d",
+      "url": "https://github.com/brianwestphal/kerf/actions/runs/42757076917/artifacts/13736241668"
+    },
+    {
+      "id": 13736227254,
+      "name": "candidate-eslint-plugin-1-d5adc44f8aaf7e9a92261ea3cdfa036e46b3fdfa",
+      "sizeBytes": 22712,
+      "archiveDigest": "sha256:403e9e847cb4dd0141d4213f24ead77b48259701bcb4b0238078ca18e675063e",
+      "url": "https://github.com/brianwestphal/kerf/actions/runs/42757076917/artifacts/13736227254"
+    },
+    {
+      "id": 13736177185,
+      "name": "candidate-editor-0-d5adc44f8aaf7e9a92261ea3cdfa036e46b3fdfa",
+      "sizeBytes": 109934,
+      "archiveDigest": "sha256:fc50647cac02a43402cb3c3c2ae98b4b9c37b5aff13ecb0ef8c5a0ca80d2b466",
+      "url": "https://github.com/brianwestphal/kerf/actions/runs/42757076917/artifacts/13736177185"
+    },
+    {
+      "id": 13735423711,
+      "name": "candidate-node-floor-0-d5adc44f8aaf7e9a92261ea3cdfa036e46b3fdfa",
+      "sizeBytes": 46925,
+      "archiveDigest": "sha256:5f8fbc8a4eabe52608076e1622f54c03da858f5c79604c9f4b6d85ed8acffec9",
+      "url": "https://github.com/brianwestphal/kerf/actions/runs/42757076917/artifacts/13735423711"
+    }
+  ],
+  "limits": [
+    "The gates chain stopped at complete-example typing; later subchecks and its audit step did not execute",
+    "Initial release setup failed; later successful release-only evidence used a different SHA",
+    "Provisioned WASI positive control reified the Bun tree using npm",
+    "Post-no-save pm/lock snapshots differ from actual runtime ESLint versions; complete physical graphs unverified (KF-1EH00H)",
+    "No installer adoption or real registry/OIDC publication authorized"
+  ],
+  "fullRawLogAttachment": {
+    "name": "KF-ZVVQ0G-original-matrix-d5adc44f.log.gz",
+    "sizeBytes": 1236210,
+    "sha256": "1ac46b9e99c664e0b80c40c7ef2aeb3932f47011c2f6395c493433a348d9b5b8",
+    "encoding": "gzip; decompressed SHA-256 is fullRawLogSha256"
+  }
+}
