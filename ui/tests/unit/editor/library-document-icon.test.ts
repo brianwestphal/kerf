@@ -5,12 +5,12 @@ import { libraryDocumentTree } from '../../../src/editor/model/library-document-
 
 describe('Library document icons', () => {
   it.each([
-    ['view.kui.json', 'file-json-2'],
-    ['APP.TSX', 'file-code-2'],
+    ['view.kui.json', 'file-braces-corner'],
+    ['APP.TSX', 'file-code-corner'],
     ['README.md', 'file-text'],
     ['photo.PNG', 'file-image'],
-    ['voice.wav', 'file-audio'],
-    ['movie.mp4', 'file-video'],
+    ['voice.wav', 'file-headphone'],
+    ['movie.mp4', 'file-play'],
     ['backup.tar.gz', 'file-archive'],
     ['rows.csv', 'file-spreadsheet'],
     ['unknown.xyz', 'file'],
@@ -26,7 +26,7 @@ describe('Library document icons', () => {
     const [folder] = libraryDocumentTree(['views/example.kui.json']);
     expect(String(folder!.icon)).toContain('data-lucide="folder"');
     expect(String(folder!.children![0]!.icon)).toContain(
-      'data-lucide="file-json-2"',
+      'data-lucide="file-braces-corner"',
     );
   });
 });

@@ -33,7 +33,9 @@ test('Library shows extension-based Lucide icons in tree and columns', async ({
     '[role="treeitem"][data-item-id="Designs/Orders.kui.json"]',
   );
   await expect(folder.locator('[data-lucide="folder"]')).toHaveCount(1);
-  await expect(file.locator('[data-lucide="file-json-2"]')).toHaveCount(1);
+  await expect(file.locator('[data-lucide="file-braces-corner"]')).toHaveCount(
+    1,
+  );
   await expect(file).toHaveAccessibleName('Orders.kui.json');
   for (const width of [2048, 867, 390, 960]) {
     await page.setViewportSize({ width, height: 1128 });
@@ -52,7 +54,7 @@ test('Library shows extension-based Lucide icons in tree and columns', async ({
   await columnFolder.click();
   await expect(
     library.locator(
-      '[data-item-id="Designs/Orders.kui.json"] [data-lucide="file-json-2"]',
+      '[data-item-id="Designs/Orders.kui.json"] [data-lucide="file-braces-corner"]',
     ),
   ).toHaveCount(1);
   await library.screenshot({
