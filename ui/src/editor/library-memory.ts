@@ -1,5 +1,5 @@
 // The component Library's per-browser memory (KF-YF1PDR: split out of
-// editor.tsx): its list or grid view and where it was left pinned, kept in
+// editor.tsx): its list or grid view, chosen size and pinned placement, kept in
 // localStorage, plus the palette tiles' fallback icons.
 import {
   Activity,
@@ -82,7 +82,7 @@ export const LIBRARY_ID = 'editor-library';
 const LIBRARY_KEY = 'kerf-ui-editor:library';
 type LibraryMemory = Pick<PinnablePopoverChange, 'pinned' | 'placement'>;
 
-/** Whether the Library was left pinned, and where, in this browser. */
+/** The Library's saved pin state, size, and placement in this browser. */
 export function rememberedLibrary(): LibraryMemory | undefined {
   try {
     const stored = globalThis.localStorage?.getItem(LIBRARY_KEY);

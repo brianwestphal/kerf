@@ -17,7 +17,7 @@ export type PinnablePopoverChangeReason = 'pin' | 'unpin' | 'move' | 'resize';
 /** What `wirePinnablePopover`'s `onChange` reports. */
 export interface PinnablePopoverChange {
   readonly pinned: boolean;
-  /** The pinned placement; `null` while transient. */
+  /** Placement and saved size; transient surfaces use only the size. */
   readonly placement: PinnablePopoverPlacement | null;
   readonly reason: PinnablePopoverChangeReason;
 }
@@ -31,7 +31,7 @@ export interface PinnablePopoverOptions {
   anchor?: Element | (() => Element | null);
   /** Start pinned, as the application last stored it. */
   pinned?: boolean;
-  /** The pinned placement to restore, as `onChange` last reported it. */
+  /** Placement and size to restore; transient surfaces ignore x and y. */
   placement?: PinnablePopoverPlacement;
   /** An arrow key's move, in px (default 8). */
   step?: number;
@@ -91,8 +91,8 @@ export function pinPopover(surface: HTMLElement, pinned = true): void {
  * Give an overlay PinnablePopoverSurface its behavior: placement below its
  * anchor while transient, a press outside or Escape closing it; the Pin
  * toggle; a drag by the header and the arrow keys on the focused title
- * (Shift for `largeStep`) moving it, which pins it; a pinned surface's
- * resize; and a clamp inside the viewport gutter, kept after a window
+ * (Shift for `largeStep`) moving it, which pins it; resizing without changing
+ * pin state; and a clamp inside the viewport gutter, kept after a window
  * resize. Pinned, it closes only by Escape (with focus inside it), its Close
  * button, or `hidePopover()`. The state survives application re-renders and
  * closing; `onChange` reports it for the application to store. An
@@ -108,8 +108,7 @@ export function wirePinnablePopover(
   const step = options.step ?? 8;
   const largeStep = options.largeStep ?? 40;
   let pinned = options.pinned ?? false;
-  let requested: PinnablePopoverPlacement | null =
-    pinned && options.placement ? options.placement : null;
+  let requested: PinnablePopoverPlacement | null = options.placement ?? null;
   /** Inline styles the controller owns, restored after a re-render. */
   const owned = new Map<string, string>();
   let frame = 0;
@@ -234,7 +233,8 @@ export function wirePinnablePopover(
         settle(place(box.left, box.top));
       }
     } else {
-      requested = null;
+      if (requested?.width === undefined && requested?.height === undefined)
+        requested = null;
       applySize();
       layout();
     }
@@ -296,7 +296,6 @@ export function wirePinnablePopover(
       !event.metaKey
     ) {
       event.preventDefault();
-      setPinned(true);
       const box = surface.getBoundingClientRect();
       const distance = event.shiftKey ? largeStep : step;
       const maxHeight = Math.max(0, viewport().height - gutter() - box.top);
@@ -353,7 +352,6 @@ export function wirePinnablePopover(
     );
     if (resizeHandle?.parentElement === surface && event.button === 0) {
       const box = surface.getBoundingClientRect();
-      setPinned(true);
       resizeDrag = {
         id: event.pointerId,
         handle: resizeHandle,

@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+### Fixed
+
+- **Editor Library resize (KF-EQRNAR).** Bottom-edge pointer and keyboard resizing now remembers the chosen size without pinning the Library. Header movement still pins it; transient panels keep light dismissal and restore their size after reopening or reload.
+
 ### Removed
 
 - **`@kerfjs/ui/view` generator internals (KF-V5DPD1).** `printDoc` and `moduleSpecifier` are no longer exported by the public view subpath; repository tests import them from the generator module. The view subpath has only shipped in the 5.0.0 beta line.

@@ -13473,7 +13473,7 @@
             "nullable": true
           },
           "required": false,
-          "description": "Add a bottom-edge handle that pins and resizes an overlay by drag or arrow key."
+          "description": "Add a bottom-edge handle that resizes by drag or arrow key without changing pin state."
         },
         {
           "name": "pinLabel",

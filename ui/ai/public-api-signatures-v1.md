@@ -5499,7 +5499,7 @@ interface PinnablePopoverSurfaceProps {
      * `fill-last` stacks fixed rows above one filling last child.
      */
     bodyLayout?: DialogSurfaceBodyLayout;
-    /** Add a bottom-edge handle that pins and resizes an overlay by drag or arrow key. */
+    /** Add a bottom-edge handle that resizes by drag or arrow key without changing pin state. */
     resizeFromBottom?: boolean;
     /** The Pin toggle's accessible name (default `Pin`). */
     pinLabel?: string;
@@ -5554,7 +5554,7 @@ type PinnablePopoverChangeReason = 'pin' | 'unpin' | 'move' | 'resize';
 /** What `wirePinnablePopover`'s `onChange` reports. */
 interface PinnablePopoverChange {
     readonly pinned: boolean;
-    /** The pinned placement; `null` while transient. */
+    /** Placement and saved size; transient surfaces use only the size. */
     readonly placement: PinnablePopoverPlacement | null;
     readonly reason: PinnablePopoverChangeReason;
 }
@@ -5567,7 +5567,7 @@ interface PinnablePopoverOptions {
     anchor?: Element | (() => Element | null);
     /** Start pinned, as the application last stored it. */
     pinned?: boolean;
-    /** The pinned placement to restore, as `onChange` last reported it. */
+    /** Placement and size to restore; transient surfaces ignore x and y. */
     placement?: PinnablePopoverPlacement;
     /** An arrow key's move, in px (default 8). */
     step?: number;
@@ -5593,8 +5593,8 @@ declare function pinPopover(surface: HTMLElement, pinned?: boolean): void;
  * Give an overlay PinnablePopoverSurface its behavior: placement below its
  * anchor while transient, a press outside or Escape closing it; the Pin
  * toggle; a drag by the header and the arrow keys on the focused title
- * (Shift for `largeStep`) moving it, which pins it; a pinned surface's
- * resize; and a clamp inside the viewport gutter, kept after a window
+ * (Shift for `largeStep`) moving it, which pins it; resizing without changing
+ * pin state; and a clamp inside the viewport gutter, kept after a window
  * resize. Pinned, it closes only by Escape (with focus inside it), its Close
  * button, or `hidePopover()`. The state survives application re-renders and
  * closing; `onChange` reports it for the application to store. An

@@ -293,7 +293,7 @@ describe('wirePinnablePopover', () => {
     dispose();
   });
 
-  it('pins and resizes from the bottom by pointer and arrow keys', () => {
+  it('resizes without pinning from the bottom by pointer and arrow keys', () => {
     const { surface } = mount({ resizeFromBottom: true });
     const { changes } = wire(surface);
     surface.showPopover();
@@ -307,7 +307,8 @@ describe('wirePinnablePopover', () => {
     expect(surface.style.height).toBe('266px');
     pointer(grip, 'pointerup', 200, 350);
     expect(grip.releasePointerCapture).toHaveBeenCalledWith(1);
-    expect(changes.map((change) => change.reason)).toEqual(['pin', 'resize']);
+    expect(changes.map((change) => change.reason)).toEqual(['resize']);
+    expect(isPopoverPinned(surface)).toBe(false);
     expect(changes.at(-1)!.placement).toEqual({ x: 100, y: 84, height: 266 });
     expect(key(grip, { key: 'ArrowUp' }).defaultPrevented).toBe(true);
     expect(surface.style.height).toBe('258px');
@@ -319,6 +320,10 @@ describe('wirePinnablePopover', () => {
       key(grip, { key: 'ArrowDown', metaKey: true }).defaultPrevented,
     ).toBe(false);
     expect(changes.at(-1)!.placement?.height).toBe(298);
+    expect(isPopoverPinned(surface)).toBe(false);
+    surface.hidePopover();
+    surface.showPopover();
+    expect(surface.style.height).toBe('298px');
     grip.hasPointerCapture = () => false;
     pointer(grip, 'pointerdown', 200, 382);
     pointer(grip, 'pointerup', 200, 382);
@@ -723,11 +728,26 @@ describe('wirePinnablePopover', () => {
         height: 300,
       });
 
-      // Unpinned, the size goes back to the CSS.
+      // Unpinning returns to the anchor with the chosen size.
       pinPopover(surface, false);
-      expect(surface.style.width).toBe('');
+      expect(surface.style.width).toBe('400px');
       expect(position(surface)).toEqual({ x: 100, y: 84 });
     });
+  });
+
+  it('restores a saved transient size below the anchor and light-dismisses', () => {
+    const { surface } = mount();
+    wire(surface, {
+      pinned: false,
+      placement: { x: 700, y: 500, width: 320, height: 240 },
+    });
+    surface.showPopover();
+    expect(surface.style.width).toBe('320px');
+    expect(surface.style.height).toBe('240px');
+    expect(position(surface)).toEqual({ x: 100, y: 84 });
+    expect(isPopoverPinned(surface)).toBe(false);
+    pointer(document.getElementById('outside')!, 'pointerdown', 1, 1);
+    expect(open.has(surface)).toBe(false);
   });
 
   it('takes a resize of a pinned surface with nothing stored yet', async () => {

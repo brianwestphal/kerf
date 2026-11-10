@@ -68,7 +68,7 @@ export interface PinnablePopoverSurfaceProps {
    * `fill-last` stacks fixed rows above one filling last child.
    */
   bodyLayout?: DialogSurfaceBodyLayout;
-  /** Add a bottom-edge handle that pins and resizes an overlay by drag or arrow key. */
+  /** Add a bottom-edge handle that resizes by drag or arrow key without changing pin state. */
   resizeFromBottom?: boolean;
   /** The Pin toggle's accessible name (default `Pin`). */
   pinLabel?: string;

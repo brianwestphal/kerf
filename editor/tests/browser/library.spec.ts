@@ -290,12 +290,14 @@ test('Library grid names truncate visibly without losing the full name', async (
   }
 });
 
-test('Library resizes vertically from its bottom edge', async ({
+test('Library resizing changes its default size without pinning', async ({
   page,
 }, info) => {
   for (const [width, height] of [
     [2048, 1128],
+    [960, 900],
     [390, 844],
+    [2048, 1128],
   ]) {
     await page.setViewportSize({ width, height });
     await openLibrary(page);
@@ -305,6 +307,13 @@ test('Library resizes vertically from its bottom edge', async ({
     const grip = surface.locator(
       '.kui-pinnable-popover-surface__bottom-resize',
     );
+    // The previous viewport leaves a remembered minimum height. Restore a
+    // useful starting size before testing this viewport's resize.
+    if ((await surface.boundingBox())!.height < 360) {
+      await grip.focus();
+      for (let step = 0; step < 8; step++)
+        await page.keyboard.press('Shift+ArrowDown');
+    }
     const before = (await surface.boundingBox())!;
     const edge = (await grip.boundingBox())!;
     await page.mouse.move(edge.x + edge.width / 2, edge.y + edge.height / 2);
@@ -314,8 +323,19 @@ test('Library resizes vertically from its bottom edge', async ({
     });
     await page.mouse.up();
     const after = (await surface.boundingBox())!;
-    expect(after.height).toBeLessThan(before.height - 80);
-    await expect(surface).toHaveAttribute('data-pinned', '');
+    expect(after.height).toBeLessThanOrEqual(Math.max(160, before.height - 80));
+    await expect(surface).not.toHaveAttribute('data-pinned', '');
+    await expect(
+      surface.locator('[data-pinnable-popover-pin]'),
+    ).toHaveAttribute('aria-pressed', 'false');
+    await page.mouse.click(1, 1);
+    await expect(surface).toBeHidden();
+    await openLibrary(page);
+    expect((await surface.boundingBox())!.height).toBeCloseTo(after.height, 0);
+    await page.reload();
+    await openLibrary(page);
+    await expect(surface).not.toHaveAttribute('data-pinned', '');
+    expect((await surface.boundingBox())!.height).toBeCloseTo(after.height, 0);
     const results = surface.locator(
       '.kui-pinnable-popover-surface__body > .kui-list:last-child',
     );
@@ -324,7 +344,11 @@ test('Library resizes vertically from its bottom edge', async ({
     });
     expect(await results.evaluate((node) => node.scrollTop)).toBeGreaterThan(0);
     await surface.screenshot({
-      path: info.outputPath(`library-bottom-resize-${width}.png`),
+      path: info.outputPath(`KF-EQRNAR-library-bottom-resize-${width}.png`),
+    });
+    await page.screenshot({
+      path: info.outputPath(`KF-EQRNAR-editor-resized-library-${width}.png`),
+      animations: 'disabled',
     });
     const lowerEdge = (await grip.boundingBox())!;
     await page.mouse.move(
@@ -353,6 +377,7 @@ test('Library resizes vertically from its bottom edge', async ({
     await grip.focus();
     await page.keyboard.press('ArrowDown');
     expect((await surface.boundingBox())!.height).toBeGreaterThan(160);
+    await expect(surface).not.toHaveAttribute('data-pinned', '');
     await surface.evaluate((node: HTMLElement) => node.hidePopover());
   }
 });

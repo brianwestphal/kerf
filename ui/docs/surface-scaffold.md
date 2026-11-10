@@ -575,7 +575,10 @@ hand-built draggable panel. It takes the same geometry props as
   Moving a transient surface pins it. It stays inside the viewport gutter,
   and after a window resize it is clamped again; when the window has room it
   returns to where the person put it.
-- **Resized** from its corner while pinned, within the viewport caps.
+- **Resized** from its corner while pinned, or from the optional
+  `resizeFromBottom` handle by pointer or arrow keys in either state, within
+  the viewport caps. Bottom-edge resizing keeps the current pin state; the
+  chosen size survives closing, reopening, and unpinning.
 
 The surface is `popover="manual"`, so the controller provides its light
 dismiss; changing an `auto` popover into a pinned one is not possible while
@@ -586,8 +589,8 @@ popover; give its first control `autofocus` to move focus in on open.
 
 The application owns storage. `onChange` reports `{ pinned, placement, reason }`
 whenever the person or `pinPopover` pins, unpins, moves, or resizes it
-(`placement` is `{ x, y, width?, height? }` in viewport px, `null` while
-transient); a clamp after a window resize is not reported. Pass the stored
+(`placement` is `{ x, y, width?, height? }` in viewport px, or `null` before
+a placement or size is saved; transient surfaces restore only its size); a clamp after a window resize is not reported. Pass the stored
 values back as `pinned` and `placement` to restore it. `isPopoverPinned()`
 reads the current state.
 

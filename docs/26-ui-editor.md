@@ -667,7 +667,10 @@ it, and focus returns to the Library button when it was inside the Library
 Library stays open while the editor is used, moves and resizes, and is
 restored pinned, where it was, in the next session
 (`kerf-ui-editor:library`, `{ pinned, placement }` from `onChange`; without
-storage it opens transient). Play mode closes it. The Library is
+storage it opens transient). Resizing from its bottom edge, by pointer or
+arrow keys, changes the remembered default height without pinning it
+(KF-EQRNAR); it still closes on an outside press or a completed drop.
+Dragging the title continues to pin it. Play mode closes it. The Library is
 **transient around a drop**:
 
 - A drag from an unpinned Library **steps it aside** (it closes as the drag

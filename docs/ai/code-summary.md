@@ -1567,7 +1567,9 @@ a focusable move-handle button, `headerActions`, a Pin toggle with
 (`wirePinnablePopover`, `pinPopover`, `isPopoverPinned`, exported from
 `@kerfjs/ui/surface-scaffold`), places a transient surface below its
 `popovertarget` opener, provides its light dismiss and Escape, pins, drags by
-the header, moves by arrow keys, reads the pinned resize, clamps to the
+the header, moves by arrow keys, reads the pinned corner resize, and resizes
+from its optional bottom edge without pinning (KF-EQRNAR). Saved dimensions
+restore for transient and pinned surfaces, independently of placement. It clamps to the
 registered `--_kui-pinnable-popover-surface-gutter-px`, re-clamps on window
 resize, restores owned state after a morph, and reports `onChange`. Demo: the
 Surface Scaffolds catalog's Pinnable Popover example. Tests:

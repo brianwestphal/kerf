@@ -846,6 +846,7 @@ export function SurfaceScaffoldDemo() {
         <PinnablePopoverSurface
           id={LIBRARY_POPOVER_ID}
           label="Library"
+          resizeFromBottom
           size="small"
           maxHeight={remify(420)}
         >
