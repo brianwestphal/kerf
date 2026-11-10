@@ -78,7 +78,7 @@ const openDocument = async (page: Page) => {
  * Fit: the frame, scaled down, sits whole inside the stage and keeps its
  * viewport: the default iPhone 17 in a browser tab, 402×678 (KF-R7KXSN).
  */
-const expectFits = async (page: Page) => {
+const expectFrameBounds = async (page: Page) => {
   const frame = page.locator('[data-editor-play-frame]');
   await expect(frame).toBeVisible();
   const stageBox = (await page.locator('[data-editor-stage]').boundingBox())!;
@@ -89,6 +89,10 @@ const expectFits = async (page: Page) => {
   expect(box.y + box.height).toBeLessThanOrEqual(stageBox.y + stageBox.height);
   // Scaled evenly.
   expect(box.width / box.height).toBeCloseTo(402 / 678, 2);
+  return box;
+};
+const expectFits = async (page: Page) => {
+  const box = await expectFrameBounds(page);
   expect(
     await page
       .frameLocator('[data-editor-play-frame]')
@@ -98,13 +102,27 @@ const expectFits = async (page: Page) => {
   return box;
 };
 
-const play = (page: Page) =>
-  page.locator('[data-action="editor-play"]').click();
+// The new iframe initially exposes about:blank with the correct viewport.
+// Wait for the actual play page and its module bootstrap, not that initial DOM.
+const waitForPlayFrame = async (page: Page) => {
+  const element = await page
+    .locator('[data-editor-play-frame]')
+    .elementHandle();
+  const frame = await element?.contentFrame();
+  if (!frame) throw new Error('Play frame is missing');
+  await frame.waitForURL((url) => url.searchParams.has('kerf-ui-play'), {
+    waitUntil: 'domcontentloaded',
+  });
+};
+const play = async (page: Page) => {
+  await page.locator('[data-action="editor-play"]').click();
+  await waitForPlayFrame(page);
+};
 const stage = (page: Page) => page.frameLocator('[data-editor-play-frame]');
 
 test('Play shows the stage at the device viewport and Done restores the editor', async ({
   page,
-}) => {
+}, info) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await openDocument(page);
   await page
@@ -127,6 +145,9 @@ test('Play shows the stage at the device viewport and Done restores the editor',
   // shows the view being edited.
   await expect(stage(page).getByText('All projects')).toBeVisible();
   await expect(stage(page).getByText('Atlas details')).toHaveCount(0);
+  await page.screenshot({
+    path: info.outputPath('KF-C09GS4-play-root-ready.png'),
+  });
   await page.locator('[data-action="editor-play-done"]').click();
   await expect(frame).toHaveCount(0);
   await expect(page.locator('[data-editor-canvas]')).toBeVisible();
@@ -134,7 +155,84 @@ test('Play shows the stage at the device viewport and Done restores the editor',
   await expect(highlight).toBeVisible();
   expect(await highlight.boundingBox()).toEqual(ring);
   await expect(children).toHaveValue('Atlas details');
+  await page.screenshot({
+    path: info.outputPath('KF-C09GS4-editor-selection-restored.png'),
+  });
 });
+
+// KF-C09GS4: navigation and module loading can lag behind parent geometry.
+for (const heldResource of ['document', 'script'] as const) {
+  test(`Play readiness waits for its actual ${heldResource} response`, async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await openDocument(page);
+    let release!: () => void;
+    let requested!: () => void;
+    const gate = new Promise<void>((resolve) => {
+      release = resolve;
+    });
+    const requestStarted = new Promise<void>((resolve) => {
+      requested = resolve;
+    });
+    await page.route('**/*', async (route) => {
+      const request = route.request();
+      if (
+        request.frame().parentFrame() === page.mainFrame() &&
+        request.resourceType() === heldResource
+      ) {
+        requested();
+        await gate;
+      }
+      await route.continue();
+    });
+    try {
+      // Positive control: the old click/geometry/focus checks all finish while
+      // the actual child document or its entry module is still held.
+      await page.locator('[data-action="editor-play"]').click();
+      await requestStarted;
+      let ready = false;
+      const loaded = waitForPlayFrame(page).then(() => {
+        ready = true;
+      });
+      await expectFrameBounds(page);
+      await expect(
+        page.locator('[data-action="editor-play-done"]'),
+      ).toBeFocused();
+      expect(ready).toBe(false);
+      // Read the initial same-origin child directly: Chromium/WebKit's
+      // frame locators wait for the pending navigation, whereas Firefox can
+      // expose the about:blank HTML (the original CI race).
+      const child = await page
+        .locator('[data-editor-play-frame]')
+        .evaluate((element) => {
+          const frame = element as HTMLIFrameElement;
+          return {
+            href: frame.contentWindow!.location.href,
+            viewport: [
+              frame.contentWindow!.innerWidth,
+              frame.contentWindow!.innerHeight,
+            ],
+            text: frame.contentDocument!.body.textContent,
+          };
+        });
+      expect(child.viewport).toEqual([402, 678]);
+      expect(new URL(child.href).searchParams.has('kerf-ui-play')).toBe(
+        heldResource === 'script',
+      );
+      expect(child.text).not.toContain('All projects');
+      release();
+      await loaded;
+      await expect(stage(page).getByText('All projects')).toBeVisible();
+      await expect(stage(page).getByText('Atlas details')).toHaveCount(0);
+      await page.locator('[data-action="editor-play-done"]').click();
+      await expect(page.locator('[data-editor-play-frame]')).toHaveCount(0);
+      await expect(page.locator('[data-editor-canvas]')).toBeVisible();
+    } finally {
+      release();
+    }
+  });
+}
 
 test('Fit scales the frame to a short stage and follows its resizes', async ({
   page,
