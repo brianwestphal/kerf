@@ -847,6 +847,7 @@ export function SurfaceScaffoldDemo() {
           id={LIBRARY_POPOVER_ID}
           label="Library"
           resizeFromBottom
+          minHeight={remify(240)}
           bodyInset="none"
           size="small"
           maxHeight={remify(420)}

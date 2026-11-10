@@ -580,6 +580,13 @@ hand-built draggable panel. It takes the same geometry props as
   the viewport caps. Bottom-edge resizing keeps the current pin state; the
   chosen size survives closing, reopening, and unpinning.
 
+`minHeight` accepts a branded `CssLength` and protects fixed controls plus a
+useful content region while resizing. CSS resolves the length and caps the
+minimum by `maxHeight` and the available dynamic viewport. Resizable overlays
+default to 160px; the editor Library configures 320px for its header, view tabs,
+search field, and visible result rows. Keyboard resize reports the actual
+constrained box, so stored height agrees with what the person sees.
+
 The surface is `popover="manual"`, so the controller provides its light
 dismiss; changing an `auto` popover into a pinned one is not possible while
 it is open. The title is the move handle: a focusable button named by the

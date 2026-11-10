@@ -13453,6 +13453,17 @@
           "description": "Definite height, bounded by the dynamic viewport minus both gutters."
         },
         {
+          "name": "minHeight",
+          "type": {
+            "kind": "css-value",
+            "grammar": "CssLength",
+            "text": "CssLength",
+            "nullable": true
+          },
+          "required": false,
+          "description": "Minimum height, capped by maxHeight and the available viewport. Resizable overlays default to 160px."
+        },
+        {
           "name": "maxHeight",
           "type": {
             "kind": "union",

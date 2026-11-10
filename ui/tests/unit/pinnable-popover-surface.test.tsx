@@ -9,6 +9,7 @@ import {
   pinPopover,
   wirePinnablePopover,
 } from '../../src/components/surfaces/surface-scaffold/surface-scaffold.js';
+import { px } from '../../src/shared/styles/css-values.js';
 
 const VIEW_WIDTH = 1024;
 const VIEW_HEIGHT = 768;
@@ -215,6 +216,16 @@ describe('PinnablePopoverSurface', () => {
     expect(html.slice(0, html.indexOf('>'))).not.toContain('style=');
   });
 
+  it('exposes a typed minimum height without allowing root attribute overrides', () => {
+    const html = render({
+      minHeight: px(320),
+      rootAttributes: { 'data-min-height': 'ignored' },
+    });
+    expect(html).toContain('data-min-height=""');
+    expect(html).toContain('--_kui-pinnable-popover-surface-min-height:320px');
+    expect(html).not.toContain('ignored');
+  });
+
   it('renders an opt-in bottom resize handle only on overlays', () => {
     expect(render({ resizeFromBottom: true })).toContain(
       'class="kui-pinnable-popover-surface__bottom-resize" aria-label="Resize Library vertically"',
@@ -346,6 +357,24 @@ describe('wirePinnablePopover', () => {
     pointer(grip, 'pointerdown', 200, 382);
     pointer(grip, 'pointerup', 200, 382);
     expect(changes.at(-1)!.reason).toBe('resize');
+  });
+
+  it('reports the actual CSS-constrained height after keyboard resizing', () => {
+    const { surface } = mount({ resizeFromBottom: true, minHeight: px(320) });
+    const unconstrained = surface.getBoundingClientRect;
+    surface.getBoundingClientRect = () => {
+      const box = unconstrained();
+      return rect(box.x, box.y, box.width, Math.max(320, box.height));
+    };
+    const { changes } = wire(surface);
+    surface.showPopover();
+    key(bottomResize(surface), { key: 'ArrowUp' });
+    expect(surface.style.height).toBe('312px');
+    expect(changes.at(-1)?.placement?.height).toBe(320);
+    expect(isPopoverPinned(surface)).toBe(false);
+    surface.hidePopover();
+    surface.showPopover();
+    expect(surface.style.height).toBe('320px');
   });
 
   it('can size a closed surface before it has a saved placement', () => {

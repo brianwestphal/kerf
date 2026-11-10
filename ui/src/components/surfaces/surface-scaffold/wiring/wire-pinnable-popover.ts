@@ -307,9 +307,10 @@ export function wirePinnablePopover(
         maxHeight,
       );
       own('height', `${Math.round(height)}px`);
+      const resized = surface.getBoundingClientRect();
       requested = {
         ...(requested ?? { x: box.left, y: box.top }),
-        height: Math.round(height),
+        height: Math.round(resized.height),
       };
       report('resize');
       return;

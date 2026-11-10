@@ -1570,13 +1570,17 @@ a focusable move-handle button, `headerActions`, a Pin toggle with
 `@kerfjs/ui/surface-scaffold`), places a transient surface below its
 `popovertarget` opener, provides its light dismiss and Escape, pins, drags by
 the header, moves by arrow keys, reads the pinned corner resize, and resizes
-from its optional bottom edge without pinning (KF-EQRNAR). Saved dimensions
+from its optional bottom edge without pinning (KF-EQRNAR). Typed `minHeight` is
+resolved by CSS within max-height/viewport caps; Library uses 320px to keep search
+and result rows visible (KF-GC3PRB), and keyboard resize reports the actual
+constrained height. Saved dimensions
 restore for transient and pinned surfaces, independently of placement. It clamps to the
 registered `--_kui-pinnable-popover-surface-gutter-px`, re-clamps on window
 resize, restores owned state after a morph, and reports `onChange`. Demo: the
 Surface Scaffolds catalog's Pinnable Popover example. Tests:
 `ui/tests/unit/pinnable-popover-surface.test.tsx`,
-`ui/tests/browser/pinnable-popover.spec.ts`.
+`ui/tests/browser/pinnable-popover.spec.ts`, and the real-app minimum-size
+regression `editor/tests/browser/library-minimum-size.spec.ts`.
 
 Surface Scaffold's `surface-scaffold.tsx` is a facade: its four renderers live in
 `internal/dialog-surface.tsx`, `internal/popover-dialog-surface.tsx`,

@@ -5487,6 +5487,8 @@ interface PinnablePopoverSurfaceProps {
     preferredWidth?: CssLength;
     /** Definite height, bounded by the dynamic viewport minus both gutters. */
     height?: DialogSurfaceHeight;
+    /** Minimum height, capped by maxHeight and the available viewport. Resizable overlays default to 160px. */
+    minHeight?: CssLength;
     /** Height cap, bounded the same way, for a surface that sizes to content. */
     maxHeight?: DialogSurfaceMaxHeight;
     /**
@@ -5525,7 +5527,7 @@ interface PinnablePopoverSurfaceProps {
  * what `onChange` reports. Use `PopoverDialogSurface` for a dialog that only
  * ever light-dismisses.
  */
-declare function PinnablePopoverSurface({ id, label, describedBy, children, headerActions, presentation, pinned, size, preferredWidth, height, maxHeight, viewportGutter, bodyLayout, bodyInset, resizeFromBottom, pinLabel, closeLabel, moveDescription, rootAttributes, className, slot, }: PinnablePopoverSurfaceProps): kerfjs.SafeHtml;
+declare function PinnablePopoverSurface({ id, label, describedBy, children, headerActions, presentation, pinned, size, preferredWidth, height, minHeight, maxHeight, viewportGutter, bodyLayout, bodyInset, resizeFromBottom, pinLabel, closeLabel, moveDescription, rootAttributes, className, slot, }: PinnablePopoverSurfaceProps): kerfjs.SafeHtml;
 
 type PopupSurfaceInset = 'none' | 'compact' | 'default' | /** @deprecated Use default. */ 'standard' | /** @deprecated Use none. */ 'list-zero';
 interface PopupSurfaceProps {

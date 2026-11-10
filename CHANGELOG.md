@@ -8,6 +8,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Fixed
 
+- **Library minimum size (KF-GC3PRB).** Shrinking the Library keeps its search and result rows visible through a public, viewport-capped PinnablePopoverSurface `minHeight` option. Keyboard resize remembers the actual constrained height without pinning.
+
 - **Library keyboard-cleared search (KF-0XRNXD).** Select All then Delete now restores the same empty editor, placeholder, and field height as the clear button by installing shared SearchField wiring on the Library surface.
 
 - **Library column clipping (KF-7HP7R9).** Document columns now clip at the Library surface edges while retaining row content insets. Public ColumnTrack/ColumnExplorer `inset` and PinnablePopoverSurface `bodyInset` options configure that boundary.

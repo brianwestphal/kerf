@@ -323,7 +323,7 @@ test('Library resizing changes its default size without pinning', async ({
     });
     await page.mouse.up();
     const after = (await surface.boundingBox())!;
-    expect(after.height).toBeLessThanOrEqual(Math.max(160, before.height - 80));
+    expect(after.height).toBeLessThanOrEqual(Math.max(320, before.height - 80));
     await expect(surface).not.toHaveAttribute('data-pinned', '');
     await expect(
       surface.locator('[data-pinnable-popover-pin]'),
@@ -372,11 +372,11 @@ test('Library resizing changes its default size without pinning', async ({
       steps: 8,
     });
     await page.mouse.up();
-    expect((await surface.boundingBox())!.height).toBeGreaterThanOrEqual(159);
-    expect((await surface.boundingBox())!.height).toBeLessThanOrEqual(161);
+    expect((await surface.boundingBox())!.height).toBeGreaterThanOrEqual(319);
+    expect((await surface.boundingBox())!.height).toBeLessThanOrEqual(321);
     await grip.focus();
     await page.keyboard.press('ArrowDown');
-    expect((await surface.boundingBox())!.height).toBeGreaterThan(160);
+    expect((await surface.boundingBox())!.height).toBeGreaterThan(320);
     await expect(surface).not.toHaveAttribute('data-pinned', '');
     await surface.evaluate((node: HTMLElement) => node.hidePopover());
   }

@@ -904,6 +904,20 @@ h2.kui-dialog-surface__title {
     )
   );
 }
+.kui-pinnable-popover-surface[data-min-height],
+.kui-pinnable-popover-surface[data-presentation="overlay"]:is(
+    [data-pinned],
+    [data-resize-from-bottom]
+  ):popover-open {
+  min-height: max(
+    0px,
+    min(
+      var(--_kui-pinnable-popover-surface-min-height, remify(160px)),
+      var(--_kui-pinnable-popover-surface-max-height, 100dvh),
+      var(--_kui-pinnable-popover-surface-available-height)
+    )
+  );
+}
 .kui-pinnable-popover-surface[data-presentation="overlay"]:popover-open {
   inset: 0;
   margin: auto;
@@ -919,7 +933,6 @@ h2.kui-dialog-surface__title {
 /* A pinned overlay resizes from its corner, within the viewport caps. */
 .kui-pinnable-popover-surface[data-presentation="overlay"][data-pinned]:popover-open {
   min-width: min(remify(240px), 100%);
-  min-height: min(remify(160px), 100%);
   resize: both;
 }
 .kui-pinnable-popover-surface__bottom-resize {

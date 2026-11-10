@@ -670,6 +670,8 @@ restored pinned, where it was, in the next session
 storage it opens transient). Resizing from its bottom edge, by pointer or
 arrow keys, changes the remembered default height without pinning it
 (KF-EQRNAR); it still closes on an outside press or a completed drop.
+Its `minHeight={px(320)}` keeps the header, tabs, search, and useful result rows
+visible at the resize minimum, capped by the available viewport (KF-GC3PRB).
 Dragging the title continues to pin it. Play mode closes it. The Library is
 **transient around a drop**:
 

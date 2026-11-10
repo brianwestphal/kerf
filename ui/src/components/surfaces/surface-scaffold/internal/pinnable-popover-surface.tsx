@@ -57,6 +57,8 @@ export interface PinnablePopoverSurfaceProps {
   preferredWidth?: CssLength;
   /** Definite height, bounded by the dynamic viewport minus both gutters. */
   height?: DialogSurfaceHeight;
+  /** Minimum height, capped by maxHeight and the available viewport. Resizable overlays default to 160px. */
+  minHeight?: CssLength;
   /** Height cap, bounded the same way, for a surface that sizes to content. */
   maxHeight?: DialogSurfaceMaxHeight;
   /**
@@ -90,6 +92,7 @@ const PINNABLE_POPOVER_PROTECTED = new Set([
   'data-presentation',
   'data-size',
   'data-height',
+  'data-min-height',
   'data-max-height',
   'data-body-layout',
   'data-body-inset',
@@ -124,6 +127,7 @@ export function PinnablePopoverSurface({
   size = 'medium',
   preferredWidth,
   height,
+  minHeight,
   maxHeight,
   viewportGutter,
   bodyLayout = 'flow',
@@ -146,6 +150,9 @@ export function PinnablePopoverSurface({
     height === undefined || height === 'viewport'
       ? ''
       : `--_kui-pinnable-popover-surface-height:${height}`,
+    minHeight === undefined
+      ? ''
+      : `--_kui-pinnable-popover-surface-min-height:${minHeight}`,
     maxHeight === undefined || maxHeight === 'viewport'
       ? ''
       : `--_kui-pinnable-popover-surface-max-height:${maxHeight}`,
@@ -162,6 +169,7 @@ export function PinnablePopoverSurface({
       data-presentation={presentation}
       data-size={size}
       data-height={height === undefined ? undefined : ''}
+      data-min-height={minHeight === undefined ? undefined : ''}
       data-max-height={maxHeight === undefined ? undefined : ''}
       data-body-layout={bodyLayout === 'flow' ? undefined : bodyLayout}
       data-body-inset={bodyInset === 'compact' ? 'default' : bodyInset}

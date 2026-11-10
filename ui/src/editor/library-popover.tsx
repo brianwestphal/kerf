@@ -224,6 +224,7 @@ export function createLibraryPopover(
         label="Library"
         size="small"
         height={px(560)}
+        minHeight={px(320)}
         bodyLayout="fill-last"
         bodyInset="none"
         resizeFromBottom
