@@ -157,7 +157,7 @@ jobs:
         working-directory: .
         run: npm install --global bun@1.4.4
       - run: node "$GITHUB_WORKSPACE/scripts/bun-candidate-install.mjs" .
-      - run: npm --prefix site ci
+      - run: node "$GITHUB_WORKSPACE/scripts/bun-candidate-install.mjs" site
       - name: Run the check:core gates no other job covers
         run: node scripts/run-check-steps.mjs check:core --skip lint,typecheck,test,vitest:dist,vitest:dist-full,check-package-gates
       - name: Audit the published dependency tree (high and critical)

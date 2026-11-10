@@ -48,6 +48,12 @@ describe(
       expect(candidate.permissions).toEqual({ contents: 'read' });
       const text = YAML.stringify(candidate);
       expect(text).not.toContain('npm ci');
+      expect(text).not.toMatch(/npm --prefix \S+ ci/);
+      expect(
+        candidate.jobs.gates.steps.some((step: { run?: string }) =>
+          step.run?.includes('bun-candidate-install.mjs" site'),
+        ),
+      ).toBe(true);
       expect(text).not.toContain('id-token');
       expect(text).not.toContain('secrets.');
       expect(text).not.toMatch(/npm publish/);

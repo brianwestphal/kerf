@@ -35,6 +35,11 @@ export function qualificationWorkflow(source) {
       if (typeof step.run !== 'string') continue;
       const cwd = step['working-directory'] ?? defaults;
       step.run = step.run.replaceAll(
+        /\bnpm --prefix ([a-z0-9./-]+) ci\b/g,
+        (_command, prefix) =>
+          `node "$GITHUB_WORKSPACE/scripts/bun-candidate-install.mjs" ${cwd === '.' ? prefix : `${cwd}/${prefix}`}`,
+      );
+      step.run = step.run.replaceAll(
         /\bnpm ci\b/g,
         `node "$GITHUB_WORKSPACE/scripts/bun-candidate-install.mjs" ${cwd}`,
       );
@@ -69,7 +74,7 @@ export function qualificationWorkflow(source) {
         );
       }
       assert.ok(
-        !step.run.includes('npm ci'),
+        !/\bnpm(?:\s+--prefix\s+\S+)?\s+ci\b/.test(step.run),
         `${name} retained npm repository installation`,
       );
     }
