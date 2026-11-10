@@ -88,11 +88,24 @@ test('validates defaults with the compiler and persists undoable parameter edits
   await dialog
     .getByRole('textbox', { name: 'Name', exact: true })
     .fill('draftCount');
+  // A cold project compiler can outlast the default five-second UI assertion.
+  // Wait for this draft's response, not the earlier initial-string analysis.
+  const numberAnalysis = page.waitForResponse(
+    (response) => {
+      if (!response.url().endsWith('/__kerf-ui-editor/api/types')) return false;
+      const request = response.request().postDataJSON();
+      return request?.action === 'analyze' && request.text === 'number';
+    },
+    { timeout: 15000 },
+  );
   await dialog.locator('[data-parameter-draft="type"] textarea').fill('number');
   await dialog.getByRole('switch', { name: 'Use default' }).click();
   await dialog
     .getByRole('textbox', { name: 'Default value (JSON)' })
     .fill('"wrong"');
+  const response = await numberAnalysis;
+  expect(response.ok()).toBe(true);
+  expect(await response.json()).toMatchObject({ diagnostics: [] });
   await expect(
     dialog.getByRole('button', { name: 'Add parameter', exact: true }),
   ).toBeEnabled();
