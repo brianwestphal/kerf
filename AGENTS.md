@@ -332,7 +332,7 @@ Use `npm run push` (`scripts/push.mjs`: it requires a clean worktree, runs `npm 
 
 ## Hot Sheet integration
 
-This project is managed via [Hot Sheet](https://github.com/brianwestphal/hotsheet) — a **local-only** ticket tracker. Tickets use the `KF-` prefix and exist only on the maintainer's machine. Run `hotsheet` from the project root to launch the local UI; the skill files under `.claude/skills/kerf/` reference the worklist for AI-driven work.
+This project is managed via [Hot Sheet](https://github.com/brianwestphal/hotsheet). Tickets use the `KF-` prefix and live in the project's linked local store, so public readers cannot resolve them. Use the `hotsheet` skill under `.agents/skills/` or `.claude/skills/` for queue work; `.hotsheet2/worklist.md` is a generated local projection, not the authoritative ticket record. The shared **Hot Sheet — ticket workflow** owns claims, phases, completion, and follow-ups.
 
 ### Referencing tickets in code and docs
 
@@ -353,6 +353,8 @@ Hot Sheet is local-only, so a bare `KF-NN` reference can't be looked up by anyon
 The same rule applies to commit messages — `git log` is a public-facing surface for any open-source consumer. Use the slug-first subject shape from **Git Commit and Push** (`KF-NN <imperative summary>`), so the title makes the commit understandable without a ticket lookup.
 
 **Exception: ticket-to-ticket references inside Hot Sheet itself are fine.** Anyone reading a ticket already has Hot Sheet open, so bare `KF-NN` cross-references in ticket titles, details, and notes resolve trivially. The self-contained-summary rule is only about surfaces _outside_ Hot Sheet where readers may not have it.
+
+## Publishing conventions
 
 ### Comparison tables on the site
 
@@ -376,9 +378,11 @@ What this means for the site:
 - The homepage performance table (rendered from `bench/results.json` by `site/src/components/PerfTable.astro`) shows the most recent committed krausest import. Re-commit only from `bench/import-krausest.mjs`.
 - Per-framework migration pages (`/kerf/migrating/{react,lit,vanjs,…}/`) may cite the krausest numbers for framework pairs that krausest measures. For a pair krausest doesn't cover (e.g. Alpine), keep the §5 "Perf numbers" section a one-paragraph qualitative note ("Both frameworks are in the same performance cluster on the krausest benchmark").
 
+## Project ticket conventions
+
 ### Concerns → tickets, not ad-hoc fixes
 
-The Hot Sheet workflow below governs follow-ups: a concern outside the current ticket's scope (a bug, refactor, doc drift, or design question noticed along the way) gets its own ticket immediately rather than an in-flight fix, even a one-line one. Kerf specifics: file with the `hs-bug` / `hs-task` / `hs-issue` / `hs-feature` / `hs-investigation` / `hs-requirement-change` skills, and name the surfacing context in the title (for example "Surfaced by /check-code-hygiene on YYYY-MM-DD"). The only in-flight edits allowed are ones the ticket's own scope defines, such as the summary fixes `/check-requirements-against-code` performs.
+The shared **Ticket-Driven Work** and **Hot Sheet — ticket workflow** rules govern scope and follow-ups. Kerf specifics: file with the `hs-bug` / `hs-task` / `hs-issue` / `hs-feature` / `hs-investigation` / `hs-requirement-change` skills, and name the surfacing context in the title (for example "Surfaced by /check-code-hygiene on YYYY-MM-DD"). The only in-flight edits allowed are ones the ticket's own scope defines, such as the summary fixes `/check-requirements-against-code` performs.
 
 ### Tag a ticket `Fable` when Fable is the right model for it
 
