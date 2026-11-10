@@ -96,7 +96,7 @@
         "workers": 1,
         "retries": 0
       },
-      "playwrightTree": "kerf-ui-editor@0.0.0 /home/runner/work/kerf/kerf/editor\n└─┬ @playwright/test@1.64.1\n  └─┬ playwright@1.64.1\n    └── playwright-core@1.64.1\n\n",
+      "playwrightTree": "kerf-ui-editor@0.0.0 <repo-root>/editor\n└─┬ @playwright/test@1.64.1\n  └─┬ playwright@1.64.1\n    └── playwright-core@1.64.1\n\n",
       "browserDownload": {
         "description": "Firefox 157.0 (playwright firefox v1555)",
         "url": "https://cdn.playwright.dev/dbazure/download/playwright/builds/firefox/1555/firefox-ubuntu-24.04.zip"
@@ -235,7 +235,7 @@
         "workers": 1,
         "retries": 0
       },
-      "playwrightTree": "kerf-ui-editor@0.0.0 /home/runner/work/kerf/kerf/editor\n└─┬ @playwright/test@1.64.1\n  └─┬ playwright@1.64.1\n    └── playwright-core@1.64.1\n\n",
+      "playwrightTree": "kerf-ui-editor@0.0.0 <repo-root>/editor\n└─┬ @playwright/test@1.64.1\n  └─┬ playwright@1.64.1\n    └── playwright-core@1.64.1\n\n",
       "browserDownload": {
         "description": "WebKit 27.2 (playwright webkit v2370)",
         "url": "https://cdn.playwright.dev/dbazure/download/playwright/builds/webkit/2370/webkit-ubuntu-24.04.zip"
@@ -369,7 +369,7 @@
         "workers": 1,
         "retries": 0
       },
-      "playwrightTree": "kerf-ui-editor@0.0.0 /home/runner/work/kerf/kerf/editor\n└─┬ @playwright/test@1.64.1\n  └─┬ playwright@1.64.1\n    └── playwright-core@1.64.1\n\n",
+      "playwrightTree": "kerf-ui-editor@0.0.0 <repo-root>/editor\n└─┬ @playwright/test@1.64.1\n  └─┬ playwright@1.64.1\n    └── playwright-core@1.64.1\n\n",
       "browserDownload": {
         "description": "Firefox 157.0 (playwright firefox v1555)",
         "url": "https://cdn.playwright.dev/dbazure/download/playwright/builds/firefox/1555/firefox-ubuntu-24.04.zip"
@@ -547,7 +547,7 @@
         "workers": 1,
         "retries": 0
       },
-      "playwrightTree": "kerf-ui-editor@0.0.0 /home/runner/work/kerf/kerf/editor\n└─┬ @playwright/test@1.64.1\n  └─┬ playwright@1.64.1\n    └── playwright-core@1.64.1\n\n",
+      "playwrightTree": "kerf-ui-editor@0.0.0 <repo-root>/editor\n└─┬ @playwright/test@1.64.1\n  └─┬ playwright@1.64.1\n    └── playwright-core@1.64.1\n\n",
       "browserDownload": {
         "description": "WebKit 27.2 (playwright webkit v2370)",
         "url": "https://cdn.playwright.dev/dbazure/download/playwright/builds/webkit/2370/webkit-ubuntu-24.04.zip"
@@ -645,5 +645,6 @@
     "WebKit390px: readable hierarchy/header/search, no horizontal clipping; partially visible bottom row indicates scrolling.",
     "Firefox1440px: aligned header, tabs/search, folder disclosure and rows."
   ],
-  "budgetMs": 1000
+  "budgetMs": 1000,
+  "normalization": "Hosted repository/home prefixes in displayed npm dependency-tree text are represented by <repo-root>/<runner-home>. Original raw files remain in the artifacts; raw-file paths, hashes, job-log hashes and artifact digests are unchanged."
 }
