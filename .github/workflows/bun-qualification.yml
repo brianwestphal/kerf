@@ -14,8 +14,8 @@ jobs:
   test:
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
-      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: npm
@@ -26,7 +26,7 @@ jobs:
       - run: npm test
       - name: Retain exact candidate locks and input manifests
         if: always()
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: candidate-${{ github.job }}-${{ strategy.job-index }}-${{ github.sha }}
           path: ${{ env.BUN_QUALIFICATION_EVIDENCE }}
@@ -34,8 +34,8 @@ jobs:
   lint:
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
-      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: npm
@@ -46,7 +46,7 @@ jobs:
       - run: npm run lint
       - name: Retain exact candidate locks and input manifests
         if: always()
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: candidate-${{ github.job }}-${{ strategy.job-index }}-${{ github.sha }}
           path: ${{ env.BUN_QUALIFICATION_EVIDENCE }}
@@ -54,8 +54,8 @@ jobs:
   typecheck:
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
-      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: npm
@@ -66,7 +66,7 @@ jobs:
       - run: npm run typecheck
       - name: Retain exact candidate locks and input manifests
         if: always()
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: candidate-${{ github.job }}-${{ strategy.job-index }}-${{ github.sha }}
           path: ${{ env.BUN_QUALIFICATION_EVIDENCE }}
@@ -74,8 +74,8 @@ jobs:
   build:
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
-      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: npm
@@ -89,7 +89,7 @@ jobs:
       - run: npm pack --dry-run
       - name: Retain exact candidate locks and input manifests
         if: always()
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: candidate-${{ github.job }}-${{ strategy.job-index }}-${{ github.sha }}
           path: ${{ env.BUN_QUALIFICATION_EVIDENCE }}
@@ -97,8 +97,8 @@ jobs:
   node-floor:
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
-      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: npm
@@ -111,7 +111,7 @@ jobs:
         run: |
           mkdir -p "$RUNNER_TEMP/pack"
           npm pack --pack-destination "$RUNNER_TEMP/pack"
-      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
           node-version: '18'
       - name: Install the tarball into a scratch consumer on Node 18
@@ -140,7 +140,7 @@ jobs:
           "
       - name: Retain exact candidate locks and input manifests
         if: always()
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: candidate-${{ github.job }}-${{ strategy.job-index }}-${{ github.sha }}
           path: ${{ env.BUN_QUALIFICATION_EVIDENCE }}
@@ -148,8 +148,8 @@ jobs:
   gates:
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
-      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: npm
@@ -164,7 +164,7 @@ jobs:
         run: npm run --silent check:audit
       - name: Retain exact candidate locks and input manifests
         if: always()
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: candidate-${{ github.job }}-${{ strategy.job-index }}-${{ github.sha }}
           path: ${{ env.BUN_QUALIFICATION_EVIDENCE }}
@@ -172,8 +172,8 @@ jobs:
   site:
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
-      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: npm
@@ -198,7 +198,7 @@ jobs:
           node ../scripts/check-site-build-output.mjs < "$RUNNER_TEMP/kerf-site-build.log"
       - name: Retain exact candidate locks and input manifests
         if: always()
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: candidate-${{ github.job }}-${{ strategy.job-index }}-${{ github.sha }}
           path: ${{ env.BUN_QUALIFICATION_EVIDENCE }}
@@ -215,8 +215,8 @@ jobs:
       run:
         working-directory: eslint-plugin
     steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
-      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: npm
@@ -231,7 +231,7 @@ jobs:
       - run: npm run check
       - name: Retain exact candidate locks and input manifests
         if: always()
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: candidate-${{ github.job }}-${{ strategy.job-index }}-${{ github.sha }}
           path: ${{ env.BUN_QUALIFICATION_EVIDENCE }}
@@ -242,8 +242,8 @@ jobs:
       run:
         working-directory: create-kerf-component
     steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
-      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: npm
@@ -256,7 +256,7 @@ jobs:
       - run: npm test
       - name: Retain exact candidate locks and input manifests
         if: always()
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: candidate-${{ github.job }}-${{ strategy.job-index }}-${{ github.sha }}
           path: ${{ env.BUN_QUALIFICATION_EVIDENCE }}
@@ -267,8 +267,8 @@ jobs:
       run:
         working-directory: ui
     steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
-      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: npm
@@ -284,7 +284,7 @@ jobs:
         run: npm run build
       - run: node "$GITHUB_WORKSPACE/scripts/bun-candidate-install.mjs" ui
       - name: Cache UI Playwright browsers
-        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: ~/.cache/ms-playwright
           key: playwright-ui-${{ runner.os }}-${{ hashFiles('ui/package-lock.json') }}
@@ -295,7 +295,7 @@ jobs:
       - run: npm run check
       - name: Retain exact candidate locks and input manifests
         if: always()
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: candidate-${{ github.job }}-${{ strategy.job-index }}-${{ github.sha }}
           path: ${{ env.BUN_QUALIFICATION_EVIDENCE }}
@@ -306,8 +306,8 @@ jobs:
       run:
         working-directory: editor
     steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
-      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: npm
@@ -328,7 +328,7 @@ jobs:
       - run: npm run check
       - name: Retain exact candidate locks and input manifests
         if: always()
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: candidate-${{ github.job }}-${{ strategy.job-index }}-${{ github.sha }}
           path: ${{ env.BUN_QUALIFICATION_EVIDENCE }}
@@ -351,8 +351,8 @@ jobs:
       run:
         working-directory: editor
     steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
-      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: npm
@@ -378,7 +378,7 @@ jobs:
         run: npm run test:e2e -- --project=${{ matrix.browser }} --shard=${{ matrix.shard }}/4
       - name: Upload failed editor browser evidence
         if: ${{ !cancelled() && steps.editor_browser.outcome == 'failure' }}
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: editor-browser-failure-${{ matrix.browser }}-${{ matrix.shard }}-${{ github.run_id }}-${{ github.run_attempt }}
           path: |
@@ -387,7 +387,7 @@ jobs:
             editor/test-results/**/error-context.md
       - name: Retain exact candidate locks and input manifests
         if: always()
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: candidate-${{ github.job }}-${{ strategy.job-index }}-${{ github.sha }}
           path: ${{ env.BUN_QUALIFICATION_EVIDENCE }}
@@ -405,8 +405,8 @@ jobs:
       run:
         working-directory: ui
     steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
-      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: npm
@@ -422,7 +422,7 @@ jobs:
         run: npm run build
       - run: node "$GITHUB_WORKSPACE/scripts/bun-candidate-install.mjs" ui
       - name: Cache UI Playwright browser
-        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: ~/.cache/ms-playwright
           key: playwright-ui-${{ matrix.browser }}-${{ runner.os }}-${{ hashFiles('ui/package-lock.json') }}
@@ -437,7 +437,7 @@ jobs:
         run: npm run test:e2e -- --project=${{ matrix.browser }}
       - name: Upload failed UI browser evidence
         if: ${{ !cancelled() && steps.ui_browser.outcome == 'failure' }}
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: ui-browser-failure-${{ matrix.browser }}-${{ github.run_id }}-${{ github.run_attempt }}
           path: |
@@ -449,7 +449,7 @@ jobs:
           retention-days: 14
       - name: Retain exact candidate locks and input manifests
         if: always()
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: candidate-${{ github.job }}-${{ strategy.job-index }}-${{ github.sha }}
           path: ${{ env.BUN_QUALIFICATION_EVIDENCE }}
@@ -460,8 +460,8 @@ jobs:
       run:
         working-directory: ui
     steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
-      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: npm
@@ -477,7 +477,7 @@ jobs:
         run: npm run build
       - run: node "$GITHUB_WORKSPACE/scripts/bun-candidate-install.mjs" ui
       - name: Cache UI Playwright browser
-        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: ~/.cache/ms-playwright
           key: playwright-ui-chromium-${{ runner.os }}-${{ hashFiles('ui/package-lock.json') }}
@@ -489,7 +489,7 @@ jobs:
         run: bun add --no-save @awesome.me/webawesome@^3 && bun pm ls --all > "$BUN_QUALIFICATION_EVIDENCE/ui-webawesome-latest-final-packages.txt" && cp bun.lock "$BUN_QUALIFICATION_EVIDENCE/ui-webawesome-latest-final.bun.lock" && cp package.json "$BUN_QUALIFICATION_EVIDENCE/ui-webawesome-latest-final-package.json" && node node_modules/vitest/vitest.mjs run tests/unit && KERF_WEBAWESOME_LATEST=1 node node_modules/playwright/cli.js test --project=chromium
       - name: Upload Web Awesome browser failure evidence
         if: failure()
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: ui-webawesome-latest-failure
           path: |
@@ -500,7 +500,7 @@ jobs:
           retention-days: 14
       - name: Retain exact candidate locks and input manifests
         if: always()
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: candidate-${{ github.job }}-${{ strategy.job-index }}-${{ github.sha }}
           path: ${{ env.BUN_QUALIFICATION_EVIDENCE }}
@@ -511,8 +511,8 @@ jobs:
       run:
         working-directory: ui
     steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
-      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: npm
@@ -537,7 +537,7 @@ jobs:
       - run: npm run check:design-templates:drift
       - name: Retain exact candidate locks and input manifests
         if: always()
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: candidate-${{ github.job }}-${{ strategy.job-index }}-${{ github.sha }}
           path: ${{ env.BUN_QUALIFICATION_EVIDENCE }}
@@ -545,8 +545,8 @@ jobs:
   browser:
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
-      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: npm
@@ -555,7 +555,7 @@ jobs:
         run: npm install --global bun@1.4.4
       - run: node "$GITHUB_WORKSPACE/scripts/bun-candidate-install.mjs" .
       - name: Cache Playwright browsers
-        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: ~/.cache/ms-playwright
           key: playwright-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
@@ -565,7 +565,7 @@ jobs:
       - run: npm run test:browser
       - name: Retain exact candidate locks and input manifests
         if: always()
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: candidate-${{ github.job }}-${{ strategy.job-index }}-${{ github.sha }}
           path: ${{ env.BUN_QUALIFICATION_EVIDENCE }}
@@ -573,8 +573,8 @@ jobs:
   seventh-tree:
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
-      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
           node-version: ${{ env.NODE_VERSION }}
       - run: npm install --global bun@1.4.4
@@ -582,15 +582,15 @@ jobs:
       - run: npm run build
         working-directory: examples/reactivity-demo
       - if: always()
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: candidate-seventh-tree-${{ github.sha }}
           path: ${{ env.BUN_QUALIFICATION_EVIDENCE }}
   release-artifacts:
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
-      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
           node-version: ${{ env.NODE_VERSION }}
       - run: npm install --global bun@1.4.4
@@ -598,7 +598,7 @@ jobs:
       - run: node node_modules/vitest/vitest.mjs run tests/unit/release-package.test.ts tests/unit/release-common.test.ts tests/unit/release-changelog.test.ts tests/unit/release-beta-plan.test.ts tests/unit/release-order.test.ts tests/integration/release-beta-auto.test.ts
       - run: node scripts/bun-release-artifact-probe.mjs
       - if: always()
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: candidate-release-artifacts-${{ github.sha }}
           path: ${{ env.BUN_QUALIFICATION_EVIDENCE }}

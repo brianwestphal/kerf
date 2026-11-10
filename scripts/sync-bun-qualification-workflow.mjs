@@ -162,7 +162,20 @@ async function main() {
   const raw =
     '# Generated from ci.yml by scripts/sync-bun-qualification-workflow.mjs.\n# Manual candidate only; production npm CI and release workflows are unchanged.\n' +
     YAML.stringify(qualificationWorkflow(source), { lineWidth: 0 });
-  const expected = await format(raw, {
+  const releases = new Map(
+    [
+      ...source.matchAll(/uses:\s+(\S+@[0-9a-f]{40})\s+#\s+(v\d+\.\d+\.\d+)/g),
+    ].map(([, action, release]) => [action, release]),
+  );
+  const annotated = raw.replace(
+    /^(\s*(?:-\s*)?uses:\s+)(\S+@[0-9a-f]{40})$/gm,
+    (_line, prefix, action) => {
+      const release = releases.get(action);
+      assert.ok(release, `No audited canonical release comment for ${action}`);
+      return `${prefix}${action} # ${release}`;
+    },
+  );
+  const expected = await format(annotated, {
     ...(await resolveConfig(path)),
     filepath: path,
   });

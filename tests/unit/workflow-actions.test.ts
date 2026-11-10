@@ -92,6 +92,25 @@ describe('GitHub Actions inventory', () => {
         .filter((line) => /^\s*(?:-\s*)?uses:\s+/.test(line));
 
       for (const line of actionLines) {
+        const local = line.match(
+          /^\s*(?:-\s*)?uses:\s+(\.\/\.github\/workflows\/([a-z0-9-]+\.ya?ml))\s*$/,
+        );
+        if (local) {
+          expect(
+            workflowFiles,
+            `${file}: local workflow ${local[1]} must exist`,
+          ).toContain(local[2]);
+          const target = parse(
+            readFileSync(join(workflowDirectory, local[2]), 'utf8'),
+          );
+          expect(
+            target.on,
+            `${file}: ${local[1]} must be callable`,
+          ).toHaveProperty('workflow_call');
+          // Every external action inside that same-commit workflow is audited
+          // by this loop's normal traversal of all workflow files.
+          continue;
+        }
         const match = line.match(
           /^\s*(?:-\s*)?uses:\s+([^@\s]+)@([0-9a-f]{40})\s+#\s+(v\d+\.\d+\.\d+)\s*$/,
         );
