@@ -1,0 +1,649 @@
+{
+  "schema": "kerf-library-single-worker-linux/v1",
+  "result": "Baseline WebKit fails unchanged 1000ms task budget; repaired Firefox and WebKit pass task/visible-frame budgets, row-mutation and stable-identity assertions. These are whole-tree budget outcomes, not a causal cross-run speedup estimate.",
+  "fixture": "200 folders ×25 documents =5000 files; four alternating disclosure clicks; one browser engine/job, workers1, retries0; canonical tracing retained.",
+  "cases": [
+    {
+      "cohort": "baseline",
+      "browser": "firefox",
+      "sourceSha": "56e4394d992a1ab27d4cfde47676720a7ba3a352",
+      "workflowSha": "d08decc8cfbf93a1ddbe1e3d8afb867fb38cf6a2",
+      "run": {
+        "id": 42783628150,
+        "url": "https://github.com/brianwestphal/kerf/actions/runs/42783628150",
+        "conclusion": "failure"
+      },
+      "job": {
+        "id": 129719366583,
+        "name": "library-performance / library-performance (firefox)",
+        "conclusion": "success",
+        "startedAt": "2026-11-10T08:35:25Z",
+        "completedAt": "2026-11-10T08:37:28Z"
+      },
+      "artifact": {
+        "id": 13746908836,
+        "node_id": "MDg6QXJ0aWZhY3QxMzc0NjkwODgzNg==",
+        "name": "library-performance-firefox-56e4394d992a1ab27d4cfde47676720a7ba3a352",
+        "size_in_bytes": 145512,
+        "url": "https://api.github.com/repos/brianwestphal/kerf/actions/artifacts/13746908836",
+        "archive_download_url": "https://api.github.com/repos/brianwestphal/kerf/actions/artifacts/13746908836/zip",
+        "expired": false,
+        "digest": "sha256:d584869bbd9e162b117cd80328602d3adf50ccd8e1169669beff2b8d2294a825",
+        "created_at": "2026-11-10T08:37:25Z",
+        "updated_at": "2026-11-10T08:37:25Z",
+        "expires_at": "2027-02-08T08:33:57Z",
+        "workflow_run": {
+          "id": 42783628150,
+          "repository_id": 1231460256,
+          "head_repository_id": 1231460256,
+          "head_branch": "main",
+          "head_sha": "d08decc8cfbf93a1ddbe1e3d8afb867fb38cf6a2"
+        }
+      },
+      "environment": {
+        "sourceSha": "56e4394d992a1ab27d4cfde47676720a7ba3a352",
+        "workflowSha": "d08decc8cfbf93a1ddbe1e3d8afb867fb38cf6a2",
+        "node": "v22.23.4",
+        "npm": "10.9.9",
+        "cpus": [
+          {
+            "model": "AMD EPYC 9V45 96-Core Processor",
+            "speed": 0,
+            "times": {
+              "user": 3190,
+              "nice": 0,
+              "sys": 2060,
+              "idle": 40430,
+              "irq": 0
+            }
+          },
+          {
+            "model": "AMD EPYC 9V45 96-Core Processor",
+            "speed": 0,
+            "times": {
+              "user": 3230,
+              "nice": 0,
+              "sys": 2140,
+              "idle": 40090,
+              "irq": 0
+            }
+          },
+          {
+            "model": "AMD EPYC 9V45 96-Core Processor",
+            "speed": 0,
+            "times": {
+              "user": 2010,
+              "nice": 0,
+              "sys": 1700,
+              "idle": 42210,
+              "irq": 0
+            }
+          },
+          {
+            "model": "AMD EPYC 9V45 96-Core Processor",
+            "speed": 0,
+            "times": {
+              "user": 1950,
+              "nice": 0,
+              "sys": 1630,
+              "idle": 42700,
+              "irq": 0
+            }
+          }
+        ],
+        "availableParallelism": 4,
+        "loadavg": [0.13, 0.04, 0.01],
+        "workers": 1,
+        "retries": 0
+      },
+      "playwrightTree": "kerf-ui-editor@0.0.0 /home/runner/work/kerf/kerf/editor\n└─┬ @playwright/test@1.64.1\n  └─┬ playwright@1.64.1\n    └── playwright-core@1.64.1\n\n",
+      "browserDownload": {
+        "description": "Firefox 157.0 (playwright firefox v1555)",
+        "url": "https://cdn.playwright.dev/dbazure/download/playwright/builds/firefox/1555/firefox-ubuntu-24.04.zip"
+      },
+      "taskSamplesMs": [458, 470, 435, 464],
+      "maxTaskMs": 470,
+      "measurements": null,
+      "maxVisibleFrameMs": null,
+      "rawFiles": [
+        {
+          "path": "home/runner/work/kerf/kerf/editor/test-results/library-performance-Librar-bf030-ive-with-5000-project-files-firefox/KF-1XBJDT-large-project-disclosure-1440.png",
+          "bytes": 41945,
+          "sha256": "3a8cbde3d4c992bfb305cfe5bc8b0c1d58d89b9a834cdb8298d5cf01c85bce3a"
+        },
+        {
+          "path": "home/runner/work/kerf/kerf/editor/test-results/library-performance-Librar-bf030-ive-with-5000-project-files-firefox/KF-1XBJDT-large-project-tree-390.png",
+          "bytes": 40497,
+          "sha256": "975bf712e0b40b764e563e287622884d7f80fa05270cbeef755326b112044a31"
+        },
+        {
+          "path": "home/runner/work/kerf/kerf/editor/test-results/library-performance-Librar-bf030-ive-with-5000-project-files-firefox/KF-1XBJDT-large-project-tree-867.png",
+          "bytes": 41241,
+          "sha256": "2d98cea30b5dc0a2aa498bc22f7f176ae06976f375bc4c56aa9cd36dcea4006b"
+        },
+        {
+          "path": "home/runner/work/kerf/kerf/editor/test-results/library-performance-Librar-bf030-ive-with-5000-project-files-firefox/KF-1XBJDT-large-project-tree-960.png",
+          "bytes": 41801,
+          "sha256": "7fe517a532a86c1cf7415abc2ab987384c7ef87fc0ccb74bff9f7ed11ba09d16"
+        },
+        {
+          "path": "tmp/kerf-library-performance/environment.json",
+          "bytes": 1122,
+          "sha256": "79d8cc880908190981c86d8f54bfa5aec0331b486c1fefab2ee72975b2486b49"
+        },
+        {
+          "path": "tmp/kerf-library-performance/playwright-tree.txt",
+          "bytes": 158,
+          "sha256": "7983a9d359b78dd93fa8084234ec5974b6aed34466ea87081575e40936e6b79e"
+        }
+      ],
+      "jobLog": {
+        "name": "kerf-perf-baseline-firefox.log",
+        "sha256": "314d05c2bc649542fecf7d69df972a625500a6ec23d96de03d03ff33359c7261"
+      }
+    },
+    {
+      "cohort": "baseline",
+      "browser": "webkit",
+      "sourceSha": "56e4394d992a1ab27d4cfde47676720a7ba3a352",
+      "workflowSha": "d08decc8cfbf93a1ddbe1e3d8afb867fb38cf6a2",
+      "run": {
+        "id": 42783628150,
+        "url": "https://github.com/brianwestphal/kerf/actions/runs/42783628150",
+        "conclusion": "failure"
+      },
+      "job": {
+        "id": 129719366948,
+        "name": "library-performance / library-performance (webkit)",
+        "conclusion": "failure",
+        "startedAt": "2026-11-10T08:36:16Z",
+        "completedAt": "2026-11-10T08:39:34Z"
+      },
+      "artifact": {
+        "id": 13747846178,
+        "node_id": "MDg6QXJ0aWZhY3QxMzc0Nzg0NjE3OA==",
+        "name": "library-performance-webkit-56e4394d992a1ab27d4cfde47676720a7ba3a352",
+        "size_in_bytes": 1266438,
+        "url": "https://api.github.com/repos/brianwestphal/kerf/actions/artifacts/13747846178",
+        "archive_download_url": "https://api.github.com/repos/brianwestphal/kerf/actions/artifacts/13747846178/zip",
+        "expired": false,
+        "digest": "sha256:34756c2a72443932b742efd3509db60a5fbcd221bb7bfc5da4e1cde30e3c48d2",
+        "created_at": "2026-11-10T08:39:32Z",
+        "updated_at": "2026-11-10T08:39:32Z",
+        "expires_at": "2027-02-08T08:33:57Z",
+        "workflow_run": {
+          "id": 42783628150,
+          "repository_id": 1231460256,
+          "head_repository_id": 1231460256,
+          "head_branch": "main",
+          "head_sha": "d08decc8cfbf93a1ddbe1e3d8afb867fb38cf6a2"
+        }
+      },
+      "environment": {
+        "sourceSha": "56e4394d992a1ab27d4cfde47676720a7ba3a352",
+        "workflowSha": "d08decc8cfbf93a1ddbe1e3d8afb867fb38cf6a2",
+        "node": "v22.23.4",
+        "npm": "10.9.9",
+        "cpus": [
+          {
+            "model": "Intel(R) Xeon(R) Platinum 8370C CPU @ 2.80GHz",
+            "speed": 3497,
+            "times": {
+              "user": 4100,
+              "nice": 10,
+              "sys": 3720,
+              "idle": 34910,
+              "irq": 0
+            }
+          },
+          {
+            "model": "Intel(R) Xeon(R) Platinum 8370C CPU @ 2.80GHz",
+            "speed": 3485,
+            "times": {
+              "user": 3110,
+              "nice": 0,
+              "sys": 3070,
+              "idle": 35970,
+              "irq": 0
+            }
+          },
+          {
+            "model": "Intel(R) Xeon(R) Platinum 8370C CPU @ 2.80GHz",
+            "speed": 3614,
+            "times": {
+              "user": 4310,
+              "nice": 0,
+              "sys": 2390,
+              "idle": 35590,
+              "irq": 0
+            }
+          },
+          {
+            "model": "Intel(R) Xeon(R) Platinum 8370C CPU @ 2.80GHz",
+            "speed": 3492,
+            "times": {
+              "user": 3860,
+              "nice": 0,
+              "sys": 2230,
+              "idle": 37570,
+              "irq": 0
+            }
+          }
+        ],
+        "availableParallelism": 4,
+        "loadavg": [0.14, 0.04, 0.01],
+        "workers": 1,
+        "retries": 0
+      },
+      "playwrightTree": "kerf-ui-editor@0.0.0 /home/runner/work/kerf/kerf/editor\n└─┬ @playwright/test@1.64.1\n  └─┬ playwright@1.64.1\n    └── playwright-core@1.64.1\n\n",
+      "browserDownload": {
+        "description": "WebKit 27.2 (playwright webkit v2370)",
+        "url": "https://cdn.playwright.dev/dbazure/download/playwright/builds/webkit/2370/webkit-ubuntu-24.04.zip"
+      },
+      "taskSamplesMs": [2039, 2047, 2049, 2040],
+      "maxTaskMs": 2049,
+      "measurements": null,
+      "maxVisibleFrameMs": null,
+      "rawFiles": [
+        {
+          "path": "home/runner/work/kerf/kerf/editor/test-results/library-performance-Librar-bf030-ive-with-5000-project-files-webkit/error-context.md",
+          "bytes": 4169,
+          "sha256": "3642ba3bb805d2a872abb8053effc0ed5d38b28c4c31d33e136e7ba2a57fab69"
+        },
+        {
+          "path": "home/runner/work/kerf/kerf/editor/test-results/library-performance-Librar-bf030-ive-with-5000-project-files-webkit/test-failed-1.png",
+          "bytes": 115601,
+          "sha256": "2c9addec69ab8d6b9f26c4b3dc973ab10a44271925d1339d7a79749949bb5d62"
+        },
+        {
+          "path": "home/runner/work/kerf/kerf/editor/test-results/library-performance-Librar-bf030-ive-with-5000-project-files-webkit/trace.zip",
+          "bytes": 2087475,
+          "sha256": "c41492a104c6696bed51d3e3b0d2db04859c3b1f7e9c692aded066efdb9b932d"
+        },
+        {
+          "path": "tmp/kerf-library-performance/environment.json",
+          "bytes": 1191,
+          "sha256": "806faf3733b284d748cc85213b2f514468ad52641f558a30a8c32dbc242e96df"
+        },
+        {
+          "path": "tmp/kerf-library-performance/playwright-tree.txt",
+          "bytes": 158,
+          "sha256": "7983a9d359b78dd93fa8084234ec5974b6aed34466ea87081575e40936e6b79e"
+        }
+      ],
+      "jobLog": {
+        "name": "kerf-perf-baseline-webkit.log",
+        "sha256": "8baa061f7aa874c39b0b913bbf00a56be21e13ac6e6b145d0ab23521cc516823"
+      }
+    },
+    {
+      "cohort": "repaired",
+      "browser": "firefox",
+      "sourceSha": "2f261cf5d48ced67664a91d673f374a604a09c73",
+      "workflowSha": "d08decc8cfbf93a1ddbe1e3d8afb867fb38cf6a2",
+      "run": {
+        "id": 42783632258,
+        "url": "https://github.com/brianwestphal/kerf/actions/runs/42783632258",
+        "conclusion": "success"
+      },
+      "job": {
+        "id": 129719380857,
+        "name": "library-performance / library-performance (firefox)",
+        "conclusion": "success",
+        "startedAt": "2026-11-10T08:37:33Z",
+        "completedAt": "2026-11-10T08:39:59Z"
+      },
+      "artifact": {
+        "id": 13747881294,
+        "node_id": "MDg6QXJ0aWZhY3QxMzc0Nzg4MTI5NA==",
+        "name": "library-performance-firefox-2f261cf5d48ced67664a91d673f374a604a09c73",
+        "size_in_bytes": 146705,
+        "url": "https://api.github.com/repos/brianwestphal/kerf/actions/artifacts/13747881294",
+        "archive_download_url": "https://api.github.com/repos/brianwestphal/kerf/actions/artifacts/13747881294/zip",
+        "expired": false,
+        "digest": "sha256:594b33a9c3de22800c958634ff0a02044089cc52cf0cfbd873f2f51f588993d1",
+        "created_at": "2026-11-10T08:39:57Z",
+        "updated_at": "2026-11-10T08:39:57Z",
+        "expires_at": "2027-02-08T08:33:59Z",
+        "workflow_run": {
+          "id": 42783632258,
+          "repository_id": 1231460256,
+          "head_repository_id": 1231460256,
+          "head_branch": "main",
+          "head_sha": "d08decc8cfbf93a1ddbe1e3d8afb867fb38cf6a2"
+        }
+      },
+      "environment": {
+        "sourceSha": "2f261cf5d48ced67664a91d673f374a604a09c73",
+        "workflowSha": "d08decc8cfbf93a1ddbe1e3d8afb867fb38cf6a2",
+        "node": "v22.23.4",
+        "npm": "10.9.9",
+        "cpus": [
+          {
+            "model": "AMD EPYC 9V74 80-Core Processor",
+            "speed": 0,
+            "times": {
+              "user": 2850,
+              "nice": 0,
+              "sys": 2640,
+              "idle": 32170,
+              "irq": 0
+            }
+          },
+          {
+            "model": "AMD EPYC 9V74 80-Core Processor",
+            "speed": 0,
+            "times": {
+              "user": 3070,
+              "nice": 10,
+              "sys": 2440,
+              "idle": 31290,
+              "irq": 0
+            }
+          },
+          {
+            "model": "AMD EPYC 9V74 80-Core Processor",
+            "speed": 0,
+            "times": {
+              "user": 5030,
+              "nice": 0,
+              "sys": 2680,
+              "idle": 30070,
+              "irq": 0
+            }
+          },
+          {
+            "model": "AMD EPYC 9V74 80-Core Processor",
+            "speed": 0,
+            "times": {
+              "user": 2180,
+              "nice": 0,
+              "sys": 2650,
+              "idle": 32090,
+              "irq": 0
+            }
+          }
+        ],
+        "availableParallelism": 4,
+        "loadavg": [0.29, 0.06, 0.02],
+        "workers": 1,
+        "retries": 0
+      },
+      "playwrightTree": "kerf-ui-editor@0.0.0 /home/runner/work/kerf/kerf/editor\n└─┬ @playwright/test@1.64.1\n  └─┬ playwright@1.64.1\n    └── playwright-core@1.64.1\n\n",
+      "browserDownload": {
+        "description": "Firefox 157.0 (playwright firefox v1555)",
+        "url": "https://cdn.playwright.dev/dbazure/download/playwright/builds/firefox/1555/firefox-ubuntu-24.04.zip"
+      },
+      "taskSamplesMs": [493, 465, 493, 463],
+      "maxTaskMs": 493,
+      "measurements": [
+        {
+          "taskMs": 493,
+          "visibleFrameMs": 611,
+          "added": 0,
+          "removed": 25,
+          "stableBranch": true
+        },
+        {
+          "taskMs": 465,
+          "visibleFrameMs": 547,
+          "added": 25,
+          "removed": 0,
+          "stableBranch": true
+        },
+        {
+          "taskMs": 493,
+          "visibleFrameMs": 494,
+          "added": 0,
+          "removed": 25,
+          "stableBranch": true
+        },
+        {
+          "taskMs": 463,
+          "visibleFrameMs": 464,
+          "added": 25,
+          "removed": 0,
+          "stableBranch": true
+        }
+      ],
+      "maxVisibleFrameMs": 611,
+      "rawFiles": [
+        {
+          "path": "home/runner/work/kerf/kerf/editor/test-results/library-performance-Librar-bf030-ive-with-5000-project-files-firefox/KF-1XBJDT-disclosure-metrics.json",
+          "bytes": 542,
+          "sha256": "d67dc99e55eea1828b677a14b64a2b974d37b530e8192c925e2e9721c75b98bc"
+        },
+        {
+          "path": "home/runner/work/kerf/kerf/editor/test-results/library-performance-Librar-bf030-ive-with-5000-project-files-firefox/KF-1XBJDT-large-project-disclosure-1440.png",
+          "bytes": 41945,
+          "sha256": "3a8cbde3d4c992bfb305cfe5bc8b0c1d58d89b9a834cdb8298d5cf01c85bce3a"
+        },
+        {
+          "path": "home/runner/work/kerf/kerf/editor/test-results/library-performance-Librar-bf030-ive-with-5000-project-files-firefox/KF-1XBJDT-large-project-tree-390.png",
+          "bytes": 40497,
+          "sha256": "975bf712e0b40b764e563e287622884d7f80fa05270cbeef755326b112044a31"
+        },
+        {
+          "path": "home/runner/work/kerf/kerf/editor/test-results/library-performance-Librar-bf030-ive-with-5000-project-files-firefox/KF-1XBJDT-large-project-tree-867.png",
+          "bytes": 41241,
+          "sha256": "2d98cea30b5dc0a2aa498bc22f7f176ae06976f375bc4c56aa9cd36dcea4006b"
+        },
+        {
+          "path": "home/runner/work/kerf/kerf/editor/test-results/library-performance-Librar-bf030-ive-with-5000-project-files-firefox/KF-1XBJDT-large-project-tree-960.png",
+          "bytes": 41801,
+          "sha256": "7fe517a532a86c1cf7415abc2ab987384c7ef87fc0ccb74bff9f7ed11ba09d16"
+        },
+        {
+          "path": "home/runner/work/kerf/kerf/editor/test-results/library-performance-Librar-bf030-ive-with-5000-project-files-firefox/attachments/KF-1XBJDT-disclosure-metrics-72285d0b7b832fa1baa782b641d314cb6ba5ef8a.json",
+          "bytes": 542,
+          "sha256": "d67dc99e55eea1828b677a14b64a2b974d37b530e8192c925e2e9721c75b98bc"
+        },
+        {
+          "path": "tmp/kerf-library-performance/environment.json",
+          "bytes": 1123,
+          "sha256": "f450682ce6237fb0641ebb4bda3b4a297c2845190760a006c0787b74f3607ce7"
+        },
+        {
+          "path": "tmp/kerf-library-performance/playwright-tree.txt",
+          "bytes": 158,
+          "sha256": "7983a9d359b78dd93fa8084234ec5974b6aed34466ea87081575e40936e6b79e"
+        }
+      ],
+      "jobLog": {
+        "name": "kerf-perf-repaired-firefox.log",
+        "sha256": "567068a8c895dfbe4a6afff5b9908b9c3b041a2de3269132589fc3634a2ff1be"
+      }
+    },
+    {
+      "cohort": "repaired",
+      "browser": "webkit",
+      "sourceSha": "2f261cf5d48ced67664a91d673f374a604a09c73",
+      "workflowSha": "d08decc8cfbf93a1ddbe1e3d8afb867fb38cf6a2",
+      "run": {
+        "id": 42783632258,
+        "url": "https://github.com/brianwestphal/kerf/actions/runs/42783632258",
+        "conclusion": "success"
+      },
+      "job": {
+        "id": 129719381215,
+        "name": "library-performance / library-performance (webkit)",
+        "conclusion": "success",
+        "startedAt": "2026-11-10T08:37:37Z",
+        "completedAt": "2026-11-10T08:41:18Z"
+      },
+      "artifact": {
+        "id": 13748945113,
+        "node_id": "MDg6QXJ0aWZhY3QxMzc0ODk0NTExMw==",
+        "name": "library-performance-webkit-2f261cf5d48ced67664a91d673f374a604a09c73",
+        "size_in_bytes": 153955,
+        "url": "https://api.github.com/repos/brianwestphal/kerf/actions/artifacts/13748945113",
+        "archive_download_url": "https://api.github.com/repos/brianwestphal/kerf/actions/artifacts/13748945113/zip",
+        "expired": false,
+        "digest": "sha256:609f812eb5bd70e48e9fdca702dd1218e331fdd4a22f981ddbf18ee6774ab937",
+        "created_at": "2026-11-10T08:41:15Z",
+        "updated_at": "2026-11-10T08:41:15Z",
+        "expires_at": "2027-02-08T08:33:59Z",
+        "workflow_run": {
+          "id": 42783632258,
+          "repository_id": 1231460256,
+          "head_repository_id": 1231460256,
+          "head_branch": "main",
+          "head_sha": "d08decc8cfbf93a1ddbe1e3d8afb867fb38cf6a2"
+        }
+      },
+      "environment": {
+        "sourceSha": "2f261cf5d48ced67664a91d673f374a604a09c73",
+        "workflowSha": "d08decc8cfbf93a1ddbe1e3d8afb867fb38cf6a2",
+        "node": "v22.23.4",
+        "npm": "10.9.9",
+        "cpus": [
+          {
+            "model": "AMD EPYC 9V74 80-Core Processor",
+            "speed": 0,
+            "times": {
+              "user": 3270,
+              "nice": 10,
+              "sys": 3090,
+              "idle": 38160,
+              "irq": 0
+            }
+          },
+          {
+            "model": "AMD EPYC 9V74 80-Core Processor",
+            "speed": 0,
+            "times": {
+              "user": 2300,
+              "nice": 0,
+              "sys": 2260,
+              "idle": 42030,
+              "irq": 0
+            }
+          },
+          {
+            "model": "AMD EPYC 9V74 80-Core Processor",
+            "speed": 0,
+            "times": {
+              "user": 2400,
+              "nice": 0,
+              "sys": 2420,
+              "idle": 39930,
+              "irq": 0
+            }
+          },
+          {
+            "model": "AMD EPYC 9V74 80-Core Processor",
+            "speed": 0,
+            "times": {
+              "user": 2810,
+              "nice": 0,
+              "sys": 2350,
+              "idle": 39270,
+              "irq": 0
+            }
+          }
+        ],
+        "availableParallelism": 4,
+        "loadavg": [0.47, 0.14, 0.05],
+        "workers": 1,
+        "retries": 0
+      },
+      "playwrightTree": "kerf-ui-editor@0.0.0 /home/runner/work/kerf/kerf/editor\n└─┬ @playwright/test@1.64.1\n  └─┬ playwright@1.64.1\n    └── playwright-core@1.64.1\n\n",
+      "browserDownload": {
+        "description": "WebKit 27.2 (playwright webkit v2370)",
+        "url": "https://cdn.playwright.dev/dbazure/download/playwright/builds/webkit/2370/webkit-ubuntu-24.04.zip"
+      },
+      "taskSamplesMs": [530, 549, 521, 547],
+      "maxTaskMs": 549,
+      "measurements": [
+        {
+          "taskMs": 530,
+          "visibleFrameMs": 647,
+          "added": 0,
+          "removed": 25,
+          "stableBranch": true
+        },
+        {
+          "taskMs": 549,
+          "visibleFrameMs": 625,
+          "added": 25,
+          "removed": 0,
+          "stableBranch": true
+        },
+        {
+          "taskMs": 521,
+          "visibleFrameMs": 593,
+          "added": 0,
+          "removed": 25,
+          "stableBranch": true
+        },
+        {
+          "taskMs": 547,
+          "visibleFrameMs": 622,
+          "added": 25,
+          "removed": 0,
+          "stableBranch": true
+        }
+      ],
+      "maxVisibleFrameMs": 647,
+      "rawFiles": [
+        {
+          "path": "home/runner/work/kerf/kerf/editor/test-results/library-performance-Librar-bf030-ive-with-5000-project-files-webkit/KF-1XBJDT-disclosure-metrics.json",
+          "bytes": 542,
+          "sha256": "13841b2d75cf9801af54fc2cd96df6abb82201b895ebb80fecc068ce365e1e82"
+        },
+        {
+          "path": "home/runner/work/kerf/kerf/editor/test-results/library-performance-Librar-bf030-ive-with-5000-project-files-webkit/KF-1XBJDT-large-project-disclosure-1440.png",
+          "bytes": 42526,
+          "sha256": "91a0c328c084ba779d7da7a96c3bbfa266a74ed86918cce3f4772aa22e03ec6b"
+        },
+        {
+          "path": "home/runner/work/kerf/kerf/editor/test-results/library-performance-Librar-bf030-ive-with-5000-project-files-webkit/KF-1XBJDT-large-project-tree-390.png",
+          "bytes": 42528,
+          "sha256": "309db347cda89a5c984baedef44ccf0c1704304514c680dac14ff52f2c11c741"
+        },
+        {
+          "path": "home/runner/work/kerf/kerf/editor/test-results/library-performance-Librar-bf030-ive-with-5000-project-files-webkit/KF-1XBJDT-large-project-tree-867.png",
+          "bytes": 42414,
+          "sha256": "1d5693887cbb62c97522817a6efe3612a35495ba7504a5abe33ffeb66aaa477c"
+        },
+        {
+          "path": "home/runner/work/kerf/kerf/editor/test-results/library-performance-Librar-bf030-ive-with-5000-project-files-webkit/KF-1XBJDT-large-project-tree-960.png",
+          "bytes": 42755,
+          "sha256": "ef9713c21c118f2799aad252bcce678d2451bbddcbc6d7cf6751bf862fc41567"
+        },
+        {
+          "path": "home/runner/work/kerf/kerf/editor/test-results/library-performance-Librar-bf030-ive-with-5000-project-files-webkit/attachments/KF-1XBJDT-disclosure-metrics-943123fb7069832b10f273382bc48f3ebdd73fca.json",
+          "bytes": 542,
+          "sha256": "13841b2d75cf9801af54fc2cd96df6abb82201b895ebb80fecc068ce365e1e82"
+        },
+        {
+          "path": "tmp/kerf-library-performance/environment.json",
+          "bytes": 1123,
+          "sha256": "1eaf142b97fb5281337370917030bb8e3a37b68fd896da36ceb8f290afb802e1"
+        },
+        {
+          "path": "tmp/kerf-library-performance/playwright-tree.txt",
+          "bytes": 158,
+          "sha256": "7983a9d359b78dd93fa8084234ec5974b6aed34466ea87081575e40936e6b79e"
+        }
+      ],
+      "jobLog": {
+        "name": "kerf-perf-repaired-webkit.log",
+        "sha256": "448e86d454519dbc5ccb44518e52dca7883354028d1a57ee547f66c5dee1e764"
+      }
+    }
+  ],
+  "limitations": [
+    "Different exact source trees include intervening RQJ changes; comparison is not a single-patch estimate.",
+    "Baseline records only zero-task log samples. Repaired instrumentation adds JSON, double-rAF visible frames and mutation/identity assertions; no baseline visible-frame or mutation values are inferred.",
+    "Hosted CPU models differ: baseline WebKit Intel Xeon8370C versus repaired AMD EPYC9V74; Firefox baseline EPYC9V45 versus repaired EPYC9V74. No causal Linux speedup ratio is claimed.",
+    "All runners report four available CPUs, but one Playwright worker does not prove absence of host CPU contention. loadavg was recorded before installs, not during measurements.",
+    "Same-machine local remove-only CSS controls provide the separately recorded causal evidence. Full canonical CI remains independent.",
+    "This is an npm performance control, not Bun installer or runtime qualification."
+  ],
+  "afterCapturesReviewed": [
+    "WebKit390px: readable hierarchy/header/search, no horizontal clipping; partially visible bottom row indicates scrolling.",
+    "Firefox1440px: aligned header, tabs/search, folder disclosure and rows."
+  ],
+  "budgetMs": 1000
+}
