@@ -27,10 +27,16 @@ export interface TreeListProps {
   id: string;
   /** The tree's accessible name, such as "Document outline". */
   label: string;
-  /** The immutable hierarchy. Replace changed nodes to update their content. */
+  /** The hierarchy. The application owns it. */
   nodes: readonly TreeListNode[];
   /** Ids of the expanded nodes. The application owns this state. */
   expanded: ReadonlySet<string> | readonly string[];
+  /**
+   * Reuse unchanged rows through native keyed reconciliation. Keep node objects
+   * immutable and stable. Use only outside an enclosing each() row render.
+   * Default false preserves ordinary markup composition, including nested lists.
+   */
+  keyedRows?: boolean;
   /** The selected node's id. */
   selected?: string;
   /** Delegated action for choosing a row; the row's `data-item-id` names it. */
@@ -65,6 +71,7 @@ export function TreeList({
   action,
   toggleAction,
   density = 'default',
+  keyedRows = false,
   className = '',
   rootAttributes = {},
   slot,
@@ -79,6 +86,28 @@ export function TreeList({
       : treeListPath(nodes, selected)
           .reverse()
           .find((pathId) => visible.has(pathId))) ?? rows[0]?.node.id;
+  const renderRow = (row: (typeof rows)[number]) => (
+    <ListTreeItem
+      itemId={row.node.id}
+      label={row.node.label}
+      description={row.node.description}
+      icon={row.node.icon}
+      trailing={row.node.trailing}
+      level={row.level}
+      position={row.position}
+      setSize={row.setSize}
+      expandable={row.expandable}
+      expanded={row.expanded}
+      selected={row.node.id === selected}
+      focusable={row.node.id === focusId}
+      disabled={row.node.disabled}
+      draggable={row.node.draggable}
+      rootAttributes={row.node.rootAttributes}
+      density={density}
+      action={action}
+      toggleAction={toggleAction}
+    />
+  );
   const byNode = new Map(rows.map((row) => [row.node, row]));
   return (
     <div
@@ -91,52 +120,30 @@ export function TreeList({
       data-tree-list-id={id}
       slot={slot}
     >
-      {each(
-        rows.map((row) => row.node),
-        (node) => {
-          const row = byNode.get(node)!;
-          return (
-            <ListTreeItem
-              itemId={row.node.id}
-              label={row.node.label}
-              description={row.node.description}
-              icon={row.node.icon}
-              trailing={row.node.trailing}
-              level={row.level}
-              position={row.position}
-              setSize={row.setSize}
-              expandable={row.expandable}
-              expanded={row.expanded}
-              selected={row.node.id === selected}
-              focusable={row.node.id === focusId}
-              disabled={row.node.disabled}
-              draggable={row.node.draggable}
-              rootAttributes={row.node.rootAttributes}
-              density={density}
-              action={action}
-              toggleAction={toggleAction}
-            />
-          );
-        },
-        {
-          key: `tree-list:${id}`,
-          cacheKey: (node) => {
-            const row = byNode.get(node)!;
-            return JSON.stringify([
-              row.level,
-              row.position,
-              row.setSize,
-              row.expandable,
-              row.expanded,
-              node.id === selected,
-              node.id === focusId,
-              density,
-              action,
-              toggleAction,
-            ]);
-          },
-        },
-      )}
+      {keyedRows
+        ? each(
+            rows.map((row) => row.node),
+            (node) => renderRow(byNode.get(node)!),
+            {
+              key: `tree-list:${Array.from(id, (character) => character.codePointAt(0)!.toString(16)).join('_')}`,
+              cacheKey: (node) => {
+                const row = byNode.get(node)!;
+                return JSON.stringify([
+                  row.level,
+                  row.position,
+                  row.setSize,
+                  row.expandable,
+                  row.expanded,
+                  node.id === selected,
+                  node.id === focusId,
+                  density,
+                  action,
+                  toggleAction,
+                ]);
+              },
+            },
+          )
+        : rows.map(renderRow)}
     </div>
   );
 }

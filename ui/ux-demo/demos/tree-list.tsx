@@ -281,6 +281,7 @@ export function TreeListDemo() {
         viewport={{ width: 'compact' }}
       >
         <TreeList
+          keyedRows
           id="files"
           label="Files"
           nodes={files()}

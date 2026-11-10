@@ -16692,7 +16692,7 @@
             "text": "readonly TreeListNode[]"
           },
           "required": true,
-          "description": "The immutable hierarchy. Replace changed nodes to update their content."
+          "description": "The hierarchy. The application owns it."
         },
         {
           "name": "expanded",
@@ -16714,6 +16714,17 @@
           },
           "required": true,
           "description": "Ids of the expanded nodes. The application owns this state."
+        },
+        {
+          "name": "keyedRows",
+          "type": {
+            "kind": "boolean",
+            "text": "boolean | undefined",
+            "nullable": true
+          },
+          "required": false,
+          "default": false,
+          "description": "Reuse unchanged rows through native keyed reconciliation. Keep node objects\nimmutable and stable. Use only outside an enclosing each() row render.\nDefault false preserves ordinary markup composition, including nested lists."
         },
         {
           "name": "selected",

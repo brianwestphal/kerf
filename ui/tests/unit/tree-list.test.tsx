@@ -1,6 +1,6 @@
 // KF-ECR4XG: TreeList's model, markup, and keyboard wiring, including the
 // expand → move → collapse → re-render sequences a tree goes through.
-import { mount, signal } from 'kerfjs';
+import { each, mount, signal } from 'kerfjs';
 import { delegateActions } from 'kerfjs/actions';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
@@ -87,6 +87,94 @@ describe('treeListRows', () => {
 });
 
 describe('TreeList reconciliation', () => {
+  it('refreshes mutated application nodes in default markup mode', () => {
+    const host = document.createElement('div');
+    const mutable = { id: 'node', label: 'Before' };
+    const revision = signal(0);
+    const dispose = mount(host, () => {
+      revision.value;
+      return TreeList({
+        id: 'mutable',
+        label: 'Files',
+        nodes: [mutable],
+        expanded: [],
+        action: 'pick',
+        toggleAction: 'toggle',
+      });
+    });
+    mutable.label = 'After';
+    revision.value += 1;
+    expect(host.querySelector('[role="treeitem"]')?.textContent).toContain(
+      'After',
+    );
+    dispose();
+  });
+
+  it.each([false, true])(
+    'accepts unusual valid HTML ids (keyedRows=%s)',
+    (keyedRows) => {
+      const host = document.createElement('div');
+      const expanded = signal<readonly string[]>(['src']);
+      const dispose = mount(host, () =>
+        TreeList({
+          id: 'files--設計🔨',
+          label: 'Files',
+          nodes,
+          expanded: expanded.value,
+          keyedRows,
+          action: 'pick',
+          toggleAction: 'toggle',
+        }),
+      );
+      expect(host.querySelector('[role="tree"]')?.id).toBe('files--設計🔨');
+      expanded.value = [];
+      expect(
+        host
+          .querySelector('[data-item-id="src"]')
+          ?.getAttribute('aria-expanded'),
+      ).toBe('false');
+      dispose();
+    },
+  );
+
+  it('composes inside an outer each row and updates with the outer row', () => {
+    const host = document.createElement('div');
+    const groups = signal([
+      { id: 'group', nodes: [{ id: 'first', label: 'First' }] },
+    ]);
+    const dispose = mount(host, () => (
+      <section>
+        {each(
+          groups.value,
+          (group) => (
+            <article data-key={group.id}>
+              <TreeList
+                id={`tree--${group.id}`}
+                label="Files"
+                nodes={group.nodes}
+                expanded={[]}
+                action="pick"
+                toggleAction="toggle"
+              />
+            </article>
+          ),
+          { key: 'groups' },
+        )}
+      </section>
+    ));
+    expect(host.querySelector('[role="treeitem"]')?.textContent).toContain(
+      'First',
+    );
+    groups.value = [
+      { id: 'group', nodes: [{ id: 'second', label: 'Second' }] },
+    ];
+    expect(host.querySelector('[data-item-id="first"]')).toBeNull();
+    expect(
+      host.querySelector('[data-item-id="second"]')?.textContent,
+    ).toContain('Second');
+    dispose();
+  });
+
   it('reuses unchanged branch content when another folder is collapsed', () => {
     let reads = 0;
     const untouched: TreeListNode = {
@@ -110,6 +198,7 @@ describe('TreeList reconciliation', () => {
     const dispose = mount(host, () =>
       TreeList({
         id: 'memo-tree',
+        keyedRows: true,
         label: 'Files',
         nodes: stableNodes,
         expanded: expanded.value,

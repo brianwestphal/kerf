@@ -6146,10 +6146,16 @@ interface TreeListProps {
     id: string;
     /** The tree's accessible name, such as "Document outline". */
     label: string;
-    /** The immutable hierarchy. Replace changed nodes to update their content. */
+    /** The hierarchy. The application owns it. */
     nodes: readonly TreeListNode[];
     /** Ids of the expanded nodes. The application owns this state. */
     expanded: ReadonlySet<string> | readonly string[];
+    /**
+     * Reuse unchanged rows through native keyed reconciliation. Keep node objects
+     * immutable and stable. Use only outside an enclosing each() row render.
+     * Default false preserves ordinary markup composition, including nested lists.
+     */
+    keyedRows?: boolean;
     /** The selected node's id. */
     selected?: string;
     /** Delegated action for choosing a row; the row's `data-item-id` names it. */
@@ -6174,7 +6180,7 @@ interface TreeListProps {
  * which is selected, and handles `action` and `toggleAction`. Wire keyboard
  * navigation with `wireTreeList`.
  */
-declare function TreeList({ id, label, nodes, expanded, selected, action, toggleAction, density, className, rootAttributes, slot, }: TreeListProps): kerfjs.SafeHtml;
+declare function TreeList({ id, label, nodes, expanded, selected, action, toggleAction, density, keyedRows, className, rootAttributes, slot, }: TreeListProps): kerfjs.SafeHtml;
 
 export { TreeList, TreeListNode, type TreeListProps };
 ```

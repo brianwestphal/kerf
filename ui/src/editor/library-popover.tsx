@@ -203,6 +203,7 @@ export function createLibraryPopover(
     ) : (
       <TreeList
         id="editor-library-documents-tree"
+        keyedRows
         label={LIBRARY_DOCUMENTS}
         nodes={nodes}
         expanded={

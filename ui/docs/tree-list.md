@@ -44,14 +44,20 @@ re-renders), a `label`, and optionally a `description`, an `icon` (an unsized
 node `hasChildren` to make it expandable before its children are loaded, and
 load them when `toggleAction` expands it.
 
-Rows use native keyed reconciliation. Keep unchanged node objects stable and
-replace a node when its content changes. Expansion, selection, and row position
-update independently, preserving unaffected row DOM and avoiding repeated row rendering.
+Default rendering composes as ordinary markup, including inside an enclosing
+`each()` row. Opt into native keyed reconciliation with `keyedRows` for large
+standalone trees. In that mode, keep unchanged node objects stable and replace a
+node when its content changes. Expansion, selection, and row position update
+independently, preserving unaffected row DOM and avoiding repeated row rendering.
+Do not enable `keyedRows` inside an enclosing `each()` row; render its default
+markup so the outer row owns updates. HTML ids retain their normal unrestricted
+character set in either mode; keyed list identities are encoded internally.
 
 ## Props
 
 - `id` and `label` (required): the tree's identity and accessible name.
 - `nodes` and `expanded` (required): the hierarchy and the ids of open nodes.
+- `keyedRows`: opt into native keyed rows; default false. Requires immutable node identities and placement outside an enclosing `each()` row.
 - `selected`: the chosen node's id. It is the tree's Tab stop; when it sits
   inside a collapsed node, its nearest visible ancestor is.
 - `action` and `toggleAction` (required): delegated actions for choosing a
