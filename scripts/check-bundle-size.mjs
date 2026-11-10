@@ -552,6 +552,26 @@ const DOC_CLAIMS = [
     figure: 'main',
   },
   {
+    file: 'site/src/content/docs/index.mdx',
+    pattern: /^description: .* ~([\d.]+) KB,/m,
+    figure: 'main',
+  },
+  {
+    file: 'site/src/content/docs/index.mdx',
+    pattern: /^\s+~([\d.]+) KB\. No virtual DOM\./m,
+    figure: 'main',
+  },
+  {
+    file: 'site/src/content/docs/index.mdx',
+    pattern: /runtime trades that gap for an ~([\d.]+) KB bundle/,
+    figure: 'main',
+  },
+  {
+    file: 'site/src/content/docs/index.mdx',
+    pattern: /^\s+~([\d.]+) KB minified \+ gzipped including signals\./m,
+    figure: 'main',
+  },
+  {
     file: 'site/src/content/docs/use-cases.md',
     pattern: /Adding ~([\d.]+) KB is reasonable/,
     figure: 'main',

@@ -1,13 +1,13 @@
 ---
 title: Kerf — the smallest cut
-description: Tiny reactive UI framework — fine-grained signals + DOM diff + JSX. ~11 KB, no virtual DOM, no compiler.
+description: Tiny reactive UI framework — fine-grained signals + DOM diff + JSX. ~15 KB, no virtual DOM, no compiler.
 template: splash
 hero:
   title: Reactive UI that touches only the bytes that changed.
   tagline: |
     The smallest cut.
 
-    ~11 KB. No virtual DOM. No compiler. No magic.
+    ~15 KB. No virtual DOM. No compiler. No magic.
   image:
     file: ../../assets/logo.svg
   actions:
@@ -70,13 +70,13 @@ That's it. Your JSX renders to HTML strings, kerf's native diff applies the mini
 
 <PerfTable />
 
-Official numbers from the [krausest js-framework-benchmark](https://krausest.github.io/js-framework-benchmark/current.html) — kerf is a listed entry, so it's measured on the same reference machine as every competitor in the same run — see `bench/results.md` for the full table and methodology. Kerf sits in the same cluster as Vue, vanjs, and Lit on most operations. Solid wins the compiler-driven `select row` and `partial update` benchmarks; kerf's general-purpose runtime trades that gap for an ~11 KB bundle, no compiler step, and a smaller public API.
+Official numbers from the [krausest js-framework-benchmark](https://krausest.github.io/js-framework-benchmark/current.html) — kerf is a listed entry, so it's measured on the same reference machine as every competitor in the same run — see `bench/results.md` for the full table and methodology. Kerf sits in the same cluster as Vue, vanjs, and Lit on most operations. Solid wins the compiler-driven `select row` and `partial update` benchmarks; kerf's general-purpose runtime trades that gap for an ~15 KB bundle, no compiler step, and a smaller public API.
 
 ## What kerf is good at
 
 <CardGrid>
   <Card title="Small bundle" icon="approve-check">
-    ~11 KB minified + gzipped including signals. The one runtime dependency is
+    ~15 KB minified + gzipped including signals. The one runtime dependency is
     `@preact/signals-core`. No virtual DOM, no scheduler, no concurrent-mode
     machinery to ship.
   </Card>

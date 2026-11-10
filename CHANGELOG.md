@@ -8,6 +8,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Fixed
 
+- **Homepage size claims (KF-60YNT1).** The homepage advertises the measured ~15 KB core bundle, and all four claims now participate in the existing bundle-size gate.
+
 - **Dependency security (KF-3NWVZN).** Refresh vulnerable tooling, docs and example dependencies. The setup CLI retains Node 18 support through the unaffected minimatch 6 branch; contributor tooling resolves affected minimatch versions to patched 11.x. Astro stays on its patched 7.3 line to preserve the docs site's Node 22.12 floor.
 
 - **Downstream Library previews (KF-RQJ15M).** Hosts and component catalogs can register typed Library-only samples, static schematics and icon fallbacks. Built-ins use the same extension; inert shadow thumbnails share styles and refit loaded assets, while insertion defaults and canvas rendering stay independent.
