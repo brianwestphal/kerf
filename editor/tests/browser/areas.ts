@@ -66,9 +66,19 @@ export async function openLibrary(page: Page) {
  */
 export async function showInspector(page: Page) {
   const show = page.getByRole('button', { name: 'Show Inspector' });
-  if (await show.isVisible()) await show.click();
-  await expect(page.locator('[data-workbench-rail="right"]')).toHaveAttribute(
-    'data-collapsed',
-    'false',
+  const rail = page.locator('[data-workbench-rail="right"]');
+  // The Workbench collapses an unfocused overlay from a ResizeObserver just
+  // after a resize, so let that run before deciding either way.
+  await page.evaluate(
+    () =>
+      new Promise((done) =>
+        requestAnimationFrame(() => requestAnimationFrame(done)),
+      ),
   );
+  await expect(async () => {
+    if (await show.isVisible()) await show.click();
+    await expect(rail).toHaveAttribute('data-collapsed', 'false', {
+      timeout: 500,
+    });
+  }).toPass();
 }
