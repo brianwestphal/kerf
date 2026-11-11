@@ -714,7 +714,8 @@ types are listed only by name in `nativeAttributes`. Web Awesome entries carry
 attribute props (with `property` when the field name differs) and `slots`.
 
 `ui/ai/component-props-overlay.json` (schema-validated) adds only what types
-cannot express: inspector `control` hints, `group`/`subgroup`/`order`, a missing
+cannot express: inspector `control` hints, `group`/`subgroup`/`order`, a
+task-facing `label` (Button's `children` reads Button text; KF-HP1J4Z), a missing
 `default`, and `choicesFrom`, the sibling list a value prop picks from when it
 is not `choices` (ColorSwatches' `value` takes `swatches`; KF-H1X3S7). The generator marks plumbing props as `control: "hidden"` by default
 (`className`, `*ClassName`, `slot`, `rootAttributes`, `triggerAttributes`),

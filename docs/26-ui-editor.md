@@ -354,7 +354,16 @@ rather than after every text field. Choosing an icon also sets the string
 field beside it that names it, an item's `iconName` (else `name`) or a
 LucideIcon's `name`, while that name still follows the icon: unset, the
 old icon's name, or the seeded default.
-The node's own name field reads "Ref name".
+The node's own name field reads "Ref name". Its help ("Name it to use it as
+a typed ref in code.") shows only while the node has no name; a bad name
+still shows its error there. The Inspector's header names the component type
+alone (`Button`, `Workbench`), so a long author name never truncates it; the
+name is the Ref name field just below, and the header carries no property
+count (All properties says how many fields there are) (KF-HP1J4Z: selection
+identity). The overlay's optional `label` gives a prop a task-facing name the
+Inspector shows in its field, its group's summary, its Bindings row, and its
+Bind page: Button's `children` reads **Button text**, so it no longer shares a
+name with the Children area. All properties still finds it by its API name.
 
 A component's own class list (`className`, or `class`) is a **Classes** text
 field in the **Integration** family (KF-X8X8VX: editable classes; it was a

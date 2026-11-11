@@ -56,6 +56,11 @@
           "type": "string",
           "minLength": 1
         },
+        "label": {
+          "description": "The task-facing name the editor's Inspector shows for the prop (Button's children read \"Button text\"); search still finds it by its API name.",
+          "type": "string",
+          "minLength": 1
+        },
         "subgroup": {
           "description": "A component-specific task inside the group (Link, Typing assistance), shown under its own heading.",
           "type": "string",

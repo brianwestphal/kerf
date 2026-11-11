@@ -4,6 +4,8 @@ import type { ViewNode, ViewValue } from '@kerfjs/ui/view';
 
 export interface InspectorProp {
   readonly name: string;
+  /** The task-facing name the Inspector shows (KF-HP1J4Z: Button text). */
+  readonly label?: string;
   readonly type: { readonly kind: string; readonly text?: string };
   readonly required: boolean;
   readonly default?: string | number | boolean;
@@ -364,7 +366,7 @@ export function groupSummary(
   props: readonly InspectorProp[],
   values: Readonly<Record<string, unknown>>,
   problems: ReadonlyMap<string, string>,
-  label: (name: string) => string,
+  label: (prop: InspectorProp) => string,
 ): { readonly description: string; readonly problems: number } {
   const set = props.filter((prop) => prop.name in values);
   const named = set.map((prop) => {
@@ -373,7 +375,7 @@ export function groupSummary(
       value !== null &&
       typeof value === 'object' &&
       ('$param' in value || '$bind' in value);
-    return bound ? `${label(prop.name)} (bound)` : label(prop.name);
+    return bound ? `${label(prop)} (bound)` : label(prop);
   });
   const description = !named.length
     ? 'Defaults'

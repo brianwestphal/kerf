@@ -31,7 +31,7 @@ import {
 } from './model/controls.js';
 import { findNode } from './model/document.js';
 import { exampleValue, slotNamer, usedSlots } from './model/examples.js';
-import { fieldEditorKind, fieldSummary, propLabel } from './model/fields.js';
+import { fieldEditorKind, fieldLabel, fieldSummary } from './model/fields.js';
 import type { InspectorProp } from './model/inspector.js';
 import {
   EXAMPLE_ACTION,
@@ -89,7 +89,7 @@ export function createInspectorControls(
       ).map((item) => JSON.stringify(item));
       return (
         <CheckboxGroup
-          label={propLabel(prop.name)}
+          label={fieldLabel(prop)}
           name={`prop-${key}`}
           choices={offered.map((choice) => ({
             value: JSON.stringify(choice.value),
@@ -109,7 +109,7 @@ export function createInspectorControls(
       return (
         <Select
           name={`prop-${key}`}
-          label={propLabel(prop.name)}
+          label={fieldLabel(prop)}
           value={value === undefined ? '' : JSON.stringify(value)}
           choices={[
             { value: '', label: 'Not set' },
@@ -162,7 +162,7 @@ export function createInspectorControls(
     const grammar = cssGrammar(prop.type as never, definitionsOf(type));
     const builderField = (raw: string) => (
       <TextField
-        label={`${propLabel(prop.name)} value`}
+        label={`${fieldLabel(prop)} value`}
         value={raw}
         hint={cssHint(prop.cssValue?.helpers, grammar)}
         placeholder={cssPlaceholder(prop.cssValue?.helpers, grammar)}
@@ -197,7 +197,7 @@ export function createInspectorControls(
           <>
             <Select
               name={`prop-${key}`}
-              label={propLabel(prop.name)}
+              label={fieldLabel(prop)}
               value={custom ? CUSTOM_SIZE : String(control.raw)}
               choices={control.choices!.map((choice) => ({
                 value: choice,
@@ -237,7 +237,7 @@ export function createInspectorControls(
         return (
           <Select
             name={`prop-${key}`}
-            label={propLabel(prop.name)}
+            label={fieldLabel(prop)}
             value={String(control.raw)}
             choices={control.choices!.map((choice) => ({
               value: choice,
@@ -250,7 +250,7 @@ export function createInspectorControls(
       case 'switch':
         return (
           <Switch
-            label={propLabel(prop.name)}
+            label={fieldLabel(prop)}
             checked={control.raw === true}
             rootAttributes={marker('switch')}
           />
@@ -258,12 +258,12 @@ export function createInspectorControls(
       case 'readonly':
         return undefined;
       case 'icon':
-        return iconRow(propLabel(prop.name), String(control.raw), place);
+        return iconRow(fieldLabel(prop), String(control.raw), place);
       // KF-3CKTKN: a typed value from a Select, and an open member's own
       // control (text, a number, a list) or form (an object) beneath it.
       case 'choice': {
         const member = control.member && {
-          name: propLabel(prop.name),
+          name: fieldLabel(prop),
           type: control.member as InspectorProp['type'],
           required: false,
         };
@@ -271,7 +271,7 @@ export function createInspectorControls(
           <>
             <Select
               name={`prop-${key}`}
-              label={`${propLabel(prop.name)} type`}
+              label={`${fieldLabel(prop)} type`}
               value={String(control.raw)}
               choices={[
                 {
@@ -291,7 +291,7 @@ export function createInspectorControls(
             {member
               ? fieldEditorKind(member.type as never, definitionsOf(type)) ===
                 'object'
-                ? configureRow(propLabel(prop.name), value as ViewValue, place)
+                ? configureRow(fieldLabel(prop), value as ViewValue, place)
                 : propControl(member, value, type, place)
               : undefined}
           </>
@@ -302,7 +302,7 @@ export function createInspectorControls(
         return (
           <TagField
             id={`editor-tags-${key}`}
-            label={propLabel(prop.name)}
+            label={fieldLabel(prop)}
             tags={JSON.parse(String(control.raw)) as string[]}
             error={error}
             rootAttributes={marker('tags')}
@@ -311,7 +311,7 @@ export function createInspectorControls(
       case 'enum-set':
         return (
           <CheckboxGroup
-            label={propLabel(prop.name)}
+            label={fieldLabel(prop)}
             name={`prop-${key}`}
             choices={control.choices!.map((choice) => ({
               value: choice,
@@ -335,7 +335,7 @@ export function createInspectorControls(
         return (
           <>
             <TextField
-              label={propLabel(prop.name)}
+              label={fieldLabel(prop)}
               value={String(control.raw)}
               multiline
               rows={control.raw === '' ? 2 : 4}
@@ -378,7 +378,7 @@ export function createInspectorControls(
         else if (unsettable && value === undefined) placeholder = 'Not set';
         return (
           <TextField
-            label={propLabel(prop.name)}
+            label={fieldLabel(prop)}
             value={String(control.raw)}
             type={control.kind === 'number' ? 'number' : 'text'}
             multiline={multiline}

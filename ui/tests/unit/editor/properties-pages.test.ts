@@ -61,7 +61,7 @@ describe('the Properties directory (KF-QWDPM3)', () => {
       'Integration',
       'All properties',
     ]);
-    expect(row(root, 'Content').textContent).toContain('Children');
+    expect(row(root, 'Content').textContent).toContain('Button text');
     expect(row(root, 'Appearance').textContent).toContain('Tone');
     expect(row(root, 'Accessibility').textContent).toContain('Defaults');
     expect(row(root, 'All properties').textContent).toMatch(
@@ -386,5 +386,58 @@ describe('binding and promotion beside each field (KF-FN28S3)', () => {
     )!;
     expect(source.getAttribute('value')).toBe('');
     expect(node()!.props?.tone).toEqual({ $param: 'gone' });
+  });
+});
+
+describe('selection identity and labels (KF-HP1J4Z)', () => {
+  const header = (root: HTMLElement) =>
+    root.querySelector<HTMLElement>(
+      '#editor-inspector-stack [data-component="list-header"]',
+    )!;
+
+  it('names the type in the header and the node in Ref name', () => {
+    const { root } = open();
+    expect(header(root).textContent?.trim()).toBe('Button');
+    // No bare count beside it; All properties says how many there are.
+    expect(
+      header(root).querySelector('[data-has-count], .kui-list-header__count'),
+    ).toBeNull();
+    const name = root.querySelector<HTMLElement>('[data-editor-name]')!;
+    expect(name.querySelector('input')!.value).toBe('composeButton');
+    // A named node needs no help with its name.
+    expect(name.textContent).not.toContain('typed ref');
+  });
+
+  it('helps name an unnamed node and keeps its validation', () => {
+    const { root } = open(TOOLBAR);
+    const name = () => root.querySelector<HTMLElement>('[data-editor-name]')!;
+    expect(name().textContent).toContain(
+      'Name it to use it as a typed ref in code.',
+    );
+    type(name(), 'Bad Name');
+    expect(name().textContent).toContain('camelCase');
+  });
+
+  it('shows a task-facing label and still finds it by its API name', () => {
+    const { root } = open();
+    row(root, 'Content').click();
+    expect(
+      root.querySelector('[data-editor-properties-page="Content"]')!
+        .textContent,
+    ).toContain('Button text');
+    back(root);
+    row(root, 'All properties').click();
+    search(root, 'children');
+    expect(
+      root.querySelector<HTMLElement>(
+        '[data-editor-properties-page="All properties"] [data-editor-prop]',
+      )?.dataset.editorProp,
+    ).toBe('children');
+    search(root, 'button text');
+    expect(
+      root.querySelector<HTMLElement>(
+        '[data-editor-properties-page="All properties"] [data-editor-prop]',
+      )?.dataset.editorProp,
+    ).toBe('children');
   });
 });

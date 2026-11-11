@@ -53,7 +53,9 @@ describe('a preview that fails when mounted', () => {
     expect(canvas.textContent).toContain('exactly one is required');
     // The editor still renders other changes.
     editor.selection.value = { kind: 'node', id: COMPOSE };
-    expect(root.textContent).toContain('composeButton · Button');
+    expect(
+      root.querySelector<HTMLInputElement>('[data-editor-name] input')?.value,
+    ).toBe('composeButton');
     // Deleting the list that repeats the failing row restores the preview.
     editor.selection.value = { kind: 'node', id: FOLDERS };
     root.querySelector<HTMLElement>('[data-action="editor-delete"]')!.click();

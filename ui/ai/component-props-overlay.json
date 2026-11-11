@@ -13,7 +13,8 @@
       "props": {
         "children": {
           "group": "Content",
-          "order": 1
+          "order": 1,
+          "label": "Button text"
         },
         "icon": {
           "group": "Content",

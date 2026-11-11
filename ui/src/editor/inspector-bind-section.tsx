@@ -13,7 +13,8 @@ import type { PropsComponent } from './catalog.js';
 import { HOOK } from './dom-hooks.js';
 import type { EditorContext } from './editor-context.js';
 import { bindingOptions } from './model/edits.js';
-import { propLabel } from './model/fields.js';
+import { fieldLabel, propLabel } from './model/fields.js';
+import type { InspectorProp } from './model/inspector.js';
 import { PROMOTE_PROP_ACTION } from './shell-names.js';
 
 /** How a prop's value reads: its param, its item field, or "Not bound". */
@@ -32,10 +33,11 @@ export function bindingSummary(value: unknown): string {
 export function bindPropPage(
   ctx: EditorContext,
   node: ViewNode,
-  name: string,
+  prop: InspectorProp,
   promotable: boolean,
 ) {
-  const label = propLabel(name);
+  const { name } = prop;
+  const label = fieldLabel(prop);
   const options = bindingOptions(
     ctx.doc.value,
     ctx.catalog.viewCatalog,

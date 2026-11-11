@@ -517,7 +517,8 @@
           "variantOnly": true,
           "slot": true,
           "group": "Content",
-          "order": 1
+          "order": 1,
+          "label": "Button text"
         },
         {
           "name": "icon",

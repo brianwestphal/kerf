@@ -783,7 +783,7 @@ the generated structured prop layer (KF-8PXPKW: per-component prop schema).
 `ui/scripts/lib/component-props.mjs`). That module reads
 `ui/dist/*.d.ts` through the typescript@6 JS API plus Web Awesome's
 `custom-elements.json`, and merges the curated
-`ui/ai/component-props-overlay.json` (and its schema; `group` names an Inspector family, `subgroup` a task inside it — KF-4BPSTB, read by `ui/src/editor/model/inspector.ts`'s `groupedProps`/`propPlace`/`inferredFamily`; `ui/src/editor/inspector-groups.tsx` renders the Properties directory, its group/task pages and All properties search — KF-QWDPM3 — and each page's Bindings rows, whose Bind pages `inspector-bind-section.tsx`'s `bindPropPage` renders — KF-FN28S3; tests `ui/tests/unit/editor/properties-pages.test.ts`). Tests:
+`ui/ai/component-props-overlay.json` (and its schema; `group` names an Inspector family, `subgroup` a task inside it — KF-4BPSTB, `label` a task-facing name read through `model/fields.ts`'s `fieldLabel` — KF-HP1J4Z, read by `ui/src/editor/model/inspector.ts`'s `groupedProps`/`propPlace`/`inferredFamily`; `ui/src/editor/inspector-groups.tsx` renders the Properties directory, its group/task pages and All properties search — KF-QWDPM3 — and each page's Bindings rows, whose Bind pages `inspector-bind-section.tsx`'s `bindPropPage` renders — KF-FN28S3; tests `ui/tests/unit/editor/properties-pages.test.ts`). Tests:
 `ui/tests/unit/component-props.test.ts`, with fixture declarations under
 `ui/tests/fixtures/component-props/`. The module's `buildPackageComponentProps`
 backs the shipped `kerf-ui-props` bin (`ui/props/cli.mjs`; KF-B8TGP4: component

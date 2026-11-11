@@ -50,9 +50,10 @@ test('selects a canvas node and highlights it without running its action', async
     `[data-editor-canvas] [data-kerf-node="${COMPOSE}"]`,
   );
   await compose.click();
+  // KF-HP1J4Z: the header names the type; Ref name holds the node's name.
   await expect(
-    page.getByText('composeButton · Button', { exact: false }),
-  ).toBeVisible();
+    page.locator('[data-editor-name] input').filter({ visible: true }),
+  ).toHaveValue('composeButton');
   const highlight = page.locator('.kui-editor__selection');
   await expect(highlight).toBeVisible();
   const [box, target] = await Promise.all([
@@ -71,9 +72,10 @@ test('selects from the outline and documents a palette component', async ({
       '[data-action="editor-select-node"][data-item-id="01JB8Z1M6Q8E1X9V4S7K2R3T5E"]',
     )
     .click();
+  // KF-HP1J4Z: the header names the type; Ref name holds the node's name.
   await expect(
-    page.getByText('folderList · List', { exact: false }),
-  ).toBeVisible();
+    page.locator('[data-editor-name] input').filter({ visible: true }),
+  ).toHaveValue('folderList');
   await openLibrary(page);
   await page
     .locator('[data-action="editor-show-component"]', { hasText: /^Badge$/ })
@@ -218,9 +220,10 @@ test('lists problems and selects the node a problem is about', async ({
   await expect(page.getByText('2 problems in this document')).toBeVisible();
   await area(page, 'Problems');
   await problems.nth(1).click();
+  // KF-HP1J4Z: the header names the type; Ref name holds the node's name.
   await expect(
-    page.getByText('composeButton · Button', { exact: false }),
-  ).toBeVisible();
+    page.locator('[data-editor-name] input').filter({ visible: true }),
+  ).toHaveValue('composeButton');
   // The broken node previews as a selectable placeholder; the rest renders.
   const canvas = page.locator('[data-editor-canvas]');
   await expect(canvas).toContainText('composeButton cannot render');
@@ -804,7 +807,10 @@ test('drags a node on the canvas to after another', async ({ page }, info) => {
   await expect(outlineRow).toHaveAttribute('aria-selected', 'true');
   await expect(page.getByText('7 nodes · valid')).toBeVisible();
   // The click that ended the drag did not select the slot under it.
-  await expect(page.getByText('composeButton · Button')).toBeVisible();
+  // KF-HP1J4Z: the header names the type; Ref name holds the node's name.
+  await expect(
+    page.locator('[data-editor-name] input').filter({ visible: true }),
+  ).toHaveValue('composeButton');
 });
 
 // KF-SFAA5R: the Inspector's Move to list is checked with the scoped move
@@ -1347,7 +1353,16 @@ for (const width of [1440, 900]) {
       .last()
       .scrollIntoViewIfNeeded();
     await expect(properties).toBeInViewport();
-    await expect(rail.getByText('composeButton · Button')).toBeInViewport();
+    await expect(
+      rail
+        .locator('[data-nav-key="inspector"] [data-component="list-header"]')
+        .first(),
+    ).toHaveText('Button');
+    await expect(
+      rail
+        .locator('[data-nav-key="inspector"] [data-component="list-header"]')
+        .first(),
+    ).toBeInViewport();
     await page.screenshot({
       path: info.outputPath(`KF-5QXNWS-inspector-scrolled-${width}.png`),
       animations: 'disabled',

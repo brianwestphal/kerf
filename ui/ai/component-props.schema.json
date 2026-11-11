@@ -232,6 +232,10 @@
         "subgroup": {
           "type": "string"
         },
+        "label": {
+          "description": "The task-facing name the editor's Inspector shows.",
+          "type": "string"
+        },
         "order": {
           "type": "integer",
           "minimum": 0

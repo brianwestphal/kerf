@@ -12,7 +12,7 @@ import { SearchField } from '../components/forms/search-field/search-field.js';
 import { LucideIcon } from '../components/media/lucide-icon/lucide-icon.js';
 import { Text } from '../components/typography/text/text.js';
 import { HOOK } from './dom-hooks.js';
-import { propLabel } from './model/fields.js';
+import { fieldLabel } from './model/fields.js';
 import {
   groupSummary,
   type InspectorProp,
@@ -45,8 +45,8 @@ export interface PropertiesState {
   readonly title: string;
   /** How a field reads its value: "Not bound", or its param or item field. */
   readonly bindingOf: (prop: InspectorProp) => string;
-  /** A field's Bind page (KF-FN28S3), or none for a field the node lacks. */
-  readonly bindPage: (name: string) => SafeHtml | undefined;
+  /** A field's Bind page (KF-FN28S3). */
+  readonly bindPage: (prop: InspectorProp) => SafeHtml;
   /** What a group's page holds after its fields, such as data attributes. */
   readonly extra?: {
     readonly group: string;
@@ -79,7 +79,7 @@ function groupRow(
       : props,
     state.values,
     state.problems,
-    propLabel,
+    fieldLabel,
   );
   const status = problemCount(problems);
   return (
@@ -113,7 +113,7 @@ function bindSection(
     <ListHeader label="Bindings" size="xs" />,
     <List rootAttributes={{ 'data-editor-bind-rows': path.join('/') }}>
       {props.map((prop) => {
-        const label = propLabel(prop.name);
+        const label = fieldLabel(prop);
         const binding = state.bindingOf(prop);
         return (
           <ListItem
@@ -232,7 +232,7 @@ function allPropertiesPage(
       const props = subgroup.props.filter((prop) =>
         matchesQuery(
           prop,
-          propLabel(prop.name),
+          fieldLabel(prop),
           [group.title, subgroup.title ?? ''],
           query,
         ),
@@ -336,13 +336,16 @@ export function propertiesPages(
   const name = step?.startsWith(BIND_STEP)
     ? step.slice(BIND_STEP.length)
     : undefined;
-  const bind = name === undefined ? undefined : state.bindPage(name);
-  if (bind)
+  // A field the node lacks (a path kept past its node) opens no page.
+  const prop = state.groups
+    .flatMap((group) => group.props)
+    .find((item) => item.name === name);
+  if (prop)
     pages.push(
       page(
         path.slice(0, path.length - rest.length + 1),
-        bind,
-        `Bind ${propLabel(name!)}`,
+        state.bindPage(prop),
+        `Bind ${fieldLabel(prop)}`,
       ),
     );
   return pages;

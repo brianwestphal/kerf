@@ -147,7 +147,9 @@ describe('the editor shell', () => {
       kind: 'node',
       id: '01JB8Z1M6Q8E1X9V4S7K2R3T5D',
     });
-    expect(root.textContent).toContain('composeButton · Button');
+    expect(
+      root.querySelector<HTMLInputElement>('[data-editor-name] input')?.value,
+    ).toBe('composeButton');
     expect(
       field(root, '[data-editor-prop="tone"]')?.getAttribute('value'),
     ).toBe('brand');

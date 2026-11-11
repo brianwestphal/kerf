@@ -44,8 +44,8 @@ import {
 import {
   appParamFor,
   fieldEditorKind,
+  fieldLabel,
   isAppSupplied,
-  propLabel,
 } from './model/fields.js';
 import type { InspectorProp } from './model/inspector.js';
 import { inspectorSections, propertiesGroups } from './model/inspector.js';
@@ -177,7 +177,7 @@ export function createNodeInspectorViews(
           kind: 'edit',
           row: (
             <TextField
-              label={`${propLabel(prop.name)} param`}
+              label={`${fieldLabel(prop)} param`}
               value={param}
               hint="Renaming the param updates every prop that uses it."
               error={fieldErrors.value[`#param:${param}`]}
@@ -189,7 +189,7 @@ export function createNodeInspectorViews(
         kind: 'fixed',
         row: (
           <ValueTableRow
-            label={propLabel(prop.name)}
+            label={fieldLabel(prop)}
             value={
               inspectorSections(node, {
                 ...entry,
@@ -356,7 +356,7 @@ export function createNodeInspectorViews(
                 controlFor(prop, value, definitionsOf(node.type)).kind ===
                 'icon'
                   ? propControl(prop, value, node.type)!
-                  : configureRow(propLabel(prop.name), value, {
+                  : configureRow(fieldLabel(prop), value, {
                       prop: prop.name,
                       path: [],
                     }),
@@ -372,10 +372,10 @@ export function createNodeInspectorViews(
               kind: 'open',
               row: (
                 <ListItem
-                  label={propLabel(prop.name)}
+                  label={fieldLabel(prop)}
                   description="The app supplies it"
                   status="Promote to a param"
-                  accessibleLabel={`Promote ${propLabel(prop.name).toLowerCase()} to a param`}
+                  accessibleLabel={`Promote ${fieldLabel(prop).toLowerCase()} to a param`}
                   action={PROMOTE_PROP_ACTION}
                   trailing={
                     <LucideIcon icon={ChevronRight} name="chevron-right" />
@@ -406,7 +406,7 @@ export function createNodeInspectorViews(
               kind: 'edit' as const,
               row: (
                 <TextField
-                  label={`${propLabel(prop.name)} param`}
+                  label={`${fieldLabel(prop)} param`}
                   value={param}
                   hint="Renaming the param updates every prop that uses it."
                   error={fieldErrors.value[`#param:${param}`]}
@@ -421,7 +421,7 @@ export function createNodeInspectorViews(
             kind: 'fixed' as const,
             row: (
               <ValueTableRow
-                label={propLabel(prop.name)}
+                label={fieldLabel(prop)}
                 value={
                   inspectorSections(node, {
                     ...component,
@@ -447,15 +447,13 @@ export function createNodeInspectorViews(
       fieldsOf: (group, label) => inspectorRuns(rowsOf(group), label),
       title,
       bindingOf: (prop) => bindingSummary(props[prop.name]),
-      bindPage: (name) =>
-        groups.some((group) => group.props.some((prop) => prop.name === name))
-          ? bindPropPage(
-              ctx,
-              node,
-              name,
-              promotable.some((prop) => prop.name === name),
-            )
-          : undefined,
+      bindPage: (prop) =>
+        bindPropPage(
+          ctx,
+          node,
+          prop,
+          promotable.some((item) => item.name === prop.name),
+        ),
       ...(dataAttributes
         ? {
             extra: {
@@ -495,7 +493,12 @@ export function createNodeInspectorViews(
           <TextField
             label="Ref name"
             value={node.name ?? ''}
-            hint="A name makes the node a typed ref in the generated module."
+            // Help only until it has one; a bad name still shows its error.
+            hint={
+              node.name
+                ? undefined
+                : 'Name it to use it as a typed ref in code.'
+            }
             error={fieldErrors.value['#name']}
             rootAttributes={{ [HOOK.name]: 'true' }}
           />
@@ -583,9 +586,8 @@ export function createNodeInspectorViews(
       header: (
         <List>
           <ListHeader
-            label={node.name ? `${node.name} · ${title}` : title}
-            count={component.props.length}
-            countLabel="props"
+            // KF-HP1J4Z: the type reads whole; Ref name below holds its name.
+            label={title}
             // KF-QAVK73: copies the node right after itself (⌘D).
             action={DUPLICATE_ACTION}
             actionLabel="Duplicate"

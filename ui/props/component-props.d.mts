@@ -54,6 +54,9 @@ export interface PropDescriptor {
   cssValue?: { grammar: string; helpers?: string[]; rawPolicy?: string };
   control?: string;
   group?: string;
+  /** The task-facing name the Inspector shows (Button text). */
+  label?: string;
+  subgroup?: string;
   order?: number;
 }
 

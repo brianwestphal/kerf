@@ -247,6 +247,7 @@ import {
   appParamFor,
   containerFor,
   documentInDeclaredOrder,
+  fieldLabel,
   fieldZoneKeys,
   isFieldZoneKey,
   listMembers,
@@ -1321,7 +1322,7 @@ export function createEditor(options: EditorOptions) {
     return (
       <>
         <TextField
-          label={propLabel(prop.name)}
+          label={fieldLabel(prop)}
           value={content.text ?? ''}
           disabled
           hint={`Holds ${content.count} ${content.count === 1 ? 'node' : 'nodes'}; select ${content.count === 1 ? 'it' : 'them'} in the outline.`}

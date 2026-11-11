@@ -220,6 +220,16 @@ const SPELLED: Readonly<Record<string, string>> = {
 };
 
 /**
+ * The name the Inspector shows for a prop: its catalog's task-facing label
+ * (KF-HP1J4Z: Button's `children` reads "Button text"), else `propLabel`.
+ * Search still finds it by its API name.
+ */
+export const fieldLabel = (prop: {
+  readonly name: string;
+  readonly label?: string;
+}) => prop.label ?? propLabel(prop.name);
+
+/**
  * The label a field shows for a prop or field name (KF-7M4XQR): its camelCase
  * words in sentence case, so `controlInsets` reads "Control insets", `hAlign`
  * "Horizontal align", and `ariaLabel` "ARIA label".
