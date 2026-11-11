@@ -49,6 +49,7 @@ describe(
         options: [
           'full',
           'release-artifacts',
+          'dependency-variations',
           'browser-apt',
           'pure-wasi',
           'local-peer',
@@ -92,6 +93,9 @@ describe(
             'stable-plan',
             'bundled-dependency',
             'library-performance',
+            // KF-1EH00H: these also run for `dependency-variations`.
+            'eslint-plugin',
+            'ui-webawesome-latest',
           ].includes(name)
         )
           expect(job.if).toBe("${{ inputs.scope == 'full' }}");
@@ -229,6 +233,18 @@ describe(
           step.run?.startsWith('bun add --no-save'),
         );
         expect(step.run).toContain('bun pm ls --all');
+        // KF-1EH00H: the lock's view is named as such, and the physical
+        // graph plus the runtime version are recorded from disk.
+        expect(step.run).toContain(`${name}-final-lock-view.txt`);
+        expect(step.run).not.toContain('final-packages.txt');
+        expect(step.run).toContain(
+          `scripts/bun-installed-inventory.mjs" . "$BUN_QUALIFICATION_EVIDENCE/${name}-final-installed.json" --expect `,
+        );
+        expect(step.run).toContain(
+          name === 'eslint-plugin'
+            ? '--expect eslint@${{ matrix.eslint }}'
+            : '--expect @awesome.me/webawesome@^3',
+        );
         expect(step.run).toContain(`${name}-final.bun.lock`);
         expect(step.run).toContain(`${name}-final-package.json`);
         if (name === 'ui-webawesome-latest')
@@ -236,6 +252,18 @@ describe(
             step.run.indexOf('vitest.mjs run'),
           );
       }
+    });
+
+    it('reruns only the dependency-variation lanes for their own scope', () => {
+      const candidate = candidateFrom(source);
+      expect(candidate.on.workflow_dispatch.inputs.scope.options).toContain(
+        'dependency-variations',
+      );
+      for (const name of ['eslint-plugin', 'ui-webawesome-latest'])
+        expect(candidate.jobs[name].if).toContain(
+          "inputs.scope == 'dependency-variations'",
+        );
+      expect(candidate.jobs.test.if).not.toContain('dependency-variations');
     });
 
     it('rejects a new unreviewed npm installer instead of silently qualifying it', () => {

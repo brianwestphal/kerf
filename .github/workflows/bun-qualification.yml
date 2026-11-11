@@ -14,6 +14,7 @@ on:
         options:
           - full
           - release-artifacts
+          - dependency-variations
           - browser-apt
           - pure-wasi
           - local-peer
@@ -251,7 +252,7 @@ jobs:
         run: npm install --global bun@1.4.4
       - run: node "$GITHUB_WORKSPACE/scripts/bun-candidate-install.mjs" eslint-plugin
       - run: npm run lint
-      - run: bun add --no-save eslint@${{ matrix.eslint }} && bun pm ls --all > "$BUN_QUALIFICATION_EVIDENCE/eslint-plugin-final-packages.txt" && cp bun.lock "$BUN_QUALIFICATION_EVIDENCE/eslint-plugin-final.bun.lock" && cp package.json "$BUN_QUALIFICATION_EVIDENCE/eslint-plugin-final-package.json"
+      - run: bun add --no-save eslint@${{ matrix.eslint }} && bun pm ls --all > "$BUN_QUALIFICATION_EVIDENCE/eslint-plugin-final-lock-view.txt" && node "$GITHUB_WORKSPACE/scripts/bun-installed-inventory.mjs" . "$BUN_QUALIFICATION_EVIDENCE/eslint-plugin-final-installed.json" --expect eslint@${{ matrix.eslint }} && cp bun.lock "$BUN_QUALIFICATION_EVIDENCE/eslint-plugin-final.bun.lock" && cp package.json "$BUN_QUALIFICATION_EVIDENCE/eslint-plugin-final-package.json"
       - run: node -e "console.log('eslint', require('eslint').ESLint.version)"
       - run: npm run check
       - name: Retain exact candidate locks and input manifests
@@ -261,7 +262,7 @@ jobs:
           name: candidate-${{ github.job }}-${{ strategy.job-index }}-${{ github.sha }}
           path: ${{ env.BUN_QUALIFICATION_EVIDENCE }}
           if-no-files-found: warn
-    if: ${{ inputs.scope == 'full' }}
+    if: ${{ inputs.scope == 'full' || inputs.scope == 'dependency-variations' }}
   create-kerf-component:
     runs-on: ubuntu-24.04
     defaults:
@@ -548,7 +549,7 @@ jobs:
         timeout-minutes: 15
       - run: npm run build
       - name: Run the UI unit and Chromium suites against the newest Web Awesome 3.x
-        run: bun add --no-save @awesome.me/webawesome@^3 && bun pm ls --all > "$BUN_QUALIFICATION_EVIDENCE/ui-webawesome-latest-final-packages.txt" && cp bun.lock "$BUN_QUALIFICATION_EVIDENCE/ui-webawesome-latest-final.bun.lock" && cp package.json "$BUN_QUALIFICATION_EVIDENCE/ui-webawesome-latest-final-package.json" && node node_modules/vitest/vitest.mjs run tests/unit && KERF_WEBAWESOME_LATEST=1 node node_modules/playwright/cli.js test --project=chromium
+        run: bun add --no-save @awesome.me/webawesome@^3 && bun pm ls --all > "$BUN_QUALIFICATION_EVIDENCE/ui-webawesome-latest-final-lock-view.txt" && node "$GITHUB_WORKSPACE/scripts/bun-installed-inventory.mjs" . "$BUN_QUALIFICATION_EVIDENCE/ui-webawesome-latest-final-installed.json" --expect @awesome.me/webawesome@^3 && cp bun.lock "$BUN_QUALIFICATION_EVIDENCE/ui-webawesome-latest-final.bun.lock" && cp package.json "$BUN_QUALIFICATION_EVIDENCE/ui-webawesome-latest-final-package.json" && node node_modules/vitest/vitest.mjs run tests/unit && KERF_WEBAWESOME_LATEST=1 node node_modules/playwright/cli.js test --project=chromium
       - name: Upload Web Awesome browser failure evidence
         if: failure()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
@@ -567,7 +568,7 @@ jobs:
           name: candidate-${{ github.job }}-${{ strategy.job-index }}-${{ github.sha }}
           path: ${{ env.BUN_QUALIFICATION_EVIDENCE }}
           if-no-files-found: warn
-    if: ${{ inputs.scope == 'full' }}
+    if: ${{ inputs.scope == 'full' || inputs.scope == 'dependency-variations' }}
   design-templates:
     runs-on: macos-latest
     defaults:

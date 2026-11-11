@@ -34,8 +34,12 @@ export function qualificationWorkflow(source) {
   );
 
   for (const [name, job] of Object.entries(jobs)) {
-    const recordVariation =
-      `bun pm ls --all > "$BUN_QUALIFICATION_EVIDENCE/${name}-final-packages.txt" && ` +
+    // KF-1EH00H: `bun pm ls` reads the lock, which a `--no-save` add leaves
+    // behind, so it is kept as the lock's view; the physical graph and the
+    // version Node actually resolves come from the installed tree itself.
+    const recordVariation = (expect) =>
+      `bun pm ls --all > "$BUN_QUALIFICATION_EVIDENCE/${name}-final-lock-view.txt" && ` +
+      `node "$GITHUB_WORKSPACE/scripts/bun-installed-inventory.mjs" . "$BUN_QUALIFICATION_EVIDENCE/${name}-final-installed.json" --expect ${expect} && ` +
       `cp bun.lock "$BUN_QUALIFICATION_EVIDENCE/${name}-final.bun.lock" && ` +
       `cp package.json "$BUN_QUALIFICATION_EVIDENCE/${name}-final-package.json"`;
     if (job['runs-on'] === 'ubuntu-latest') job['runs-on'] = 'ubuntu-24.04';
@@ -67,10 +71,10 @@ export function qualificationWorkflow(source) {
         'bun add --no-save eslint@',
       );
       if (step.run.startsWith('bun add --no-save eslint@'))
-        step.run += ` && ${recordVariation}`;
+        step.run += ` && ${recordVariation('eslint@${{ matrix.eslint }}')}`;
       if (step.run === 'npm run test:webawesome-latest') {
         step.run =
-          `bun add --no-save @awesome.me/webawesome@^3 && ${recordVariation} && ` +
+          `bun add --no-save @awesome.me/webawesome@^3 && ${recordVariation('@awesome.me/webawesome@^3')} && ` +
           'node node_modules/vitest/vitest.mjs run tests/unit && KERF_WEBAWESOME_LATEST=1 node node_modules/playwright/cli.js test --project=chromium';
       }
       step.run = step.run.replaceAll(
@@ -275,10 +279,13 @@ JS`,
       ].includes(name)
     )
       continue;
+    // KF-1EH00H: the dependency-variation lanes rerun on their own.
     const scope =
       name === 'release-artifacts'
         ? "inputs.scope == 'full' || inputs.scope == 'release-artifacts'"
-        : "inputs.scope == 'full'";
+        : name === 'eslint-plugin' || name === 'ui-webawesome-latest'
+          ? "inputs.scope == 'full' || inputs.scope == 'dependency-variations'"
+          : "inputs.scope == 'full'";
     let prior = job.if;
     if (typeof prior === 'string') {
       prior = prior.trim();
@@ -308,6 +315,7 @@ JS`,
             options: [
               'full',
               'release-artifacts',
+              'dependency-variations',
               'browser-apt',
               'pure-wasi',
               'local-peer',
