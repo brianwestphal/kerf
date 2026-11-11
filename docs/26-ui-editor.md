@@ -306,6 +306,9 @@ and State, Link, Form, and Popup (Behavior); TextField's Optional controls
 Workbench's Main, Left rail, Right rail, and Bottom drawer (Layout), each
 region keeping its toolbar, header, footer, and placement fields together,
 and its Work area (Accessibility) apart from the component's own label. Every
+Kerf component's catalog entry names the family of each visible prop
+(KF-DXTRPR: catalog-wide curation), so the name fallback below serves only
+Web Awesome entries and custom catalogs. Every
 prop has exactly one place. The overlay's `group` and `subgroup` place a prop
 (`docs/21-ui-package.md`); an older group name reads as a family and subgroup
 (`State` is Behavior › State); a prop no catalog places takes a family from its

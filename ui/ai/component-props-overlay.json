@@ -2,6 +2,126 @@
   "$schema": "./component-props-overlay.schema.json",
   "description": "Curated additions to the generated component-props.json for what types cannot express: inspector control hints, grouping, and order. Every key must name a generated component and prop; npm run props:sync fails otherwise.",
   "components": {
+    "@kerfjs/ui:backdrop-image": {
+      "groups": [
+        "Content",
+        "Appearance",
+        "Behavior",
+        "Layout",
+        "Accessibility",
+        "Integration"
+      ],
+      "props": {
+        "repeat": {
+          "group": "Appearance",
+          "subgroup": "Image fit"
+        },
+        "srcset": {
+          "group": "Content",
+          "subgroup": "Image"
+        },
+        "sizes": {
+          "group": "Content",
+          "subgroup": "Image"
+        },
+        "fit": {
+          "group": "Appearance",
+          "subgroup": "Image fit"
+        },
+        "src": {
+          "group": "Content",
+          "subgroup": "Image"
+        },
+        "alt": {
+          "group": "Accessibility"
+        },
+        "position": {
+          "group": "Appearance",
+          "subgroup": "Image fit"
+        },
+        "height": {
+          "group": "Layout"
+        },
+        "aspectRatio": {
+          "group": "Layout"
+        },
+        "loading": {
+          "group": "Behavior"
+        },
+        "bleedInline": {
+          "group": "Layout"
+        },
+        "parallax": {
+          "group": "Appearance",
+          "subgroup": "Effects"
+        },
+        "fadeTo": {
+          "group": "Appearance",
+          "subgroup": "Effects"
+        },
+        "blur": {
+          "group": "Appearance",
+          "subgroup": "Effects"
+        },
+        "deferOffscreen": {
+          "group": "Behavior"
+        },
+        "underChrome": {
+          "group": "Layout"
+        },
+        "scrim": {
+          "group": "Appearance",
+          "subgroup": "Effects"
+        },
+        "overlay": {
+          "group": "Content"
+        },
+        "children": {
+          "group": "Content"
+        },
+        "id": {
+          "group": "Integration"
+        }
+      }
+    },
+    "@kerfjs/ui:badge": {
+      "groups": ["Content", "Appearance", "Layout", "Accessibility"],
+      "props": {
+        "children": {
+          "group": "Content"
+        },
+        "icon": {
+          "group": "Content"
+        },
+        "appearance": {
+          "group": "Appearance"
+        },
+        "shape": {
+          "group": "Appearance"
+        },
+        "size": {
+          "group": "Appearance"
+        },
+        "maxWidth": {
+          "group": "Layout"
+        },
+        "label": {
+          "group": "Accessibility"
+        },
+        "ariaHidden": {
+          "group": "Accessibility"
+        },
+        "tone": {
+          "group": "Appearance"
+        },
+        "placement": {
+          "group": "Layout"
+        },
+        "title": {
+          "group": "Accessibility"
+        }
+      }
+    },
     "@kerfjs/ui:button": {
       "groups": [
         "Content",
@@ -164,7 +284,7 @@
       }
     },
     "@kerfjs/ui:checkbox": {
-      "groups": ["Content", "State"],
+      "groups": ["Content", "Appearance", "Behavior", "Integration"],
       "props": {
         "label": {
           "group": "Content",
@@ -175,49 +295,841 @@
           "order": 2
         },
         "error": {
-          "group": "Content",
+          "group": "Behavior",
+          "subgroup": "Validation",
           "order": 3
         },
         "name": {
-          "group": "Content",
+          "group": "Behavior",
+          "subgroup": "Form",
           "order": 4
         },
         "action": {
-          "group": "Content",
+          "group": "Behavior",
           "order": 5
         },
         "checked": {
-          "group": "State",
+          "group": "Behavior",
+          "subgroup": "State",
           "order": 1
         },
         "indeterminate": {
-          "group": "State",
+          "group": "Behavior",
+          "subgroup": "State",
           "order": 2
         },
         "required": {
-          "group": "State",
+          "group": "Behavior",
+          "subgroup": "Validation",
           "order": 3
         },
         "size": {
-          "group": "State",
+          "group": "Appearance",
           "order": 4,
           "control": "segmented"
         },
         "disabled": {
-          "group": "State",
+          "group": "Behavior",
+          "subgroup": "State",
           "order": 5
+        },
+        "value": {
+          "group": "Behavior",
+          "subgroup": "Form"
+        },
+        "form": {
+          "group": "Behavior",
+          "subgroup": "Form"
+        },
+        "id": {
+          "group": "Integration"
+        }
+      }
+    },
+    "@kerfjs/ui:checkbox-group": {
+      "groups": [
+        "Content",
+        "Appearance",
+        "Behavior",
+        "Layout",
+        "Accessibility",
+        "Integration"
+      ],
+      "props": {
+        "label": {
+          "group": "Content"
+        },
+        "ariaLabel": {
+          "group": "Accessibility"
+        },
+        "labelledBy": {
+          "group": "Accessibility"
+        },
+        "name": {
+          "group": "Behavior",
+          "subgroup": "Form"
+        },
+        "choices": {
+          "group": "Content"
+        },
+        "value": {
+          "group": "Behavior"
+        },
+        "hint": {
+          "group": "Content"
+        },
+        "error": {
+          "group": "Behavior"
+        },
+        "size": {
+          "group": "Appearance"
+        },
+        "orientation": {
+          "group": "Layout"
+        },
+        "disabled": {
+          "group": "Behavior"
+        },
+        "action": {
+          "group": "Behavior"
+        },
+        "form": {
+          "group": "Behavior",
+          "subgroup": "Form"
+        },
+        "id": {
+          "group": "Integration"
+        }
+      }
+    },
+    "@kerfjs/ui:chip": {
+      "groups": [
+        "Content",
+        "Appearance",
+        "Behavior",
+        "Layout",
+        "Accessibility",
+        "Integration"
+      ],
+      "props": {
+        "icon": {
+          "group": "Content"
+        },
+        "tone": {
+          "group": "Appearance"
+        },
+        "appearance": {
+          "group": "Appearance"
+        },
+        "shape": {
+          "group": "Appearance"
+        },
+        "size": {
+          "group": "Appearance"
+        },
+        "disabled": {
+          "group": "Behavior"
+        },
+        "itemId": {
+          "group": "Integration"
+        },
+        "children": {
+          "group": "Content"
+        },
+        "truncate": {
+          "group": "Layout"
+        },
+        "removeAction": {
+          "group": "Behavior"
+        },
+        "removeLabel": {
+          "group": "Accessibility"
+        },
+        "href": {
+          "group": "Behavior",
+          "subgroup": "Link"
+        },
+        "download": {
+          "group": "Behavior",
+          "subgroup": "Link"
+        },
+        "external": {
+          "group": "Behavior",
+          "subgroup": "Link"
+        },
+        "action": {
+          "group": "Behavior"
+        },
+        "actionLabel": {
+          "group": "Accessibility"
+        }
+      }
+    },
+    "@kerfjs/ui:choice-chips": {
+      "groups": [
+        "Content",
+        "Appearance",
+        "Behavior",
+        "Layout",
+        "Accessibility",
+        "Integration"
+      ],
+      "props": {
+        "name": {
+          "group": "Behavior",
+          "subgroup": "Form"
+        },
+        "choices": {
+          "group": "Content"
+        },
+        "action": {
+          "group": "Behavior"
+        },
+        "size": {
+          "group": "Appearance"
+        },
+        "presentation": {
+          "group": "Appearance"
+        },
+        "maxHeight": {
+          "group": "Layout"
+        },
+        "overflow": {
+          "group": "Layout"
+        },
+        "disabled": {
+          "group": "Behavior"
+        },
+        "form": {
+          "group": "Behavior",
+          "subgroup": "Form"
+        },
+        "id": {
+          "group": "Integration"
+        },
+        "multiple": {
+          "group": "Behavior"
+        },
+        "value": {
+          "group": "Behavior"
+        },
+        "required": {
+          "group": "Behavior"
+        },
+        "label": {
+          "group": "Content"
+        },
+        "labelledBy": {
+          "group": "Accessibility"
+        }
+      }
+    },
+    "@kerfjs/ui:collapsible-panel": {
+      "groups": [
+        "Content",
+        "Appearance",
+        "Behavior",
+        "Layout",
+        "Accessibility",
+        "Integration"
+      ],
+      "props": {
+        "id": {
+          "group": "Integration"
+        },
+        "side": {
+          "group": "Layout"
+        },
+        "collapsed": {
+          "group": "Behavior"
+        },
+        "size": {
+          "group": "Layout"
+        },
+        "label": {
+          "group": "Accessibility"
+        },
+        "tabIndex": {
+          "group": "Accessibility"
+        },
+        "outlined": {
+          "group": "Accessibility"
+        },
+        "children": {
+          "group": "Content"
+        },
+        "toolbar": {
+          "group": "Layout",
+          "subgroup": "Top chrome"
+        },
+        "header": {
+          "group": "Layout",
+          "subgroup": "Top chrome"
+        },
+        "headerList": {
+          "group": "Layout",
+          "subgroup": "Top chrome"
+        },
+        "headerPlacement": {
+          "group": "Layout",
+          "subgroup": "Top chrome"
+        },
+        "footer": {
+          "group": "Layout",
+          "subgroup": "Bottom chrome"
+        },
+        "footerList": {
+          "group": "Layout",
+          "subgroup": "Bottom chrome"
+        },
+        "bottomToolbar": {
+          "group": "Layout",
+          "subgroup": "Bottom chrome"
+        },
+        "footerPlacement": {
+          "group": "Layout",
+          "subgroup": "Bottom chrome"
+        },
+        "pane": {
+          "group": "Layout"
+        },
+        "separator": {
+          "group": "Appearance"
+        },
+        "collapseMotion": {
+          "group": "Behavior"
+        },
+        "contentOverflow": {
+          "group": "Layout"
+        },
+        "presentation": {
+          "group": "Layout"
+        },
+        "restoreControl": {
+          "group": "Behavior"
+        },
+        "restorePosition": {
+          "group": "Behavior"
+        }
+      }
+    },
+    "@kerfjs/ui:collapsible-panel#CollapsiblePanelRelocated": {
+      "groups": ["Content", "Appearance", "Behavior", "Layout"],
+      "props": {
+        "panelId": {
+          "group": "Behavior"
+        },
+        "side": {
+          "group": "Layout"
+        },
+        "collapsed": {
+          "group": "Behavior"
+        },
+        "toolbar": {
+          "group": "Content"
+        },
+        "density": {
+          "group": "Appearance"
+        }
+      }
+    },
+    "@kerfjs/ui:collapsible-panel#CollapsiblePanelToggle": {
+      "groups": ["Behavior", "Layout", "Accessibility"],
+      "props": {
+        "side": {
+          "group": "Layout"
+        },
+        "collapsed": {
+          "group": "Behavior"
+        },
+        "action": {
+          "group": "Behavior"
+        },
+        "panelId": {
+          "group": "Behavior"
+        },
+        "label": {
+          "group": "Accessibility"
+        }
+      }
+    },
+    "@kerfjs/ui:color-field": {
+      "groups": [
+        "Content",
+        "Appearance",
+        "Behavior",
+        "Accessibility",
+        "Integration"
+      ],
+      "props": {
+        "id": {
+          "group": "Integration"
+        },
+        "value": {
+          "group": "Behavior"
+        },
+        "mode": {
+          "group": "Behavior"
+        },
+        "alpha": {
+          "group": "Behavior"
+        },
+        "name": {
+          "group": "Behavior",
+          "subgroup": "Form"
+        },
+        "form": {
+          "group": "Behavior",
+          "subgroup": "Form"
+        },
+        "hint": {
+          "group": "Content"
+        },
+        "error": {
+          "group": "Behavior",
+          "subgroup": "Validation"
+        },
+        "size": {
+          "group": "Appearance"
+        },
+        "disabled": {
+          "group": "Behavior"
+        },
+        "required": {
+          "group": "Behavior",
+          "subgroup": "Validation"
+        },
+        "label": {
+          "group": "Content"
+        },
+        "ariaLabel": {
+          "group": "Accessibility"
+        }
+      }
+    },
+    "@kerfjs/ui:color-picker": {
+      "groups": ["Content", "Behavior", "Accessibility", "Integration"],
+      "props": {
+        "id": {
+          "group": "Integration"
+        },
+        "label": {
+          "group": "Accessibility"
+        },
+        "value": {
+          "group": "Behavior"
+        },
+        "mode": {
+          "group": "Behavior"
+        },
+        "alpha": {
+          "group": "Behavior"
+        },
+        "name": {
+          "group": "Behavior",
+          "subgroup": "Form"
+        },
+        "form": {
+          "group": "Behavior",
+          "subgroup": "Form"
+        },
+        "eyedropper": {
+          "group": "Behavior"
+        },
+        "presets": {
+          "group": "Content"
+        },
+        "samples": {
+          "group": "Content"
+        },
+        "addSampleAction": {
+          "group": "Behavior"
+        },
+        "disabled": {
+          "group": "Behavior"
         }
       }
     },
     "@kerfjs/ui:color-swatches": {
+      "groups": [
+        "Content",
+        "Appearance",
+        "Behavior",
+        "Accessibility",
+        "Integration"
+      ],
       "props": {
         "value": {
+          "group": "Behavior",
           "choicesFrom": "swatches"
+        },
+        "name": {
+          "group": "Behavior"
+        },
+        "swatches": {
+          "group": "Content"
+        },
+        "size": {
+          "group": "Appearance"
+        },
+        "disabled": {
+          "group": "Behavior"
+        },
+        "action": {
+          "group": "Behavior"
+        },
+        "form": {
+          "group": "Behavior"
+        },
+        "id": {
+          "group": "Integration"
+        },
+        "label": {
+          "group": "Content"
+        },
+        "ariaLabel": {
+          "group": "Accessibility"
+        }
+      }
+    },
+    "@kerfjs/ui:column-explorer": {
+      "groups": [
+        "Content",
+        "Appearance",
+        "Behavior",
+        "Layout",
+        "Accessibility",
+        "Integration"
+      ],
+      "props": {
+        "id": {
+          "group": "Integration"
+        },
+        "label": {
+          "group": "Accessibility"
+        },
+        "nodes": {
+          "group": "Content"
+        },
+        "path": {
+          "group": "Behavior"
+        },
+        "action": {
+          "group": "Behavior"
+        },
+        "preview": {
+          "group": "Content"
+        },
+        "layout": {
+          "group": "Layout"
+        },
+        "inset": {
+          "group": "Layout"
+        },
+        "minColumnWidth": {
+          "group": "Layout"
+        },
+        "peek": {
+          "group": "Layout"
+        },
+        "rootHeading": {
+          "group": "Content"
+        },
+        "density": {
+          "group": "Appearance"
+        }
+      }
+    },
+    "@kerfjs/ui:column-track": {
+      "groups": ["Content", "Layout", "Accessibility", "Integration"],
+      "props": {
+        "children": {
+          "group": "Content"
+        },
+        "layout": {
+          "group": "Layout"
+        },
+        "inset": {
+          "group": "Layout"
+        },
+        "minColumnWidth": {
+          "group": "Layout"
+        },
+        "peek": {
+          "group": "Layout"
+        },
+        "ariaLabel": {
+          "group": "Accessibility"
+        },
+        "id": {
+          "group": "Integration"
+        }
+      }
+    },
+    "@kerfjs/ui:combobox": {
+      "groups": ["Content", "Behavior", "Integration"],
+      "props": {
+        "id": {
+          "group": "Integration"
+        },
+        "label": {
+          "group": "Content"
+        },
+        "suggestions": {
+          "group": "Content"
+        },
+        "value": {
+          "group": "Behavior"
+        },
+        "placeholder": {
+          "group": "Content"
+        },
+        "hint": {
+          "group": "Content"
+        },
+        "name": {
+          "group": "Behavior"
+        },
+        "createLabel": {
+          "group": "Behavior"
+        },
+        "disabled": {
+          "group": "Behavior"
+        }
+      }
+    },
+    "@kerfjs/ui:content-item": {
+      "groups": [
+        "Content",
+        "Appearance",
+        "Behavior",
+        "Layout",
+        "Accessibility",
+        "Integration"
+      ],
+      "props": {
+        "appearance": {
+          "group": "Appearance"
+        },
+        "media": {
+          "group": "Content"
+        },
+        "tint": {
+          "group": "Appearance",
+          "subgroup": "Surface"
+        },
+        "scheme": {
+          "group": "Appearance",
+          "subgroup": "Surface"
+        },
+        "children": {
+          "group": "Content"
+        },
+        "frame": {
+          "group": "Appearance"
+        },
+        "flush": {
+          "group": "Appearance"
+        },
+        "shape": {
+          "group": "Appearance"
+        },
+        "bubble": {
+          "group": "Layout"
+        },
+        "title": {
+          "group": "Accessibility"
+        },
+        "ariaLabel": {
+          "group": "Accessibility"
+        },
+        "focusTarget": {
+          "group": "Accessibility"
+        },
+        "outlined": {
+          "group": "Accessibility"
+        },
+        "interactive": {
+          "group": "Behavior"
+        },
+        "action": {
+          "group": "Behavior"
+        },
+        "itemId": {
+          "group": "Integration"
+        },
+        "selectionMode": {
+          "group": "Behavior"
+        },
+        "selected": {
+          "group": "Behavior"
+        },
+        "disabled": {
+          "group": "Behavior"
+        },
+        "tabIndex": {
+          "group": "Accessibility"
+        },
+        "gridRow": {
+          "group": "Accessibility"
+        }
+      }
+    },
+    "@kerfjs/ui:content-swap": {
+      "groups": ["Content", "Behavior", "Layout", "Accessibility"],
+      "props": {
+        "active": {
+          "group": "Behavior"
+        },
+        "a": {
+          "group": "Content"
+        },
+        "b": {
+          "group": "Content"
+        },
+        "transition": {
+          "group": "Behavior"
+        },
+        "direction": {
+          "group": "Behavior"
+        },
+        "label": {
+          "group": "Accessibility"
+        },
+        "fill": {
+          "group": "Layout"
+        }
+      }
+    },
+    "@kerfjs/ui:corner-status": {
+      "groups": ["Content", "Appearance", "Layout", "Integration"],
+      "props": {
+        "id": {
+          "group": "Integration"
+        },
+        "children": {
+          "group": "Content"
+        },
+        "placement": {
+          "group": "Layout"
+        },
+        "presentation": {
+          "group": "Appearance"
+        }
+      }
+    },
+    "@kerfjs/ui:disclosure": {
+      "groups": ["Content", "Appearance", "Behavior", "Integration"],
+      "props": {
+        "title": {
+          "group": "Content"
+        },
+        "detail": {
+          "group": "Content"
+        },
+        "children": {
+          "group": "Content"
+        },
+        "open": {
+          "group": "Behavior"
+        },
+        "name": {
+          "group": "Behavior"
+        },
+        "appearance": {
+          "group": "Appearance"
+        },
+        "toggleAction": {
+          "group": "Behavior"
+        },
+        "id": {
+          "group": "Integration"
+        }
+      }
+    },
+    "@kerfjs/ui:disclosure-arrow": {
+      "groups": ["Content", "Appearance", "Behavior"],
+      "props": {
+        "open": {
+          "group": "Behavior"
+        },
+        "openDirection": {
+          "group": "Appearance"
+        },
+        "closedDirection": {
+          "group": "Appearance"
+        },
+        "icon": {
+          "group": "Content"
+        },
+        "size": {
+          "group": "Appearance"
+        }
+      }
+    },
+    "@kerfjs/ui:edge-activity-indicator": {
+      "groups": ["Content", "Appearance", "Behavior", "Layout"],
+      "props": {
+        "busy": {
+          "group": "Behavior"
+        },
+        "message": {
+          "group": "Content"
+        },
+        "tone": {
+          "group": "Appearance"
+        },
+        "inset": {
+          "group": "Layout"
+        }
+      }
+    },
+    "@kerfjs/ui:editor-frame": {
+      "groups": [
+        "Content",
+        "Appearance",
+        "Behavior",
+        "Layout",
+        "Accessibility"
+      ],
+      "props": {
+        "toolbar": {
+          "group": "Content"
+        },
+        "children": {
+          "group": "Content"
+        },
+        "mode": {
+          "group": "Behavior"
+        },
+        "appearance": {
+          "group": "Appearance"
+        },
+        "inset": {
+          "group": "Layout"
+        },
+        "expanded": {
+          "group": "Behavior"
+        },
+        "height": {
+          "group": "Layout"
+        },
+        "maxWidth": {
+          "group": "Layout"
+        },
+        "sourceHeight": {
+          "group": "Layout"
+        },
+        "sourceAutosize": {
+          "group": "Layout"
+        },
+        "label": {
+          "group": "Accessibility"
         }
       }
     },
     "@kerfjs/ui:empty-state": {
-      "groups": ["Content", "State"],
+      "groups": ["Content", "Behavior"],
       "props": {
         "title": {
           "group": "Content",
@@ -229,20 +1141,264 @@
           "control": "textarea"
         },
         "busy": {
-          "group": "State",
+          "group": "Behavior",
           "order": 1
         }
       }
     },
+    "@kerfjs/ui:file-picker": {
+      "groups": [
+        "Content",
+        "Appearance",
+        "Behavior",
+        "Accessibility",
+        "Integration"
+      ],
+      "props": {
+        "label": {
+          "group": "Content"
+        },
+        "accessibleLabel": {
+          "group": "Accessibility"
+        },
+        "icon": {
+          "group": "Content"
+        },
+        "tone": {
+          "group": "Appearance"
+        },
+        "emphasis": {
+          "group": "Appearance"
+        },
+        "size": {
+          "group": "Appearance"
+        },
+        "accept": {
+          "group": "Behavior"
+        },
+        "multiple": {
+          "group": "Behavior"
+        },
+        "name": {
+          "group": "Behavior"
+        },
+        "pickerId": {
+          "group": "Integration"
+        },
+        "disabled": {
+          "group": "Behavior"
+        }
+      }
+    },
+    "@kerfjs/ui:file-picker#FileDropZone": {
+      "groups": ["Content", "Behavior", "Accessibility", "Integration"],
+      "props": {
+        "title": {
+          "group": "Content"
+        },
+        "detail": {
+          "group": "Content"
+        },
+        "icon": {
+          "group": "Content"
+        },
+        "accessibleLabel": {
+          "group": "Accessibility"
+        },
+        "dropScope": {
+          "group": "Behavior"
+        },
+        "accept": {
+          "group": "Behavior"
+        },
+        "multiple": {
+          "group": "Behavior"
+        },
+        "name": {
+          "group": "Behavior"
+        },
+        "pickerId": {
+          "group": "Integration"
+        },
+        "disabled": {
+          "group": "Behavior"
+        }
+      }
+    },
+    "@kerfjs/ui:floating-toolbar": {
+      "groups": ["Content", "Layout", "Accessibility"],
+      "props": {
+        "children": {
+          "group": "Content"
+        },
+        "label": {
+          "group": "Accessibility"
+        },
+        "position": {
+          "group": "Layout"
+        },
+        "placement": {
+          "group": "Layout"
+        },
+        "inset": {
+          "group": "Layout"
+        },
+        "safeAreaInsets": {
+          "group": "Layout"
+        }
+      }
+    },
+    "@kerfjs/ui:form": {
+      "groups": ["Content", "Behavior", "Accessibility", "Integration"],
+      "props": {
+        "id": {
+          "group": "Integration"
+        },
+        "name": {
+          "group": "Behavior"
+        },
+        "action": {
+          "group": "Behavior"
+        },
+        "labelledBy": {
+          "group": "Accessibility"
+        },
+        "ariaLabel": {
+          "group": "Accessibility"
+        },
+        "describedBy": {
+          "group": "Accessibility"
+        },
+        "noValidate": {
+          "group": "Behavior"
+        },
+        "children": {
+          "group": "Content"
+        }
+      }
+    },
+    "@kerfjs/ui:framed-list": {
+      "groups": ["Content", "Appearance", "Accessibility", "Integration"],
+      "props": {
+        "children": {
+          "group": "Content"
+        },
+        "label": {
+          "group": "Accessibility"
+        },
+        "surface": {
+          "group": "Appearance"
+        },
+        "id": {
+          "group": "Integration"
+        }
+      }
+    },
+    "@kerfjs/ui:framed-list#FramedListRow": {
+      "groups": ["Content", "Appearance", "Integration"],
+      "props": {
+        "children": {
+          "group": "Content"
+        },
+        "highlighted": {
+          "group": "Appearance"
+        },
+        "id": {
+          "group": "Integration"
+        }
+      }
+    },
+    "@kerfjs/ui:gauge": {
+      "groups": ["Content", "Appearance", "Accessibility", "Integration"],
+      "props": {
+        "value": {
+          "group": "Content"
+        },
+        "max": {
+          "group": "Content"
+        },
+        "label": {
+          "group": "Accessibility"
+        },
+        "valueText": {
+          "group": "Content"
+        },
+        "unit": {
+          "group": "Content"
+        },
+        "variant": {
+          "group": "Appearance"
+        },
+        "tone": {
+          "group": "Appearance"
+        },
+        "size": {
+          "group": "Appearance"
+        },
+        "colors": {
+          "group": "Appearance"
+        },
+        "id": {
+          "group": "Integration"
+        }
+      }
+    },
+    "@kerfjs/ui:grid": {
+      "groups": ["Content", "Behavior", "Layout", "Accessibility"],
+      "props": {
+        "children": {
+          "group": "Content"
+        },
+        "selectionMode": {
+          "group": "Behavior"
+        },
+        "ariaLabel": {
+          "group": "Accessibility"
+        },
+        "gap": {
+          "group": "Layout"
+        },
+        "flex": {
+          "group": "Layout"
+        },
+        "fill": {
+          "group": "Layout"
+        },
+        "textInsets": {
+          "group": "Layout",
+          "subgroup": "Insets"
+        },
+        "controlInsets": {
+          "group": "Layout",
+          "subgroup": "Insets"
+        },
+        "columns": {
+          "group": "Layout"
+        },
+        "minColumnWidth": {
+          "group": "Layout"
+        },
+        "autoFill": {
+          "group": "Layout"
+        }
+      }
+    },
     "@kerfjs/ui:list": {
-      "groups": ["Content", "Layout", "Surface"],
+      "groups": [
+        "Content",
+        "Appearance",
+        "Behavior",
+        "Layout",
+        "Accessibility",
+        "Integration"
+      ],
       "props": {
         "ariaLabel": {
-          "group": "Content",
+          "group": "Accessibility",
           "order": 1
         },
         "selectionMode": {
-          "group": "Content",
+          "group": "Behavior",
           "order": 2
         },
         "gap": {
@@ -256,72 +1412,292 @@
         },
         "scrollable": {
           "group": "Layout",
+          "subgroup": "Scrolling",
           "order": 3
         },
         "hAlign": {
           "group": "Layout",
+          "subgroup": "Alignment",
           "order": 4,
           "control": "segmented"
         },
         "vAlign": {
           "group": "Layout",
+          "subgroup": "Alignment",
           "order": 5,
           "control": "segmented"
         },
         "maxHeight": {
           "group": "Layout",
+          "subgroup": "Size",
           "order": 6,
           "control": "length"
         },
         "minHeight": {
           "group": "Layout",
+          "subgroup": "Size",
           "order": 7,
           "control": "length"
         },
         "surface": {
-          "group": "Surface",
+          "group": "Appearance",
           "order": 1,
           "control": "segmented"
         },
         "frame": {
-          "group": "Surface",
+          "group": "Appearance",
           "order": 2
         },
         "dividerSides": {
-          "group": "Surface",
+          "group": "Appearance",
           "order": 3
         },
         "textInsets": {
-          "group": "Surface",
+          "group": "Layout",
+          "subgroup": "Insets",
           "order": 4
         },
         "controlInsets": {
-          "group": "Surface",
+          "group": "Layout",
+          "subgroup": "Insets",
           "order": 5
+        },
+        "children": {
+          "group": "Content"
+        },
+        "flex": {
+          "group": "Layout"
+        },
+        "scrollClearance": {
+          "group": "Layout",
+          "subgroup": "Scrolling"
+        },
+        "contentWidth": {
+          "group": "Layout",
+          "subgroup": "Size"
+        },
+        "contentAlign": {
+          "group": "Layout",
+          "subgroup": "Alignment"
+        },
+        "inset": {
+          "group": "Layout",
+          "subgroup": "Insets"
+        },
+        "id": {
+          "group": "Integration"
+        },
+        "hidden": {
+          "group": "Layout"
+        },
+        "landmark": {
+          "group": "Accessibility"
+        },
+        "labelledBy": {
+          "group": "Accessibility"
         }
       }
     },
     "@kerfjs/ui:list-action-row": {
+      "groups": [
+        "Content",
+        "Appearance",
+        "Behavior",
+        "Accessibility",
+        "Integration"
+      ],
       "props": {
         "pressed": {
+          "group": "Behavior",
+          "subgroup": "State",
           "control": "select"
+        },
+        "label": {
+          "group": "Content"
+        },
+        "description": {
+          "group": "Content"
+        },
+        "status": {
+          "group": "Content"
+        },
+        "busy": {
+          "group": "Behavior",
+          "subgroup": "State"
+        },
+        "density": {
+          "group": "Appearance"
+        },
+        "divider": {
+          "group": "Appearance"
+        },
+        "icon": {
+          "group": "Content"
+        },
+        "iconTile": {
+          "group": "Appearance"
+        },
+        "action": {
+          "group": "Behavior"
+        },
+        "itemId": {
+          "group": "Integration"
+        },
+        "selected": {
+          "group": "Behavior",
+          "subgroup": "State"
+        },
+        "accessibleLabel": {
+          "group": "Accessibility"
+        },
+        "title": {
+          "group": "Content"
+        },
+        "multiline": {
+          "group": "Appearance"
+        },
+        "state": {
+          "group": "Integration"
+        },
+        "disabled": {
+          "group": "Behavior",
+          "subgroup": "State"
+        },
+        "tabIndex": {
+          "group": "Accessibility"
+        },
+        "placeholder": {
+          "group": "Behavior",
+          "subgroup": "State"
+        },
+        "draggable": {
+          "group": "Behavior",
+          "subgroup": "Drag and drop"
+        },
+        "dragging": {
+          "group": "Behavior",
+          "subgroup": "Drag and drop"
+        },
+        "dropPosition": {
+          "group": "Behavior",
+          "subgroup": "Drag and drop"
+        },
+        "trailingActionVisibility": {
+          "group": "Behavior",
+          "subgroup": "Trailing action"
+        },
+        "trailingAction": {
+          "group": "Behavior",
+          "subgroup": "Trailing action"
+        },
+        "trailingActionLabel": {
+          "group": "Behavior",
+          "subgroup": "Trailing action"
+        },
+        "trailingActionIcon": {
+          "group": "Behavior",
+          "subgroup": "Trailing action"
+        },
+        "trailingActionDisabled": {
+          "group": "Behavior",
+          "subgroup": "Trailing action"
+        },
+        "trailingActionTitle": {
+          "group": "Behavior",
+          "subgroup": "Trailing action"
+        },
+        "trailingActionAttributes": {
+          "group": "Behavior",
+          "subgroup": "Trailing action"
+        },
+        "trailingMenu": {
+          "group": "Behavior",
+          "subgroup": "Trailing action"
+        }
+      }
+    },
+    "@kerfjs/ui:list-detail-dialog": {
+      "groups": [
+        "Content",
+        "Appearance",
+        "Behavior",
+        "Layout",
+        "Accessibility",
+        "Integration"
+      ],
+      "props": {
+        "id": {
+          "group": "Integration"
+        },
+        "label": {
+          "group": "Accessibility"
+        },
+        "describedBy": {
+          "group": "Accessibility"
+        },
+        "list": {
+          "group": "Content"
+        },
+        "detail": {
+          "group": "Content"
+        },
+        "compact": {
+          "group": "Behavior"
+        },
+        "embedded": {
+          "group": "Behavior"
+        },
+        "detailActive": {
+          "group": "Behavior"
+        },
+        "backLabel": {
+          "group": "Accessibility"
+        },
+        "closeLabel": {
+          "group": "Accessibility"
+        },
+        "lightDismiss": {
+          "group": "Behavior"
+        },
+        "size": {
+          "group": "Appearance"
+        },
+        "preferredWidth": {
+          "group": "Layout"
+        },
+        "height": {
+          "group": "Layout"
+        },
+        "maxHeight": {
+          "group": "Layout"
+        },
+        "viewportGutter": {
+          "group": "Layout"
         }
       }
     },
     "@kerfjs/ui:list-header": {
-      "groups": ["Content", "Mode", "Appearance"],
+      "groups": [
+        "Content",
+        "Appearance",
+        "Behavior",
+        "Layout",
+        "Accessibility"
+      ],
       "props": {
         "label": {
           "group": "Content",
           "order": 1
         },
         "toggle": {
-          "group": "Mode",
+          "group": "Behavior",
+          "subgroup": "Disclosure",
           "order": 1,
           "control": "switch"
         },
         "expanded": {
-          "group": "Mode",
+          "group": "Behavior",
+          "subgroup": "Disclosure",
           "order": 2,
           "control": "switch"
         },
@@ -331,24 +1707,27 @@
           "control": "number"
         },
         "countLabel": {
-          "group": "Content",
+          "group": "Accessibility",
           "order": 3
         },
         "headingLevel": {
-          "group": "Content",
+          "group": "Accessibility",
           "order": 4,
           "control": "segmented"
         },
         "action": {
-          "group": "Mode",
+          "group": "Behavior",
+          "subgroup": "Action",
           "order": 3
         },
         "actionLabel": {
-          "group": "Mode",
+          "group": "Behavior",
+          "subgroup": "Action",
           "order": 4
         },
         "actionDisabled": {
-          "group": "Mode",
+          "group": "Behavior",
+          "subgroup": "Action",
           "order": 5
         },
         "size": {
@@ -365,11 +1744,73 @@
           "group": "Appearance",
           "order": 3,
           "control": "segmented"
+        },
+        "inline": {
+          "group": "Layout"
+        },
+        "width": {
+          "group": "Layout"
+        },
+        "wrap": {
+          "group": "Layout"
+        },
+        "indicatorTone": {
+          "group": "Appearance"
+        },
+        "placeholder": {
+          "group": "Behavior",
+          "subgroup": "State"
+        },
+        "controls": {
+          "group": "Accessibility"
+        },
+        "badge": {
+          "group": "Content"
+        },
+        "status": {
+          "group": "Content"
+        },
+        "actionIcon": {
+          "group": "Behavior",
+          "subgroup": "Action"
+        },
+        "disabledReason": {
+          "group": "Behavior",
+          "subgroup": "Action"
+        }
+      }
+    },
+    "@kerfjs/ui:list-inset-control": {
+      "groups": ["Content", "Layout"],
+      "props": {
+        "children": {
+          "group": "Content"
+        },
+        "sides": {
+          "group": "Layout"
+        }
+      }
+    },
+    "@kerfjs/ui:list-inset-text": {
+      "groups": ["Content", "Layout"],
+      "props": {
+        "children": {
+          "group": "Content"
+        },
+        "sides": {
+          "group": "Layout"
         }
       }
     },
     "@kerfjs/ui:list-item": {
-      "groups": ["Content", "Behavior", "Appearance", "State"],
+      "groups": [
+        "Content",
+        "Appearance",
+        "Behavior",
+        "Layout",
+        "Accessibility",
+        "Integration"
+      ],
       "props": {
         "label": {
           "group": "Content",
@@ -380,7 +1821,7 @@
           "order": 2
         },
         "accessibleLabel": {
-          "group": "Content",
+          "group": "Accessibility",
           "order": 3
         },
         "title": {
@@ -392,7 +1833,7 @@
           "order": 1
         },
         "itemId": {
-          "group": "Behavior",
+          "group": "Integration",
           "order": 2
         },
         "density": {
@@ -410,37 +1851,182 @@
           "order": 3
         },
         "selected": {
-          "group": "State",
+          "group": "Behavior",
+          "subgroup": "State",
           "order": 1
         },
         "pressed": {
-          "group": "State",
+          "group": "Behavior",
+          "subgroup": "State",
           "order": 2,
           "control": "select"
         },
         "busy": {
-          "group": "State",
+          "group": "Behavior",
+          "subgroup": "State",
           "order": 3
         },
         "disabled": {
-          "group": "State",
+          "group": "Behavior",
+          "subgroup": "State",
           "order": 4
         },
         "placeholder": {
-          "group": "State",
+          "group": "Behavior",
+          "subgroup": "State",
           "order": 5
+        },
+        "icon": {
+          "group": "Content"
+        },
+        "iconTile": {
+          "group": "Appearance"
+        },
+        "trailing": {
+          "group": "Content"
+        },
+        "status": {
+          "group": "Content"
+        },
+        "multilineIconAlign": {
+          "group": "Layout"
+        },
+        "state": {
+          "group": "Integration"
+        },
+        "tabIndex": {
+          "group": "Accessibility"
+        },
+        "draggable": {
+          "group": "Behavior",
+          "subgroup": "Drag and drop"
+        },
+        "dragging": {
+          "group": "Behavior",
+          "subgroup": "Drag and drop"
+        },
+        "dropPosition": {
+          "group": "Behavior",
+          "subgroup": "Drag and drop"
+        }
+      }
+    },
+    "@kerfjs/ui:list-item#ListItemLink": {
+      "groups": [
+        "Content",
+        "Appearance",
+        "Behavior",
+        "Layout",
+        "Accessibility",
+        "Integration"
+      ],
+      "props": {
+        "href": {
+          "group": "Behavior",
+          "subgroup": "Link"
+        },
+        "external": {
+          "group": "Behavior",
+          "subgroup": "Link"
+        },
+        "disabled": {
+          "group": "Behavior",
+          "subgroup": "State"
+        },
+        "density": {
+          "group": "Appearance"
+        },
+        "tabIndex": {
+          "group": "Accessibility"
+        },
+        "label": {
+          "group": "Content"
+        },
+        "title": {
+          "group": "Content"
+        },
+        "trailing": {
+          "group": "Content"
+        },
+        "status": {
+          "group": "Content"
+        },
+        "icon": {
+          "group": "Content"
+        },
+        "draggable": {
+          "group": "Behavior",
+          "subgroup": "Drag and drop"
+        },
+        "itemId": {
+          "group": "Integration"
+        },
+        "selected": {
+          "group": "Behavior",
+          "subgroup": "State"
+        },
+        "divider": {
+          "group": "Appearance"
+        },
+        "dragging": {
+          "group": "Behavior",
+          "subgroup": "Drag and drop"
+        },
+        "state": {
+          "group": "Integration"
+        },
+        "busy": {
+          "group": "Behavior",
+          "subgroup": "State"
+        },
+        "multiline": {
+          "group": "Appearance"
+        },
+        "description": {
+          "group": "Content"
+        },
+        "iconTile": {
+          "group": "Appearance"
+        },
+        "accessibleLabel": {
+          "group": "Accessibility"
+        },
+        "multilineIconAlign": {
+          "group": "Layout"
+        },
+        "placeholder": {
+          "group": "Behavior",
+          "subgroup": "State"
+        },
+        "dropPosition": {
+          "group": "Behavior",
+          "subgroup": "Drag and drop"
+        }
+      }
+    },
+    "@kerfjs/ui:loading-spinner": {
+      "groups": ["Appearance", "Accessibility"],
+      "props": {
+        "color": {
+          "group": "Appearance"
+        },
+        "label": {
+          "group": "Accessibility"
+        },
+        "size": {
+          "group": "Appearance"
         }
       }
     },
     "@kerfjs/ui:lucide-icon": {
-      "groups": ["Icon", "Appearance", "Accessibility"],
+      "groups": ["Content", "Appearance", "Accessibility"],
       "props": {
         "icon": {
-          "group": "Icon",
+          "group": "Content",
           "order": 1
         },
         "name": {
-          "group": "Icon",
+          "group": "Content",
           "order": 2
         },
         "size": {
@@ -469,81 +2055,664 @@
         }
       }
     },
+    "@kerfjs/ui:message-composer": {
+      "groups": [
+        "Content",
+        "Behavior",
+        "Layout",
+        "Accessibility",
+        "Integration"
+      ],
+      "props": {
+        "label": {
+          "group": "Accessibility"
+        },
+        "name": {
+          "group": "Behavior"
+        },
+        "id": {
+          "group": "Integration"
+        },
+        "value": {
+          "group": "Behavior"
+        },
+        "placeholder": {
+          "group": "Content"
+        },
+        "minRows": {
+          "group": "Layout"
+        },
+        "maxRows": {
+          "group": "Layout"
+        },
+        "hint": {
+          "group": "Content"
+        },
+        "disabled": {
+          "group": "Behavior"
+        },
+        "submitOnEnter": {
+          "group": "Behavior"
+        }
+      }
+    },
+    "@kerfjs/ui:nav-stack": {
+      "groups": [
+        "Content",
+        "Appearance",
+        "Layout",
+        "Accessibility",
+        "Integration"
+      ],
+      "props": {
+        "id": {
+          "group": "Integration"
+        },
+        "label": {
+          "group": "Accessibility"
+        },
+        "views": {
+          "group": "Content"
+        },
+        "backLabel": {
+          "group": "Accessibility"
+        },
+        "backIcon": {
+          "group": "Content",
+          "subgroup": "Back control"
+        },
+        "backText": {
+          "group": "Content",
+          "subgroup": "Back control"
+        },
+        "toolbarConfig": {
+          "group": "Layout",
+          "subgroup": "Top toolbar"
+        },
+        "panelToggle": {
+          "group": "Layout",
+          "subgroup": "Top toolbar"
+        },
+        "hideToolbar": {
+          "group": "Layout",
+          "subgroup": "Top toolbar"
+        },
+        "bottomToolbar": {
+          "group": "Layout",
+          "subgroup": "Bottom toolbar"
+        },
+        "separator": {
+          "group": "Appearance",
+          "subgroup": "Chrome"
+        },
+        "chromeDividers": {
+          "group": "Appearance",
+          "subgroup": "Chrome"
+        },
+        "chromePresentation": {
+          "group": "Layout",
+          "subgroup": "Top toolbar"
+        },
+        "bottomToolbarPresentation": {
+          "group": "Layout",
+          "subgroup": "Bottom toolbar"
+        },
+        "scrollEdge": {
+          "group": "Appearance",
+          "subgroup": "Chrome"
+        },
+        "scrollEdgeDistance": {
+          "group": "Appearance",
+          "subgroup": "Chrome"
+        },
+        "background": {
+          "group": "Appearance",
+          "subgroup": "Surface"
+        },
+        "tint": {
+          "group": "Appearance",
+          "subgroup": "Surface"
+        },
+        "scheme": {
+          "group": "Appearance",
+          "subgroup": "Surface"
+        }
+      }
+    },
+    "@kerfjs/ui:paged-view": {
+      "groups": ["Content", "Behavior", "Accessibility", "Integration"],
+      "props": {
+        "id": {
+          "group": "Integration"
+        },
+        "label": {
+          "group": "Accessibility"
+        },
+        "pages": {
+          "group": "Content"
+        },
+        "page": {
+          "group": "Behavior"
+        },
+        "pageLabel": {
+          "group": "Accessibility"
+        }
+      }
+    },
     "@kerfjs/ui:pane": {
-      "groups": ["Content", "Layout", "Chrome", "Surface", "Semantics"],
+      "groups": [
+        "Appearance",
+        "Behavior",
+        "Layout",
+        "Accessibility",
+        "Integration"
+      ],
       "props": {
         "fill": {
           "group": "Layout",
           "order": 1
         },
         "label": {
-          "group": "Content",
+          "group": "Accessibility",
           "order": 1
         },
         "contentLabel": {
-          "group": "Content",
+          "group": "Accessibility",
           "order": 2
         },
         "chromePlacement": {
-          "group": "Chrome",
+          "group": "Appearance",
+          "subgroup": "Chrome",
           "order": 1,
           "control": "segmented"
         },
         "chromeDividers": {
-          "group": "Chrome",
+          "group": "Appearance",
+          "subgroup": "Chrome",
           "order": 2,
           "control": "segmented"
         },
         "headerPresentation": {
-          "group": "Chrome",
+          "group": "Appearance",
+          "subgroup": "Chrome",
           "order": 3
         },
         "scrollEdge": {
-          "group": "Chrome",
+          "group": "Appearance",
+          "subgroup": "Chrome",
           "order": 4,
           "control": "segmented"
         },
         "appearance": {
-          "group": "Surface",
+          "group": "Appearance",
           "order": 1,
           "control": "segmented"
         },
         "background": {
-          "group": "Surface",
+          "group": "Appearance",
+          "subgroup": "Surface",
           "order": 2,
           "control": "color"
         },
         "scrollClearance": {
-          "group": "Surface",
+          "group": "Layout",
           "order": 3
         },
         "deepInset": {
-          "group": "Surface",
+          "group": "Layout",
           "order": 4
         },
         "outlined": {
-          "group": "Surface",
+          "group": "Accessibility",
           "order": 5
         },
         "element": {
-          "group": "Semantics",
+          "group": "Accessibility",
           "order": 1,
           "control": "select"
         },
         "contentElement": {
-          "group": "Semantics",
+          "group": "Accessibility",
           "order": 2,
           "control": "select"
         },
         "tabIndex": {
-          "group": "Semantics",
+          "group": "Accessibility",
           "order": 3,
           "control": "segmented"
+        },
+        "compactChrome": {
+          "group": "Appearance",
+          "subgroup": "Chrome"
+        },
+        "compactChromeOpen": {
+          "group": "Behavior"
+        },
+        "scrollEdgeDistance": {
+          "group": "Appearance",
+          "subgroup": "Chrome"
+        },
+        "tint": {
+          "group": "Appearance",
+          "subgroup": "Surface"
+        },
+        "scheme": {
+          "group": "Appearance",
+          "subgroup": "Surface"
+        },
+        "anchorName": {
+          "group": "Integration"
+        },
+        "scrollAnchoring": {
+          "group": "Layout"
+        },
+        "separators": {
+          "group": "Appearance",
+          "subgroup": "Chrome"
+        },
+        "safeAreaEdges": {
+          "group": "Layout"
+        },
+        "id": {
+          "group": "Integration"
+        }
+      }
+    },
+    "@kerfjs/ui:popup-menu": {
+      "groups": [
+        "Content",
+        "Appearance",
+        "Behavior",
+        "Layout",
+        "Accessibility"
+      ],
+      "props": {
+        "embedded": {
+          "control": "hidden"
+        },
+        "embeddedSubmenu": {
+          "control": "hidden"
+        },
+        "text": {
+          "group": "Content"
+        },
+        "label": {
+          "group": "Accessibility"
+        },
+        "triggerContent": {
+          "group": "Content"
+        },
+        "context": {
+          "group": "Behavior"
+        },
+        "anchor": {
+          "group": "Behavior"
+        },
+        "icon": {
+          "group": "Content"
+        },
+        "items": {
+          "group": "Content"
+        },
+        "placement": {
+          "group": "Layout"
+        },
+        "caret": {
+          "group": "Appearance"
+        },
+        "disabled": {
+          "group": "Behavior"
+        },
+        "emphasis": {
+          "group": "Appearance"
+        },
+        "size": {
+          "group": "Appearance"
+        },
+        "popupNote": {
+          "group": "Content"
+        }
+      }
+    },
+    "@kerfjs/ui:progress-bar": {
+      "groups": ["Content", "Appearance", "Accessibility", "Integration"],
+      "props": {
+        "value": {
+          "group": "Content"
+        },
+        "max": {
+          "group": "Content"
+        },
+        "valueText": {
+          "group": "Accessibility"
+        },
+        "showValue": {
+          "group": "Content"
+        },
+        "tone": {
+          "group": "Appearance"
+        },
+        "size": {
+          "group": "Appearance"
+        },
+        "id": {
+          "group": "Integration"
+        },
+        "label": {
+          "group": "Content"
+        },
+        "ariaLabel": {
+          "group": "Accessibility"
+        }
+      }
+    },
+    "@kerfjs/ui:progress-ring": {
+      "groups": ["Content", "Appearance", "Accessibility", "Integration"],
+      "props": {
+        "value": {
+          "group": "Content"
+        },
+        "max": {
+          "group": "Content"
+        },
+        "label": {
+          "group": "Accessibility"
+        },
+        "valueText": {
+          "group": "Accessibility"
+        },
+        "tone": {
+          "group": "Appearance"
+        },
+        "size": {
+          "group": "Appearance"
+        },
+        "id": {
+          "group": "Integration"
+        }
+      }
+    },
+    "@kerfjs/ui:radio-group": {
+      "groups": [
+        "Content",
+        "Appearance",
+        "Behavior",
+        "Layout",
+        "Accessibility",
+        "Integration"
+      ],
+      "props": {
+        "label": {
+          "group": "Content"
+        },
+        "ariaLabel": {
+          "group": "Accessibility"
+        },
+        "name": {
+          "group": "Behavior",
+          "subgroup": "Form"
+        },
+        "choices": {
+          "group": "Content"
+        },
+        "value": {
+          "group": "Behavior"
+        },
+        "hint": {
+          "group": "Content"
+        },
+        "error": {
+          "group": "Behavior",
+          "subgroup": "Validation"
+        },
+        "size": {
+          "group": "Appearance"
+        },
+        "orientation": {
+          "group": "Layout"
+        },
+        "required": {
+          "group": "Behavior",
+          "subgroup": "Validation"
+        },
+        "disabled": {
+          "group": "Behavior"
+        },
+        "action": {
+          "group": "Behavior"
+        },
+        "form": {
+          "group": "Behavior",
+          "subgroup": "Form"
+        },
+        "id": {
+          "group": "Integration"
+        }
+      }
+    },
+    "@kerfjs/ui:resize": {
+      "groups": [
+        "Content",
+        "Appearance",
+        "Behavior",
+        "Layout",
+        "Accessibility",
+        "Integration"
+      ],
+      "props": {
+        "id": {
+          "group": "Integration"
+        },
+        "label": {
+          "group": "Accessibility"
+        },
+        "size": {
+          "group": "Layout"
+        },
+        "min": {
+          "group": "Layout"
+        },
+        "max": {
+          "group": "Layout"
+        },
+        "axis": {
+          "group": "Layout"
+        },
+        "edge": {
+          "group": "Layout"
+        },
+        "collapsed": {
+          "group": "Behavior"
+        },
+        "transitioning": {
+          "group": "Behavior"
+        },
+        "separator": {
+          "group": "Appearance"
+        },
+        "collapseMotion": {
+          "group": "Behavior"
+        },
+        "contentOverflow": {
+          "group": "Layout"
+        },
+        "presentation": {
+          "group": "Layout"
+        },
+        "restoreControl": {
+          "group": "Behavior"
+        },
+        "restorePosition": {
+          "group": "Behavior"
+        },
+        "restorePlacement": {
+          "group": "Behavior"
+        },
+        "restoreInset": {
+          "group": "Behavior"
+        },
+        "responsiveFillAt": {
+          "group": "Layout"
+        },
+        "handleIcon": {
+          "group": "Content"
+        },
+        "children": {
+          "group": "Content"
+        }
+      }
+    },
+    "@kerfjs/ui:row": {
+      "groups": ["Content", "Layout", "Accessibility"],
+      "props": {
+        "children": {
+          "group": "Content"
+        },
+        "hAlign": {
+          "group": "Layout"
+        },
+        "vAlign": {
+          "group": "Layout"
+        },
+        "gap": {
+          "group": "Layout"
+        },
+        "flex": {
+          "group": "Layout"
+        },
+        "fill": {
+          "group": "Layout"
+        },
+        "wrap": {
+          "group": "Layout"
+        },
+        "textInsets": {
+          "group": "Layout",
+          "subgroup": "Insets"
+        },
+        "controlInsets": {
+          "group": "Layout",
+          "subgroup": "Insets"
+        },
+        "ariaLabel": {
+          "group": "Accessibility"
+        }
+      }
+    },
+    "@kerfjs/ui:scroll-effect": {
+      "groups": ["Content", "Appearance"],
+      "props": {
+        "effects": {
+          "group": "Appearance"
+        },
+        "children": {
+          "group": "Content"
+        }
+      }
+    },
+    "@kerfjs/ui:search-field": {
+      "groups": [
+        "Content",
+        "Appearance",
+        "Behavior",
+        "Layout",
+        "Accessibility",
+        "Integration"
+      ],
+      "props": {
+        "id": {
+          "group": "Integration"
+        },
+        "label": {
+          "group": "Content"
+        },
+        "query": {
+          "group": "Behavior",
+          "subgroup": "Search"
+        },
+        "tokens": {
+          "group": "Behavior",
+          "subgroup": "Search"
+        },
+        "model": {
+          "group": "Behavior",
+          "subgroup": "Search"
+        },
+        "revision": {
+          "group": "Behavior",
+          "subgroup": "Search"
+        },
+        "placeholder": {
+          "group": "Content"
+        },
+        "tokenPlaceholder": {
+          "group": "Content"
+        },
+        "disabled": {
+          "group": "Behavior",
+          "subgroup": "State"
+        },
+        "autofocus": {
+          "group": "Behavior",
+          "subgroup": "State"
+        },
+        "fill": {
+          "group": "Layout"
+        },
+        "editAction": {
+          "group": "Behavior",
+          "subgroup": "Actions"
+        },
+        "removeAction": {
+          "group": "Behavior",
+          "subgroup": "Actions"
+        },
+        "clearAction": {
+          "group": "Behavior",
+          "subgroup": "Actions"
+        },
+        "clearLabel": {
+          "group": "Accessibility"
+        },
+        "clearIcon": {
+          "group": "Content"
+        },
+        "editorAttributes": {
+          "group": "Integration"
+        },
+        "collapsible": {
+          "group": "Behavior",
+          "subgroup": "Collapsing"
+        },
+        "expanded": {
+          "group": "Behavior",
+          "subgroup": "Collapsing"
+        },
+        "expandAction": {
+          "group": "Behavior",
+          "subgroup": "Collapsing"
+        },
+        "expandLabel": {
+          "group": "Accessibility"
+        },
+        "trailingAction": {
+          "group": "Behavior",
+          "subgroup": "Actions"
+        },
+        "presentation": {
+          "group": "Appearance"
+        },
+        "hint": {
+          "group": "Content"
+        },
+        "required": {
+          "group": "Behavior",
+          "subgroup": "State"
         }
       }
     },
     "@kerfjs/ui:segmented-control": {
-      "groups": ["Content", "Appearance", "State"],
+      "groups": ["Content", "Appearance", "Behavior", "Layout", "Integration"],
       "props": {
         "label": {
           "group": "Content",
@@ -554,11 +2723,11 @@
           "order": 2
         },
         "value": {
-          "group": "Content",
+          "group": "Behavior",
           "order": 3
         },
         "action": {
-          "group": "Content",
+          "group": "Behavior",
           "order": 4
         },
         "appearance": {
@@ -577,33 +2746,42 @@
           "control": "segmented"
         },
         "layout": {
-          "group": "Appearance",
+          "group": "Layout",
           "order": 4,
           "control": "segmented"
         },
         "disabled": {
-          "group": "State",
+          "group": "Behavior",
           "order": 1
         },
         "placeholder": {
-          "group": "State",
+          "group": "Behavior",
           "order": 2
+        },
+        "id": {
+          "group": "Integration"
         }
       }
     },
     "@kerfjs/ui:select": {
-      "groups": ["Content", "Appearance", "State"],
+      "groups": [
+        "Content",
+        "Appearance",
+        "Behavior",
+        "Layout",
+        "Accessibility"
+      ],
       "props": {
         "label": {
           "group": "Content",
           "order": 1
         },
         "ariaLabel": {
-          "group": "Content",
+          "group": "Accessibility",
           "order": 2
         },
         "name": {
-          "group": "Content",
+          "group": "Behavior",
           "order": 3
         },
         "choices": {
@@ -611,11 +2789,11 @@
           "order": 4
         },
         "value": {
-          "group": "Content",
+          "group": "Behavior",
           "order": 5
         },
         "multiple": {
-          "group": "Content",
+          "group": "Behavior",
           "order": 6
         },
         "hint": {
@@ -633,7 +2811,7 @@
           "control": "segmented"
         },
         "triggerWidth": {
-          "group": "Appearance",
+          "group": "Layout",
           "order": 3,
           "control": "segmented"
         },
@@ -642,20 +2820,293 @@
           "order": 4
         },
         "disabled": {
-          "group": "State",
+          "group": "Behavior",
+          "subgroup": "State",
           "order": 1
         },
         "placeholder": {
-          "group": "State",
+          "group": "Behavior",
+          "subgroup": "State",
           "order": 2
         },
         "embedded": {
           "control": "hidden"
+        },
+        "placeholderText": {
+          "group": "Content"
+        },
+        "popupNote": {
+          "group": "Content"
+        },
+        "fitMenu": {
+          "group": "Layout"
+        },
+        "maxTriggerWidth": {
+          "group": "Layout"
+        },
+        "minTriggerWidth": {
+          "group": "Layout"
+        },
+        "focusRingOwner": {
+          "group": "Appearance"
+        },
+        "focusRingInset": {
+          "group": "Appearance"
+        },
+        "labelMaxWidth": {
+          "group": "Layout"
+        },
+        "renderSelected": {
+          "group": "Content"
+        },
+        "selectedPresentation": {
+          "group": "Appearance"
+        },
+        "triggerIcon": {
+          "group": "Content"
+        },
+        "selectAllLabel": {
+          "group": "Behavior",
+          "subgroup": "Footer actions"
+        },
+        "clearLabel": {
+          "group": "Behavior",
+          "subgroup": "Footer actions"
+        }
+      }
+    },
+    "@kerfjs/ui:sized-region": {
+      "groups": ["Content", "Layout", "Integration"],
+      "props": {
+        "height": {
+          "group": "Layout"
+        },
+        "minHeight": {
+          "group": "Layout"
+        },
+        "maxHeight": {
+          "group": "Layout"
+        },
+        "children": {
+          "group": "Content"
+        },
+        "id": {
+          "group": "Integration"
+        }
+      }
+    },
+    "@kerfjs/ui:skeleton": {
+      "groups": ["Appearance", "Layout", "Accessibility"],
+      "props": {
+        "width": {
+          "group": "Layout"
+        },
+        "height": {
+          "group": "Layout"
+        },
+        "radius": {
+          "group": "Appearance"
+        },
+        "lines": {
+          "group": "Appearance"
+        },
+        "block": {
+          "group": "Layout"
+        },
+        "label": {
+          "group": "Accessibility"
+        }
+      }
+    },
+    "@kerfjs/ui:slider": {
+      "groups": [
+        "Content",
+        "Appearance",
+        "Behavior",
+        "Layout",
+        "Accessibility",
+        "Integration"
+      ],
+      "props": {
+        "id": {
+          "group": "Integration"
+        },
+        "value": {
+          "group": "Behavior"
+        },
+        "min": {
+          "group": "Behavior"
+        },
+        "max": {
+          "group": "Behavior"
+        },
+        "step": {
+          "group": "Behavior"
+        },
+        "name": {
+          "group": "Behavior",
+          "subgroup": "Form"
+        },
+        "showValue": {
+          "group": "Content"
+        },
+        "unit": {
+          "group": "Content"
+        },
+        "hint": {
+          "group": "Content"
+        },
+        "ticks": {
+          "group": "Content"
+        },
+        "orientation": {
+          "group": "Layout"
+        },
+        "length": {
+          "group": "Layout"
+        },
+        "size": {
+          "group": "Appearance"
+        },
+        "disabled": {
+          "group": "Behavior"
+        },
+        "action": {
+          "group": "Behavior"
+        },
+        "form": {
+          "group": "Behavior",
+          "subgroup": "Form"
+        },
+        "label": {
+          "group": "Content"
+        },
+        "ariaLabel": {
+          "group": "Accessibility"
+        }
+      }
+    },
+    "@kerfjs/ui:spacer": {
+      "groups": ["Layout"],
+      "props": {
+        "flex": {
+          "group": "Layout"
+        },
+        "width": {
+          "group": "Layout"
+        },
+        "height": {
+          "group": "Layout"
+        }
+      }
+    },
+    "@kerfjs/ui:split-button": {
+      "groups": ["Content", "Appearance", "Behavior", "Accessibility"],
+      "props": {
+        "label": {
+          "group": "Content"
+        },
+        "action": {
+          "group": "Behavior"
+        },
+        "icon": {
+          "group": "Content"
+        },
+        "accessibleLabel": {
+          "group": "Accessibility"
+        },
+        "optionsLabel": {
+          "group": "Behavior",
+          "subgroup": "Options menu"
+        },
+        "optionsAction": {
+          "group": "Behavior",
+          "subgroup": "Options menu"
+        },
+        "optionsExpanded": {
+          "group": "Behavior",
+          "subgroup": "Options menu"
+        },
+        "optionsPopup": {
+          "group": "Behavior",
+          "subgroup": "Options menu"
+        },
+        "optionsControls": {
+          "group": "Behavior",
+          "subgroup": "Options menu"
+        },
+        "tone": {
+          "group": "Appearance"
+        },
+        "fill": {
+          "group": "Appearance"
+        },
+        "shape": {
+          "group": "Appearance"
+        },
+        "focusRingInset": {
+          "group": "Appearance"
+        },
+        "busy": {
+          "group": "Behavior",
+          "subgroup": "State"
+        },
+        "disabled": {
+          "group": "Behavior",
+          "subgroup": "State"
+        },
+        "optionsDisabled": {
+          "group": "Behavior",
+          "subgroup": "Options menu"
+        },
+        "title": {
+          "group": "Accessibility"
+        }
+      }
+    },
+    "@kerfjs/ui:split-view": {
+      "groups": [
+        "Content",
+        "Behavior",
+        "Layout",
+        "Accessibility",
+        "Integration"
+      ],
+      "props": {
+        "id": {
+          "group": "Integration"
+        },
+        "label": {
+          "group": "Accessibility"
+        },
+        "compact": {
+          "group": "Behavior"
+        },
+        "detailActive": {
+          "group": "Behavior"
+        },
+        "listTitle": {
+          "group": "Content"
+        },
+        "detailTitle": {
+          "group": "Content"
+        },
+        "backLabel": {
+          "group": "Accessibility"
+        },
+        "compactStack": {
+          "group": "Behavior"
+        },
+        "resizable": {
+          "group": "Layout"
+        },
+        "listWidth": {
+          "group": "Layout"
         }
       }
     },
     "@kerfjs/ui:state-banner": {
-      "groups": ["Content", "Appearance"],
+      "groups": ["Content", "Appearance", "Behavior", "Layout"],
       "props": {
         "title": {
           "group": "Content",
@@ -686,19 +3137,363 @@
           "control": "segmented"
         },
         "copyLayout": {
-          "group": "Appearance",
+          "group": "Layout",
           "order": 4,
           "control": "segmented"
         },
         "actionPlacement": {
-          "group": "Appearance",
+          "group": "Layout",
           "order": 5,
           "control": "segmented"
+        },
+        "dividerSides": {
+          "group": "Appearance"
+        },
+        "placeholder": {
+          "group": "Behavior"
+        }
+      }
+    },
+    "@kerfjs/ui:summary-row": {
+      "groups": [
+        "Content",
+        "Appearance",
+        "Behavior",
+        "Layout",
+        "Accessibility",
+        "Integration"
+      ],
+      "props": {
+        "title": {
+          "group": "Content"
+        },
+        "leading": {
+          "group": "Content"
+        },
+        "trailingMeta": {
+          "group": "Content"
+        },
+        "metadata": {
+          "group": "Content"
+        },
+        "presentation": {
+          "group": "Appearance"
+        },
+        "titleLines": {
+          "group": "Layout"
+        },
+        "rail": {
+          "group": "Appearance"
+        },
+        "selected": {
+          "group": "Behavior"
+        },
+        "dimmed": {
+          "group": "Appearance"
+        },
+        "listEdge": {
+          "group": "Layout"
+        },
+        "deferRendering": {
+          "group": "Behavior"
+        },
+        "id": {
+          "group": "Integration"
+        },
+        "semanticRole": {
+          "group": "Accessibility"
+        },
+        "action": {
+          "group": "Behavior"
+        },
+        "draggable": {
+          "group": "Behavior"
+        },
+        "ariaLabel": {
+          "group": "Accessibility"
+        }
+      }
+    },
+    "@kerfjs/ui:sunken-panel": {
+      "groups": ["Content", "Appearance", "Layout", "Accessibility"],
+      "props": {
+        "children": {
+          "group": "Content"
+        },
+        "ariaLabel": {
+          "group": "Accessibility"
+        },
+        "shape": {
+          "group": "Appearance"
+        },
+        "flex": {
+          "group": "Layout"
+        },
+        "fill": {
+          "group": "Layout"
+        },
+        "tabIndex": {
+          "group": "Accessibility"
+        },
+        "outlined": {
+          "group": "Accessibility"
+        }
+      }
+    },
+    "@kerfjs/ui:surface-scaffold": {
+      "groups": [
+        "Content",
+        "Appearance",
+        "Behavior",
+        "Layout",
+        "Accessibility",
+        "Integration"
+      ],
+      "props": {
+        "label": {
+          "group": "Content"
+        },
+        "labelledBy": {
+          "group": "Accessibility"
+        },
+        "id": {
+          "group": "Integration"
+        },
+        "describedBy": {
+          "group": "Accessibility"
+        },
+        "alert": {
+          "group": "Behavior"
+        },
+        "children": {
+          "group": "Content"
+        },
+        "stack": {
+          "group": "Behavior"
+        },
+        "heading": {
+          "group": "Content"
+        },
+        "headerActions": {
+          "group": "Content"
+        },
+        "footer": {
+          "group": "Content"
+        },
+        "withoutHeader": {
+          "group": "Layout"
+        },
+        "lightDismiss": {
+          "group": "Behavior"
+        },
+        "closeLabel": {
+          "group": "Accessibility"
+        },
+        "closeEmphasis": {
+          "group": "Appearance"
+        },
+        "size": {
+          "group": "Appearance"
+        },
+        "presentation": {
+          "group": "Appearance"
+        },
+        "preferredWidth": {
+          "group": "Layout",
+          "subgroup": "Size"
+        },
+        "bodyInset": {
+          "group": "Layout",
+          "subgroup": "Insets"
+        },
+        "footerInset": {
+          "group": "Layout",
+          "subgroup": "Insets"
+        },
+        "viewportGutter": {
+          "group": "Layout",
+          "subgroup": "Size"
+        },
+        "maxHeight": {
+          "group": "Layout",
+          "subgroup": "Size"
+        },
+        "height": {
+          "group": "Layout",
+          "subgroup": "Size"
+        },
+        "minHeight": {
+          "group": "Layout",
+          "subgroup": "Size"
+        },
+        "resizable": {
+          "group": "Behavior",
+          "subgroup": "Bottom sheet"
+        },
+        "enterMotion": {
+          "group": "Behavior",
+          "subgroup": "Bottom sheet"
+        },
+        "exitMotion": {
+          "group": "Behavior",
+          "subgroup": "Bottom sheet"
+        },
+        "bodyLayout": {
+          "group": "Layout"
+        },
+        "headerPresentation": {
+          "group": "Layout"
+        },
+        "footerPresentation": {
+          "group": "Layout"
+        },
+        "footerOffset": {
+          "group": "Layout",
+          "subgroup": "Insets"
+        }
+      }
+    },
+    "@kerfjs/ui:surface-scaffold#PinnablePopoverSurface": {
+      "groups": [
+        "Content",
+        "Appearance",
+        "Behavior",
+        "Layout",
+        "Accessibility",
+        "Integration"
+      ],
+      "props": {
+        "id": {
+          "group": "Integration"
+        },
+        "label": {
+          "group": "Content"
+        },
+        "describedBy": {
+          "group": "Accessibility"
+        },
+        "children": {
+          "group": "Content"
+        },
+        "headerActions": {
+          "group": "Content"
+        },
+        "presentation": {
+          "group": "Appearance"
+        },
+        "pinned": {
+          "group": "Behavior"
+        },
+        "size": {
+          "group": "Appearance"
+        },
+        "preferredWidth": {
+          "group": "Layout",
+          "subgroup": "Size"
+        },
+        "height": {
+          "group": "Layout",
+          "subgroup": "Size"
+        },
+        "minHeight": {
+          "group": "Layout",
+          "subgroup": "Size"
+        },
+        "maxHeight": {
+          "group": "Layout",
+          "subgroup": "Size"
+        },
+        "viewportGutter": {
+          "group": "Layout",
+          "subgroup": "Size"
+        },
+        "bodyLayout": {
+          "group": "Layout"
+        },
+        "bodyInset": {
+          "group": "Layout"
+        },
+        "resizeFromBottom": {
+          "group": "Behavior"
+        },
+        "pinLabel": {
+          "group": "Accessibility"
+        },
+        "closeLabel": {
+          "group": "Accessibility"
+        },
+        "moveDescription": {
+          "group": "Accessibility"
+        }
+      }
+    },
+    "@kerfjs/ui:surface-scaffold#PopoverDialogSurface": {
+      "groups": [
+        "Content",
+        "Appearance",
+        "Behavior",
+        "Layout",
+        "Accessibility",
+        "Integration"
+      ],
+      "props": {
+        "label": {
+          "group": "Content"
+        },
+        "labelledBy": {
+          "group": "Accessibility"
+        },
+        "id": {
+          "group": "Integration"
+        },
+        "describedBy": {
+          "group": "Accessibility"
+        },
+        "children": {
+          "group": "Content"
+        },
+        "presentation": {
+          "group": "Appearance"
+        },
+        "dismiss": {
+          "group": "Behavior"
+        },
+        "anchorName": {
+          "group": "Integration"
+        },
+        "size": {
+          "group": "Appearance"
+        },
+        "preferredWidth": {
+          "group": "Layout"
+        },
+        "height": {
+          "group": "Layout"
+        },
+        "maxHeight": {
+          "group": "Layout"
+        },
+        "viewportGutter": {
+          "group": "Layout"
+        },
+        "bodyLayout": {
+          "group": "Layout"
+        }
+      }
+    },
+    "@kerfjs/ui:surface-scaffold#PopupSurface": {
+      "groups": ["Content", "Layout"],
+      "props": {
+        "children": {
+          "group": "Content"
+        },
+        "inset": {
+          "group": "Layout"
         }
       }
     },
     "@kerfjs/ui:switch": {
-      "groups": ["Content", "State"],
+      "groups": ["Content", "Appearance", "Behavior", "Integration"],
       "props": {
         "label": {
           "group": "Content",
@@ -709,30 +3504,287 @@
           "order": 2
         },
         "name": {
-          "group": "Content",
+          "group": "Behavior",
+          "subgroup": "Form",
           "order": 3
         },
         "action": {
-          "group": "Content",
+          "group": "Behavior",
           "order": 4
         },
         "checked": {
-          "group": "State",
+          "group": "Behavior",
+          "subgroup": "State",
           "order": 1
         },
         "size": {
-          "group": "State",
+          "group": "Appearance",
           "order": 2,
           "control": "segmented"
         },
         "disabled": {
-          "group": "State",
+          "group": "Behavior",
+          "subgroup": "State",
           "order": 3
+        },
+        "value": {
+          "group": "Behavior",
+          "subgroup": "Form"
+        },
+        "form": {
+          "group": "Behavior",
+          "subgroup": "Form"
+        },
+        "id": {
+          "group": "Integration"
+        }
+      }
+    },
+    "@kerfjs/ui:tab-bar": {
+      "groups": [
+        "Appearance",
+        "Behavior",
+        "Layout",
+        "Accessibility",
+        "Integration"
+      ],
+      "props": {
+        "id": {
+          "group": "Integration"
+        },
+        "label": {
+          "group": "Accessibility"
+        },
+        "activation": {
+          "group": "Behavior"
+        },
+        "allocation": {
+          "group": "Layout"
+        },
+        "presentation": {
+          "group": "Appearance"
+        },
+        "shape": {
+          "group": "Appearance"
+        },
+        "iconOnlyAt": {
+          "group": "Layout"
+        },
+        "trailingPlacement": {
+          "group": "Layout"
+        },
+        "snapTabs": {
+          "group": "Behavior"
+        }
+      }
+    },
+    "@kerfjs/ui:tab-navigator": {
+      "groups": [
+        "Content",
+        "Appearance",
+        "Behavior",
+        "Layout",
+        "Accessibility",
+        "Integration"
+      ],
+      "props": {
+        "id": {
+          "group": "Integration"
+        },
+        "label": {
+          "group": "Accessibility"
+        },
+        "tabs": {
+          "group": "Content"
+        },
+        "active": {
+          "group": "Behavior"
+        },
+        "separator": {
+          "group": "Appearance",
+          "subgroup": "Chrome"
+        },
+        "chromeDividers": {
+          "group": "Appearance",
+          "subgroup": "Chrome"
+        },
+        "barPresentation": {
+          "group": "Layout"
+        },
+        "scrollEdge": {
+          "group": "Appearance",
+          "subgroup": "Chrome"
+        },
+        "scrollEdgeDistance": {
+          "group": "Appearance",
+          "subgroup": "Chrome"
+        },
+        "background": {
+          "group": "Appearance",
+          "subgroup": "Surface"
+        },
+        "tint": {
+          "group": "Appearance",
+          "subgroup": "Surface"
+        },
+        "scheme": {
+          "group": "Appearance",
+          "subgroup": "Surface"
+        }
+      }
+    },
+    "@kerfjs/ui:tab-panel": {
+      "groups": ["Content", "Behavior", "Accessibility", "Integration"],
+      "props": {
+        "id": {
+          "group": "Integration"
+        },
+        "tabId": {
+          "group": "Accessibility"
+        },
+        "hidden": {
+          "group": "Behavior"
+        },
+        "busy": {
+          "group": "Behavior"
+        },
+        "children": {
+          "group": "Content"
+        }
+      }
+    },
+    "@kerfjs/ui:tabs": {
+      "groups": [
+        "Content",
+        "Appearance",
+        "Behavior",
+        "Layout",
+        "Accessibility",
+        "Integration"
+      ],
+      "props": {
+        "id": {
+          "group": "Integration"
+        },
+        "name": {
+          "group": "Content"
+        },
+        "selected": {
+          "group": "Behavior",
+          "subgroup": "State"
+        },
+        "disabled": {
+          "group": "Behavior",
+          "subgroup": "State"
+        },
+        "tabId": {
+          "group": "Accessibility"
+        },
+        "panelId": {
+          "group": "Accessibility"
+        },
+        "attention": {
+          "group": "Appearance"
+        },
+        "dropTarget": {
+          "group": "Behavior",
+          "subgroup": "Drag and drop"
+        },
+        "closable": {
+          "group": "Behavior"
+        },
+        "draggable": {
+          "group": "Behavior",
+          "subgroup": "Drag and drop"
+        },
+        "presentation": {
+          "group": "Appearance"
+        },
+        "size": {
+          "group": "Appearance"
+        },
+        "labelMaxWidth": {
+          "group": "Layout"
+        },
+        "nameOverflow": {
+          "group": "Layout"
+        },
+        "selectAction": {
+          "group": "Behavior"
+        },
+        "closeAction": {
+          "group": "Behavior"
+        },
+        "placeholder": {
+          "group": "Behavior",
+          "subgroup": "State"
+        },
+        "pending": {
+          "group": "Behavior",
+          "subgroup": "State"
+        }
+      }
+    },
+    "@kerfjs/ui:tag-field": {
+      "groups": ["Content", "Behavior", "Accessibility", "Integration"],
+      "props": {
+        "id": {
+          "group": "Integration"
+        },
+        "label": {
+          "group": "Content"
+        },
+        "tags": {
+          "group": "Behavior"
+        },
+        "name": {
+          "group": "Behavior",
+          "subgroup": "Form"
+        },
+        "form": {
+          "group": "Behavior",
+          "subgroup": "Form"
+        },
+        "placeholder": {
+          "group": "Content"
+        },
+        "morePlaceholder": {
+          "group": "Content"
+        },
+        "hint": {
+          "group": "Content"
+        },
+        "error": {
+          "group": "Behavior",
+          "subgroup": "Validation"
+        },
+        "max": {
+          "group": "Behavior",
+          "subgroup": "Validation"
+        },
+        "required": {
+          "group": "Behavior",
+          "subgroup": "Validation"
+        },
+        "disabled": {
+          "group": "Behavior"
+        },
+        "icon": {
+          "group": "Content"
+        },
+        "clearLabel": {
+          "group": "Accessibility"
         }
       }
     },
     "@kerfjs/ui:text": {
-      "groups": ["Content", "Appearance", "Wrapping"],
+      "groups": [
+        "Content",
+        "Appearance",
+        "Layout",
+        "Accessibility",
+        "Integration"
+      ],
       "props": {
         "children": {
           "group": "Content",
@@ -765,7 +3817,7 @@
           "control": "color"
         },
         "align": {
-          "group": "Appearance",
+          "group": "Layout",
           "order": 5,
           "control": "segmented"
         },
@@ -774,19 +3826,61 @@
           "order": 6
         },
         "wrap": {
-          "group": "Wrapping",
+          "group": "Layout",
+          "subgroup": "Wrapping",
           "order": 1,
           "control": "segmented"
         },
         "maxLines": {
-          "group": "Wrapping",
+          "group": "Layout",
+          "subgroup": "Wrapping",
           "order": 2,
           "control": "number"
         },
         "truncate": {
-          "group": "Wrapping",
+          "group": "Layout",
+          "subgroup": "Wrapping",
           "order": 3,
           "control": "segmented"
+        },
+        "id": {
+          "group": "Integration"
+        },
+        "lang": {
+          "group": "Accessibility"
+        },
+        "ariaLabel": {
+          "group": "Accessibility"
+        },
+        "weight": {
+          "group": "Appearance"
+        },
+        "border": {
+          "group": "Appearance"
+        },
+        "controlMargins": {
+          "group": "Layout"
+        },
+        "lineHeight": {
+          "group": "Appearance"
+        },
+        "live": {
+          "group": "Accessibility"
+        },
+        "truncateKeep": {
+          "group": "Layout",
+          "subgroup": "Wrapping"
+        }
+      }
+    },
+    "@kerfjs/ui:text#FieldLabel": {
+      "groups": ["Content", "Integration"],
+      "props": {
+        "children": {
+          "group": "Content"
+        },
+        "id": {
+          "group": "Integration"
         }
       }
     },
@@ -954,18 +4048,11 @@
         }
       }
     },
-    "@kerfjs/ui:value-preview": {
-      "props": {
-        "value": {
-          "control": "textarea"
-        }
-      }
-    },
     "@kerfjs/ui:toolbar": {
-      "groups": ["Content", "Layout", "Responsive"],
+      "groups": ["Appearance", "Layout", "Accessibility", "Integration"],
       "props": {
         "label": {
-          "group": "Content",
+          "group": "Accessibility",
           "order": 1
         },
         "position": {
@@ -974,12 +4061,12 @@
           "control": "segmented"
         },
         "density": {
-          "group": "Layout",
+          "group": "Appearance",
           "order": 2,
           "control": "segmented"
         },
         "dividerSides": {
-          "group": "Layout",
+          "group": "Appearance",
           "order": 3
         },
         "centerAlign": {
@@ -988,28 +4075,42 @@
           "control": "segmented"
         },
         "responsive": {
-          "group": "Responsive",
+          "group": "Layout",
           "order": 1
         },
         "responsiveAt": {
-          "group": "Responsive",
+          "group": "Layout",
           "order": 2
+        },
+        "id": {
+          "group": "Integration"
+        },
+        "safeAreaEdges": {
+          "group": "Layout"
         }
       }
     },
     "@kerfjs/ui:toolbar-control-group": {
-      "groups": ["Content", "Appearance", "Responsive", "State"],
+      "groups": [
+        "Content",
+        "Appearance",
+        "Behavior",
+        "Layout",
+        "Accessibility"
+      ],
       "props": {
         "label": {
-          "group": "Content",
+          "group": "Accessibility",
           "order": 1
         },
         "single": {
-          "group": "Content",
+          "group": "Appearance",
+          "subgroup": "Contents",
           "order": 2
         },
         "nestedDropdown": {
-          "group": "Content",
+          "group": "Appearance",
+          "subgroup": "Nested menu",
           "order": 3
         },
         "appearance": {
@@ -1038,46 +4139,181 @@
           "control": "segmented"
         },
         "overflow": {
-          "group": "Responsive",
+          "group": "Layout",
           "order": 1
         },
         "visibility": {
-          "group": "Responsive",
+          "group": "Layout",
+          "subgroup": "Responsive",
           "order": 2
         },
         "hideBelow": {
-          "group": "Responsive",
+          "group": "Layout",
+          "subgroup": "Responsive",
           "order": 3,
           "control": "length"
         },
         "showBelow": {
-          "group": "Responsive",
+          "group": "Layout",
+          "subgroup": "Responsive",
           "order": 4,
           "control": "length"
         },
         "expanded": {
-          "group": "State",
+          "group": "Behavior",
           "order": 1
         },
         "busy": {
-          "group": "State",
+          "group": "Behavior",
           "order": 2
         },
         "busyLabel": {
-          "group": "State",
+          "group": "Accessibility",
           "order": 3
+        },
+        "children": {
+          "group": "Content"
+        },
+        "material": {
+          "group": "Appearance"
+        },
+        "tileTone": {
+          "group": "Appearance",
+          "subgroup": "Contents"
+        },
+        "buttonAppearance": {
+          "group": "Appearance",
+          "subgroup": "Contents"
+        },
+        "content": {
+          "group": "Appearance",
+          "subgroup": "Contents"
+        },
+        "focusRing": {
+          "group": "Appearance",
+          "subgroup": "Focus and selection"
+        },
+        "selectedChrome": {
+          "group": "Appearance",
+          "subgroup": "Focus and selection"
+        },
+        "selectedTone": {
+          "group": "Appearance",
+          "subgroup": "Focus and selection"
+        },
+        "menuInset": {
+          "group": "Appearance",
+          "subgroup": "Nested menu"
+        },
+        "expandedOverflow": {
+          "group": "Layout"
+        },
+        "sizing": {
+          "group": "Layout"
+        },
+        "placement": {
+          "group": "Layout"
+        },
+        "growBasis": {
+          "group": "Layout"
+        },
+        "relocateOnCollapse": {
+          "group": "Layout"
+        },
+        "scrim": {
+          "group": "Appearance",
+          "subgroup": "Contents"
+        },
+        "avatarImage": {
+          "group": "Content"
+        }
+      }
+    },
+    "@kerfjs/ui:toolbar-control-group#ToolbarActionLink": {
+      "groups": ["Content", "Behavior", "Accessibility"],
+      "props": {
+        "href": {
+          "group": "Behavior"
+        },
+        "label": {
+          "group": "Content"
+        },
+        "icon": {
+          "group": "Content"
+        },
+        "detail": {
+          "group": "Content"
+        },
+        "ariaLabel": {
+          "group": "Accessibility"
+        },
+        "external": {
+          "group": "Behavior"
         }
       }
     },
     "@kerfjs/ui:toolbar-control-group#ToolbarButton": {
+      "groups": ["Content", "Appearance", "Behavior", "Accessibility"],
       "props": {
         "pressed": {
+          "group": "Behavior",
+          "subgroup": "State",
           "control": "select"
+        },
+        "children": {
+          "group": "Content"
+        },
+        "icon": {
+          "group": "Content"
+        },
+        "ariaLabel": {
+          "group": "Accessibility"
+        },
+        "action": {
+          "group": "Behavior"
+        },
+        "popoverTarget": {
+          "group": "Behavior"
+        },
+        "popoverTargetAction": {
+          "group": "Behavior"
+        },
+        "ariaHasPopup": {
+          "group": "Behavior"
+        },
+        "disabled": {
+          "group": "Behavior",
+          "subgroup": "State"
+        },
+        "title": {
+          "group": "Accessibility"
+        },
+        "selectedChrome": {
+          "group": "Appearance"
+        },
+        "badge": {
+          "group": "Content",
+          "subgroup": "Badge"
+        },
+        "badgeTone": {
+          "group": "Content",
+          "subgroup": "Badge"
+        },
+        "badgeMax": {
+          "group": "Content",
+          "subgroup": "Badge"
         }
       }
     },
     "@kerfjs/ui:toolbar-text": {
-      "groups": ["Content", "Appearance", "Behavior"],
+      "groups": [
+        "Content",
+        "Appearance",
+        "Behavior",
+        "Layout",
+        "Accessibility",
+        "Integration"
+      ],
       "props": {
         "text": {
           "group": "Content",
@@ -1088,7 +4324,7 @@
           "order": 2
         },
         "headingLevel": {
-          "group": "Content",
+          "group": "Accessibility",
           "order": 3,
           "control": "segmented"
         },
@@ -1107,11 +4343,11 @@
           "order": 3
         },
         "wrap": {
-          "group": "Appearance",
+          "group": "Layout",
           "order": 4
         },
         "maxLines": {
-          "group": "Appearance",
+          "group": "Layout",
           "order": 5,
           "control": "number"
         },
@@ -1122,16 +4358,120 @@
         "placeholder": {
           "group": "Behavior",
           "order": 2
+        },
+        "hideBelow": {
+          "group": "Layout"
+        },
+        "showBelow": {
+          "group": "Layout"
+        },
+        "id": {
+          "group": "Integration"
+        },
+        "fill": {
+          "group": "Layout"
+        },
+        "descriptionId": {
+          "group": "Accessibility"
         }
       }
     },
-    "@kerfjs/ui:popup-menu": {
+    "@kerfjs/ui:tree-list": {
+      "groups": [
+        "Content",
+        "Appearance",
+        "Behavior",
+        "Accessibility",
+        "Integration"
+      ],
       "props": {
-        "embedded": {
-          "control": "hidden"
+        "id": {
+          "group": "Integration"
         },
-        "embeddedSubmenu": {
-          "control": "hidden"
+        "label": {
+          "group": "Accessibility"
+        },
+        "nodes": {
+          "group": "Content"
+        },
+        "expanded": {
+          "group": "Behavior"
+        },
+        "keyedRows": {
+          "group": "Behavior"
+        },
+        "selected": {
+          "group": "Behavior"
+        },
+        "action": {
+          "group": "Behavior"
+        },
+        "toggleAction": {
+          "group": "Behavior"
+        },
+        "density": {
+          "group": "Appearance"
+        }
+      }
+    },
+    "@kerfjs/ui:value-preview": {
+      "groups": ["Content", "Layout", "Accessibility", "Integration"],
+      "props": {
+        "value": {
+          "group": "Content",
+          "control": "textarea"
+        },
+        "label": {
+          "group": "Accessibility"
+        },
+        "minHeight": {
+          "group": "Layout"
+        },
+        "maxHeight": {
+          "group": "Layout"
+        },
+        "id": {
+          "group": "Integration"
+        }
+      }
+    },
+    "@kerfjs/ui:value-table": {
+      "groups": ["Content", "Appearance", "Layout", "Accessibility"],
+      "props": {
+        "label": {
+          "group": "Accessibility"
+        },
+        "density": {
+          "group": "Appearance"
+        },
+        "labelWidth": {
+          "group": "Layout"
+        },
+        "presentation": {
+          "group": "Appearance"
+        },
+        "stackBelow": {
+          "group": "Layout"
+        },
+        "children": {
+          "group": "Content"
+        }
+      }
+    },
+    "@kerfjs/ui:value-table#ValueTableRow": {
+      "groups": ["Content", "Behavior"],
+      "props": {
+        "label": {
+          "group": "Content"
+        },
+        "value": {
+          "group": "Content"
+        },
+        "icon": {
+          "group": "Content"
+        },
+        "placeholder": {
+          "group": "Behavior"
         }
       }
     },
@@ -1234,6 +4574,95 @@
         "id": {
           "group": "Integration",
           "order": 1
+        }
+      }
+    },
+    "@kerfjs/ui:workbench-dialog": {
+      "groups": [
+        "Content",
+        "Appearance",
+        "Behavior",
+        "Layout",
+        "Accessibility",
+        "Integration"
+      ],
+      "props": {
+        "id": {
+          "group": "Integration"
+        },
+        "label": {
+          "group": "Accessibility"
+        },
+        "title": {
+          "group": "Content"
+        },
+        "description": {
+          "group": "Content"
+        },
+        "describedBy": {
+          "group": "Accessibility"
+        },
+        "leading": {
+          "group": "Content"
+        },
+        "actions": {
+          "group": "Content"
+        },
+        "main": {
+          "group": "Content"
+        },
+        "mainFooter": {
+          "group": "Content"
+        },
+        "mainBottomToolbar": {
+          "group": "Content"
+        },
+        "leftRail": {
+          "group": "Layout",
+          "subgroup": "Rails"
+        },
+        "rightRail": {
+          "group": "Layout",
+          "subgroup": "Rails"
+        },
+        "bottomDrawer": {
+          "group": "Layout",
+          "subgroup": "Rails"
+        },
+        "compact": {
+          "group": "Behavior"
+        },
+        "embedded": {
+          "group": "Behavior"
+        },
+        "closeLabel": {
+          "group": "Accessibility"
+        },
+        "lightDismiss": {
+          "group": "Behavior"
+        },
+        "size": {
+          "group": "Appearance"
+        },
+        "preferredWidth": {
+          "group": "Layout",
+          "subgroup": "Size"
+        },
+        "height": {
+          "group": "Layout",
+          "subgroup": "Size"
+        },
+        "maxHeight": {
+          "group": "Layout",
+          "subgroup": "Size"
+        },
+        "viewportGutter": {
+          "group": "Layout",
+          "subgroup": "Size"
+        },
+        "mainMinSize": {
+          "group": "Layout",
+          "subgroup": "Rails"
         }
       }
     }

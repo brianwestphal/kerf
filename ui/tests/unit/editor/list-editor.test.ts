@@ -266,7 +266,7 @@ describe(
             '#editor-inspector-stack [data-nav-key]',
           ),
         ].map((view) => view.dataset.navKey),
-      ).toEqual(['inspector', 'properties-Behavior', 'field-ticks']);
+      ).toEqual(['inspector', 'properties-Content', 'field-ticks']);
       expect(
         root.querySelector('#editor-inspector-stack')!.textContent,
       ).toContain('No items yet.');

@@ -243,10 +243,11 @@ describe('a new selection and the open page (KF-QWDPM3)', () => {
 
   it('returns to the overview from a group the new node lacks', () => {
     const { root } = open();
-    row(root, 'Accessibility').click();
+    // KF-DXTRPR: a Toolbar has no Behavior props (a List has every family).
+    row(root, 'Behavior').click();
     root
       .querySelector<HTMLElement>(
-        `[data-action="editor-select-node"][data-item-id="${FOLDERS}"]`,
+        `[data-action="editor-select-node"][data-item-id="${TOOLBAR}"]`,
       )!
       .click();
     expect(views(root)).toEqual(['inspector']);

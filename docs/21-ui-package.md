@@ -727,11 +727,13 @@ Behavior › Typing assistance, Workbench's Layout › Main). Older group names
 still read: `State`, `Form`, `Input`, `Validation`, and `Mode` become Behavior
 subgroups, `Surface` and `Chrome` Appearance ones, `Wrapping` and `Responsive`
 Layout ones, `Icon` a Content one and `Semantics` an Accessibility one; any
-other name stays its own section after the families. Seventeen palette
-components carry curated groups and controls: Button, ListHeader, Pane,
-Toolbar, ToolbarText, ToolbarControlGroup, List, ListItem, Text, TextField,
-Select, Switch, Checkbox, SegmentedControl, StateBanner, EmptyState, and
-Workbench; Button, TextField, and Workbench use the families directly. Run `npm run props:sync` after the build. `check:props` (in the ui
+other name stays its own section after the families. Every Kerf component
+(all 89 non-`wa-*` entries; KF-DXTRPR: catalog-wide curation) names a family
+for each visible prop, with task subgroups where a family holds more than one
+task (NavStack's Layout › Top toolbar and Bottom toolbar, ToolbarControlGroup's
+Appearance › Focus and selection, Checkbox's Behavior › Form and Validation);
+none uses the older names, and a family of more than ten fields always has
+titled tasks. Web Awesome entries still take families from their names. Run `npm run props:sync` after the build. `check:props` (in the ui
 `check` chain, after the build) fails on drift, on a schema violation, on an
 overlay key naming no component, prop, or declared group, on a `choicesFrom`
 naming no sibling prop, and on a catalog

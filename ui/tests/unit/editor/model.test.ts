@@ -9,10 +9,15 @@ import {
   visitNodes,
 } from '../../../src/editor/model/document.js';
 import {
+  FOCUSED_FIELD_LIMIT,
   formatValue,
   groupedProps,
+  type InspectorComponent,
   type InspectorProp,
   inspectorSections,
+  PROP_FAMILIES,
+  propPlace,
+  splitsIntoPages,
 } from '../../../src/editor/model/inspector.js';
 import {
   nodeTitle,
@@ -284,6 +289,85 @@ describe('inspector', () => {
         .map((prop) => prop.name);
       expect(placed.slice().sort()).toEqual(visible.slice().sort());
     }
+  });
+
+  describe('curated families across the Kerf catalog (KF-DXTRPR)', () => {
+    const kerf = [...propsByKey.values()].filter(
+      (component) =>
+        component.key.startsWith('@kerfjs/ui:') &&
+        !component.key.startsWith('@kerfjs/ui:wa-'),
+    );
+    const visible = (component: InspectorComponent) =>
+      component.props.filter(
+        (prop) =>
+          prop.control !== 'hidden' && !prop.zone && prop.type.kind !== 'never',
+      );
+    const place = (key: string, name: string) => {
+      const component = propsByKey.get(key)!;
+      const prop = component.props.find(
+        (candidate) => candidate.name === name,
+      )!;
+      return propPlace(prop, component).group;
+    };
+
+    it('gives every visible Kerf prop an explicit family, never the name fallback', () => {
+      expect(kerf.length).toBeGreaterThan(80);
+      const unplaced = kerf.flatMap((component) =>
+        visible(component)
+          // The class list is always Integration (KF-X8X8VX).
+          .filter((prop) => prop.control !== 'classes')
+          .filter(
+            (prop) =>
+              !prop.group ||
+              !(PROP_FAMILIES as readonly string[]).includes(prop.group) ||
+              !(component.groups ?? []).includes(prop.group),
+          )
+          .map((prop) => `${component.key} ${prop.name}`),
+      );
+      expect(unplaced).toEqual([]);
+    });
+
+    it('places the props the name fallback and legacy groups misplaced', () => {
+      const nav = '@kerfjs/ui:nav-stack';
+      expect(place(nav, 'views')).toBe('Content');
+      expect(place(nav, 'toolbarConfig')).toBe('Layout');
+      expect(place(nav, 'bottomToolbar')).toBe('Layout');
+      expect(place(nav, 'scheme')).toBe('Appearance');
+      expect(place(nav, 'tint')).toBe('Appearance');
+      const group = '@kerfjs/ui:toolbar-control-group';
+      expect(
+        groupedProps(propsByKey.get(group)!)
+          .find((family) => family.title === 'Behavior')!
+          .props.map((prop) => prop.name)
+          .sort(),
+      ).toEqual(['busy', 'expanded']);
+      expect(place(group, 'avatarImage')).toBe('Content');
+      expect(place(group, 'material')).toBe('Appearance');
+      expect(place(group, 'scrim')).toBe('Appearance');
+      expect(place(group, 'sizing')).toBe('Layout');
+      const checkbox = '@kerfjs/ui:checkbox';
+      expect(place(checkbox, 'size')).toBe('Appearance');
+      for (const name of ['error', 'name', 'action'])
+        expect(place(checkbox, name)).toBe('Behavior');
+      const list = '@kerfjs/ui:list';
+      expect(place(list, 'hidden')).toBe('Layout');
+      expect(place(list, 'inset')).toBe('Layout');
+      expect(place(list, 'labelledBy')).toBe('Accessibility');
+      expect(place(list, 'landmark')).toBe('Accessibility');
+    });
+
+    it('splits every family of more than ten fields into titled tasks', () => {
+      const crowded = kerf.flatMap((component) =>
+        groupedProps(component)
+          .filter(
+            (family) =>
+              family.props.length > FOCUSED_FIELD_LIMIT &&
+              !splitsIntoPages(family),
+          )
+          .map((family) => `${component.key} ${family.title}`),
+      );
+      expect(crowded).toEqual([]);
+    });
   });
 
   it('reads legacy and custom group names, and places uncurated props', () => {
