@@ -850,6 +850,7 @@ type ListHeaderRootAttributes = Readonly<Record<`data-${string}`, string | undef
     'data-wrap'?: never;
     'data-indicator-tone'?: never;
     'data-toggle'?: never;
+    'data-leading-edge'?: never;
 }>;
 type ListHeaderTriggerAttributes = Readonly<Record<`data-${string}`, string | undefined> & {
     'data-action'?: never;
@@ -875,6 +876,13 @@ interface ListHeaderBaseProps {
      * readable in a narrow column, such as a specimen or form-section heading.
      */
     wrap?: boolean;
+    /**
+     * Start the label on another component's leading-content edge (KF-J8GMA2).
+     * `summary-row` spans the full width as `SummaryRow`s do and starts the
+     * label where their leading content starts, compacting with them at the
+     * same width; for a fill-width header directly above summary rows.
+     */
+    leadingEdge?: 'default' | 'summary-row';
     indicatorTone?: 'neutral' | 'accent' | 'pop' | 'danger';
     /** Render as an unanimated loading skeleton: keep the label and action affordance, disable interaction. */
     placeholder?: boolean;
@@ -976,7 +984,7 @@ type ListHeaderIndicatorProps = {
     status?: string | SafeHtml | undefined;
 };
 type ListHeaderProps = ListHeaderBaseProps & ListHeaderIndicatorProps & ListHeaderModeProps;
-declare function ListHeader({ label, size, headingLevel, count, countLabel, badge, status, density, divider, inline, width, wrap, indicatorTone, action, actionLabel, actionIcon, actionDisabled, disabledReason, expanded, toggle, overflowAction, overflowLabel, overflowIcon, overflowDisabled, overflowTriggerAttributes, placeholder, rootAttributes, triggerAttributes, controls, slot, }: ListHeaderProps): SafeHtml;
+declare function ListHeader({ label, size, headingLevel, count, countLabel, badge, status, density, divider, inline, width, wrap, leadingEdge, indicatorTone, action, actionLabel, actionIcon, actionDisabled, disabledReason, expanded, toggle, overflowAction, overflowLabel, overflowIcon, overflowDisabled, overflowTriggerAttributes, placeholder, rootAttributes, triggerAttributes, controls, slot, }: ListHeaderProps): SafeHtml;
 
 export { ListHeader, type ListHeaderProps };
 ```

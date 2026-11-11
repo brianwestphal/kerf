@@ -3,12 +3,13 @@ import { Button } from '@kerfjs/ui/button';
 import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
 import { Chip } from '@kerfjs/ui/chip';
 import { List } from '@kerfjs/ui/list';
+import { ListHeader } from '@kerfjs/ui/list-header';
 import { LucideIcon } from '@kerfjs/ui/lucide-icon';
 import { SummaryRow } from '@kerfjs/ui/summary-row';
 import { Text } from '@kerfjs/ui/text';
 import { Bug, Lightbulb, ListTodo } from 'lucide';
 
-import { summaryRowSelected } from './state.js';
+import { summaryRowSectionOpen, summaryRowSelected } from './state.js';
 
 const items = [
   {
@@ -96,6 +97,34 @@ export function SummaryRowDemo() {
       >
         <List controlInsets="trbl" selectionMode="single" ariaLabel="Tickets">
           {rows('row')}
+        </List>
+      </CatalogExample>
+      <CatalogExample
+        label="Section Header on the Rows' Edge"
+        note='leadingEdge="summary-row" starts the header label on the rows&apos; leading-content edge, and compacts with them in a narrow column.'
+        viewport={{ width: 'medium', surface: 'lowered', frame: 'solid' }}
+        rootAttributes={{ 'data-demo-summary-row-header': '' }}
+      >
+        <List controlInsets="trbl">
+          <ListHeader
+            label="Started"
+            count={3}
+            countLabel="3 started tickets"
+            size="m"
+            leadingEdge="summary-row"
+            toggle
+            expanded={summaryRowSectionOpen.value}
+            action="toggle-summary-row-section"
+            controls="summary-row-section-rows"
+          />
+          <List
+            id="summary-row-section-rows"
+            hidden={!summaryRowSectionOpen.value}
+            selectionMode="single"
+            ariaLabel="Started"
+          >
+            {rows('row')}
+          </List>
         </List>
       </CatalogExample>
       <CatalogExample

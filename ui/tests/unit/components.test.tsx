@@ -2480,6 +2480,52 @@ describe('production UI primitives', () => {
     ).not.toContain('data-list-header-overflow');
   });
 
+  // KF-J8GMA2: a header above summary rows starts on their leading edge.
+  it('marks a ListHeader that starts on the summary rows’ leading edge', () => {
+    const heading = asHtml(
+      ListHeader({ label: 'Started', leadingEdge: 'summary-row' }),
+    );
+    expect(heading).toContain('data-leading-edge="summary-row"');
+    const toggle = asHtml(
+      ListHeader({
+        label: 'Started',
+        leadingEdge: 'summary-row',
+        toggle: true,
+        expanded: true,
+        action: 'toggle-started',
+        rootAttributes: { 'data-leading-edge': 'ignored' } as never,
+      }),
+    );
+    expect(toggle).toContain('data-leading-edge="summary-row"');
+    expect(toggle).not.toContain('data-leading-edge="ignored"');
+    for (const props of [
+      { label: 'Started' },
+      { label: 'Started', leadingEdge: 'default' as const },
+    ])
+      expect(asHtml(ListHeader(props))).not.toContain('data-leading-edge');
+  });
+
+  it('keeps ListHeader’s leading edge on the summary row’s tokens and compaction', () => {
+    const css = (path: string) =>
+      readFileSync(resolve(import.meta.dirname, '../../src', path), 'utf8');
+    const header = css('components/collections/list-header/list-header.css');
+    const row = css('components/collections/summary-row/summary-row.css');
+    // The row body's inline padding, wide and compact…
+    expect(row).toMatch(
+      /\.kui-summary-row__body \{[^}]*padding: var\(--kui-space-xs\) var\(--kui-space-s\);/,
+    );
+    expect(row).toMatch(
+      /@container \(max-width: remify\(384px\)\) \{\s*\.kui-summary-row__body \{\s*padding: var\(--kui-space-xs\);/,
+    );
+    // …is the header's, at the same width.
+    expect(header).toContain(
+      '--_kui-list-header-leading-edge: var(--kui-space-s);',
+    );
+    expect(header).toMatch(
+      /@container \(max-width: remify\(384px\)\) \{[^@]*--_kui-list-header-leading-edge: var\(--kui-space-xs\);/,
+    );
+  });
+
   it('wraps plain-text ListHeader badge and status in its own escaped badges', () => {
     const header = asHtml(
       ListHeader({

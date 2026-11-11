@@ -254,6 +254,7 @@ import {
   sizedDisclosureOpen,
   splitButtonOptionsOpen,
   splitButtonRunning,
+  summaryRowSectionOpen,
   summaryRowSelected,
   switchLiveUpdates,
   tabBarActive,
@@ -762,6 +763,12 @@ const stopActions = delegateActions(app, 'click', {
     actionLog.value = disclosureOpen.value
       ? 'Disclosure opened'
       : 'Disclosure closed';
+  },
+  'toggle-summary-row-section': () => {
+    summaryRowSectionOpen.value = !summaryRowSectionOpen.value;
+    actionLog.value = summaryRowSectionOpen.value
+      ? 'Section opened'
+      : 'Section closed';
   },
   'toggle-list-header-group': () => {
     listHeaderGroupOpen.value = !listHeaderGroupOpen.value;

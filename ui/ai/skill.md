@@ -178,6 +178,11 @@ ellipsis; do not add a clamp or `text-overflow` in app CSS.
 An option SummaryRow accepts `draggable` on its root in either row or card
 presentation; the application owns dragstart/drop behavior, while the same
 option keeps its keyboard selection target and delegated `data-*` identity.
+Head a section of summary rows with a `ListHeader` given
+`leadingEdge="summary-row"` in the same container as the rows: it spans the
+full width as they do, starts its label on their leading-content edge, and
+compacts with them at their 384px width; never mirror their inset
+with an app token or container query.
 
 Name a List people navigate to by name (a reader, a result picker, a board
 column) with `landmark="region"` and a required `ariaLabel`, not a `role` in

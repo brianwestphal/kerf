@@ -25,6 +25,7 @@ const PROTECTED_ROOT_DATA_ATTRIBUTES = new Set([
   'data-wrap',
   'data-indicator-tone',
   'data-toggle',
+  'data-leading-edge',
 ]);
 const PROTECTED_TRIGGER_DATA_ATTRIBUTES = new Set([
   'data-action',
@@ -45,6 +46,7 @@ type ListHeaderRootAttributes = Readonly<
     'data-wrap'?: never;
     'data-indicator-tone'?: never;
     'data-toggle'?: never;
+    'data-leading-edge'?: never;
   }
 >;
 
@@ -75,6 +77,13 @@ interface ListHeaderBaseProps {
    * readable in a narrow column, such as a specimen or form-section heading.
    */
   wrap?: boolean;
+  /**
+   * Start the label on another component's leading-content edge (KF-J8GMA2).
+   * `summary-row` spans the full width as `SummaryRow`s do and starts the
+   * label where their leading content starts, compacting with them at the
+   * same width; for a fill-width header directly above summary rows.
+   */
+  leadingEdge?: 'default' | 'summary-row';
   indicatorTone?: 'neutral' | 'accent' | 'pop' | 'danger';
   /** Render as an unanimated loading skeleton: keep the label and action affordance, disable interaction. */
   placeholder?: boolean;
@@ -199,6 +208,7 @@ export function ListHeader({
   inline = false,
   width = 'fill',
   wrap = false,
+  leadingEdge = 'default',
   indicatorTone = 'neutral',
   action,
   actionLabel,
@@ -285,6 +295,9 @@ export function ListHeader({
         data-inline={String(inline)}
         data-width={width}
         data-wrap={wrap ? 'true' : undefined}
+        data-leading-edge={
+          leadingEdge === 'summary-row' ? 'summary-row' : undefined
+        }
         data-indicator-tone={indicatorTone}
         data-toggle="true"
         data-placeholder={placeholder ? 'true' : undefined}
@@ -344,6 +357,9 @@ export function ListHeader({
       data-inline={String(inline)}
       data-width={width}
       data-wrap={wrap ? 'true' : undefined}
+      data-leading-edge={
+        leadingEdge === 'summary-row' ? 'summary-row' : undefined
+      }
       data-indicator-tone={indicatorTone}
       data-toggle="false"
       data-placeholder={placeholder ? 'true' : undefined}

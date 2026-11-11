@@ -30,6 +30,7 @@ Use the spacing scale by relationship: 8px within a group, 16px between like gro
 - Use ordinary row selection for browsing. Checkboxes mean multi-selection for a bulk task, not the default way to open an item. Keep selected, focused, disabled, loading, and error cues distinct and accessible without color alone.
 - Put secondary row actions in a meaningful “…” menu and expose the same actions through the row's context menu. Every actionable menu entry has an icon from the application's shared icon set. Double-click opens an editable item; always offer a keyboard and visible edit route too.
 - A collapsible section that has its own commands shows them from one trailing overflow button on its header; the header's label and arrow toggle the section, and the overflow button never does (`ListHeader` `toggle` with `overflowAction`).
+- A section header above summary rows starts its label on the rows' leading-content edge; the header and the rows compact together (`ListHeader` `leadingEdge="summary-row"`).
 - Reordering uses drag and drop when the order has meaning. Supply an accessible keyboard route and visible position feedback. Do not expose internal database or provider IDs as ordinary row copy.
 - Reuse a semantic component for the same feature in different contexts, with explicit presentation or read-only variants. A list row and a board card should keep the same identity and actions. An enabled control in a demo must work in its shipped parent composition.
 

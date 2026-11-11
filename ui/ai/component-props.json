@@ -7100,6 +7100,18 @@
           "group": "Layout"
         },
         {
+          "name": "leadingEdge",
+          "type": {
+            "kind": "enum",
+            "values": ["default", "summary-row"],
+            "text": "\"default\" | \"summary-row\" | undefined",
+            "nullable": true
+          },
+          "required": false,
+          "description": "Start the label on another component's leading-content edge (KF-J8GMA2).\n`summary-row` spans the full width as `SummaryRow`s do and starts the\nlabel where their leading content starts, compacting with them at the\nsame width; for a fill-width header directly above summary rows.",
+          "group": "Layout"
+        },
+        {
           "name": "indicatorTone",
           "type": {
             "kind": "enum",
@@ -7234,13 +7246,22 @@
                   "nullable": true
                 },
                 "required": false
+              },
+              {
+                "name": "data-leading-edge",
+                "type": {
+                  "kind": "never",
+                  "text": "undefined",
+                  "nullable": true
+                },
+                "required": false
               }
             ],
             "index": {
               "keyPrefix": "data-",
               "value": { "kind": "string", "text": "string", "nullable": true }
             },
-            "text": "Readonly<Record<`data-${string}`, string | undefined> & { 'data-component'?: undefined; 'data-action'?: undefined; 'data-has-badge'?: undefined; 'data-has-count'?: undefined; 'data-density'?: undefined; 'data-size'?: undefined; 'data-divider'?: undefined; 'data-inline'?: undefined; 'data-width'?: undefined; 'data-wrap'?: undefined; 'data-indicator-tone'?: undefined; 'data-toggle'?: undefined; }>",
+            "text": "Readonly<Record<`data-${string}`, string | undefined> & { 'data-component'?: undefined; 'data-action'?: undefined; 'data-has-badge'?: undefined; 'data-has-count'?: undefined; 'data-density'?: undefined; 'data-size'?: undefined; 'data-divider'?: undefined; 'data-inline'?: undefined; 'data-width'?: undefined; 'data-wrap'?: undefined; 'data-indicator-tone'?: undefined; 'data-toggle'?: undefined; 'data-leading-edge'?: undefined; }>",
             "nullable": true
           },
           "required": false,

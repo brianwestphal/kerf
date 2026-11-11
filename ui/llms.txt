@@ -845,6 +845,9 @@ headingLevel`, `SearchField clearIcon`, `ContentItem frame="framed"` for a
   recovery button, set `semanticRole="group"` and `ariaLabel`; the root is not
   a Tab stop and only the button activates. Set `draggable` on an option row or
   card for a native drag source on that same selection root.
+  A `ListHeader` above the rows in their container takes
+  `leadingEdge="summary-row"`: it starts its label on their leading-content
+  edge and compacts with them; never mirror their inset in app CSS.
 - **Group settings rows in `FramedList`.** For rows of arbitrary content in
   one rounded frame with dividers between them (settings, account cards,
   shortcut lists), compose `FramedListRow`s; `ValueTable` is the same frame for
