@@ -22,6 +22,7 @@ import {
   matchIcons,
 } from '../../../src/editor/model/icons.js';
 import { loadScaledTimeout } from '../../helpers/load-scaled-timeout.js';
+import { showAllProperties, showProp } from './editing-harness.js';
 import { createEditor } from './kerf-catalog.js';
 
 const require = createRequire(import.meta.url);
@@ -181,6 +182,7 @@ describe(
   () => {
     it('shows a LucideIcon’s icon as a row, picks another, and removes it', () => {
       const { root, props } = added('@kerfjs/ui:lucide-icon');
+      showProp(root, 'icon');
       const row = root.querySelector<HTMLElement>(
         `[data-editor-icon-place='{"prop":"icon","path":[]}']`,
       )!;
@@ -251,6 +253,7 @@ describe(
         icon: { $icon: 'circle' },
         name: 'circle',
       });
+      showAllProperties(root);
       const icon = root.querySelector(
         `[data-editor-icon-place='{"prop":"icon","path":[]}']`,
       )!;
@@ -322,6 +325,7 @@ describe(
       editor.document.value = setProp(editor.document.value, id, 'icon', {
         $icon: 'no-such-icon',
       });
+      showProp(root, 'icon');
       const row = root.querySelector<HTMLElement>(
         `[data-editor-icon-place='{"prop":"icon","path":[]}']`,
       )!;

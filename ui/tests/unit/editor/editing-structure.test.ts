@@ -12,6 +12,8 @@ import {
   FOLDERS,
   open,
   PANE,
+  showAllProperties,
+  showProp,
   TOOLBAR,
 } from './editing-harness.js';
 import { viewCatalog } from './kerf-catalog.js';
@@ -64,7 +66,7 @@ describe('structural edits', () => {
       // A List does not fit a Button's icon: nothing changes, and a notice
       // says so.
       editor.selection.value = { kind: 'node', id: COMPOSE };
-      click(root, 'editor-content-add');
+      field(root, '[data-editor-content-add="icon"]').click();
       const unchanged = editor.document.value;
       key('v');
       expect(editor.document.value).toBe(unchanged);
@@ -197,9 +199,7 @@ describe('structural edits', () => {
         },
       } as never;
       editor.selection.value = { kind: 'node', id };
-      return root.querySelector<HTMLElement>(
-        '[data-editor-content-node="trailing"]',
-      )!;
+      return field(root, '[data-editor-content-node="trailing"]');
     };
     const badge = (name?: string) => ({
       id: `01JB8Z1M6Q8E1X9V4S7K2R3TR${name ? '1' : '2'}`,
@@ -221,6 +221,7 @@ describe('structural edits', () => {
     const { root, editor, node } = open(COMPOSE);
     const row = () =>
       root.querySelector<HTMLElement>('[data-editor-content-add="icon"]');
+    showProp(root, 'icon');
     expect(row()!.textContent).toContain('Not set');
     row()!.click();
     const [icon] = node()!.zones!.icon as { id: string; type: string }[];
@@ -228,9 +229,7 @@ describe('structural edits', () => {
     expect(editor.selection.value).toEqual({ kind: 'node', id: icon!.id });
     // Back on the Button, the row names what fills it and selects it.
     editor.selection.value = { kind: 'node', id: COMPOSE };
-    const filled = root.querySelector<HTMLElement>(
-      '[data-editor-content-node="icon"]',
-    )!;
+    const filled = field(root, '[data-editor-content-node="icon"]');
     expect(filled.textContent).toContain('LucideIcon · circle');
     expect(row()).toBeNull();
     filled.click();
@@ -252,6 +251,7 @@ describe('structural edits', () => {
     } as never;
     editor.selection.value = { kind: 'node', id };
     // The main zone has no row; trailing does.
+    showAllProperties(root);
     expect(
       root.querySelector('[data-editor-content-add="children"]'),
     ).toBeNull();

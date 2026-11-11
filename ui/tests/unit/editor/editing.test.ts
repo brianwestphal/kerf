@@ -12,6 +12,8 @@ import {
   FOLDERS,
   open,
   PANE,
+  showAllProperties,
+  showProp,
   teardown,
   TOOLBAR,
   type,
@@ -301,6 +303,7 @@ describe('Inspector control identity', () => {
       );
     // A required prop (a Text's children) has no toggle; emptied, it is "".
     const text = open('01JB8Z1M6Q8E1X9V4S7K2R3T5G');
+    showProp(text.root, 'children');
     expect(toggle(text.root, 'children')).toBeNull();
     type(field(text.root, '[data-editor-prop="children"]'), '');
     expect(text.node()!.props?.children).toBe('');
@@ -308,6 +311,7 @@ describe('Inspector control identity', () => {
     // An optional one (a Button's title) starts Not set (pressed).
     const { root, node } = open();
     expect(node()!.props?.title).toBeUndefined();
+    showProp(root, 'title');
     expect(toggle(root, 'title')!.getAttribute('aria-pressed')).toBe('true');
     const input = () =>
       field(root, '[data-editor-prop="title"]').querySelector('input')!;
@@ -331,6 +335,8 @@ describe('Inspector control identity', () => {
 
   it('keeps each control’s input when a problem appears above them', () => {
     const { root, editor } = open();
+    // Every control shows on the All properties page (KF-QWDPM3).
+    showAllProperties(root);
     const inputs = () =>
       new Map(
         [
@@ -374,6 +380,7 @@ describe('renaming a param', () => {
 
   it('renames from the bound prop and refuses a taken or invalid name', () => {
     const { root, editor, node } = open(TITLE_TEXT);
+    showProp(root, 'text');
     const param = () => field(root, '[data-editor-param]');
     expect(param().dataset.editorParam).toBe('title');
     type(param(), 'heading');

@@ -4,6 +4,7 @@
 // popup.
 import { expect, type Locator, type Page, test } from '@playwright/test';
 
+import { showProp } from './build.js';
 import { settled } from './settled.js';
 
 const ids = {
@@ -315,6 +316,7 @@ for (const width of [1440, 390]) {
     // dialog it opens.
     const open = async (path: readonly (string | number)[]) => {
       const scope = path.length ? page.locator('dialog[open]') : page;
+      if (!path.length) await showProp(page, 'items');
       const row = scope
         .locator(
           `[data-editor-open='${JSON.stringify({ prop: 'items', path })}']`,

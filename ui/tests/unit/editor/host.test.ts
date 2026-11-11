@@ -10,6 +10,7 @@ import compositionJson from '../../../ai/component-composition.json';
 import propsJson from '../../../ai/component-props.json';
 import { findNode } from '../../../src/editor/model/document.js';
 import { setProp } from '../../../src/editor/model/edits.js';
+import { showProp } from './editing-harness.js';
 import {
   componentFunctions,
   createEditor,
@@ -276,6 +277,7 @@ describe('inspector edits a host can reach', () => {
       document: document_ as unknown as ViewDocument,
     });
     editor.selection.value = { kind: 'node', id: bar };
+    showProp(root, 'value');
     const field = root.querySelector<HTMLElement>(
       '[data-editor-prop="value"]',
     )!;

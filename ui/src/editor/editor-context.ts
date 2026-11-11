@@ -37,6 +37,15 @@ export interface EditorContext {
   readonly currentProblems: ReadonlySignal<readonly Problem[]>;
   /** The Inspector's area (Properties, Flow, Children). */
   readonly inspectorArea: Signal<InspectorArea>;
+  /**
+   * KF-QWDPM3: the Properties page open over the Inspector, as a path: a
+   * group (`['Behavior']`), a task in it (`['Behavior', 'Link']`), or
+   * `[ALL_PROPERTIES]`; empty on the Properties overview.
+   */
+  readonly inspectorGroup: Signal<readonly string[]>;
+  /** The All properties page's search, and its clear revision. */
+  readonly propertiesQuery: Signal<string>;
+  readonly propertiesQueryRevision: Signal<number>;
   /** The type table component `key`'s props catalog declares. */
   readonly definitionsOf: (key: string) => Record<string, ViewType>;
   /** The Inspector entry for a node (a `#view` one's from its params). */

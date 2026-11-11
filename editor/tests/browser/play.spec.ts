@@ -3,6 +3,8 @@
 // play-time copy; Done or Escape returns to the editor as it was.
 import { expect, type Page, test } from '@playwright/test';
 
+import { showProp } from './build.js';
+
 const ids = {
   tabs: '01JB8Z1M6Q8E1X9V4S7K2R3T8B',
   stack: '01JB8Z1M6Q8E1X9V4S7K2R3T8C',
@@ -131,6 +133,7 @@ test('Play shows the stage at the device viewport and Done restores the editor',
   const highlight = page.locator('.kui-editor__selection');
   await expect(highlight).toBeVisible();
   const ring = await highlight.boundingBox();
+  await showProp(page, 'children');
   const children = page.locator(
     '[data-editor-prop="children"] textarea, [data-editor-prop="children"] input',
   );

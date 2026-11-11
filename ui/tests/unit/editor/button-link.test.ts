@@ -9,6 +9,7 @@ import propsJson from '../../../ai/component-props.json';
 import { choiceOptions } from '../../../src/editor/model/controls.js';
 import { findNode } from '../../../src/editor/model/document.js';
 import { objectFields, typeAt } from '../../../src/editor/model/fields.js';
+import { field } from './editing-harness.js';
 import { createEditor } from './kerf-catalog.js';
 
 const definitions = propsJson.definitions as unknown as Record<
@@ -51,9 +52,6 @@ afterEach(() => {
   document.body.replaceChildren();
 });
 
-const field = (root: HTMLElement, selector: string) =>
-  root.querySelector<HTMLElement>(selector)!;
-
 function choose(select: HTMLElement, value: string) {
   select.setAttribute('value', value);
   Object.defineProperty(select, 'value', { configurable: true, value });
@@ -79,7 +77,8 @@ describe('a Button link in the Inspector (KF-RESJ2S)', () => {
     field(root, '[data-action="editor-replace-root"]').click();
     const id = editor.document.value.root!.id;
     const props = () => findNode(editor.document.value, id)!.node.props ?? {};
-    const kind = root.querySelector<HTMLElement>(
+    const kind = field(
+      root,
       '[data-editor-prop="link"][data-editor-kind="choice"]',
     );
     expect(kind).not.toBeNull();

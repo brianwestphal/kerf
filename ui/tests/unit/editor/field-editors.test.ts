@@ -30,6 +30,7 @@ import {
   withRequiredBooleans,
   withValueAt,
 } from '../../../src/editor/model/fields.js';
+import { choose, click, field, type } from './editing-harness.js';
 import { createEditor } from './kerf-catalog.js';
 
 const definitions = propsJson.definitions as unknown as Record<
@@ -277,24 +278,6 @@ afterEach(() => {
   document.body.replaceChildren();
 });
 
-const field = (root: HTMLElement, selector: string) =>
-  root.querySelector<HTMLElement>(selector)!;
-
-function choose(select: HTMLElement, value: string) {
-  select.setAttribute('value', value);
-  Object.defineProperty(select, 'value', { configurable: true, value });
-  select.dispatchEvent(new Event('change', { bubbles: true }));
-}
-
-function type(host: HTMLElement, value: string) {
-  const input = host.querySelector<HTMLInputElement>('input, textarea')!;
-  input.value = value;
-  input.dispatchEvent(new Event('change', { bubbles: true }));
-}
-
-const click = (root: HTMLElement, action: string) =>
-  field(root, `[data-action="${action}"]`).click();
-
 /** The Configure row that opens `prop` (or a field at `path` inside it). */
 const opener = (root: HTMLElement, prop: string, path: unknown[] = []) =>
   field(
@@ -336,6 +319,13 @@ const views = (root: HTMLElement) =>
     ),
   ].map((view) => view.dataset.navKey);
 
+/** KF-QWDPM3: the Properties pages that hold a Workbench's main pane props. */
+const LAYOUT_MAIN = [
+  'inspector',
+  'properties-Layout',
+  'properties-Layout-Main',
+];
+
 describe('object forms in the Inspector (KF-Z9S029)', () => {
   it('shows an object prop as a Configure row instead of JSON', () => {
     const { root } = workbench();
@@ -353,7 +343,7 @@ describe('object forms in the Inspector (KF-Z9S029)', () => {
   it('pushes a small object’s form, edits it live, and pops with Back', () => {
     const { root, props } = workbench();
     opener(root, 'mainFooterList').click();
-    expect(views(root)).toEqual(['inspector', 'field-mainFooterList']);
+    expect(views(root)).toEqual([...LAYOUT_MAIN, 'field-mainFooterList']);
     choose(at(root, 'mainFooterList', ['hAlign']), 'center');
     expect(props().mainFooterList).toEqual({ hAlign: 'center' });
     // The form stays open on the edited value, and its row says so.
@@ -366,7 +356,7 @@ describe('object forms in the Inspector (KF-Z9S029)', () => {
       ).getAttribute('value'),
     ).toBe('center');
     field(root, '#editor-inspector-stack [data-nav-back]').click();
-    expect(views(root)).toEqual(['inspector']);
+    expect(views(root)).toEqual(LAYOUT_MAIN);
     expect(
       field(root, `[data-editor-open='{"prop":"mainFooterList","path":[]}']`)
         .textContent,
@@ -378,7 +368,7 @@ describe('object forms in the Inspector (KF-Z9S029)', () => {
     opener(root, 'mainPane').click();
     const dialog = field(root, '#editor-field-dialog') as HTMLDialogElement;
     expect(dialog.open).toBe(true);
-    expect(views(root)).toEqual(['inspector']);
+    expect(views(root)).toEqual(LAYOUT_MAIN);
     expect(dialog.textContent).toContain('Chrome dividers');
     choose(at(root, 'mainPane', ['chromeDividers']), 'always');
     expect(props().mainPane).toEqual({ chromeDividers: 'always' });
@@ -400,7 +390,7 @@ describe('object forms in the Inspector (KF-Z9S029)', () => {
   it('closes the editor when its node is no longer selected', () => {
     const { root, editor } = workbench();
     opener(root, 'mainFooterList').click();
-    expect(views(root)).toHaveLength(2);
+    expect(views(root)).toEqual([...LAYOUT_MAIN, 'field-mainFooterList']);
     editor.selection.value = null;
     expect(views(root)).toEqual(['inspector']);
   });

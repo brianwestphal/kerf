@@ -2,6 +2,7 @@ import { expect, type Page, test } from '@playwright/test';
 
 import { FIXTURE_EDITOR_URL } from '../../ports.js';
 import { area, openLibrary } from './areas.js';
+import { showConfigure, showProp } from './build.js';
 
 // KF-6GT5QY: an application's own dev server hosts the editor through
 // `@kerfjs/ui/vite-editor`, and its own component (OrderCard, which lives in
@@ -55,9 +56,11 @@ test('an app’s dev server hosts the editor with its own components', async ({
   await expect(card.locator('h3')).toHaveText('OrderCard');
 
   // The inspector edits its props from the app's prop catalog.
+  await showProp(page, 'status');
   await page.locator('[data-editor-prop="status"]').click();
   await page.getByRole('option', { name: 'shipped' }).click();
   await expect(card).toHaveAttribute('data-status', 'shipped');
+  await showProp(page, 'title');
   const title = page.locator('[data-editor-prop="title"]').getByRole('textbox');
   await title.fill('Order 1024');
   await title.press('Enter');
@@ -96,6 +99,7 @@ test('an app’s field editor edits its own type', async ({ page }, info) => {
   await page.getByRole('button', { name: 'Add', exact: true }).click();
   await area(page, 'Properties');
 
+  await showConfigure(page, 'Configure shipping');
   await page.getByRole('button', { name: 'Configure shipping' }).click();
   const stack = page.locator('#editor-inspector-stack');
   await stack.getByRole('button', { name: 'This week' }).click();

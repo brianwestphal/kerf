@@ -10,6 +10,7 @@ import {
   FOLDERS,
   open,
   PANE,
+  showProp,
   type,
 } from './editing-harness.js';
 import { viewCatalog } from './kerf-catalog.js';
@@ -45,6 +46,8 @@ describe('list props (KF-HNNWN9)', () => {
       root.querySelector<HTMLElement>(
         '[data-editor-prop="gap"][data-editor-kind="css"]',
       );
+    showProp(root, 'gap');
+    expect(gap()).not.toBeNull();
     expect(builder()).toBeNull();
     choose(gap(), 'm');
     expect(node()?.props?.gap).toBe('m');
@@ -81,6 +84,8 @@ describe('list props (KF-HNNWN9)', () => {
       root.querySelector<HTMLElement>(
         `[data-editor-field='${JSON.stringify({ prop: 'gap', path: [name] })}'][data-editor-kind="${kind}"]`,
       );
+    showProp(root, 'gap');
+    expect(gap()).not.toBeNull();
     expect(axis('column')).toBeNull();
     choose(gap(), 'l');
     choose(gap(), 'axes');
@@ -191,6 +196,7 @@ describe('list props (KF-HNNWN9)', () => {
     const { root } = add('@kerfjs/ui:popup-menu');
     // The optional anchor is unset and opens its form (KF-Z9S029), with no
     // Fill button beside it.
+    showProp(root, 'anchor');
     expect(
       root.querySelector('[data-editor-open*=\'"prop":"anchor"\']'),
     ).not.toBeNull();

@@ -2,7 +2,13 @@ import { mkdir, readFile, writeFile } from 'node:fs/promises';
 
 import { expect, type Locator, type Page, test } from '@playwright/test';
 
-import { area, openLibrary } from './areas.js';
+import {
+  area,
+  inspectorBack,
+  inspectorSettled,
+  inspectorTop,
+  openLibrary,
+} from './areas.js';
 import { sampleName } from './sample-name.js';
 
 /**
@@ -68,14 +74,130 @@ export async function select(page: Page, name: RegExp | string, nth = 0) {
   await area(page, 'Properties');
 }
 
+/**
+ * KF-QWDPM3: opens the Properties page holding prop `name` as a person
+ * would, from its group's row and then its task's, unless the field (or its
+ * Configure or content row) already shows.
+ */
+export async function showProp(page: Page, name: string) {
+  const here = [
+    `[data-editor-prop="${name}"]`,
+    `[data-editor-open^='{"prop":"${name}"']`,
+    `[data-editor-content-add="${name}"]`,
+    `[data-editor-content-node="${name}"]`,
+    `[data-editor-icon-place^='{"prop":"${name}"']`,
+    `[data-editor-promote-prop="${name}"]`,
+  ].join(', ');
+  for (let step = 0; step < 6; step += 1) {
+    if (await page.locator(here).filter({ visible: true }).count()) return;
+    const row = inspectorTop(page)
+      .locator(`[data-editor-group-props~="${name}"]`)
+      .first();
+    if (!(await row.count())) {
+      // Another group's page: back out toward the overview.
+      if (
+        !(await inspectorTop(page).count()) ||
+        (await inspectorTop(page).getAttribute('data-nav-key')) === 'inspector'
+      )
+        return;
+      await inspectorBack(page);
+      continue;
+    }
+    // The overview's directory shows under its Properties tab.
+    if (!(await row.isVisible())) await area(page, 'Properties');
+    await openGroupRow(page, row);
+    // The page holding it, though its field may carry no hook (a content
+    // prop holding nodes reads as a disabled field).
+    if (
+      !(await inspectorTop(page)
+        .locator(`[data-editor-group-props~="${name}"]`)
+        .count())
+    )
+      return;
+  }
+}
+
+/** Follows a Properties directory row onto the page it opens. */
+async function openGroupRow(page: Page, row: Locator) {
+  const path = await row.getAttribute('data-editor-prop-group');
+  await row.click();
+  await expect(
+    inspectorTop(page).locator(`[data-editor-properties-page="${path}"]`),
+  ).toBeVisible();
+  await inspectorSettled(page);
+}
+
+/**
+ * KF-QWDPM3: shows `target` (a row on some Properties page, such as a
+ * promoted prop's param field or a Configure button), opening each group's
+ * page, and each task's, from the overview until it shows; `hint` names a
+ * prop that page holds, tried first.
+ */
+export async function reveal(page: Page, target: Locator, hint?: string) {
+  const shown = () => target.filter({ visible: true }).count();
+  if (await shown()) return;
+  if (hint) {
+    await showProp(page, hint);
+    if (await shown()) return;
+  }
+  await area(page, 'Properties');
+  if (await shown()) return;
+  const rows = (scope: Locator) =>
+    scope.locator(
+      `[data-action="editor-inspector-group"]:not([data-editor-prop-group="All properties"])`,
+    );
+  const groups = await rows(inspectorTop(page)).evaluateAll((items) =>
+    items.map((item) => item.getAttribute('data-editor-prop-group')!),
+  );
+  for (const group of groups) {
+    await openGroupRow(
+      page,
+      inspectorTop(page).locator(`[data-editor-prop-group="${group}"]`),
+    );
+    if (await shown()) return;
+    const tasks = await rows(inspectorTop(page)).evaluateAll((items) =>
+      items.map((item) => item.getAttribute('data-editor-prop-group')!),
+    );
+    for (const task of tasks) {
+      await openGroupRow(
+        page,
+        inspectorTop(page).locator(`[data-editor-prop-group="${task}"]`),
+      );
+      if (await shown()) return;
+      await inspectorBack(page);
+    }
+    await inspectorBack(page);
+  }
+  await expect(target.filter({ visible: true }).first()).toBeVisible();
+}
+
+/** Shows the field of param `param`, on the page of the prop it binds. */
+export const showParam = (page: Page, param: string) =>
+  reveal(page, page.locator(`[data-editor-param="${param}"]`));
+
+/** Shows a prop's Configure row by its button label (`Configure tabs`). */
+export async function showConfigure(page: Page, label: string) {
+  const words = label.replace(/^Configure /, '').split(' ');
+  const hint = words
+    .map((word, index) =>
+      index ? word[0]!.toUpperCase() + word.slice(1) : word,
+    )
+    .join('');
+  await reveal(page, page.getByRole('button', { name: label }), hint);
+}
+
 const prop = (page: Page, name: string) =>
-  page.locator(`[data-editor-prop="${name}"]`).first();
+  page
+    .locator(`[data-editor-prop="${name}"]`)
+    .filter({ visible: true })
+    .first();
 
 /**
  * Unsets optional text prop `name` with its Not set toggle (KF-3Y2GS2): an
  * emptied field is the empty string, not an unset prop.
  */
 export async function unset(page: Page, name: string) {
+  await showProp(page, name);
   const toggle = prop(page, name).locator('.kui-text-field__toggle');
   if ((await toggle.getAttribute('aria-pressed')) !== 'true')
     await toggle.click();
@@ -88,6 +210,7 @@ export async function unset(page: Page, name: string) {
  * Enter types a line break (KF-8FCJ02).
  */
 export async function setText(page: Page, name: string, value: string) {
+  await showProp(page, name);
   const field = prop(page, name).locator('input, textarea').first();
   await field.click();
   await page.keyboard.press('ControlOrMeta+a');
@@ -101,6 +224,7 @@ export async function setText(page: Page, name: string, value: string) {
 
 /** Picks `option` in an enum prop's Select. */
 export async function choose(page: Page, name: string, option: string) {
+  await showProp(page, name);
   await prop(page, name).locator('.kui-select__trigger').click();
   const choice = prop(page, name).getByRole('option', {
     name: option,
@@ -115,20 +239,29 @@ export async function choose(page: Page, name: string, option: string) {
 
 /** Turns a boolean prop's Switch on. */
 export async function turnOn(page: Page, name: string) {
+  await showProp(page, name);
   await prop(page, name).locator('.kui-switch__control').click();
   await expect(prop(page, name).getByRole('switch')).toBeChecked();
 }
 
 /** Turns a boolean prop off with its switch. */
 export async function turnOff(page: Page, name: string) {
+  await showProp(page, name);
   await prop(page, name).locator('.kui-switch__control').click();
   await expect(prop(page, name).getByRole('switch')).not.toBeChecked();
 }
 
 /** Adds the suggested node to a content prop (an icon) and picks its glyph. */
 export async function addIcon(page: Page, prop: string, glyph: string) {
+  await showProp(page, prop);
   await page.locator(`[data-editor-content-add="${prop}"]`).click();
-  await page.locator('[data-editor-icon-place]').first().click();
+  // The new LucideIcon is selected; its icon row is on its Content page.
+  await showProp(page, 'icon');
+  await page
+    .locator('[data-editor-icon-place]')
+    .filter({ visible: true })
+    .first()
+    .click();
   await page.keyboard.type(glyph);
   await page.locator(`[data-editor-icon="${glyph}"]`).click();
 }
@@ -262,6 +395,7 @@ export async function chooseField(
   option: string,
 ) {
   const select = field(page, prop, path);
+  if (!path.length) await showProp(page, prop);
   await select.locator('.kui-select__trigger').click();
   await select.getByRole('option', { name: option, exact: true }).click();
 }
@@ -316,7 +450,10 @@ export async function turnFieldOn(
 
 /** Picks `glyph` in the icon picker its row opens. */
 export async function pickIcon(page: Page, row: Locator, glyph: string) {
-  await row.click();
+  // KF-QWDPM3: a LucideIcon's icon row is on its Content page.
+  if (!(await row.filter({ visible: true }).count()))
+    await showProp(page, 'icon');
+  await row.filter({ visible: true }).first().click();
   await page.keyboard.type(glyph.replaceAll('-', ' '));
   await page.locator(`[data-editor-icon="${glyph}"]`).click();
 }

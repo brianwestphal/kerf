@@ -1,6 +1,7 @@
 import { mount } from 'kerfjs';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
+import { field } from './editing-harness.js';
 import { createEditor } from './kerf-catalog.js';
 
 let cleanup: (() => void) | undefined;
@@ -148,7 +149,7 @@ describe('the editor shell', () => {
     });
     expect(root.textContent).toContain('composeButton · Button');
     expect(
-      root.querySelector('[data-editor-prop="tone"]')?.getAttribute('value'),
+      field(root, '[data-editor-prop="tone"]')?.getAttribute('value'),
     ).toBe('brand');
     expect(inspectorHeading(root)).not.toBe('');
   });
@@ -286,7 +287,7 @@ describe('the editor shell', () => {
     expect(banners.join()).toContain('set "label" or "ariaLabel"');
     expect(banners).toHaveLength(2);
     // The fields the hint names say so; a prop's own problem marks it.
-    const label = root.querySelector('[data-editor-prop="label"]')!;
+    const label = field(root, '[data-editor-prop="label"]');
     expect(label.textContent).toContain('To fix: set "label" or "ariaLabel"');
     // Another node shows none.
     editor.selection.value = {

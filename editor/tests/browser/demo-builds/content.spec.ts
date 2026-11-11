@@ -19,6 +19,7 @@ import {
   pickIcon,
   select,
   setText,
+  showProp,
 } from '../build.js';
 import type { FieldSpec, RootText } from './helpers.js';
 import {
@@ -116,6 +117,7 @@ test('builds Text › Control Margins', async ({ page }) => {
   ]);
   // The sentence: its text becomes a run, then the inline Text and the
   // run after it follow.
+  await showProp(page, 'children');
   await page.getByRole('button', { name: 'Use as nodes' }).click();
   await addChild(page, 'Text');
   await area(page, 'Properties');
@@ -165,6 +167,7 @@ test('builds LucideIcon › Inline with Text', async ({ page }) => {
       spec: { data: [['data-demo-icon-inline', '']] },
     },
   ]);
+  await showProp(page, 'children');
   await page.getByRole('button', { name: 'Use as nodes' }).click();
   await addChild(page, 'LucideIcon');
   await area(page, 'Properties');

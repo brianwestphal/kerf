@@ -20,6 +20,7 @@ import {
   page as pane,
   select,
   setText,
+  showProp,
   turnOn,
   unset,
 } from '../build.js';
@@ -110,6 +111,8 @@ test('builds Button › Success Emphasis', async ({ page }) => {
   ] as const;
   await buttonRow(page, buttons);
   await select(page, /^Row/);
+  // KF-QWDPM3: Data attributes are on the Properties overview.
+  await area(page, 'Properties');
   await page.locator('[data-action="editor-add-data-attribute"]').click();
   const attribute = (part: string) =>
     page.locator(
@@ -160,6 +163,7 @@ test('builds Button › Compact and Icons', async ({ page }) => {
   await unset(page, 'action');
   await setText(page, 'href', '#button');
   await select(page, /^LucideIcon/, 1);
+  await showProp(page, 'icon');
   await page.locator('[data-editor-icon-place]').first().click();
   await page.keyboard.type('download');
   await page.locator('[data-editor-icon="download"]').click();
@@ -170,6 +174,7 @@ test('builds Button › Compact and Icons', async ({ page }) => {
   await choose(page, 'tone', 'danger');
   await choose(page, 'emphasis', 'plain');
   await select(page, /^LucideIcon/, 2);
+  await showProp(page, 'icon');
   await page.locator('[data-editor-icon-place]').first().click();
   await page.keyboard.type('trash');
   await page.locator('[data-editor-icon="trash"]').click();

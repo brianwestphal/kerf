@@ -31,6 +31,8 @@ export const HOOK = {
   embedSearch: 'data-editor-embed-search',
   extract: 'data-editor-extract',
   field: 'data-editor-field',
+  /** KF-QWDPM3: a Properties row's group path, `Behavior/Link`. */
+  group: 'data-editor-prop-group',
   icon: 'data-editor-icon',
   iconSearch: 'data-editor-icon-search',
   insertDocument: 'data-editor-insert-document',
@@ -43,6 +45,7 @@ export const HOOK = {
   paletteFilter: 'data-editor-palette-filter',
   param: 'data-editor-param',
   promote: 'data-editor-promote',
+  propertiesSearch: 'data-editor-properties-search',
   prop: 'data-editor-prop',
 } as const;
 

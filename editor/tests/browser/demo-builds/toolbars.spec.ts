@@ -5,7 +5,7 @@
 // of a test.
 import { expect, test } from '@playwright/test';
 
-import { area } from '../areas.js';
+import { area, inspectorOverview } from '../areas.js';
 import {
   addChild,
   addIcon,
@@ -22,6 +22,7 @@ import {
   select,
   setField,
   setText,
+  showProp,
   turnOff,
   turnOn,
   unset,
@@ -115,6 +116,7 @@ test('builds Toolbar › Compact Density', async ({ page }) => {
   await select(page, /^ToolbarButton/, 1);
   await setText(page, 'ariaLabel', 'Filter Activity');
   await select(page, /^LucideIcon/, 1);
+  await showProp(page, 'icon');
   await page.locator('[data-editor-icon-place]').first().click();
   await page.keyboard.type('funnel');
   await page.locator('[data-editor-icon="funnel"]').click();
@@ -169,6 +171,7 @@ test('builds PopupMenu › Icon Trigger in a Toolbar Group', async ({ page }) =>
   await choose(page, 'menuInset', 'compact');
   // The group's seeded ToolbarButton gives way to the menu.
   await select(page, /^ToolbarButton/);
+  await inspectorOverview(page);
   await page.locator('[data-action="editor-delete"]').click();
   await select(page, /^ToolbarControlGroup/);
   await addChild(page, 'PopupMenu');
@@ -176,7 +179,9 @@ test('builds PopupMenu › Icon Trigger in a Toolbar Group', async ({ page }) =>
   await setText(page, 'label', 'Sort Tickets');
   // An icon-only trigger: a label, no seeded text.
   await unset(page, 'text');
+  await showProp(page, 'icon');
   await page.locator('[data-editor-content-add="icon"]').click();
+  await showProp(page, 'icon');
   await page.locator('[data-editor-icon-place]').first().click();
   await page.keyboard.type('arrow down a z');
   await expect(page.locator('[data-editor-icon]')).toHaveCount(2);
@@ -3162,6 +3167,7 @@ test('builds ApplicationTabs › Reorderable Application Tabs', async ({
     choices: { tone: 'quiet', size: 'compact' },
     text: { children: 'Order: ' },
   });
+  await showProp(page, 'children');
   await page.getByRole('button', { name: 'Use as nodes' }).click();
   await addChild(page, 'Text');
   await area(page, 'Properties');

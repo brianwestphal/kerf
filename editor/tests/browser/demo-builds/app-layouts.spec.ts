@@ -5,7 +5,7 @@
 // of a test.
 import { expect, test } from '@playwright/test';
 
-import { area } from '../areas.js';
+import { area, inspectorOverview } from '../areas.js';
 import {
   addChild,
   addIcon,
@@ -26,6 +26,7 @@ import {
   select,
   setField,
   setText,
+  showProp,
   sized,
   turnFieldOn,
   turnOn,
@@ -325,6 +326,7 @@ test('builds TabNavigator › NavStack Inside a Tab', async ({ page }) => {
     'Open this project while keeping the tab bar in place.',
   );
   // The trailing row's + opens Children › Add a child on its zone.
+  await showProp(page, 'trailing');
   await page.locator('[data-editor-content-add="trailing"]').click();
   await addChild(page, 'LucideIcon');
   await select(page, /^LucideIcon/, 0);
@@ -499,6 +501,7 @@ test('builds NavStack › Interactive Push and Pop', async ({ page }) => {
   // The icon row adds a LucideIcon; the trailing row opens Children.
   await addIcon(page, 'icon', 'folder');
   await select(page, /^ListItem/);
+  await showProp(page, 'trailing');
   await page.locator('[data-editor-content-add="trailing"]').click();
   await addChild(page, 'LucideIcon');
   await area(page, 'Properties');
@@ -664,6 +667,7 @@ test('builds NavStack › Configured Toolbar', async ({ page }) => {
   await setText(page, 'action', 'open-configured-nav-stack-project');
   await addIcon(page, 'icon', 'folder');
   await select(page, /^ListItem/);
+  await showProp(page, 'trailing');
   await page.locator('[data-editor-content-add="trailing"]').click();
   await addChild(page, 'LucideIcon');
   await area(page, 'Properties');
@@ -1869,6 +1873,7 @@ test('builds SplitView › Roomy List-Detail Split', async ({ page }) => {
   await setText(page, 'countLabel', `${MESSAGES.length} messages`);
   await messageRows(page, 'select-roomy-split-view-message');
   await select(page, /^Text/);
+  await inspectorOverview(page);
   await page.locator('[data-action="editor-delete"]').click();
   // The detail pane's seeded Text becomes a DemoContentItem's eyebrow.
   await messageDetail(page);
@@ -2012,8 +2017,10 @@ test('builds SplitView › Interactive Compact Drill-Down', async ({ page }) => 
   await setText(page, 'countLabel', `${MESSAGES.length} messages`);
   await messageRows(page, 'open-split-view-message', false);
   await select(page, /^Text/);
+  await inspectorOverview(page);
   await page.locator('[data-action="editor-delete"]').click();
   await select(page, /^Text/);
+  await inspectorOverview(page);
   await page.locator('[data-action="editor-delete"]').click();
   await select(page, /^SplitView/);
   const split = canvas(page).locator('.kui-split-view[data-kerf-node]');
@@ -2138,6 +2145,7 @@ test('builds SplitView › Resizable, Collapsible List', async ({ page }) => {
   await command(0, 'Hide Threads', 'panel-left-close');
   await messageRows(page, 'select-roomy-split-view-message');
   await select(page, /^Text/);
+  await inspectorOverview(page);
   await page.locator('[data-action="editor-delete"]').click();
   await messageDetail(page);
   // The restore control: a FloatingToolbar docked in the corner, holding
@@ -2157,9 +2165,11 @@ test('builds SplitView › Resizable, Collapsible List', async ({ page }) => {
   await command(0, 'Show Threads', 'panel-left-open');
   // The FloatingToolbar arrived holding a placeholder Text.
   await select(page, /^Text/);
+  await showProp(page, 'children');
   await expect(
     page.locator('[data-editor-prop="children"] :is(input, textarea)'),
   ).toHaveValue('FloatingToolbar');
+  await inspectorOverview(page);
   await page.locator('[data-action="editor-delete"]').click();
   await select(page, /^SplitView/);
   const [first] = MESSAGES;
@@ -3382,6 +3392,7 @@ test('builds SurfaceScaffold › Controlled Reader Stack', async ({ page }) => {
   await select(page, /^Button/);
   await setText(page, 'children', 'Open Reader');
   await setText(page, 'action', 'push-dialog-stack');
+  await inspectorOverview(page);
   await page.getByRole('button', { name: 'Duplicate', exact: true }).click();
   await select(page, /^Button/, 1);
   await setText(page, 'children', 'Swap Order');

@@ -10,6 +10,7 @@ import {
   click,
   field,
   open,
+  showAllProperties,
   TOOLBAR,
   type,
 } from './editing-harness.js';
@@ -67,6 +68,9 @@ describe('undo sequences', () => {
     const id = selected?.kind === 'node' ? selected.id : '';
     expect(findNode(editor.document.value, id)).toBeDefined();
     expect(root.querySelector('[data-editor-name]')).not.toBeNull();
+    // Its controls show on the All properties page (KF-QWDPM3).
+    showAllProperties(root);
+    expect(root.querySelector('[data-editor-prop]')).not.toBeNull();
 
     click(root, 'editor-undo');
     expect(findNode(editor.document.value, id)).toBeUndefined();

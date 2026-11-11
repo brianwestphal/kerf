@@ -5,7 +5,7 @@
 // of a test.
 import { expect, test } from '@playwright/test';
 
-import { area } from '../areas.js';
+import { area, inspectorOverview } from '../areas.js';
 import {
   addChild,
   addIcon,
@@ -23,6 +23,7 @@ import {
   select,
   setField,
   setText,
+  showProp,
   turnFieldOn,
   turnOff,
   turnOn,
@@ -711,6 +712,7 @@ test('builds SegmentedControl › Toolbar', async ({ page }) => {
   await setText(page, 'label', 'Toolbar');
   // The group's seeded ToolbarButton gives way to the control.
   await select(page, /^ToolbarButton/);
+  await inspectorOverview(page);
   await page.locator('[data-action="editor-delete"]').click();
   await select(page, /^ToolbarControlGroup/);
   await addChild(page, 'SegmentedControl');
@@ -2229,6 +2231,7 @@ test('builds SearchField › Grammar Assisted Search', async ({ page }) => {
   await applySpec(page, {
     text: { id: 'grammar-search', label: 'Search with Filters' },
   });
+  await showProp(page, 'model');
   await page.locator('[data-editor-promote-prop="model"]').click();
   await nameParam(page, 'nodeModel', 'grammarSearchModel');
   for (const [label, action] of [
@@ -2507,9 +2510,11 @@ test('builds Select › Rendering Balance', async ({ page }) => {
   }
   await dialog.getByRole('button', { name: 'Done' }).click();
   // The first choice was selected, and its rename carried the value along.
+  await showProp(page, 'value');
   await expect(
     page.locator('[data-editor-prop="value"] .kui-select__trigger'),
   ).toHaveText('Quiet');
+  await showProp(page, 'renderSelected');
   await page.locator('[data-editor-promote-prop="renderSelected"]').click();
   await expect(canvas(page).locator('.kui-select__trigger')).toContainText(
     'Quiet',
@@ -3075,6 +3080,7 @@ test('builds Select › View Title', async ({ page }) => {
   await choose(page, 'appearance', 'borderless');
   await turnOn(page, 'single');
   await select(page, /^ToolbarButton/);
+  await inspectorOverview(page);
   await page.locator('[data-action="editor-delete"]').click();
   await select(page, /^ToolbarControlGroup/);
   await addChild(page, 'Select');
@@ -3238,6 +3244,7 @@ test('builds SegmentedControl › Rounded Rectangle', async ({ page }) => {
     ).toContainText(`choices › ${index + 1} › content`);
     await addChild(page, 'LucideIcon');
     await select(page, /^LucideIcon/, index);
+    await showProp(page, 'icon');
     await page.locator('[data-editor-icon-place]').first().click();
     await page.keyboard.type(glyph);
     await page.locator(`[data-editor-icon="${glyph}"]`).click();

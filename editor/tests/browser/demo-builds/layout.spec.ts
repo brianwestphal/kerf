@@ -5,7 +5,7 @@
 // of a test.
 import { expect, test } from '@playwright/test';
 
-import { area } from '../areas.js';
+import { area, inspectorOverview } from '../areas.js';
 import {
   addChild,
   addIcon,
@@ -25,6 +25,7 @@ import {
   select,
   setField,
   setText,
+  showProp,
   sized,
   turnFieldOn,
   turnOn,
@@ -315,6 +316,7 @@ test('builds ScrollEffect › Reveal and Fade in a Feed', async ({ page }) => {
 // A new document's root Pane starts with `fill` on (KF-Z70DBC).
 test('builds Pane › Fill', async ({ page }) => {
   await select(page, /^Pane/);
+  await showProp(page, 'fill');
   await expect(
     page.locator('[data-editor-prop="fill"]').getByRole('switch'),
   ).toBeChecked();
@@ -654,6 +656,7 @@ test('builds Pane › Pane Structure and Separators', async ({ page }) => {
   );
   await select(page, /^Pane/);
   const sides = ['block-start', 'block-end', 'inline-start', 'inline-end'];
+  await showProp(page, 'separators');
   const separators = page.locator('[data-editor-prop="separators"]').first();
   for (const side of sides)
     await separators.getByRole('checkbox', { name: side, exact: true }).check();
@@ -902,6 +905,7 @@ test('builds CollapsiblePanel › Restore Control', async ({ page }) => {
   await ownToolbar(page, /^CollapsiblePanel(?!Relocated)/, 0, CONSOLE_TOOLBAR);
   // The restore control: a FloatingToolbar holding the relocated toggle.
   await select(page, /^CollapsiblePanel(?!Relocated)/);
+  await showProp(page, 'restoreControl');
   await page.locator('[data-editor-content-add="restoreControl"]').click();
   await addChild(page, 'FloatingToolbar');
   await area(page, 'Properties');
@@ -1034,6 +1038,7 @@ test('builds CollapsiblePanel › Toolbar Relocation', async ({ page }) => {
   );
   // The rail's pinned header and its list insets.
   await select(page, rail);
+  await showProp(page, 'header');
   await page.locator('[data-editor-content-add="header"]').click();
   await addChild(page, 'ToolbarText');
   await area(page, 'Properties');
@@ -1554,6 +1559,7 @@ test('builds Resize › Collapsed Region Restore', async ({ page }) => {
   await addInto(page, /^ResizableRegion/, 'Pane', 0, 0);
   // The restore control comes last: Add a child keeps the zone it last used.
   await select(page, /^ResizableRegion/);
+  await showProp(page, 'restoreControl');
   await page.locator('[data-editor-content-add="restoreControl"]').click();
   await addChild(page, 'FloatingToolbar');
   await area(page, 'Properties');
@@ -2114,8 +2120,10 @@ test('builds Pane › Overlay Header', async ({ page }) => {
   await addChild(page, 'ListItem');
   await area(page, 'Properties');
   await setText(page, 'action', 'log-inbox');
-  for (let copy = 1; copy < messages.length; copy += 1)
+  for (let copy = 1; copy < messages.length; copy += 1) {
+    await inspectorOverview(page);
     await page.getByRole('button', { name: 'Duplicate', exact: true }).click();
+  }
   for (const [index, message] of messages.entries()) {
     await select(page, /^ListItem/, index);
     await applySpec(page, {
@@ -3236,6 +3244,7 @@ test('builds ContentItem › Image-Tinted Feed Cards', async ({ page }) => {
       choices: { variant: 'span', weight: 'strong' },
       text: { children: title },
     });
+    await inspectorOverview(page);
     await page.getByRole('button', { name: 'Duplicate', exact: true }).click();
     await applySpec(page, {
       choices: { weight: 'Default (regular)', tone: 'quiet' },

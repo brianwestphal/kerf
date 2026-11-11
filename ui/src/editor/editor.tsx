@@ -131,6 +131,7 @@ import {
   type InsertDocumentFiles,
 } from './insert-document-dialog.js';
 import { createInspectorControls } from './inspector-controls.js';
+import type { PropertiesPage } from './inspector-groups.js';
 import { createLibraryDrag, type LibraryRead } from './library-drag.js';
 import {
   DOCUMENT_ROW_ACTION,
@@ -264,7 +265,7 @@ import {
   insertProblem,
   libraryDocuments,
 } from './model/insert-view.js';
-import { inspectorSections } from './model/inspector.js';
+import { groupedProps, inspectorSections } from './model/inspector.js';
 import {
   isDocumentFolderId,
   libraryDocumentTree,
@@ -323,6 +324,7 @@ import { hintRows, problemRows } from './problem-rows.js';
 import type { ProjectTypeService } from './project-type-service.js';
 import {
   ADD_ACTION,
+  ALL_PROPERTIES,
   CONTENT_ADD_ACTION,
   CONTENT_TO_NODES_ACTION,
   CONTENT_TO_TEXT_ACTION,
@@ -376,6 +378,7 @@ import {
   INSERT_DOCUMENT_ACTION,
   INSERT_DOCUMENT_CLEAR_ACTION,
   INSERT_DOCUMENT_DIALOG,
+  INSPECTOR_GROUP_ACTION,
   INSPECTOR_PANE,
   INSPECTOR_STACK,
   INSPECTOR_TAB_ACTION,
@@ -395,6 +398,7 @@ import {
   PROMOTE_ACTION,
   PROMOTE_FIELD_ACTION,
   PROMOTE_PROP_ACTION,
+  PROPERTIES_CLEAR_ACTION,
   REDO_ACTION,
   REPLACE_CONFIRM_ACTION,
   REPLACE_DIALOG,
@@ -832,6 +836,11 @@ export function createEditor(options: EditorOptions) {
     createAutosave(options.storage, 400, () => realmOf(wired ?? document));
   const documentArea = signal<DocumentArea>('outline');
   const inspectorArea = signal<InspectorArea>('properties');
+  // KF-QWDPM3: the Properties page open over the Inspector, and the All
+  // properties search.
+  const inspectorGroup = signal<readonly string[]>([]);
+  const propertiesQuery = signal('');
+  const propertiesQueryRevision = signal(0);
   const saveAsError = signal('');
   /** KF-D9P3NP: the Extract dialog's suggested path, and why it failed. */
   const extractPath = signal('');
@@ -933,6 +942,7 @@ export function createEditor(options: EditorOptions) {
     // A field editor belongs to the node it opened on (KF-Z9S029).
     if (next?.kind !== 'node' || next.id !== openField.value?.node)
       openField.value = null;
+    keepPropertiesPage(next);
     // A node chosen elsewhere (the canvas, a problem) shows in the outline.
     if (next?.kind !== 'node' && next?.kind !== 'slot') return;
     const visit = findNode(
@@ -957,6 +967,32 @@ export function createEditor(options: EditorOptions) {
       ? current.id
       : undefined;
   };
+  /**
+   * KF-QWDPM3: a new selection keeps the open Properties page only where it
+   * still means something: the group (and its task) the new node also has,
+   * or All properties. Anything else returns to the overview.
+   */
+  function keepPropertiesPage(next: Selection) {
+    const path = inspectorGroup.peek();
+    if (next?.kind !== 'node') {
+      inspectorGroup.value = [];
+      return;
+    }
+    if (path[0] === undefined || path[0] === ALL_PROPERTIES) return;
+    // A node select() is handed is in the document; a `#view` or text run
+    // has no catalog entry, so no groups.
+    const component = propsByKey.get(findNode(doc.peek(), next.id)!.node.type);
+    const group = groupedProps(component ?? { key: '', props: [] }).find(
+      (item) => item.title === path[0],
+    );
+    if (!group) inspectorGroup.value = [];
+    else if (
+      path.length > 1 &&
+      !group.subgroups.some((subgroup) => subgroup.title === path[1])
+    )
+      inspectorGroup.value = [group.title];
+  }
+
   /** The state most regions read (KF-N0CSVT: editor-context.ts). */
   const ctx: EditorContext = {
     catalog,
@@ -968,6 +1004,9 @@ export function createEditor(options: EditorOptions) {
     fieldErrors,
     currentProblems,
     inspectorArea,
+    inspectorGroup,
+    propertiesQuery,
+    propertiesQueryRevision,
     definitionsOf,
     propsEntryOf,
     resolveView,
@@ -1033,7 +1072,11 @@ export function createEditor(options: EditorOptions) {
    */
   const inspector = (
     document: ViewDocument,
-  ): { header?: SafeHtml; content: SafeHtml } => {
+  ): {
+    header?: SafeHtml;
+    content: SafeHtml;
+    pages?: readonly PropertiesPage[];
+  } => {
     const current = selection.value;
     if (current?.kind === 'slot') {
       return {
@@ -2385,18 +2428,7 @@ export function createEditor(options: EditorOptions) {
                   id: INSPECTOR_STACK,
                   label: 'Inspector',
                   toolbarConfig: { titleSize: 'default' },
-                  views: [
-                    {
-                      key: 'inspector',
-                      toolbar: {
-                        title: 'Inspector',
-                        trailing: nodeActions(document),
-                      },
-                      pane: INSPECTOR_PANE,
-                      ...inspector(document),
-                    },
-                    ...fieldViews(),
-                  ],
+                  views: inspectorViews(document),
                 },
               }}
             />
@@ -2410,6 +2442,24 @@ export function createEditor(options: EditorOptions) {
         {dragChip()}
       </List>
     );
+  };
+
+  /**
+   * The Inspector's stack: the selection's Inspector, the Properties pages
+   * open over it (KF-QWDPM3), then an open field editor's steps (KF-Z9S029).
+   */
+  const inspectorViews = (document: ViewDocument) => {
+    const { pages = [], ...body } = inspector(document);
+    return [
+      {
+        key: 'inspector',
+        toolbar: { title: 'Inspector', trailing: nodeActions(document) },
+        pane: INSPECTOR_PANE,
+        ...body,
+      },
+      ...pages,
+      ...fieldViews(),
+    ];
   };
 
   /** Draws the selection highlight over the selected node on the canvas. */
@@ -2924,6 +2974,7 @@ export function createEditor(options: EditorOptions) {
     addZone,
     addComponent,
     promoteProp,
+    fieldProblems,
   });
 
   /** Opens Embed in › Other… for the selected node (KF-6MGYSG). */
@@ -3898,6 +3949,14 @@ export function createEditor(options: EditorOptions) {
     delegate<HTMLElement>(
       root,
       'input',
+      hook(HOOK.propertiesSearch),
+      (_event, editor) => {
+        propertiesQuery.value = readSearchField(editor).query;
+      },
+    ),
+    delegate<HTMLElement>(
+      root,
+      'input',
       hook(HOOK.paletteFilter),
       (_event, editor) => {
         paletteFilter.value = readSearchField(editor).query;
@@ -4017,6 +4076,8 @@ export function createEditor(options: EditorOptions) {
         addZone.value = zone;
         addComponent.value = '';
         inspectorArea.value = 'children';
+        // The Children area sits under any open Properties page.
+        inspectorGroup.value = [];
       }
     },
     [REPLACE_ROOT_ACTION]: () => replaceRootWith(),
@@ -4037,6 +4098,20 @@ export function createEditor(options: EditorOptions) {
         ) as FieldPlace,
       ),
     [FIELD_BACK_ACTION]: fieldBack,
+    [INSPECTOR_GROUP_ACTION]: (_event, target) => {
+      const path = target
+        .closest<HTMLElement>(hook(HOOK.group))!
+        .dataset.editorPropGroup!.split('/');
+      if (path[0] === ALL_PROPERTIES) {
+        propertiesQuery.value = '';
+        propertiesQueryRevision.value += 1;
+      }
+      inspectorGroup.value = path;
+    },
+    [PROPERTIES_CLEAR_ACTION]: () => {
+      propertiesQuery.value = '';
+      propertiesQueryRevision.value += 1;
+    },
     [FIELD_ADD_ITEM_ACTION]: (_event, target) => {
       const place = JSON.parse(target.dataset.editorStep!) as FieldPlace;
       const { definitions, type, value } = fieldContext(
@@ -4693,8 +4768,12 @@ export function createEditor(options: EditorOptions) {
       ),
       // KF-Z9S029: Back pops a field editor's pushed view; closing its
       // dialog closes the editor.
+      // KF-QWDPM3: below the field steps, Back closes a Properties page.
       wireNavStack(root.querySelector(`#${INSPECTOR_STACK}`)!, {
-        onBack: fieldBack,
+        onBack: () => {
+          if (activeField()?.container === 'subview') fieldBack();
+          else inspectorGroup.value = inspectorGroup.value.slice(0, -1);
+        },
       }),
       (() => {
         const closed = (event: Event) => {

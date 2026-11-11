@@ -3,7 +3,7 @@
 // component group).
 import { expect, type Page } from '@playwright/test';
 
-import { area } from '../areas.js';
+import { area, inspectorOverview, inspectorTop } from '../areas.js';
 import {
   addChild,
   addIcon,
@@ -23,6 +23,9 @@ import {
   select,
   setField,
   setText,
+  showConfigure,
+  showParam,
+  showProp,
   turnFieldOn,
   turnOff,
   turnOn,
@@ -108,6 +111,8 @@ export const buttonRowNode = (
 
 /** Promotes prop `label` of the selected node to a param. */
 export async function promote(page: Page, label: string) {
+  // KF-QWDPM3: Promote to a param is on the Properties overview.
+  await area(page, 'Properties');
   const picker = page.locator('[data-editor-promote]');
   await picker.locator('.kui-select__trigger').click();
   await picker.getByRole('option', { name: label, exact: true }).click();
@@ -119,17 +124,23 @@ export async function promote(page: Page, label: string) {
  * row (KF-1HEZZZ), which renames every use of it too.
  */
 export async function nameParam(page: Page, from: string, to: string) {
-  await area(page, 'Properties');
-  const field = page.locator(`[data-editor-param="${from}"] input`);
+  await showParam(page, from);
+  const field = page
+    .locator(`[data-editor-param="${from}"] input`)
+    .filter({ visible: true });
   await field.click();
   await page.keyboard.press('ControlOrMeta+a');
   await page.keyboard.type(to);
   await page.keyboard.press('Enter');
-  await expect(page.locator(`[data-editor-param="${to}"]`)).toHaveCount(1);
+  await expect(
+    page.locator(`[data-editor-param="${to}"]`).filter({ visible: true }),
+  ).toHaveCount(1);
 }
 
 /** Binds prop `label` of the selected node to source `source`. */
 export async function bind(page: Page, label: string, source: string) {
+  // KF-QWDPM3: Bind a prop is on the Properties overview.
+  await area(page, 'Properties');
   for (const [part, option] of [
     ['prop', label],
     ['source', source],
@@ -264,6 +275,7 @@ export async function applySpec(page: Page, field: FieldSpec) {
       .locator(
         `[data-editor-prop="${name}"]:not([data-editor-kind="choice"]) input`,
       )
+      .filter({ visible: true })
       .first();
     await input.fill(value);
     await input.press('Enter');
@@ -341,18 +353,23 @@ export async function chip(page: Page, text: string, spec: FieldSpec) {
 
 /** Types builder call `value` into css-value prop `name` of the selection. */
 export async function setCss(page: Page, name: string, value: string) {
+  await showProp(page, name);
   // A length-or-keyword prop picks Custom… to show its builder field.
-  const css = page.locator(
-    `[data-editor-prop="${name}"][data-editor-kind="css"]`,
-  );
+  const css = page
+    .locator(`[data-editor-prop="${name}"][data-editor-kind="css"]`)
+    .filter({ visible: true });
   if (
     !(await css.count()) &&
-    (await page.locator(`[data-editor-prop="${name}"]`).count())
+    (await page
+      .locator(`[data-editor-prop="${name}"]`)
+      .filter({ visible: true })
+      .count())
   )
     await choose(page, name, 'Custom…');
   const field = page
     .locator(`[data-editor-prop="${name}"][data-editor-kind="css"]`)
     .or(page.locator(`[data-editor-prop="${name}"]:not([data-editor-kind])`))
+    .filter({ visible: true })
     .getByRole('textbox')
     .first();
   await field.fill(value);
@@ -425,8 +442,10 @@ export function valueRow(
  * and leaving the field (Tab) commits it (KF-8FCJ02).
  */
 export async function setLines(page: Page, name: string, value: string) {
+  await showProp(page, name);
   const field = page
     .locator(`[data-editor-prop="${name}"]`)
+    .filter({ visible: true })
     .first()
     .locator('textarea');
   await field.click();
@@ -551,7 +570,8 @@ export type ChoiceSpec = {
 
 /**
  * Clicks a prop's Configure button and waits for what it opens: a form
- * pushed onto the Inspector (a new Back button) or a dialog. KF-GHMFPC: the
+ * pushed onto the Inspector (a new top view, or a new Back button in a
+ * dialog's stack) or a dialog. KF-GHMFPC: the
  * dropped-click retry this used to need is gone. The drop it hid was WebKit
  * scrolling the Inspector about 300ms after an edit, when the debounced
  * autosave rewrote the Preview header's status, so a click aimed at a stable
@@ -564,16 +584,30 @@ export async function openConfigure(
   name: string,
   scope: Pick<Page, 'getByRole'> = page,
 ) {
+  // KF-QWDPM3: a prop's Configure row is on its group's Properties page.
+  if (scope === page) await showConfigure(page, name);
   const backs = page
     .getByRole('button', { name: 'Back', exact: true })
     .filter({ visible: true });
   const dialogs = page.locator('dialog[open]');
-  const before = { backs: await backs.count(), dialogs: await dialogs.count() };
-  await scope.getByRole('button', { name }).click();
+  // KF-QWDPM3: over a Properties page, a pushed form replaces the page's
+  // Back rather than adding one; the Inspector's top view changes instead.
+  const top = () => inspectorTop(page).getAttribute('data-nav-key');
+  const before = {
+    backs: await backs.count(),
+    dialogs: await dialogs.count(),
+    top: await top(),
+  };
+  await scope
+    .getByRole('button', { name })
+    .filter({ visible: true })
+    .first()
+    .click();
   await expect(async () => {
     expect(
       (await backs.count()) > before.backs ||
-        (await dialogs.count()) > before.dialogs,
+        (await dialogs.count()) > before.dialogs ||
+        (await top()) !== before.top,
     ).toBe(true);
   }).toPass({ timeout: 10_000 });
 }
@@ -684,9 +718,10 @@ export const choiceZones = (choices: readonly ChoiceSpec[], zone = 'icon') =>
  * choice order; none picked is `[]`.
  */
 export async function chooseValues(page: Page, labels: readonly string[]) {
-  const control = page.locator(
-    '[data-editor-prop="value"][data-editor-kind="value-choices"]',
-  );
+  await showProp(page, 'value');
+  const control = page
+    .locator('[data-editor-prop="value"][data-editor-kind="value-choices"]')
+    .filter({ visible: true });
   await expect(control).toBeVisible();
   const boxes = control.locator('input[type="checkbox"]');
   for (let index = 0; index < (await boxes.count()); index += 1) {
@@ -758,6 +793,7 @@ export async function choiceChips(
  * Configure dialog's Edit as JSON, as a person pastes a list in.
  */
 export async function editAsJson(page: Page, prop: string, value: unknown) {
+  await showProp(page, prop);
   await page
     .locator(`[data-editor-open='${JSON.stringify({ prop, path: [] })}']`)
     // A row of a form the stack has left stays in the page, hidden.
@@ -792,9 +828,11 @@ export async function setTags(
   prop: string,
   tags: readonly string[],
 ) {
+  await showProp(page, prop);
   // A union's tags follow its type Select, which shares the prop name.
   const control = page
     .locator(`[data-editor-prop="${prop}"]:not([data-editor-kind="choice"])`)
+    .filter({ visible: true })
     .first();
   const remove = control.getByRole('button', { name: /^Remove / });
   const old = await remove.count();
@@ -1080,9 +1118,15 @@ export async function configureSelect(page: Page, spec: SelectSpec, nth = 0) {
   if (Array.isArray(spec.pick)) await chooseValues(page, spec.pick);
   else if (typeof spec.pick === 'string')
     await choose(page, 'value', spec.pick);
-  if (spec.renderSelected)
-    await page.locator('[data-editor-promote-prop="renderSelected"]').click();
+  if (spec.renderSelected) {
+    await showProp(page, 'renderSelected');
+    await page
+      .locator('[data-editor-promote-prop="renderSelected"]')
+      .filter({ visible: true })
+      .click();
+  }
   if (spec.triggerIcon) {
+    await showProp(page, 'triggerIcon');
     await page.locator('[data-editor-content-add="triggerIcon"]').click();
     await area(page, 'Properties');
     await pickIcon(
@@ -1139,6 +1183,7 @@ export async function toolbarGroup(
   await applySpec(page, group);
   if (!keepButton) {
     await select(page, /^ToolbarButton/);
+    await inspectorOverview(page);
     await page.locator('[data-action="editor-delete"]').click();
     await select(page, /^ToolbarControlGroup/);
   }
@@ -1276,6 +1321,7 @@ export const shortcuts = [
  * node (with no Flow area) has too.
  */
 export async function deleteSelected(page: Page) {
+  await inspectorOverview(page);
   await page.locator('[data-action="editor-delete"]').click();
 }
 
@@ -1389,6 +1435,7 @@ export async function treeNodeZone(
   owner = /^TreeList/,
 ) {
   await select(page, owner);
+  await showProp(page, 'nodes');
   const open = (path: readonly (number | string)[]) =>
     page
       .locator(
@@ -1564,6 +1611,7 @@ export async function contentItemInto(
     text: { children: title },
   });
   // Focus is still in the Inspector, so the Duplicate button copies it.
+  await inspectorOverview(page);
   await page.getByRole('button', { name: 'Duplicate', exact: true }).click();
   await applySpec(page, {
     choices: {
@@ -1765,6 +1813,7 @@ export async function openField(
   prop: string,
   path: readonly (string | number)[],
 ) {
+  if (!path.length) await showProp(page, prop);
   const row = page
     .locator(`[data-editor-open='${JSON.stringify({ prop, path })}']`)
     // A row of a form the stack has left stays in the page, hidden.
@@ -2261,6 +2310,7 @@ export async function entryZone(
   zone: string,
 ) {
   await select(page, owner);
+  await showProp(page, prop);
   const open = (path: readonly (number | string)[]) =>
     page
       .locator(`[data-editor-open='${JSON.stringify({ prop, path })}']`)
@@ -2919,6 +2969,7 @@ export async function itemCopy(page: Page, title: string, detail: string) {
     text: { children: title },
   });
   // Focus is still in the Inspector, so the Duplicate button copies it.
+  await inspectorOverview(page);
   await page.getByRole('button', { name: 'Duplicate', exact: true }).click();
   await applySpec(page, {
     choices: { weight: 'Default (regular)', tone: 'quiet', size: 'compact' },
@@ -3448,6 +3499,7 @@ export async function trackList(page: Page) {
         label,
       },
     });
+    await showProp(page, 'trailing');
     await page.locator('[data-editor-content-add="trailing"]').click();
     await addChild(page, 'Text');
     await area(page, 'Properties');
@@ -3738,6 +3790,8 @@ export async function dataAttribute(
   value: string,
   index = 0,
 ) {
+  // KF-QWDPM3: Data attributes are on the Properties overview.
+  await area(page, 'Properties');
   await page.locator('[data-action="editor-add-data-attribute"]').click();
   const part = (which: string) =>
     page
@@ -3790,6 +3844,7 @@ export async function messageRows(page: Page, action: string, selected = true) {
   // The demo names the glyph's icon "message".
   await setText(page, 'name', 'message');
   await select(page, /^ListItem/);
+  await showProp(page, 'trailing');
   await page.locator('[data-editor-content-add="trailing"]').click();
   await addChild(page, 'LucideIcon');
   await area(page, 'Properties');

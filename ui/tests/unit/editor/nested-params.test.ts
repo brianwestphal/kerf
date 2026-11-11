@@ -12,7 +12,7 @@ import {
   setProp,
 } from '../../../src/editor/model/edits.js';
 import { withRequiredFilled } from '../../../src/editor/model/fields.js';
-import { attach } from './editing-harness.js';
+import { attach, field } from './editing-harness.js';
 import { createEditor, defaultCatalog, viewCatalog } from './kerf-catalog.js';
 
 const ui = '@kerfjs/ui';
@@ -239,15 +239,14 @@ describe('binding a field of an unset object (KF-PTMNSZ)', () => {
     const editor = createEditor({ document: withEmptyCard });
     attach(root, editor);
     editor.selection.value = { kind: 'node', id: EMPTY };
-    root
-      .querySelector<HTMLElement>(
-        `[data-editor-open='${JSON.stringify({ prop: 'media', path: [] })}']`,
-      )!
-      .click();
-    const field = root.querySelector<HTMLElement>(
+    field(
+      root,
+      `[data-editor-open='${JSON.stringify({ prop: 'media', path: [] })}']`,
+    ).click();
+    const bindField = root.querySelector<HTMLElement>(
       '[data-editor-bind="field"]',
     )!;
-    expect(field.getAttribute('value')).toBe('src');
+    expect(bindField.getAttribute('value')).toBe('src');
     const source = root.querySelector<HTMLElement>(
       '[data-editor-bind="field-source"]',
     )!;
@@ -274,11 +273,10 @@ describe('renaming a field-level param (KF-5ZMAEM)', () => {
     const editor = createEditor({ document: bound(document) });
     attach(root, editor);
     editor.selection.value = { kind: 'node', id: CARD };
-    root
-      .querySelector<HTMLElement>(
-        `[data-editor-open='${JSON.stringify({ prop: 'media', path: [] })}']`,
-      )!
-      .click();
+    field(
+      root,
+      `[data-editor-open='${JSON.stringify({ prop: 'media', path: [] })}']`,
+    ).click();
     const name = root.querySelector<HTMLElement>(
       '[data-editor-param="title"]',
     )!;
@@ -309,11 +307,10 @@ describe('renaming a field-level param (KF-5ZMAEM)', () => {
     });
     attach(root, editor);
     editor.selection.value = { kind: 'node', id: ROW };
-    root
-      .querySelector<HTMLElement>(
-        `[data-editor-open='${JSON.stringify({ prop: 'media', path: [] })}']`,
-      )!
-      .click();
+    field(
+      root,
+      `[data-editor-open='${JSON.stringify({ prop: 'media', path: [] })}']`,
+    ).click();
     expect(root.querySelector('[data-editor-bind="field-source"]')).not.toBe(
       null,
     );

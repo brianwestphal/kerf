@@ -14,6 +14,7 @@ import {
   listMembers,
 } from '../../../src/editor/model/fields.js';
 import { loadScaledTimeout } from '../../helpers/load-scaled-timeout.js';
+import { field } from './editing-harness.js';
 import {
   componentFunctions,
   createEditor,
@@ -77,9 +78,6 @@ afterEach(() => {
 });
 
 const PANE = '01JB8Z1M6Q8E1X9V4S7K2R3T5A';
-
-const field = (root: HTMLElement, selector: string) =>
-  root.querySelector<HTMLElement>(selector)!;
 
 function choose(select: HTMLElement, value: string) {
   select.setAttribute('value', value);
@@ -268,7 +266,7 @@ describe(
             '#editor-inspector-stack [data-nav-key]',
           ),
         ].map((view) => view.dataset.navKey),
-      ).toEqual(['inspector', 'field-ticks']);
+      ).toEqual(['inspector', 'properties-Behavior', 'field-ticks']);
       expect(
         root.querySelector('#editor-inspector-stack')!.textContent,
       ).toContain('No items yet.');

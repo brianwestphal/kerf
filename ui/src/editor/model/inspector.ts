@@ -329,3 +329,64 @@ export function inspectorSections(
     }),
   }));
 }
+
+/**
+ * KF-QWDPM3: the most fields a focused Properties page lists before its
+ * subgroups become pages of their own, the same bound that sends a larger
+ * object form to a dialog (KF-Z9S029).
+ */
+export const FOCUSED_FIELD_LIMIT = 10;
+
+/** Whether a group's page lists its subgroups as rows instead of fields. */
+export const splitsIntoPages = (group: PropGroup) =>
+  group.props.length > FOCUSED_FIELD_LIMIT &&
+  group.subgroups.some((subgroup) => subgroup.title !== undefined);
+
+/**
+ * What a Properties row says about its fields (KF-QWDPM3): the ones the
+ * node sets, marking those bound to a param or item field, or "Defaults";
+ * and how many of its fields have a problem.
+ */
+export function groupSummary(
+  props: readonly InspectorProp[],
+  values: Readonly<Record<string, unknown>>,
+  problems: ReadonlyMap<string, string>,
+  label: (name: string) => string,
+): { readonly description: string; readonly problems: number } {
+  const set = props.filter((prop) => prop.name in values);
+  const named = set.map((prop) => {
+    const value = values[prop.name];
+    const bound =
+      value !== null &&
+      typeof value === 'object' &&
+      ('$param' in value || '$bind' in value);
+    return bound ? `${label(prop.name)} (bound)` : label(prop.name);
+  });
+  const description = !named.length
+    ? 'Defaults'
+    : named.length > 3
+      ? `${named.slice(0, 3).join(', ')} + ${named.length - 3} more`
+      : named.join(', ');
+  return {
+    description,
+    problems: props.filter((prop) => problems.has(prop.name)).length,
+  };
+}
+
+/**
+ * Whether a prop answers an All properties search (KF-QWDPM3): its label,
+ * its API name, or the group or task it sits in contains every word.
+ */
+export function matchesQuery(
+  prop: InspectorProp,
+  label: string,
+  place: readonly string[],
+  query: string,
+): boolean {
+  const haystack = [label, prop.name, ...place].join(' ').toLowerCase();
+  return query
+    .toLowerCase()
+    .split(/\s+/)
+    .filter(Boolean)
+    .every((word) => haystack.includes(word));
+}

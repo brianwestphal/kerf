@@ -1,7 +1,7 @@
 import { expect, type Locator, test } from '@playwright/test';
 
 import { area } from './areas.js';
-import { addChild, select } from './build.js';
+import { addChild, select, showProp } from './build.js';
 import { settled } from './settled.js';
 
 // KF-TBVRS4: picker-owned SearchFields use the same native deletion mechanics
@@ -64,7 +64,7 @@ test('picker searches recover after keyboard deletion at wide and narrow widths'
   await select(page, /^Pane/);
   await area(page, 'Children');
   await addChild(page, 'LucideIcon');
-  await area(page, 'Properties');
+  await showProp(page, 'icon');
   await page.getByRole('button', { name: 'Choose icon', exact: true }).click();
   await check(page.locator('#editor-icon-dialog'), 'icon');
 

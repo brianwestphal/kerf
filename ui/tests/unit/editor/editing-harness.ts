@@ -45,8 +45,63 @@ export function open(id = COMPOSE) {
   return { root, editor, node };
 }
 
-export const field = (root: HTMLElement, selector: string) =>
-  root.querySelector<HTMLElement>(selector)!;
+/** Rows a Properties page shows for a prop in place of its field. */
+const ROW_HOOKS = [
+  'data-editor-promote-prop',
+  'data-editor-content-add',
+  'data-editor-content-node',
+];
+
+/**
+ * KF-QWDPM3: opens the Properties page that holds prop `name`, from the
+ * overview or a group page, as a person would: its row, then its task's.
+ */
+export function showProp(root: HTMLElement, name: string) {
+  const clicked = new Set<HTMLElement>();
+  for (let step = 0; step < 3; step += 1) {
+    if (
+      root.querySelector(
+        [
+          `[data-editor-prop="${name}"]`,
+          `[data-editor-open^='{"prop":"${name}"']`,
+          `[data-editor-icon-place^='{"prop":"${name}"']`,
+          ...ROW_HOOKS.map((hook) => `[${hook}="${name}"]`),
+        ].join(', '),
+      )
+    )
+      return;
+    const rows = [
+      ...root.querySelectorAll<HTMLElement>(
+        `[data-editor-group-props~="${name}"]`,
+      ),
+    ].filter((row) => !clicked.has(row));
+    // The deepest row: a task's row on its group's page.
+    const row = rows.at(-1);
+    if (!row) return;
+    clicked.add(row);
+    row.click();
+  }
+}
+
+/**
+ * KF-QWDPM3: opens the All properties page, which lists every field of the
+ * selected node and stays open as another node is selected.
+ */
+export function showAllProperties(root: HTMLElement) {
+  root
+    .querySelector<HTMLElement>('[data-editor-prop-group="All properties"]')
+    ?.click();
+}
+
+/** The element at `selector`, opening the page of a prop it names first. */
+export const field = (root: HTMLElement, selector: string) => {
+  const prop =
+    /data-editor-(?:prop="|open='\{"prop":"|promote-prop="|content-(?:add|node)=")([^"]+)"/.exec(
+      selector,
+    )?.[1];
+  if (prop) showProp(root, prop);
+  return root.querySelector<HTMLElement>(selector)!;
+};
 
 /** Changes a Select the way its popup does: a new value, then `change`. */
 export function choose(select: HTMLElement, value: string) {

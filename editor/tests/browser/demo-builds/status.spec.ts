@@ -5,7 +5,7 @@
 // of a test.
 import { expect, test } from '@playwright/test';
 
-import { area } from '../areas.js';
+import { area, inspectorOverview } from '../areas.js';
 import {
   addChild,
   addIcon,
@@ -22,6 +22,7 @@ import {
   pickIcon,
   select,
   setText,
+  showProp,
   turnOn,
   unset,
   zoneSpot,
@@ -125,6 +126,7 @@ test('builds LoadingSpinner › Spinner Colors', async ({ page }) => {
     [2, "foregroundColor('rebeccapurple')"],
   ] as const) {
     await select(page, /^LoadingSpinner/, index);
+    await showProp(page, 'color');
     const field = page
       .locator('[data-editor-prop="color"]')
       .getByRole('textbox');
@@ -277,6 +279,7 @@ test('builds Skeleton › In Composition', async ({ page }) => {
   }
   // The table arrived holding a placeholder Text.
   await select(page, /^Text/);
+  await inspectorOverview(page);
   await page.locator('[data-action="editor-delete"]').click();
   for (const [index, label] of ['Status', 'Owner'].entries()) {
     await select(page, /^ValueTableRow/, index);
@@ -568,6 +571,7 @@ test('builds EmptyState › Actionable', async ({ page }) => {
   await select(page, /^EmptyState/);
   await dragComponent(page, 'Button', () => zoneSpot(page, 'Action'));
   await select(page, /^LucideIcon/);
+  await showProp(page, 'icon');
   await page.locator('[data-editor-icon-place]').first().click();
   await page.keyboard.type('search');
   await page.locator('[data-editor-icon="search"]').click();
@@ -632,6 +636,7 @@ test('builds StateBanner › Stacked Copy and Action', async ({ page }) => {
   await select(page, /^StateBanner/);
   await dragComponent(page, 'Button', () => zoneSpot(page, 'Action'));
   await select(page, /^LucideIcon/);
+  await showProp(page, 'icon');
   await page.locator('[data-editor-icon-place]').first().click();
   await page.keyboard.type('circle question mark');
   await page.locator('[data-editor-icon="circle-question-mark"]').click();
@@ -714,6 +719,7 @@ test('builds ProgressBar › Tones and Compact Size', async ({ page }) => {
   await setText(page, 'ariaLabel', 'Sync Progress');
   await setText(page, 'value', '0.4');
   await choose(page, 'tone', 'Default (brand)');
+  await showProp(page, 'showValue');
   await page
     .locator('[data-editor-prop="showValue"] .kui-switch__control')
     .click();
@@ -822,6 +828,8 @@ test('builds Badge › Icon and Title', async ({ page }) => {
   await choose(page, 'tone', 'success');
   await setText(page, 'title', 'Confidence of the latest completion');
   await setText(page, 'label', '82% confidence');
+  // KF-QWDPM3: Data attributes are on the Properties overview.
+  await area(page, 'Properties');
   await page.locator('[data-action="editor-add-data-attribute"]').click();
   const attribute = (part: string) =>
     page.locator(
@@ -877,11 +885,14 @@ test('builds Badge › Long Text', async ({ page }) => {
   await setText(page, 'children', 'customer-escalation-priority-review');
   await choose(page, 'tone', 'info');
   // A builder call caps the width; the badge truncates with an ellipsis.
+  await showProp(page, 'maxWidth');
   const maxWidth = page
     .locator('[data-editor-prop="maxWidth"]')
     .getByRole('textbox');
   await maxWidth.fill('px(120)');
   await maxWidth.press('Enter');
+  // KF-QWDPM3: Data attributes are on the Properties overview.
+  await area(page, 'Properties');
   await page.locator('[data-action="editor-add-data-attribute"]').click();
   const attribute = (part: string) =>
     page.locator(

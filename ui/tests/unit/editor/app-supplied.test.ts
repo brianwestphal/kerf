@@ -16,6 +16,7 @@ import {
   isAppSupplied,
 } from '../../../src/editor/model/fields.js';
 import { sampleInputs } from '../../../src/editor/model/sample-inputs.js';
+import { field, showProp } from './editing-harness.js';
 import {
   componentFunctions,
   createEditor,
@@ -86,9 +87,6 @@ afterEach(() => {
   document.body.replaceChildren();
 });
 
-const field = (root: HTMLElement, selector: string) =>
-  root.querySelector<HTMLElement>(selector)!;
-
 function choose(select: HTMLElement, value: string) {
   select.setAttribute('value', value);
   Object.defineProperty(select, 'value', { configurable: true, value });
@@ -148,6 +146,9 @@ describe('promoting an app-supplied prop (KF-H3CB2P)', () => {
       root.querySelector<HTMLElement>(
         '[data-editor-promote-prop="renderSelected"]',
       );
+    showProp(root, 'renderSelected');
+    const page = root.querySelector('[data-editor-properties-page]');
+    expect(page).not.toBeNull();
     expect(row()!.textContent).toContain('The app supplies it');
     row()!.click();
     const bound = node().props?.renderSelected as { $param: string };
@@ -155,7 +156,8 @@ describe('promoting an app-supplied prop (KF-H3CB2P)', () => {
       kind: 'prop',
       prop: 'renderSelected',
     });
-    // Promoted, it is no longer offered.
+    // Promoted, it is no longer offered on the page that held it.
+    expect(root.querySelector('[data-editor-properties-page]')).toBe(page);
     expect(row()).toBeNull();
     // The Promote section names props in words too.
     expect(field(root, '[data-editor-promote]').textContent).toContain(

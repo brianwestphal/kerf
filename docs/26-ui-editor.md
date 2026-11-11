@@ -314,6 +314,27 @@ name (`ariaLabel` and other `…Label`s are Accessibility, `id` Integration,
 anything else Behavior); and a custom catalog's own group name keeps its own
 section after the families. There is no "Other" section.
 
+The Properties area is a task directory (KF-QWDPM3: focused Properties
+navigation), not one long form. Under the node's problems and its Ref name, a
+`List` holds a row per group: the group's name, a summary of the fields the
+node sets (up to three labels, "+ N more", a bound field marked "(bound)", or
+"Defaults"), and how many of its fields have a problem. A row pushes the
+group onto the Inspector's `NavStack` as a page of its own, titled with the
+group, holding its own fields and then each task under its heading; Back
+returns to the overview with focus on the row. A group of more than ten
+fields with tasks (the object-form bound, KF-Z9S029) lists its own fields and
+then a row per task instead, each a further page: Button's and TextField's
+Behavior, Workbench's Layout. A Configure row on a page pushes its form on top
+of that page as before. The last row, **All properties**, opens a page with a
+search over each field's label, its API name, and its group and task names
+(every word must match); each match shows under its "Group · Task" heading,
+editable there, and an empty search lists every field. The search starts
+empty each time the page opens. A new selection keeps the open page where it
+still applies — the same group, or task, on the new node, or All properties —
+and otherwise returns to the overview; a field editor still closes when its
+node is no longer selected. Data attributes, Promote to a param, and Bind a
+prop stay on the overview for now.
+
 Inspector rows, and an item form's fields, follow their prop or field
 order, whatever control each takes (KF-DQFXWG: LucideIcon inspector;
 KF-3J47BY: item forms): an icon or Configure row sits where its prop does

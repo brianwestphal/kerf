@@ -6,6 +6,7 @@ import { afterEach, describe, expect, it } from 'vitest';
 
 import { controlFor } from '../../../src/editor/model/controls.js';
 import { findNode } from '../../../src/editor/model/document.js';
+import { field } from './editing-harness.js';
 import { createEditor } from './kerf-catalog.js';
 
 let cleanup: (() => void) | undefined;
@@ -14,9 +15,6 @@ afterEach(() => {
   cleanup = undefined;
   document.body.replaceChildren();
 });
-
-const field = (root: HTMLElement, selector: string) =>
-  root.querySelector<HTMLElement>(selector)!;
 
 function choose(select: HTMLElement, value: string) {
   select.setAttribute('value', value);

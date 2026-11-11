@@ -10,6 +10,7 @@ import {
   shownScenes,
   submenuPath,
 } from '../../../src/editor/model/shown-scenes.js';
+import { field } from './editing-harness.js';
 import { createEditor } from './kerf-catalog.js';
 
 let cleanup: (() => void) | undefined;
@@ -560,9 +561,10 @@ describe('popups on the edit canvas', () => {
       );
     // A list row's action is its inner button; the row carries the place.
     const open = (path: readonly (string | number)[]) => {
-      const row = root.querySelector<HTMLElement>(
+      const row = field(
+        root,
         `[data-editor-open='${JSON.stringify({ prop: 'items', path })}']`,
-      )!;
+      );
       (row.querySelector<HTMLElement>('[data-action]') ?? row).click();
     };
     expect(shownSubmenu()).toBeNull();

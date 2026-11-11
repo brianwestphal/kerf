@@ -23,7 +23,7 @@ import {
   viewPropsEntry,
   viewSources,
 } from '../../../src/editor/model/views.js';
-import { choose } from './editing-harness.js';
+import { choose, showProp } from './editing-harness.js';
 import {
   LIST_PATH,
   listDocument,
@@ -664,6 +664,7 @@ describe('composed documents in the editor', () => {
     expect(back()!.textContent).toContain('Back to messages.kui.json');
     // An edit to the row saves to the row's file.
     editor.selection.value = { kind: 'node', id: rowDocument().root!.id };
+    showProp(root, 'title');
     expect(root.querySelector('[data-editor-param="title"]')).not.toBeNull();
     root.querySelector<HTMLInputElement>(
       '[data-editor-name="true"] input',

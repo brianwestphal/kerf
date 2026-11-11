@@ -29,6 +29,13 @@ export const DOCUMENT_AREAS = 'editor-document-areas';
 export const SPRING_MS = 500;
 export type DocumentArea = 'outline' | 'params' | 'problems';
 export type InspectorArea = 'properties' | 'flow' | 'children';
+/**
+ * KF-QWDPM3: a Properties row opens its group (or a group's task) on a page
+ * of its own; `ALL_PROPERTIES` is the searchable page of every field.
+ */
+export const INSPECTOR_GROUP_ACTION = 'editor-inspector-group';
+export const ALL_PROPERTIES = 'All properties';
+export const PROPERTIES_CLEAR_ACTION = 'editor-properties-clear';
 export const SAVE_ACTION = 'editor-save';
 export const SAVE_AS_ACTION = 'editor-save-as';
 export const SAVE_AS_DIALOG = 'editor-save-as-dialog';

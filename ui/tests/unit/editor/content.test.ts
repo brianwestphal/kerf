@@ -17,6 +17,7 @@ import {
 } from '../../../src/editor/model/controls.js';
 import { findNode } from '../../../src/editor/model/document.js';
 import sample from '../../fixtures/view/inbox.kui.json';
+import { showProp } from './editing-harness.js';
 import { createEditor, viewCatalog } from './kerf-catalog.js';
 
 const inbox = sample as unknown as ViewDocument;
@@ -158,6 +159,7 @@ describe('the inspector', () => {
 
   it('moves a label into nodes and back, with undo', () => {
     const { root, editor } = open(COMPOSE);
+    showProp(root, 'children');
     click(root, 'editor-content-to-nodes');
     const compose = () => node(editor.document.value);
     expect(compose().zones?.children).toEqual([
@@ -187,6 +189,7 @@ describe('the inspector', () => {
     ).toEqual(['#text', '@kerfjs/ui:badge']);
     expect(node(editor.document.value).props).not.toHaveProperty('children');
     editor.selection.value = { kind: 'node', id: COMPOSE };
+    showProp(root, 'children');
     expect(root.textContent).toContain(
       'Holds 2 nodes; select them in the outline.',
     );
@@ -211,6 +214,7 @@ describe('the inspector', () => {
 
   it('rejects a builder the prop does not take, and hints at the ones it does', () => {
     const { root, editor } = open(FOLDERS);
+    showProp(root, 'maxHeight');
     const field = root.querySelector<HTMLElement>(
       '[data-editor-prop="maxHeight"]',
     )!;

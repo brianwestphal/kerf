@@ -14,6 +14,7 @@ import {
   objectFields,
   typeAt,
 } from '../../../src/editor/model/fields.js';
+import { field } from './editing-harness.js';
 import { createEditor } from './kerf-catalog.js';
 
 const definitions = propsJson.definitions as unknown as Record<
@@ -79,9 +80,6 @@ afterEach(() => {
   cleanup = undefined;
   document.body.replaceChildren();
 });
-
-const field = (root: HTMLElement, selector: string) =>
-  root.querySelector<HTMLElement>(selector)!;
 
 function choose(select: HTMLElement, value: string) {
   select.setAttribute('value', value);

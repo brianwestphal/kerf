@@ -15,6 +15,7 @@ import {
   memberSwitchField,
 } from '../../../src/editor/model/fields.js';
 import { loadScaledTimeout } from '../../helpers/load-scaled-timeout.js';
+import { field } from './editing-harness.js';
 import { createEditor } from './kerf-catalog.js';
 
 const definitions = propsJson.definitions as unknown as Record<
@@ -77,9 +78,6 @@ afterEach(() => {
 });
 
 const PANE = '01JB8Z1M6Q8E1X9V4S7K2R3T5A';
-
-const field = (root: HTMLElement, selector: string) =>
-  root.querySelector<HTMLElement>(selector)!;
 
 function choose(select: HTMLElement, value: string) {
   select.setAttribute('value', value);

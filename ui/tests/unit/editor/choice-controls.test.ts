@@ -17,6 +17,7 @@ import {
 } from '../../../src/editor/model/controls.js';
 import { findNode } from '../../../src/editor/model/document.js';
 import { setProp } from '../../../src/editor/model/edits.js';
+import { field } from './editing-harness.js';
 import { createEditor } from './kerf-catalog.js';
 
 const definitions = propsJson.definitions as unknown as Record<
@@ -152,9 +153,6 @@ afterEach(() => {
   cleanup = undefined;
   document.body.replaceChildren();
 });
-
-const field = (root: HTMLElement, selector: string) =>
-  root.querySelector<HTMLElement>(selector)!;
 
 function choose(select: HTMLElement, value: string) {
   select.setAttribute('value', value);
@@ -409,7 +407,8 @@ describe('a value picked from its choices (KF-9AWGPS)', () => {
   it('turns a ChoiceChips value into a list once multiple is on', () => {
     const { root, props, editor, id } = added('@kerfjs/ui:choice-chips');
     expect(
-      root.querySelector(
+      field(
+        root,
         '[data-editor-kind="value-choice"][data-editor-prop="value"]',
       ),
     ).not.toBeNull();

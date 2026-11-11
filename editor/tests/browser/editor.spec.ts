@@ -2,7 +2,7 @@ import { readFile } from 'node:fs/promises';
 
 import { expect, type Page, test } from '@playwright/test';
 
-import { area, openLibrary } from './areas.js';
+import { area, inspectorOverview, inspectorTop, openLibrary } from './areas.js';
 import {
   addChild,
   canvas,
@@ -15,6 +15,8 @@ import {
   outlineRow,
   select,
   setField,
+  showConfigure,
+  showProp,
   turnOff,
   zoneSpot,
 } from './build.js';
@@ -310,12 +312,15 @@ test('edits, adds, moves, deletes, and undoes from the inspector', async ({
   );
   await canvasCompose.click();
 
-  // An enum prop, through the Select popup.
+  // An enum prop, through the Select popup (KF-QWDPM3: on its group's
+  // Properties page).
+  await showProp(page, 'tone');
   await page.locator('[data-editor-prop="tone"]').click();
   await page.getByRole('option', { name: 'danger' }).click();
   await expect(canvasCompose).toHaveAttribute('data-tone', 'danger');
 
   // A boolean prop, through its Switch.
+  await showProp(page, 'disabled');
   await page
     .locator('[data-editor-prop="disabled"]')
     .getByRole('switch')
@@ -323,6 +328,7 @@ test('edits, adds, moves, deletes, and undoes from the inspector', async ({
   await expect(canvasCompose).toBeDisabled();
 
   // Text-accepting content, committed with Enter.
+  await showProp(page, 'children');
   const label = page
     .locator('[data-editor-prop="children"]')
     .getByRole('textbox');
@@ -330,7 +336,8 @@ test('edits, adds, moves, deletes, and undoes from the inspector', async ({
   await label.press('Enter');
   await expect(canvasCompose).toHaveText('Write');
 
-  // An invalid name is refused with its reason.
+  // An invalid name is refused with its reason, on the overview.
+  await inspectorOverview(page);
   const name = page.locator('[data-editor-name]').getByRole('textbox');
   await name.fill('Send Button');
   await name.press('Enter');
@@ -414,6 +421,7 @@ test('edits a List gap from its size keywords and a builder call', async ({
   const list = page.locator(
     `[data-editor-canvas] [data-kerf-node="${FOLDERS}"]`,
   );
+  await showProp(page, 'gap');
   const gap = page.locator('[data-editor-prop="gap"][data-editor-kind="size"]');
   await gap.click();
   await page.getByRole('option', { name: 'l', exact: true }).click();
@@ -452,6 +460,7 @@ test('splits a List gap into columns and rows, one with a builder call', async (
     page.locator(
       `[data-editor-field='${JSON.stringify({ prop: 'gap', path: [name] })}'][data-editor-kind="${kind}"]`,
     );
+  await showProp(page, 'gap');
   await page
     .locator('[data-editor-prop="gap"][data-editor-kind="size"]')
     .click();
@@ -494,7 +503,15 @@ test('sets a component’s classes from the Inspector’s Integration group', as
     `[data-editor-canvas] [data-kerf-node="${FOLDERS}"]`,
   );
   const classes = page.locator('[data-editor-prop="className"]');
-  await expect(page.getByText('Integration', { exact: true })).toBeVisible();
+  // KF-QWDPM3: the Integration group is a row of the Properties directory,
+  // and its page holds the Classes field.
+  await expect(
+    page.locator('[data-editor-prop-group="Integration"]'),
+  ).toBeVisible();
+  await showProp(page, 'className');
+  await expect(
+    page.locator('[data-editor-properties-page="Integration"]'),
+  ).toBeVisible();
   await expect(classes).toContainText('Classes');
   const input = classes.getByRole('textbox');
   await input.fill('kui-dark');
@@ -603,6 +620,7 @@ test('turns a button label into nodes and adds a badge beside it', async ({
   await page
     .locator(`[data-action="editor-select-node"][data-item-id="${COMPOSE}"]`)
     .click();
+  await showProp(page, 'children');
   await page.getByRole('button', { name: 'Use as nodes' }).click();
   await expect(
     page.getByText('Holds 1 node; select it in the outline.'),
@@ -615,6 +633,7 @@ test('turns a button label into nodes and adds a badge beside it', async ({
   await page
     .locator(`[data-action="editor-select-node"][data-item-id="${COMPOSE}"]`)
     .click();
+  await showProp(page, 'children');
   await expect(
     page.getByText('Holds 2 nodes; select them in the outline.'),
   ).toBeVisible();
@@ -1323,8 +1342,15 @@ for (const width of [1440, 900]) {
     const rail = page.locator('[data-workbench-rail="right"]');
     const properties = rail.getByRole('tab', { name: 'Properties' });
     await expect(properties).toBeInViewport();
-    // Scroll the form to its end.
-    await rail.locator('[data-editor-prop]').last().scrollIntoViewIfNeeded();
+    // Scroll the overview to its end (KF-QWDPM3: its directory, data
+    // attributes, Promote and Bind sections).
+    await rail
+      .locator(
+        '[data-editor-prop-group], [data-action="editor-add-data-attribute"], [data-editor-promote], [data-editor-bind]',
+      )
+      .filter({ visible: true })
+      .last()
+      .scrollIntoViewIfNeeded();
     await expect(properties).toBeInViewport();
     await expect(rail.getByText('composeButton · Button')).toBeInViewport();
     await page.screenshot({
@@ -1378,6 +1404,7 @@ for (const width of [1440, 900]) {
   }, info) => {
     await page.setViewportSize({ width, height: 900 });
     await workbenchRoot(page);
+    await showConfigure(page, 'Configure main footer list');
     await page
       .getByRole('button', { name: 'Configure main footer list' })
       .click();
@@ -1407,6 +1434,7 @@ test('edits a Workbench mainPane of more than 10 fields in a dialog', async ({
 }, info) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await workbenchRoot(page);
+  await showConfigure(page, 'Configure main pane');
   await page.getByRole('button', { name: 'Configure main pane' }).click();
   const dialog = page.locator('#editor-field-dialog');
   await expect(dialog).toBeVisible();
@@ -1451,6 +1479,7 @@ test('edits a Pane’s separators and a TagField’s tags inline', async ({
   await page
     .locator(`[data-action="editor-select-node"][data-item-id="${PANE}"]`)
     .click();
+  await showProp(page, 'separators');
   const separators = page.locator('[data-editor-prop="separators"]');
   await separators.getByLabel('block-end').check();
   await expect(
@@ -1467,7 +1496,7 @@ test('edits a Pane’s separators and a TagField’s tags inline', async ({
   await page.locator('[data-editor-add="component"]').click();
   await page.getByRole('option', { name: 'TagField', exact: true }).click();
   await page.getByRole('button', { name: 'Add', exact: true }).click();
-  await area(page, 'Properties');
+  await showProp(page, 'tags');
   const tags = page.locator('[data-editor-prop="tags"]');
   const editor = tags.locator('[data-tag-field-editor]');
   // Type after the seeded chips, at the editor's end.
@@ -1499,7 +1528,7 @@ test('picks a LucideIcon’s icon from the icon picker', async ({
   await page.locator('[data-editor-add="component"]').click();
   await page.getByRole('option', { name: 'LucideIcon', exact: true }).click();
   await page.getByRole('button', { name: 'Add', exact: true }).click();
-  await area(page, 'Properties');
+  await showProp(page, 'color');
   // KF-PE0PTT: its text color field suggests a text color builder.
   const color = page.locator('[data-editor-prop="color"]');
   await expect(color.getByRole('textbox')).toHaveAttribute(
@@ -1512,6 +1541,7 @@ test('picks a LucideIcon’s icon from the icon picker', async ({
     path: info.outputPath('kf-pe0ptt-color-field-1440.png'),
     animations: 'disabled',
   });
+  await showProp(page, 'icon');
   await page.getByRole('button', { name: 'Choose icon' }).click();
   const dialog = page.locator('#editor-icon-dialog');
   await expect(dialog).toBeVisible();
@@ -1566,6 +1596,7 @@ async function addToPane(page: Page, name: string) {
 test('edits a Select’s choices in the list editor', async ({ page }, info) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await addToPane(page, 'Select');
+  await showConfigure(page, 'Configure choices');
   await page.getByRole('button', { name: 'Configure choices' }).click();
   const dialog = page.locator('#editor-field-dialog');
   await expect(dialog).toBeVisible();
@@ -1611,6 +1642,7 @@ test('adds a divider to a PopupMenu’s items from the Add menu', async ({
 }, info) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await addToPane(page, 'PopupMenu');
+  await showConfigure(page, 'Configure items');
   await page.getByRole('button', { name: 'Configure items' }).click();
   const dialog = page.locator('#editor-field-dialog');
   const rows = dialog.locator('[data-component="list-action-row"]');
@@ -1632,6 +1664,7 @@ test('sets a LucideIcon’s size from a keyword, then a number', async ({
 }, info) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await addToPane(page, 'LucideIcon');
+  await showProp(page, 'size');
   const size = page.locator(
     '[data-editor-prop="size"][data-editor-kind="choice"]',
   );
@@ -1658,6 +1691,7 @@ test('sets a LucideIcon’s size from a keyword, then a number', async ({
 test('gives a Workbench a static left rail', async ({ page }, info) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await workbenchRoot(page);
+  await showProp(page, 'leftRail');
   const kind = page.locator(
     '[data-editor-prop="leftRail"][data-editor-kind="choice"]',
   );
@@ -1665,6 +1699,7 @@ test('gives a Workbench a static left rail', async ({ page }, info) => {
   await page.getByRole('option', { name: 'Static panel…' }).click();
   const canvas = page.locator('[data-editor-canvas]');
   await expect(canvas).toContainText('leftRailContent slot');
+  await showConfigure(page, 'Configure left rail');
   await page.getByRole('button', { name: 'Configure left rail' }).click();
   const label = page
     .locator(`[data-editor-field='{"prop":"leftRail","path":["label"]}']`)
@@ -1689,11 +1724,14 @@ test('configures the toolbar of a Workbench’s static bottom drawer', async ({
 }, info) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await workbenchRoot(page);
+  await showProp(page, 'bottomDrawer');
   await page
     .locator('[data-editor-prop="bottomDrawer"][data-editor-kind="choice"]')
     .click();
   await page.getByRole('option', { name: 'Static panel…' }).click();
+  await showConfigure(page, 'Configure bottom drawer');
   await page.getByRole('button', { name: 'Configure bottom drawer' }).click();
+  await showConfigure(page, 'Configure toolbar');
   await page.getByRole('button', { name: 'Configure toolbar' }).click();
   const label = page
     .locator(
@@ -1774,10 +1812,12 @@ test('composes a Workbench’s left rail and toolbar title from nodes', async ({
 }, info) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await workbenchRoot(page);
+  await showProp(page, 'leftRail');
   await page
     .locator('[data-editor-prop="leftRail"][data-editor-kind="choice"]')
     .click();
   await page.getByRole('option', { name: 'Static panel…' }).click();
+  await showConfigure(page, 'Configure main toolbar');
   await page.getByRole('button', { name: 'Configure main toolbar' }).click();
   const label = page
     .locator(`[data-editor-field='{"prop":"mainToolbar","path":["label"]}']`)
@@ -1842,6 +1882,7 @@ test('promotes a Select’s renderSelected to an app-supplied param', async ({
   await page.setViewportSize({ width: 1440, height: 900 });
   await addToPane(page, 'Select');
   // KF-D85GY0: an app-supplied prop promotes from its own row.
+  await showProp(page, 'renderSelected');
   await page.locator('[data-editor-promote-prop="renderSelected"]').click();
   await expect(page.getByText(/· valid$/)).toBeVisible();
   // The placeholder renders the chosen label.
@@ -1884,6 +1925,7 @@ test('fills a NavStack view’s slot-seeded content from its form', async ({
   await newDocument(page);
   await dragComponent(page, 'NavStack', () => emptySpot(page));
   await select(page, /^NavStack/);
+  await showConfigure(page, 'Configure views');
   await page.getByRole('button', { name: 'Configure views' }).click();
   const dialog = page.locator('dialog[open]');
   await dialog.getByText('View 1', { exact: true }).click();
@@ -1904,6 +1946,7 @@ test('fills a NavStack view’s slot-seeded content from its form', async ({
   await area(page, 'Outline');
   await expect(place).toContainText('List');
   await select(page, /^NavStack/);
+  await showConfigure(page, 'Configure views');
   await page.getByRole('button', { name: 'Configure views' }).click();
   await dialog.getByText('View 1', { exact: true }).click();
   await expect(
@@ -2309,7 +2352,8 @@ test('hides the selection ring for a node in a view below the top', async ({
   const ring = page.locator('.kui-editor__selection');
   await expect(ring).toBeVisible();
   await addChild(page, 'ContentItem', 'views › 1 › content');
-  await expect(page.locator('[data-editor-prop]').first()).toBeVisible();
+  // The Inspector shows the new ContentItem's Properties directory.
+  await expect(page.locator('[data-editor-prop-group]').first()).toBeVisible();
   await expect(ring).toBeHidden();
   // A node in the top view is ringed.
   await select(page, /^NavStack/);
@@ -2326,8 +2370,10 @@ test('sizes a TabNavigator inside a SizedRegion as the region says', async ({
   await contentHeightDocument(page);
   await dragComponent(page, 'SizedRegion', () => emptySpot(page));
   await select(page, /^SizedRegion/);
+  await showProp(page, 'minHeight');
   await page
     .locator('[data-editor-prop="minHeight"] input')
+    .filter({ visible: true })
     .first()
     .fill('rem(25)');
   await page.keyboard.press('Enter');
@@ -2426,10 +2472,13 @@ test('keeps the Inspector still across the autosave after an edit inserts a row'
   await newDocument(page);
   await dragComponent(page, 'List', () => emptySpot(page));
   await dragComponent(page, 'ListActionRow', () => emptySpot(page));
+  // KF-QWDPM3: the icon tile's Properties page is shorter than the old
+  // single form, so a shorter window makes it scroll.
+  await page.setViewportSize({ width: 1440, height: 420 });
   await select(page, /^ListActionRow/);
-  const scroller = page
-    .locator('#editor-inspector-stack .kui-pane__content')
-    .filter({ visible: true });
+  await showProp(page, 'iconTile');
+  // The open Properties page's own scroller (the overview's lies under it).
+  const scroller = inspectorTop(page).locator('.kui-pane__content');
   await expect(scroller).toHaveCSS('overflow-anchor', 'none');
   const trigger = page
     .locator('[data-editor-prop="iconTile"] .kui-select__trigger')
@@ -2480,6 +2529,7 @@ test('promotes and binds a field inside an object prop', async ({
   await dragComponent(page, 'Pane', () => emptySpot(page));
   await dragComponent(page, 'ContentItem', () => emptySpot(page));
   await select(page, /^ContentItem/);
+  await showConfigure(page, 'Configure media');
   await page.getByRole('button', { name: 'Configure media' }).click();
   await setField(page, 'media', ['src'], 'skyline.svg');
   await setField(page, 'media', ['alt'], 'Skyline');

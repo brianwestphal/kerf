@@ -6,6 +6,7 @@ import { mount } from 'kerfjs';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { findNode } from '../../../src/editor/model/document.js';
+import { field, showProp } from './editing-harness.js';
 import { createEditor, sample } from './kerf-catalog.js';
 
 const PANE = '01JB8Z1M6Q8E1X9V4S7K2R3T5A';
@@ -133,6 +134,7 @@ describe('inspector states', () => {
     };
     const { root, editor } = open(withContent(bar));
     editor.selection.value = { kind: 'node', id: id(2) };
+    showProp(root, 'value');
     const type = (value: string) => {
       const input = root.querySelector<HTMLInputElement>(
         '[data-editor-prop="value"] input',
@@ -154,6 +156,7 @@ describe('inspector states', () => {
     };
     const { root, editor } = open(withContent(tags));
     editor.selection.value = { kind: 'node', id: id(9) };
+    showProp(root, 'placeholder');
     expect(
       root.querySelector<HTMLInputElement>(
         '[data-editor-prop="placeholder"] input',
@@ -169,7 +172,7 @@ describe('inspector states', () => {
     };
     const { root, editor } = open(withContent(icon));
     editor.selection.value = { kind: 'node', id: id(3) };
-    const color = root.querySelector('[data-editor-prop="color"]')!;
+    const color = field(root, '[data-editor-prop="color"]');
     expect(color.getAttribute('data-editor-kind')).toBe('css');
     // A text color suggests a text color builder, not a length (KF-PE0PTT).
     expect(color.querySelector('input')?.placeholder).toBe(
