@@ -264,10 +264,13 @@ test('Library grid names truncate visibly without losing the full name', async (
         '[data-segmented-control-id="editor-palette-view"] [data-segment-value="grid"]',
       )
       .click();
-    const tile = library(page).locator('[title="DisclosureArrow"]');
+    // KF-6CTMSV: the catalog's longest name, so it truncates on every
+    // platform's fonts; "DisclosureArrow" exactly fit its 92px tile on
+    // macOS, where scrollWidth equals clientWidth.
+    const tile = library(page).locator('[title="EdgeActivityIndicator"]');
     const name = tile.locator('.kui-text');
-    await expect(name).toHaveText('DisclosureArrow');
-    await expect(tile).toHaveAttribute('aria-label', 'DisclosureArrow');
+    await expect(name).toHaveText('EdgeActivityIndicator');
+    await expect(tile).toHaveAttribute('aria-label', 'EdgeActivityIndicator');
     const treatment = await name.evaluate((node) => ({
       overflow: getComputedStyle(node).overflow,
       textOverflow: getComputedStyle(node).textOverflow,
@@ -280,7 +283,9 @@ test('Library grid names truncate visibly without losing the full name', async (
       textOverflow: 'ellipsis',
       whiteSpace: 'nowrap',
     });
-    expect(treatment.scrollWidth).toBeGreaterThan(treatment.clientWidth);
+    // Well past the tile, not a pixel over it, so font metrics cannot make
+    // the name fit.
+    expect(treatment.scrollWidth).toBeGreaterThan(treatment.clientWidth * 1.2);
     await tile.focus();
     await expect(tile).toBeFocused();
     await library(page).screenshot({
