@@ -14,6 +14,8 @@ export interface WorkbenchOverlayPanel {
   key: WorkbenchPanelKey;
   collapsed: Signal<boolean>;
   keepOpenOn?: (target: Node) => boolean;
+  /** Stay open as the overlay when it holds focus as its breakpoint begins. */
+  keepFocusedOpen?: boolean;
 }
 
 /** Each panel's own element, never a nested Workbench's. */
@@ -59,7 +61,8 @@ const focusables = (element: HTMLElement): HTMLElement[] =>
  * - When a panel's `responsiveOverlayAt` breakpoint begins to apply (at
  *   wire-up, on first render, or on a crossing), its inline collapsed state is
  *   remembered and the panel collapses, so no overlay covers the work area
- *   until the user opens it. When the breakpoint stops applying (or on
+ *   until the user opens it — unless the panel sets `keepFocusedOpen` and
+ *   holds focus: then it stays open as the overlay, keeping its focus. When the breakpoint stops applying (or on
  *   disposal) the remembered state comes back. These presentation changes
  *   skip the collapse motion.
  * - A panel that opens while it presents as an overlay takes focus: its
@@ -287,7 +290,16 @@ export function wireWorkbenchOverlays(
       const active = responsive(element);
       if (active && !inlineState.has(panel)) {
         inlineState.set(panel, panel.collapsed.peek());
-        adapt(panel, element, true);
+        // A panel that opts in and holds focus (the user is working in it)
+        // stays open as the overlay, so narrowing keeps the field in hand.
+        adapt(
+          panel,
+          element,
+          !(
+            panel.keepFocusedOpen &&
+            element.contains(ownerDocument.activeElement)
+          ),
+        );
       } else if (!active && inlineState.has(panel)) {
         const remembered = inlineState.get(panel)!;
         inlineState.delete(panel);

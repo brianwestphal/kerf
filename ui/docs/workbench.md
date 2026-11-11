@@ -499,6 +499,12 @@ presents as one, mirroring `wireSidebar`'s compact overlay:
   path, so matching the portal root keeps the panel open when the press starts
   or ends anywhere inside the portal. Escape and Tab inside that portal remain
   with its own keyboard handler. Other outside presses still close the panel.
+- **Keep a focused panel:** by default a panel collapses when its overlay
+  breakpoint begins to apply. Set `keepFocusedOpen: true` on a panel in
+  `wireWorkbench` (an inspector or form panel) to keep it open as the overlay,
+  focus and all, when it holds focus at that moment. A narrowing window then
+  never takes away the field being edited. Without focus inside, it collapses
+  as any panel does.
 - **Focus:** when a panel closes with focus inside it — whatever closed it,
   including the app's own control inside the panel — focus returns to the
   control that had it when the panel opened (typically its toggle; one inside

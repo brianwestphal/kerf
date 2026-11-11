@@ -575,7 +575,9 @@ anchor(--kui-restore-drawer top, <safe-area fallback>))` with
     optional). With `dismissOverlays` (default `true`, mirroring
     `wireSidebar`'s compact overlay, which is on once `deviceClass` is given)
     the wiring collapses a panel when its `responsiveOverlayAt` breakpoint
-    begins to apply — detected by the panel computing `position: absolute`
+    begins to apply (a panel with `keepFocusedOpen` that holds focus then
+    stays open as the overlay instead, focus and all — KF-EGNN3J: the
+    editor's Inspector keeps the field being edited across a narrowing) — detected by the panel computing `position: absolute`
     while `data-presentation` stays `inline`, re-checked by a
     `ResizeObserver` on the Workbench plus a `MutationObserver` for a
     Workbench that renders later or a changed presentation (KF-CRRD70: the

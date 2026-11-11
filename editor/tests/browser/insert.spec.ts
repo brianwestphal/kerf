@@ -277,7 +277,9 @@ for (const width of [2048, 390]) {
     await page.setViewportSize({ width: 2048, height: 1128 });
     const folder = await openMain(page, `library-capture-${width}`);
     await select(page, 'messages');
-    // Wide to the capture width before the Library opens over it.
+    // Wide to the capture width before the Library opens over it, with
+    // focus out of the Inspector so it collapses (KF-EGNN3J).
+    await page.evaluate(() => (document.activeElement as HTMLElement).blur());
     await page.setViewportSize({ width, height: width === 390 ? 900 : 1128 });
     const { library } = await libraryDocument(page, folder);
     await library.getByRole('searchbox').fill(folder);

@@ -2574,3 +2574,63 @@ test('promotes and binds a field inside an object prop', async ({
   });
   await expect(page.getByText(/ · \d+ nodes? · valid$/)).toBeVisible();
 });
+
+// KF-EGNN3J: narrowing to a phone and back keeps the Inspector a focused
+// editing surface: its page, the draft being typed, focus, selection, and
+// scroll all survive 1440 → 960 → 390 → 1440.
+test('keeps the Inspector’s editing context across a narrow round trip', async ({
+  page,
+}, info) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page
+    .locator(`[data-editor-canvas] [data-kerf-node="${COMPOSE}"]`)
+    .click();
+  // A long page, scrolled, keeps its place.
+  await inspectorTop(page)
+    .locator('[data-editor-prop-group="All properties"]')
+    .click();
+  await expect(
+    inspectorTop(page).locator('[data-editor-properties-page]'),
+  ).toBeVisible();
+  const scroller = inspectorTop(page).locator('.kui-pane__content').first();
+  await scroller.evaluate((element) => {
+    element.scrollTop = 400;
+  });
+  const href = inspectorTop(page).locator('[data-editor-prop="href"] input');
+  await href.scrollIntoViewIfNeeded();
+  const offset = await scroller.evaluate((element) => element.scrollTop);
+  expect(offset).toBeGreaterThan(0);
+  await href.click();
+  await page.keyboard.type('/inbox');
+  for (const width of [960, 390, 1440]) {
+    await page.setViewportSize({ width, height: 900 });
+    await expect(page.locator('[data-workbench-rail="right"]')).toHaveAttribute(
+      'data-collapsed',
+      'false',
+    );
+    await expect(inspectorTop(page)).toHaveAttribute(
+      'data-nav-key',
+      'properties-All-properties',
+    );
+    await expect(href).toHaveValue('/inbox');
+    await expect(href).toBeFocused();
+    await expect(
+      page.locator(
+        `[data-action="editor-select-node"][data-item-id="${COMPOSE}"]`,
+      ),
+    ).toHaveAttribute('aria-selected', 'true');
+    if (width === 390)
+      await page.screenshot({
+        path: info.outputPath('kf-egnn3j-narrow-editing-390.png'),
+        animations: 'disabled',
+      });
+  }
+  expect(
+    Math.abs(
+      (await scroller.evaluate((element) => element.scrollTop)) - offset,
+    ),
+  ).toBeLessThan(2);
+  // Committing the draft still edits the node.
+  await page.keyboard.press('Enter');
+  await expect(page.getByText(/· valid$/)).toBeVisible();
+});

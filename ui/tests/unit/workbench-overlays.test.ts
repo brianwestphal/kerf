@@ -199,13 +199,14 @@ function studio({
         dismissOverlays?: boolean;
         exclusiveOverlays?: boolean;
         keepOpenOn?: (target: Node) => boolean;
+        keepFocusedOpen?: boolean;
       } = {},
     ) => {
-      const { keepOpenOn, ...wireOptions } = options;
+      const { keepOpenOn, keepFocusedOpen, ...wireOptions } = options;
       const dispose = wireWorkbench(root, {
         id: 'studio',
         panels: {
-          leftRail: { collapsed: left, keepOpenOn },
+          leftRail: { collapsed: left, keepOpenOn, keepFocusedOpen },
           rightRail: { collapsed: right },
           bottomDrawer: { collapsed: drawer },
         },
@@ -417,6 +418,24 @@ describe('wireWorkbench transient overlays', () => {
     return Promise.resolve().then(() => {
       expect(app.leftRail().contains(document.activeElement)).toBe(false);
     });
+  });
+
+  it('keeps a keepFocusedOpen panel open as the overlay while it holds focus', () => {
+    const app = studio();
+    app.wire({ keepFocusedOpen: true });
+    // KF-EGNN3J: narrowing while working in the panel keeps it, and its
+    // focus, as the overlay.
+    app.button('nav item').focus();
+    resize(true);
+    expect(app.left.value).toBe(false);
+    expect(document.activeElement?.textContent).toBe('nav item');
+    // Widening gives back its inline state, still open.
+    resize(false);
+    expect(app.left.value).toBe(false);
+    // Without focus inside, it collapses as any panel does.
+    app.button('Plain').focus();
+    resize(true);
+    expect(app.left.value).toBe(true);
   });
 
   it('returns focus to an aria-controls toggle for a panel open at wire-up', () => {

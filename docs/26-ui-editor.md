@@ -334,6 +334,16 @@ still applies — the same group, or task, on the new node, or All properties �
 and otherwise returns to the overview; a field editor still closes when its
 node is no longer selected.
 
+At phone width the Inspector is a focused editing surface (KF-EGNN3J:
+narrow Inspector). Its rail is a transient overlay at 704px and below, as
+before, but it is wired with `keepFocusedOpen`. A window that narrows while
+the author is working in the Inspector keeps it open as the overlay instead
+of collapsing it. The open page, the draft typed in a field, focus, the
+selection, and the page's scroll all survive 1440 → 960 → 390 → 1440, and
+the same group names and order show at every width. Its toggle (Hide
+Inspector), Escape, or a press on the preview beside it returns to the
+preview.
+
 Binding and promotion sit with the field they change (KF-FN28S3: contextual
 binding). Each Properties page ends with **Bindings**, a row per field on
 that page named for the field and summarizing what it reads: "Not bound",

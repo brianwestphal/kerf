@@ -4582,7 +4582,13 @@ export function createEditor(options: EditorOptions) {
         id: WORKBENCH_ID,
         panels: {
           leftRail: { size: documentSize, collapsed: documentCollapsed },
-          rightRail: { size: inspectorSize, collapsed: inspectorCollapsed },
+          // KF-EGNN3J: narrowing keeps the Inspector open while it is being
+          // edited, as the focused overlay, rather than taking it away.
+          rightRail: {
+            size: inspectorSize,
+            collapsed: inspectorCollapsed,
+            keepFocusedOpen: true,
+          },
         },
       }),
       ...wireInspectorChanges(root),

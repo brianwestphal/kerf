@@ -2931,6 +2931,13 @@ interface WireWorkbenchPanel {
      * presses outside the panel and its allowed surfaces still dismiss it.
      */
     keepOpenOn?: (target: Node) => boolean;
+    /**
+     * Keep the panel open as the overlay when its `responsiveOverlayAt`
+     * breakpoint begins to apply while it holds focus, instead of collapsing
+     * it: a narrowing window then never takes away the field the user is
+     * editing. An inspector or form panel opts in; a navigator usually does not.
+     */
+    keepFocusedOpen?: boolean;
 }
 /** A resize the user made, after `wireWorkbench` wrote it to the size signal. */
 interface WorkbenchResize {
@@ -2964,7 +2971,8 @@ interface WireWorkbenchOptions {
      * Treat the panels given a `collapsed` signal as transient overlays while
      * they present as overlays (default `true`), like `wireSidebar`'s compact
      * overlay: a panel whose `responsiveOverlayAt` breakpoint begins to apply
-     * starts collapsed, with no collapse motion, and gets its inline collapsed
+     * starts collapsed, with no collapse motion (unless its `keepFocusedOpen`
+     * holds it open), and gets its inline collapsed
      * state back when the breakpoint stops applying (and on disposal); an open
      * overlay panel, responsive or `presentation: "overlay"`, closes on Escape
      * or a press that starts and ends outside it. A panel that opens as an

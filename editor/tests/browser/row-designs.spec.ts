@@ -4,7 +4,7 @@
 // row of either design.
 import { expect, type Page, test } from '@playwright/test';
 
-import { area, inspectorTop } from './areas.js';
+import { area, inspectorTop, showInspector } from './areas.js';
 import { openBind } from './build.js';
 
 const ids = {
@@ -186,7 +186,7 @@ test('removing a design leaves one template', async ({ page }, info) => {
   });
   // The narrow Inspector shows the selected design's Row designs.
   await page.setViewportSize({ width: 390, height: 844 });
-  await page.getByRole('button', { name: 'Show Inspector' }).click();
+  await showInspector(page);
   await area(page, 'Flow');
   const remove = page.getByRole('button', { name: 'Remove row design' });
   await remove.scrollIntoViewIfNeeded();
@@ -261,7 +261,7 @@ test('a list keyed by kind renders each kind’s design', async ({
     animations: 'disabled',
   });
   await page.setViewportSize({ width: 390, height: 844 });
-  await page.getByRole('button', { name: 'Show Inspector' }).click();
+  await showInspector(page);
   await area(page, 'Flow');
   await page.getByRole('button', { name: 'Add kind' }).scrollIntoViewIfNeeded();
   await page.mouse.move(1, 1);
@@ -313,7 +313,7 @@ test('row designs reorder, the last one staying last', async ({
     animations: 'disabled',
   });
   await page.setViewportSize({ width: 390, height: 844 });
-  await page.getByRole('button', { name: 'Show Inspector' }).click();
+  await showInspector(page);
   await area(page, 'Flow');
   await later.scrollIntoViewIfNeeded();
   await page.mouse.move(1, 1);

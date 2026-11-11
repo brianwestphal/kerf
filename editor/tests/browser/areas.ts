@@ -59,3 +59,16 @@ export async function openLibrary(page: Page) {
     await page.locator('[data-editor-library-button]').click();
   await expect(library).toBeVisible();
 }
+
+/**
+ * Shows the Inspector at a narrow width. KF-EGNN3J: an Inspector that held
+ * focus as the window narrowed is still open, as the overlay.
+ */
+export async function showInspector(page: Page) {
+  const show = page.getByRole('button', { name: 'Show Inspector' });
+  if (await show.isVisible()) await show.click();
+  await expect(page.locator('[data-workbench-rail="right"]')).toHaveAttribute(
+    'data-collapsed',
+    'false',
+  );
+}
