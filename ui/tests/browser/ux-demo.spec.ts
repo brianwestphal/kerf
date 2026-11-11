@@ -6349,9 +6349,11 @@ test('fills ListHeader rows and keeps 18px action visuals at the logical end', a
     }
   };
 
+  // KF-X2MRCT: the only toggle header is the collapsible section with
+  // actions; the others are headings or trailing actions.
   await expect(
     demo.locator('.kui-list-header[data-toggle="true"]'),
-  ).toHaveCount(0);
+  ).toHaveCount(1);
 
   await expectLayout(1);
   await attachments.evaluate((element) =>
@@ -6660,9 +6662,11 @@ test('preserves menu extension metadata without surrendering native semantics', 
     .poll(() => popover.evaluate((element) => element.matches(':popover-open')))
     .toBe(false);
 
+  // KF-X2MRCT: the only toggle header is the collapsible section with
+  // actions; the others are headings or trailing actions.
   await expect(
     headerDemo.locator('.kui-list-header[data-toggle="true"]'),
-  ).toHaveCount(0);
+  ).toHaveCount(1);
   const disabled = headerDemo.getByRole('button', {
     name: 'Unavailable action',
   });

@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 164600,
-  "totalJavaScriptGzip": 469200,
-  "measuredLargestJavaScriptGzip": 164546,
-  "measuredTotalJavaScriptGzip": 469183,
+  "totalJavaScriptGzip": 469800,
+  "measuredLargestJavaScriptGzip": 164545,
+  "measuredTotalJavaScriptGzip": 469746,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -7251,6 +7251,22 @@
         "measuredTotalJavaScriptGzip": 469183,
         "largestJavaScriptGzip": 164600,
         "totalJavaScriptGzip": 469200
+      }
+    },
+    {
+      "at": "2026-11-11T12:33:33.794Z",
+      "reason": "KF-X2MRCT and KF-J8GMA2 add two catalog examples: a collapsible ListHeader section with an overflow menu and popover, and a SummaryRow section headed by a leadingEdge toggle header, plus their demo state.",
+      "old": {
+        "measuredLargestJavaScriptGzip": 164546,
+        "measuredTotalJavaScriptGzip": 469183,
+        "largestJavaScriptGzip": 164600,
+        "totalJavaScriptGzip": 469200
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 164545,
+        "measuredTotalJavaScriptGzip": 469746,
+        "largestJavaScriptGzip": 164600,
+        "totalJavaScriptGzip": 469800
       }
     }
   ]
