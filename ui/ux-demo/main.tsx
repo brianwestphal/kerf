@@ -234,6 +234,7 @@ import {
   iconTileCurrent,
   inspectorSection,
   itemTypes,
+  listHeaderGroupOpen,
   menuActionCurrent,
   menuActionPressed,
   menuToolsOpen,
@@ -761,6 +762,12 @@ const stopActions = delegateActions(app, 'click', {
     actionLog.value = disclosureOpen.value
       ? 'Disclosure opened'
       : 'Disclosure closed';
+  },
+  'toggle-list-header-group': () => {
+    listHeaderGroupOpen.value = !listHeaderGroupOpen.value;
+    actionLog.value = listHeaderGroupOpen.value
+      ? 'Group opened'
+      : 'Group closed';
   },
   'toggle-menu-tools': () => {
     menuToolsOpen.value = !menuToolsOpen.value;

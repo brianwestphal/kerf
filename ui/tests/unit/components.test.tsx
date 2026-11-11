@@ -2398,6 +2398,88 @@ describe('production UI primitives', () => {
 
   // KF-ZYQVHD: plain-text badge/status, so authors and the editor stop
   // wrapping copy in a span (or a Badge inside ListHeader's own Badge).
+  // KF-X2MRCT: a toggle header's one trailing overflow button.
+  it('renders a toggle header’s trailing overflow button outside its toggle', () => {
+    const header = asHtml(
+      ListHeader({
+        label: 'In Review',
+        toggle: true,
+        expanded: true,
+        action: 'toggle-group',
+        controls: 'group-rows',
+        overflowAction: 'group-actions',
+        overflowLabel: 'Group actions',
+        overflowIcon: <LucideIcon icon={Plus} name="plus" />,
+        overflowTriggerAttributes: {
+          popoverTarget: 'group-menu',
+          'aria-haspopup': 'menu',
+          // A protected attribute an untyped caller passes is dropped.
+          'data-action': 'ignored',
+          'data-group': 'review',
+        } as never,
+      }),
+    );
+    // The toggle closes before the overflow button opens: its own focus stop.
+    const toggleEnd = header.indexOf('</button>');
+    const overflow = header.indexOf('data-list-header-overflow="true"');
+    expect(toggleEnd).toBeGreaterThan(0);
+    expect(overflow).toBeGreaterThan(toggleEnd);
+    expect(header).toContain('data-action="toggle-group"');
+    expect(header).toContain('data-action="group-actions"');
+    expect(header).toContain(
+      'aria-label="Group actions" title="Group actions"',
+    );
+    expect(header).toContain('popoverTarget="group-menu"');
+    expect(header).toContain('aria-haspopup="menu"');
+    expect(header).toContain('data-group="review"');
+    // The overflow never carries the toggle's state or a protected action.
+    expect(header).not.toContain('data-action="ignored"');
+    expect(header.match(/aria-expanded/g)).toHaveLength(1);
+    expect(header.match(/data-component="disclosure-arrow"/g)).toHaveLength(1);
+
+    const disabled = asHtml(
+      ListHeader({
+        label: 'In Review',
+        toggle: true,
+        expanded: false,
+        action: 'toggle-group',
+        overflowAction: 'group-actions',
+        overflowLabel: 'Group actions',
+        overflowIcon: <LucideIcon icon={Plus} name="plus" />,
+        overflowDisabled: true,
+      }),
+    );
+    expect(disabled).toMatch(
+      /data-list-header-overflow="true"[^>]* disabled data-kui-disabled="true"/,
+    );
+    // A loading header keeps the overflow inert, without its action.
+    const loading = asHtml(
+      ListHeader({
+        label: 'In Review',
+        toggle: true,
+        expanded: false,
+        action: 'toggle-group',
+        overflowAction: 'group-actions',
+        overflowLabel: 'Group actions',
+        overflowIcon: <LucideIcon icon={Plus} name="plus" />,
+        placeholder: true,
+      }),
+    );
+    expect(loading).not.toContain('data-action="group-actions"');
+    expect(loading).toMatch(/data-list-header-overflow="true"[^>]* disabled/);
+    // Without one, a toggle header has just its toggle.
+    expect(
+      asHtml(
+        ListHeader({
+          label: 'In Review',
+          toggle: true,
+          expanded: false,
+          action: 'toggle-group',
+        }),
+      ),
+    ).not.toContain('data-list-header-overflow');
+  });
+
   it('wraps plain-text ListHeader badge and status in its own escaped badges', () => {
     const header = asHtml(
       ListHeader({

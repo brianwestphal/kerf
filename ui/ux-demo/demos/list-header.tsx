@@ -1,12 +1,14 @@
 import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
 import { List } from '@kerfjs/ui/list';
 import { ListHeader } from '@kerfjs/ui/list-header';
+import { ListItem } from '@kerfjs/ui/list-item';
 import { LucideIcon } from '@kerfjs/ui/lucide-icon';
 import { Row } from '@kerfjs/ui/row';
 import { Text } from '@kerfjs/ui/text';
-import { Plus } from 'lucide';
+import { Ellipsis, Plus } from 'lucide';
 
 import { DemoListPopover } from './demo-list-popover.js';
+import { listHeaderGroupOpen } from './state.js';
 
 export function ListHeaderDemo() {
   const unpricedCount = 3;
@@ -115,6 +117,47 @@ export function ListHeaderDemo() {
           placeholder
         />
       </CatalogExample>
+      <CatalogExample
+        label="Collapsible Section with Actions"
+        note="The label and arrow toggle the section; the trailing button opens its commands and never toggles it."
+        align="none"
+        viewport={{ width: 'sidebar', frame: 'solid' }}
+        rootAttributes={{ 'data-demo-list-header-overflow': '' }}
+      >
+        <List>
+          <ListHeader
+            label="In Review"
+            count={2}
+            countLabel="2 tickets in review"
+            toggle
+            expanded={listHeaderGroupOpen.value}
+            action="toggle-list-header-group"
+            controls="list-header-group-content"
+            overflowAction="log-more"
+            overflowLabel="Group actions"
+            overflowIcon={<LucideIcon icon={Ellipsis} name="ellipsis" />}
+            overflowTriggerAttributes={{
+              popoverTarget: 'list-header-group-actions-popover',
+              popoverTargetAction: 'toggle',
+              'aria-controls': 'list-header-group-actions-popover',
+              'aria-haspopup': 'dialog',
+            }}
+          />
+          <List
+            id="list-header-group-content"
+            hidden={!listHeaderGroupOpen.value}
+          >
+            <ListItem label="Rename the inbox filter" action="log-more" />
+            <ListItem label="Check the export totals" action="log-more" />
+          </List>
+        </List>
+      </CatalogExample>
+      <DemoListPopover
+        id="list-header-group-actions-popover"
+        label="Group Actions"
+      >
+        Rename or ungroup this section.
+      </DemoListPopover>
       <DemoListPopover
         id="list-header-attachments-popover"
         label="Attachment Action Details"

@@ -1777,6 +1777,31 @@
         "disabledReason": {
           "group": "Behavior",
           "subgroup": "Action"
+        },
+        "overflowAction": {
+          "group": "Behavior",
+          "subgroup": "Overflow menu",
+          "order": 10
+        },
+        "overflowLabel": {
+          "group": "Behavior",
+          "subgroup": "Overflow menu",
+          "order": 11
+        },
+        "overflowIcon": {
+          "group": "Behavior",
+          "subgroup": "Overflow menu",
+          "order": 12
+        },
+        "overflowDisabled": {
+          "group": "Behavior",
+          "subgroup": "Overflow menu",
+          "order": 13
+        },
+        "overflowTriggerAttributes": {
+          "group": "Behavior",
+          "subgroup": "Overflow menu",
+          "control": "hidden"
         }
       }
     },

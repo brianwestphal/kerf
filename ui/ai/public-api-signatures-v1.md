@@ -888,7 +888,41 @@ interface ListHeaderBaseProps {
     /** Native named-slot assignment when composed inside a web component. */
     slot?: string;
 }
-type ListHeaderModeProps = {
+/**
+ * A toggle header's one trailing overflow button (KF-X2MRCT): its own focus
+ * stop at the logical end, outside the disclosure button, opening the
+ * section's commands. The label and arrow toggle the section; the overflow
+ * button never does.
+ */
+type ListHeaderOverflowProps = {
+    /** The overflow button's `data-action`. */
+    overflowAction: string;
+    /** Its accessible name and tooltip ("Group actions"). */
+    overflowLabel: string;
+    /** Its icon, typically an `Ellipsis` `LucideIcon`. */
+    overflowIcon: SafeHtml;
+    overflowDisabled?: boolean;
+    /**
+     * Popup metadata for the overflow button (`popoverTarget`,
+     * `aria-haspopup`, `aria-controls`, `data-*`).
+     */
+    overflowTriggerAttributes?: ListHeaderTriggerAttributes;
+} | {
+    overflowAction?: never;
+    overflowLabel?: never;
+    overflowIcon?: never;
+    overflowDisabled?: never;
+    overflowTriggerAttributes?: never;
+};
+/** The non-toggle modes take no overflow button. */
+type ListHeaderNoOverflow = {
+    overflowAction?: never;
+    overflowLabel?: never;
+    overflowIcon?: never;
+    overflowDisabled?: never;
+    overflowTriggerAttributes?: never;
+};
+type ListHeaderModeProps = ({
     /** Render the title as a controlled disclosure trigger. */
     toggle: true;
     /** A toggle's label is its button text, not a heading. */
@@ -899,7 +933,7 @@ type ListHeaderModeProps = {
     actionLabel?: never;
     actionDisabled?: boolean;
     disabledReason?: string;
-} | {
+} & ListHeaderOverflowProps) | ({
     /** Render a separately named trailing action. */
     toggle?: false;
     /**
@@ -913,7 +947,7 @@ type ListHeaderModeProps = {
     expanded?: never;
     actionDisabled?: boolean;
     disabledReason?: string;
-} | {
+} & ListHeaderNoOverflow) | ({
     /** Render a passive section heading. */
     toggle?: false;
     /**
@@ -927,7 +961,7 @@ type ListHeaderModeProps = {
     expanded?: never;
     actionDisabled?: never;
     disabledReason?: never;
-};
+} & ListHeaderNoOverflow);
 type ListHeaderIndicatorProps = {
     count: number;
     countLabel: string;
@@ -942,7 +976,7 @@ type ListHeaderIndicatorProps = {
     status?: string | SafeHtml | undefined;
 };
 type ListHeaderProps = ListHeaderBaseProps & ListHeaderIndicatorProps & ListHeaderModeProps;
-declare function ListHeader({ label, size, headingLevel, count, countLabel, badge, status, density, divider, inline, width, wrap, indicatorTone, action, actionLabel, actionIcon, actionDisabled, disabledReason, expanded, toggle, placeholder, rootAttributes, triggerAttributes, controls, slot, }: ListHeaderProps): SafeHtml;
+declare function ListHeader({ label, size, headingLevel, count, countLabel, badge, status, density, divider, inline, width, wrap, indicatorTone, action, actionLabel, actionIcon, actionDisabled, disabledReason, expanded, toggle, overflowAction, overflowLabel, overflowIcon, overflowDisabled, overflowTriggerAttributes, placeholder, rootAttributes, triggerAttributes, controls, slot, }: ListHeaderProps): SafeHtml;
 
 export { ListHeader, type ListHeaderProps };
 ```

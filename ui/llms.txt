@@ -371,6 +371,10 @@ headingLevel`, `SearchField clearIcon`, `ContentItem frame="framed"` for a
   tokens tune section density. A semantic `count` requires `countLabel` and
   excludes other indicators; `badge` and `status` may render together, and
   either may be explicitly `undefined` in conditional app state.
+  A `toggle` header whose section has its own commands takes one trailing
+  overflow button (`overflowAction`, `overflowLabel`, `overflowIcon`,
+  optional `overflowDisabled`/`overflowTriggerAttributes`): its own focus
+  stop outside the disclosure button, which never toggles the section.
   For a filled command list, scope `--kui-list-item-background`,
   `--kui-list-item-color`, `--kui-list-item-border`,
   `--kui-list-item-hover-background`, `--kui-list-item-hover-border`,

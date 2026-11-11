@@ -7469,6 +7469,133 @@
           "variantOnly": true,
           "group": "Behavior",
           "subgroup": "Action"
+        },
+        {
+          "name": "overflowAction",
+          "type": { "kind": "string", "text": "string" },
+          "required": false,
+          "description": "The overflow button's `data-action`.",
+          "variantOnly": true,
+          "group": "Behavior",
+          "subgroup": "Overflow menu",
+          "order": 10
+        },
+        {
+          "name": "overflowLabel",
+          "type": { "kind": "string", "text": "string" },
+          "required": false,
+          "description": "Its accessible name and tooltip (\"Group actions\").",
+          "variantOnly": true,
+          "group": "Behavior",
+          "subgroup": "Overflow menu",
+          "order": 11
+        },
+        {
+          "name": "overflowIcon",
+          "type": { "kind": "content", "text": "SafeHtml" },
+          "required": false,
+          "description": "Its icon, typically an `Ellipsis` `LucideIcon`.",
+          "variantOnly": true,
+          "slot": true,
+          "group": "Behavior",
+          "subgroup": "Overflow menu",
+          "order": 12
+        },
+        {
+          "name": "overflowDisabled",
+          "type": {
+            "kind": "boolean",
+            "text": "boolean | undefined",
+            "nullable": true
+          },
+          "required": false,
+          "variantOnly": true,
+          "group": "Behavior",
+          "subgroup": "Overflow menu",
+          "order": 13
+        },
+        {
+          "name": "overflowTriggerAttributes",
+          "type": {
+            "kind": "object",
+            "props": [
+              {
+                "name": "data-action",
+                "type": {
+                  "kind": "never",
+                  "text": "undefined",
+                  "nullable": true
+                },
+                "required": false
+              },
+              {
+                "name": "data-kui-disabled",
+                "type": {
+                  "kind": "never",
+                  "text": "undefined",
+                  "nullable": true
+                },
+                "required": false
+              },
+              {
+                "name": "popoverTarget",
+                "type": {
+                  "kind": "string",
+                  "text": "string",
+                  "nullable": true
+                },
+                "required": false
+              },
+              {
+                "name": "popoverTargetAction",
+                "type": {
+                  "kind": "enum",
+                  "values": ["toggle", "show", "hide"],
+                  "text": "\"toggle\" | \"show\" | \"hide\" | undefined",
+                  "nullable": true
+                },
+                "required": false
+              },
+              {
+                "name": "aria-controls",
+                "type": {
+                  "kind": "string",
+                  "text": "string",
+                  "nullable": true
+                },
+                "required": false
+              },
+              {
+                "name": "aria-haspopup",
+                "type": {
+                  "kind": "enum",
+                  "values": [
+                    "dialog",
+                    "menu",
+                    "listbox",
+                    "tree",
+                    "grid",
+                    "true"
+                  ],
+                  "text": "\"menu\" | \"listbox\" | \"tree\" | \"grid\" | \"dialog\" | \"true\" | undefined",
+                  "nullable": true
+                },
+                "required": false
+              }
+            ],
+            "index": {
+              "keyPrefix": "data-",
+              "value": { "kind": "string", "text": "string", "nullable": true }
+            },
+            "text": "Readonly<Record<`data-${string}`, string | undefined> & { 'data-action'?: undefined; 'data-kui-disabled'?: undefined; popoverTarget?: string | undefined; popoverTargetAction?: \"toggle\" | \"show\" | \"hide\" | undefined; 'aria-controls'?: string | undefined; 'aria-haspopup'?: \"menu\" | \"listbox\" | \"tree\" | \"grid\" | \"dialog\" | \"true\" | undefined; }>",
+            "nullable": true
+          },
+          "required": false,
+          "description": "Popup metadata for the overflow button (`popoverTarget`,\n`aria-haspopup`, `aria-controls`, `data-*`).",
+          "variantOnly": true,
+          "group": "Behavior",
+          "subgroup": "Overflow menu",
+          "control": "hidden"
         }
       ],
       "nativeAttributes": [],
@@ -7481,9 +7608,34 @@
             "countLabel",
             "toggle",
             "action",
-            "expanded"
+            "expanded",
+            "overflowAction",
+            "overflowLabel",
+            "overflowIcon"
           ],
           "forbidden": ["badge", "status", "headingLevel", "actionLabel"]
+        },
+        {
+          "when": { "toggle": true },
+          "required": [
+            "label",
+            "count",
+            "countLabel",
+            "toggle",
+            "action",
+            "expanded"
+          ],
+          "forbidden": [
+            "badge",
+            "status",
+            "headingLevel",
+            "actionLabel",
+            "overflowAction",
+            "overflowLabel",
+            "overflowIcon",
+            "overflowDisabled",
+            "overflowTriggerAttributes"
+          ]
         },
         {
           "when": { "toggle": false },
@@ -7495,7 +7647,16 @@
             "actionLabel",
             "actionIcon"
           ],
-          "forbidden": ["badge", "status", "expanded"]
+          "forbidden": [
+            "badge",
+            "status",
+            "expanded",
+            "overflowAction",
+            "overflowLabel",
+            "overflowIcon",
+            "overflowDisabled",
+            "overflowTriggerAttributes"
+          ]
         },
         {
           "when": { "toggle": false },
@@ -7508,18 +7669,55 @@
             "actionIcon",
             "expanded",
             "actionDisabled",
-            "disabledReason"
+            "disabledReason",
+            "overflowAction",
+            "overflowLabel",
+            "overflowIcon",
+            "overflowDisabled",
+            "overflowTriggerAttributes"
           ]
         },
         {
           "when": { "toggle": true },
-          "required": ["label", "toggle", "action", "expanded"],
+          "required": [
+            "label",
+            "toggle",
+            "action",
+            "expanded",
+            "overflowAction",
+            "overflowLabel",
+            "overflowIcon"
+          ],
           "forbidden": ["count", "countLabel", "headingLevel", "actionLabel"]
+        },
+        {
+          "when": { "toggle": true },
+          "required": ["label", "toggle", "action", "expanded"],
+          "forbidden": [
+            "count",
+            "countLabel",
+            "headingLevel",
+            "actionLabel",
+            "overflowAction",
+            "overflowLabel",
+            "overflowIcon",
+            "overflowDisabled",
+            "overflowTriggerAttributes"
+          ]
         },
         {
           "when": { "toggle": false },
           "required": ["label", "action", "actionLabel", "actionIcon"],
-          "forbidden": ["count", "countLabel", "expanded"]
+          "forbidden": [
+            "count",
+            "countLabel",
+            "expanded",
+            "overflowAction",
+            "overflowLabel",
+            "overflowIcon",
+            "overflowDisabled",
+            "overflowTriggerAttributes"
+          ]
         },
         {
           "when": { "toggle": false },
@@ -7532,7 +7730,12 @@
             "actionIcon",
             "expanded",
             "actionDisabled",
-            "disabledReason"
+            "disabledReason",
+            "overflowAction",
+            "overflowLabel",
+            "overflowIcon",
+            "overflowDisabled",
+            "overflowTriggerAttributes"
           ]
         }
       ],

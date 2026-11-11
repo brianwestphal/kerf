@@ -89,8 +89,46 @@ interface ListHeaderBaseProps {
   slot?: string;
 }
 
-type ListHeaderModeProps =
+/**
+ * A toggle header's one trailing overflow button (KF-X2MRCT): its own focus
+ * stop at the logical end, outside the disclosure button, opening the
+ * section's commands. The label and arrow toggle the section; the overflow
+ * button never does.
+ */
+type ListHeaderOverflowProps =
   | {
+      /** The overflow button's `data-action`. */
+      overflowAction: string;
+      /** Its accessible name and tooltip ("Group actions"). */
+      overflowLabel: string;
+      /** Its icon, typically an `Ellipsis` `LucideIcon`. */
+      overflowIcon: SafeHtml;
+      overflowDisabled?: boolean;
+      /**
+       * Popup metadata for the overflow button (`popoverTarget`,
+       * `aria-haspopup`, `aria-controls`, `data-*`).
+       */
+      overflowTriggerAttributes?: ListHeaderTriggerAttributes;
+    }
+  | {
+      overflowAction?: never;
+      overflowLabel?: never;
+      overflowIcon?: never;
+      overflowDisabled?: never;
+      overflowTriggerAttributes?: never;
+    };
+
+/** The non-toggle modes take no overflow button. */
+type ListHeaderNoOverflow = {
+  overflowAction?: never;
+  overflowLabel?: never;
+  overflowIcon?: never;
+  overflowDisabled?: never;
+  overflowTriggerAttributes?: never;
+};
+
+type ListHeaderModeProps =
+  | ({
       /** Render the title as a controlled disclosure trigger. */
       toggle: true;
       /** A toggle's label is its button text, not a heading. */
@@ -101,8 +139,8 @@ type ListHeaderModeProps =
       actionLabel?: never;
       actionDisabled?: boolean;
       disabledReason?: string;
-    }
-  | {
+    } & ListHeaderOverflowProps)
+  | ({
       /** Render a separately named trailing action. */
       toggle?: false;
       /**
@@ -116,8 +154,8 @@ type ListHeaderModeProps =
       expanded?: never;
       actionDisabled?: boolean;
       disabledReason?: string;
-    }
-  | {
+    } & ListHeaderNoOverflow)
+  | ({
       /** Render a passive section heading. */
       toggle?: false;
       /**
@@ -131,7 +169,7 @@ type ListHeaderModeProps =
       expanded?: never;
       actionDisabled?: never;
       disabledReason?: never;
-    };
+    } & ListHeaderNoOverflow);
 
 type ListHeaderIndicatorProps =
   | { count: number; countLabel: string; badge?: never; status?: never }
@@ -169,6 +207,11 @@ export function ListHeader({
   disabledReason,
   expanded,
   toggle = false,
+  overflowAction,
+  overflowLabel,
+  overflowIcon,
+  overflowDisabled = false,
+  overflowTriggerAttributes = {},
   placeholder = false,
   rootAttributes = {},
   triggerAttributes = {},
@@ -267,6 +310,24 @@ export function ListHeader({
             </span>
           )}
         </button>
+        {overflowAction && (
+          <button
+            {...filterControlAttributes(
+              overflowTriggerAttributes,
+              PROTECTED_TRIGGER_DATA_ATTRIBUTES,
+            )}
+            type="button"
+            class="kui-list-header__action"
+            data-list-header-overflow="true"
+            data-action={placeholder ? undefined : overflowAction}
+            aria-label={overflowLabel}
+            title={overflowLabel}
+            disabled={overflowDisabled || placeholder || undefined}
+            data-kui-disabled={overflowDisabled ? 'true' : undefined}
+          >
+            {overflowIcon}
+          </button>
+        )}
       </header>
     );
   }
