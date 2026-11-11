@@ -367,95 +367,122 @@ export function createNodeInspectorViews(
           // KF-DQFXWG: rows keep the section's prop order, so a required
           // icon row is not pushed below every field; runs of one kind share
           // a container.
-          const rows = section.props.flatMap((prop): InspectorRow[] => {
-            const value = props[prop.name] as never;
-            if (opens(prop))
+          const rowsOf = (group: readonly InspectorProp[]) =>
+            group.flatMap((prop): InspectorRow[] => {
+              const value = props[prop.name] as never;
+              if (opens(prop))
+                return [
+                  {
+                    kind: 'open' as const,
+                    row:
+                      controlFor(prop, value, definitionsOf(node.type)).kind ===
+                      'icon'
+                        ? propControl(prop, value, node.type)!
+                        : configureRow(propLabel(prop.name), value, {
+                            prop: prop.name,
+                            path: [],
+                          }),
+                  },
+                ];
+              // KF-D85GY0: what the app supplies promotes from its own row.
+              if (
+                !isBinding(value) &&
+                isAppSupplied(prop.type as never, definitionsOf(node.type))
+              )
+                return [
+                  {
+                    kind: 'open',
+                    row: (
+                      <ListItem
+                        label={propLabel(prop.name)}
+                        description="The app supplies it"
+                        status="Promote to a param"
+                        accessibleLabel={`Promote ${propLabel(prop.name).toLowerCase()} to a param`}
+                        action={PROMOTE_PROP_ACTION}
+                        trailing={
+                          <LucideIcon
+                            icon={ChevronRight}
+                            name="chevron-right"
+                          />
+                        }
+                        rootAttributes={{
+                          'data-editor-promote-prop': prop.name,
+                        }}
+                      />
+                    ),
+                  },
+                ];
+              // A content prop that takes only nodes is a row (KF-5T3TE4).
+              if (
+                prop.slot &&
+                prop.name !== 'children' &&
+                !(prop.type as { acceptsText?: true }).acceptsText
+              )
+                return [{ kind: 'open', row: nodeContentRow(node, prop.name) }];
+              const control =
+                contentControl(node, prop) ??
+                propControl(prop, value, node.type);
+              if (control) return [{ kind: 'edit' as const, row: control }];
+              // KF-1HEZZZ: a prop bound to a param names that param, and
+              // renaming it here renames the param and every use of it.
+              const param = (value as { $param?: unknown } | undefined)?.$param;
+              if (typeof param === 'string')
+                return [
+                  {
+                    kind: 'edit' as const,
+                    row: (
+                      <TextField
+                        label={`${propLabel(prop.name)} param`}
+                        value={param}
+                        hint="Renaming the param updates every prop that uses it."
+                        error={fieldErrors.value[`#param:${param}`]}
+                        rootAttributes={{ [HOOK.param]: param }}
+                      />
+                    ),
+                  },
+                ];
+              // propControl leaves only a read-only prop without a control.
               return [
                 {
-                  kind: 'open' as const,
-                  row:
-                    controlFor(prop, value, definitionsOf(node.type)).kind ===
-                    'icon'
-                      ? propControl(prop, value, node.type)!
-                      : configureRow(propLabel(prop.name), value, {
-                          prop: prop.name,
-                          path: [],
-                        }),
-                },
-              ];
-            // KF-D85GY0: what the app supplies promotes from its own row.
-            if (
-              !isBinding(value) &&
-              isAppSupplied(prop.type as never, definitionsOf(node.type))
-            )
-              return [
-                {
-                  kind: 'open',
+                  kind: 'fixed' as const,
                   row: (
-                    <ListItem
+                    <ValueTableRow
                       label={propLabel(prop.name)}
-                      description="The app supplies it"
-                      status="Promote to a param"
-                      accessibleLabel={`Promote ${propLabel(prop.name).toLowerCase()} to a param`}
-                      action={PROMOTE_PROP_ACTION}
-                      trailing={
-                        <LucideIcon icon={ChevronRight} name="chevron-right" />
+                      value={
+                        inspectorSections(node, {
+                          ...component,
+                          props: [prop],
+                          groups: [],
+                        })[0]!.rows[0]!.value
                       }
-                      rootAttributes={{ 'data-editor-promote-prop': prop.name }}
                     />
                   ),
                 },
               ];
-            // A content prop that takes only nodes is a row (KF-5T3TE4).
-            if (
-              prop.slot &&
-              prop.name !== 'children' &&
-              !(prop.type as { acceptsText?: true }).acceptsText
-            )
-              return [{ kind: 'open', row: nodeContentRow(node, prop.name) }];
-            const control =
-              contentControl(node, prop) ?? propControl(prop, value, node.type);
-            if (control) return [{ kind: 'edit' as const, row: control }];
-            // KF-1HEZZZ: a prop bound to a param names that param, and
-            // renaming it here renames the param and every use of it.
-            const param = (value as { $param?: unknown } | undefined)?.$param;
-            if (typeof param === 'string')
-              return [
-                {
-                  kind: 'edit' as const,
-                  row: (
-                    <TextField
-                      label={`${propLabel(prop.name)} param`}
-                      value={param}
-                      hint="Renaming the param updates every prop that uses it."
-                      error={fieldErrors.value[`#param:${param}`]}
-                      rootAttributes={{ [HOOK.param]: param }}
-                    />
-                  ),
-                },
-              ];
-            // propControl leaves only a read-only prop without a control.
-            return [
-              {
-                kind: 'fixed' as const,
-                row: (
-                  <ValueTableRow
-                    label={propLabel(prop.name)}
-                    value={
-                      inspectorSections(node, {
-                        ...component,
-                        props: [prop],
-                        groups: [],
-                      })[0]!.rows[0]!.value
-                    }
-                  />
-                ),
-              },
-            ];
-          });
+            });
+          // KF-4BPSTB: a family's own fields, then each task in it.
           return [
             <ListHeader label={section.title} size="xs" />,
-            ...inspectorRuns(rows, `${title} ${section.title}`),
+            ...section.subgroups.flatMap((subgroup) =>
+              subgroup.title === undefined
+                ? inspectorRuns(
+                    rowsOf(subgroup.props),
+                    `${title} ${section.title}`,
+                  )
+                : [
+                    <ListHeader
+                      label={subgroup.title}
+                      size="xs"
+                      rootAttributes={{
+                        'data-editor-prop-subgroup': `${section.title}/${subgroup.title}`,
+                      }}
+                    />,
+                    ...inspectorRuns(
+                      rowsOf(subgroup.props),
+                      `${title} ${section.title} ${subgroup.title}`,
+                    ),
+                  ],
+            ),
           ];
         })}
         {dataAttributesSection(ctx, node, component)}

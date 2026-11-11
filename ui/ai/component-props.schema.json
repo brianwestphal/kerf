@@ -229,6 +229,9 @@
         "group": {
           "type": "string"
         },
+        "subgroup": {
+          "type": "string"
+        },
         "order": {
           "type": "integer",
           "minimum": 0

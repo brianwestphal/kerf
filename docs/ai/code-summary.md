@@ -783,7 +783,7 @@ the generated structured prop layer (KF-8PXPKW: per-component prop schema).
 `ui/scripts/lib/component-props.mjs`). That module reads
 `ui/dist/*.d.ts` through the typescript@6 JS API plus Web Awesome's
 `custom-elements.json`, and merges the curated
-`ui/ai/component-props-overlay.json` (and its schema). Tests:
+`ui/ai/component-props-overlay.json` (and its schema; `group` names an Inspector family, `subgroup` a task inside it — KF-4BPSTB, read by `ui/src/editor/model/inspector.ts`'s `groupedProps`/`propPlace`/`inferredFamily`). Tests:
 `ui/tests/unit/component-props.test.ts`, with fixture declarations under
 `ui/tests/fixtures/component-props/`. The module's `buildPackageComponentProps`
 backs the shipped `kerf-ui-props` bin (`ui/props/cli.mjs`; KF-B8TGP4: component

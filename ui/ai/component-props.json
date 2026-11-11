@@ -536,7 +536,9 @@
           "name": "ariaLabel",
           "type": { "kind": "string", "text": "string", "nullable": true },
           "required": false,
-          "description": "The accessible name an icon-only button needs."
+          "description": "The accessible name an icon-only button needs.",
+          "group": "Accessibility",
+          "order": 1
         },
         {
           "name": "tone",
@@ -602,7 +604,9 @@
             "nullable": true
           },
           "required": false,
-          "description": "Span the full width of the parent instead of sizing to the label, as on\n`SplitButton`. The label stays centered and ellipsizes when it no longer\nfits."
+          "description": "Span the full width of the parent instead of sizing to the label, as on\n`SplitButton`. The label stays centered and ellipsizes when it no longer\nfits.",
+          "group": "Appearance",
+          "order": 5
         },
         {
           "name": "pressed",
@@ -613,8 +617,9 @@
           },
           "required": false,
           "description": "Make it a toggle: `aria-pressed` reports the state, and a pressed look is\ndrawn on top of the tone and emphasis. The application owns the state and\nflips it in its `action` handler. A link (`link` or `href`) cannot be a\ntoggle, and neither can a Button with the `link` emphasis.",
-          "group": "State",
-          "order": 1,
+          "group": "Behavior",
+          "subgroup": "State",
+          "order": 11,
           "control": "select"
         },
         {
@@ -626,8 +631,9 @@
           },
           "required": false,
           "description": "Make it a disclosure control: `aria-expanded` reports whether the\ncontent it shows or hides is open (KF-DE348P). The application owns the\nstate and flips it in its `action` handler; pair it with a\n`DisclosureArrow` icon. A link (`link` or `href`) cannot take it.",
-          "group": "State",
-          "order": 2,
+          "group": "Behavior",
+          "subgroup": "State",
+          "order": 12,
           "control": "select"
         },
         {
@@ -638,7 +644,9 @@
             "nullable": true
           },
           "required": false,
-          "description": "Mark the current step in a sequence with `aria-current=\"step\"`."
+          "description": "Mark the current step in a sequence with `aria-current=\"step\"`.",
+          "group": "Accessibility",
+          "order": 3
         },
         {
           "name": "loading",
@@ -649,8 +657,9 @@
           },
           "required": false,
           "description": "Busy: a spinner replaces the label (which still names it) and the button\nreports `aria-busy`. Presses still reach it; the application decides\nwhat a press does while it is busy.",
-          "group": "State",
-          "order": 3
+          "group": "Behavior",
+          "subgroup": "State",
+          "order": 13
         },
         {
           "name": "disabled",
@@ -660,8 +669,9 @@
             "nullable": true
           },
           "required": false,
-          "group": "State",
-          "order": 4
+          "group": "Behavior",
+          "subgroup": "State",
+          "order": 14
         },
         {
           "name": "type",
@@ -674,25 +684,35 @@
           "required": false,
           "default": "button",
           "description": "A form button's behavior (default `button`, which never submits).",
-          "group": "Form",
-          "order": 1,
+          "group": "Behavior",
+          "subgroup": "Form",
+          "order": 31,
           "control": "segmented"
         },
         {
           "name": "name",
           "type": { "kind": "string", "text": "string", "nullable": true },
-          "required": false
+          "required": false,
+          "group": "Behavior",
+          "subgroup": "Form",
+          "order": 32
         },
         {
           "name": "value",
           "type": { "kind": "string", "text": "string", "nullable": true },
-          "required": false
+          "required": false,
+          "group": "Behavior",
+          "subgroup": "Form",
+          "order": 33
         },
         {
           "name": "form",
           "type": { "kind": "string", "text": "string", "nullable": true },
           "required": false,
-          "description": "The id of the form it belongs to, when it sits outside that form."
+          "description": "The id of the form it belongs to, when it sits outside that form.",
+          "group": "Behavior",
+          "subgroup": "Form",
+          "order": 34
         },
         {
           "name": "link",
@@ -734,13 +754,19 @@
             "nullable": true
           },
           "required": false,
-          "description": "Render a link instead of a `<button>`: a URL, or `{ href, target }`. The\nButton keeps its emphasis (set `emphasis=\"link\"` for a text link). The\npreferred spelling of `href` + `target`; give one or the other, not both."
+          "description": "Render a link instead of a `<button>`: a URL, or `{ href, target }`. The\nButton keeps its emphasis (set `emphasis=\"link\"` for a text link). The\npreferred spelling of `href` + `target`; give one or the other, not both.",
+          "group": "Behavior",
+          "subgroup": "Link",
+          "order": 21
         },
         {
           "name": "href",
           "type": { "kind": "string", "text": "string", "nullable": true },
           "required": false,
-          "description": "Render a link instead of a `<button>`; `link` is the preferred form."
+          "description": "Render a link instead of a `<button>`; `link` is the preferred form.",
+          "group": "Behavior",
+          "subgroup": "Link",
+          "order": 22
         },
         {
           "name": "target",
@@ -751,19 +777,27 @@
             "nullable": true
           },
           "required": false,
-          "description": "Where an `href` link opens; with `link`, pass `{ href, target }`."
+          "description": "Where an `href` link opens; with `link`, pass `{ href, target }`.",
+          "group": "Behavior",
+          "subgroup": "Link",
+          "order": 23
         },
         {
           "name": "action",
           "type": { "kind": "string", "text": "string", "nullable": true },
           "required": false,
-          "description": "Delegated `data-action` the application handles."
+          "description": "Delegated `data-action` the application handles.",
+          "group": "Behavior",
+          "order": 1
         },
         {
           "name": "popoverTarget",
           "type": { "kind": "string", "text": "string", "nullable": true },
           "required": false,
-          "description": "The id of a native `popover` element this button opens or closes (the\nPopover API's invoker; KF-PAMQNM). A link Button cannot take it."
+          "description": "The id of a native `popover` element this button opens or closes (the\nPopover API's invoker; KF-PAMQNM). A link Button cannot take it.",
+          "group": "Behavior",
+          "subgroup": "Popup",
+          "order": 41
         },
         {
           "name": "popoverTargetAction",
@@ -775,7 +809,10 @@
           },
           "required": false,
           "default": "toggle",
-          "description": "What the button does to its `popoverTarget`; the browser default is `toggle`."
+          "description": "What the button does to its `popoverTarget`; the browser default is `toggle`.",
+          "group": "Behavior",
+          "subgroup": "Popup",
+          "order": 42
         },
         {
           "name": "ariaHasPopup",
@@ -786,7 +823,10 @@
             "nullable": true
           },
           "required": false,
-          "description": "The kind of popup the button opens, reported as `aria-haspopup`."
+          "description": "The kind of popup the button opens, reported as `aria-haspopup`.",
+          "group": "Behavior",
+          "subgroup": "Popup",
+          "order": 43
         },
         {
           "name": "focusRingInset",
@@ -796,7 +836,9 @@
             "nullable": true
           },
           "required": false,
-          "description": "Keep the button's focus ring inside its box when an ancestor clips\noverflow. The inset ring is two-tone, a surface-colored line inside the\nring color, so it stays visible on a loud fill of the ring's own hue."
+          "description": "Keep the button's focus ring inside its box when an ancestor clips\noverflow. The inset ring is two-tone, a surface-colored line inside the\nring color, so it stays visible on a loud fill of the ring's own hue.",
+          "group": "Appearance",
+          "order": 6
         },
         {
           "name": "badge",
@@ -811,19 +853,28 @@
             "nullable": true
           },
           "required": false,
-          "description": "A count, short text, or `true` for a text-free dot over the button's\ntop-trailing corner, such as how many items a filter hides. A count of 0\nor less, or empty text, shows no badge; a count past `badgeMax` shows\n`99+`. It stays out of the accessible name unless `badgeLabel` names it."
+          "description": "A count, short text, or `true` for a text-free dot over the button's\ntop-trailing corner, such as how many items a filter hides. A count of 0\nor less, or empty text, shows no badge; a count past `badgeMax` shows\n`99+`. It stays out of the accessible name unless `badgeLabel` names it.",
+          "group": "Content",
+          "subgroup": "Badge",
+          "order": 11
         },
         {
           "name": "badgeMax",
           "type": { "kind": "number", "text": "number", "nullable": true },
           "required": false,
-          "description": "The largest count shown before `badgeMax+` (default 99)."
+          "description": "The largest count shown before `badgeMax+` (default 99).",
+          "group": "Content",
+          "subgroup": "Badge",
+          "order": 12
         },
         {
           "name": "badgeLabel",
           "type": { "kind": "string", "text": "string", "nullable": true },
           "required": false,
-          "description": "Words for the badge (\"3 hidden\"), added to the button's name while the\nbadge shows."
+          "description": "Words for the badge (\"3 hidden\"), added to the button's name while the\nbadge shows.",
+          "group": "Content",
+          "subgroup": "Badge",
+          "order": 13
         },
         {
           "name": "badgeTone",
@@ -842,18 +893,25 @@
           },
           "required": false,
           "default": "danger",
-          "description": "The badge's tone (default `danger`)."
+          "description": "The badge's tone (default `danger`).",
+          "group": "Content",
+          "subgroup": "Badge",
+          "order": 14
         },
         {
           "name": "title",
           "type": { "kind": "string", "text": "string", "nullable": true },
           "required": false,
-          "description": "Native hover text that says more than the name, such as \"More Actions\nfor report.pdf\". An icon-only Button already gets a help tag with its\n`ariaLabel` (with `@kerfjs/ui/help-tags-register`); a `title` replaces\nthat tag."
+          "description": "Native hover text that says more than the name, such as \"More Actions\nfor report.pdf\". An icon-only Button already gets a help tag with its\n`ariaLabel` (with `@kerfjs/ui/help-tags-register`); a `title` replaces\nthat tag.",
+          "group": "Accessibility",
+          "order": 2
         },
         {
           "name": "id",
           "type": { "kind": "string", "text": "string", "nullable": true },
-          "required": false
+          "required": false,
+          "group": "Integration",
+          "order": 1
         },
         {
           "name": "className",
@@ -886,7 +944,13 @@
         { "required": ["icon", "ariaLabel"], "forbidden": ["children"] }
       ],
       "dataChannel": "rootAttributes",
-      "groups": ["Content", "Appearance", "State", "Form"]
+      "groups": [
+        "Content",
+        "Appearance",
+        "Behavior",
+        "Accessibility",
+        "Integration"
+      ]
     },
     {
       "key": "@kerfjs/ui:checkbox",
@@ -15226,23 +15290,25 @@
           "type": { "kind": "string", "text": "string" },
           "required": false,
           "variantOnly": true,
-          "group": "Content",
-          "order": 4
+          "group": "Accessibility",
+          "order": 1
         },
         {
           "name": "value",
           "type": { "kind": "string", "text": "string", "nullable": true },
           "required": false,
           "description": "The controlled value.",
-          "group": "Input",
+          "group": "Behavior",
+          "subgroup": "Input",
           "order": 2
         },
         {
           "name": "name",
           "type": { "kind": "string", "text": "string", "nullable": true },
           "required": false,
-          "group": "Input",
-          "order": 1
+          "group": "Behavior",
+          "subgroup": "Input",
+          "order": 3
         },
         {
           "name": "placeholder",
@@ -15264,8 +15330,9 @@
           "type": { "kind": "string", "text": "string", "nullable": true },
           "required": false,
           "description": "A validation message: shown below the field in the danger color, added\nto its description, and marking it `aria-invalid`.",
-          "group": "Validation",
-          "order": 1
+          "group": "Behavior",
+          "subgroup": "Validation",
+          "order": 12
         },
         {
           "name": "size",
@@ -15276,8 +15343,8 @@
             "nullable": true
           },
           "required": false,
-          "group": "Input",
-          "order": 6,
+          "group": "Appearance",
+          "order": 1,
           "control": "segmented"
         },
         {
@@ -15289,7 +15356,9 @@
           },
           "required": false,
           "description": "A leading decorative icon, such as a `LucideIcon` (single-line only).",
-          "slot": true
+          "slot": true,
+          "group": "Content",
+          "order": 4
         },
         {
           "name": "clearable",
@@ -15300,15 +15369,19 @@
           },
           "required": false,
           "description": "A clear button while the field has a value (single-line only). Needs\n`wireTextFields(root)`, which clears the field and announces `input`.",
-          "group": "Input",
-          "order": 7
+          "group": "Appearance",
+          "subgroup": "Optional controls",
+          "order": 11
         },
         {
           "name": "clearLabel",
           "type": { "kind": "string", "text": "string", "nullable": true },
           "required": false,
           "default": "Clear",
-          "description": "The clear button's accessible name (default `Clear`)."
+          "description": "The clear button's accessible name (default `Clear`).",
+          "group": "Appearance",
+          "subgroup": "Optional controls",
+          "order": 12
         },
         {
           "name": "toggle",
@@ -15319,15 +15392,19 @@
             "nullable": true
           },
           "required": false,
-          "description": "An icon toggle button inside the end of the field (top end when multi-line)."
+          "description": "An icon toggle button inside the end of the field (top end when multi-line).",
+          "group": "Appearance",
+          "subgroup": "Optional controls",
+          "order": 13
         },
         {
           "name": "maxLength",
           "type": { "kind": "number", "text": "number", "nullable": true },
           "required": false,
           "description": "The most characters the field accepts (native `maxlength`).",
-          "group": "Validation",
-          "order": 3,
+          "group": "Behavior",
+          "subgroup": "Validation",
+          "order": 13,
           "control": "number"
         },
         {
@@ -15339,8 +15416,9 @@
           },
           "required": false,
           "description": "Show a live `count / maxLength` below the field. Needs `maxLength` and\n`wireTextFields(root)`, which updates it as people type.",
-          "group": "Validation",
-          "order": 4
+          "group": "Behavior",
+          "subgroup": "Validation",
+          "order": 14
         },
         {
           "name": "type",
@@ -15362,8 +15440,9 @@
           "required": false,
           "default": "text",
           "description": "Single-line value kind (default `text`); `date` uses the native picker.",
-          "group": "Input",
-          "order": 3,
+          "group": "Behavior",
+          "subgroup": "Input",
+          "order": 1,
           "control": "select"
         },
         {
@@ -15378,7 +15457,10 @@
             "nullable": true
           },
           "required": false,
-          "description": "Native lower bound for `type=\"number\"` (number or numeric string)."
+          "description": "Native lower bound for `type=\"number\"` (number or numeric string).",
+          "group": "Behavior",
+          "subgroup": "Input",
+          "order": 7
         },
         {
           "name": "max",
@@ -15392,7 +15474,10 @@
             "nullable": true
           },
           "required": false,
-          "description": "Native upper bound for `type=\"number\"` (number or numeric string)."
+          "description": "Native upper bound for `type=\"number\"` (number or numeric string).",
+          "group": "Behavior",
+          "subgroup": "Input",
+          "order": 8
         },
         {
           "name": "step",
@@ -15406,7 +15491,10 @@
             "nullable": true
           },
           "required": false,
-          "description": "Native number increment (number, numeric string, or `\"any\"`)."
+          "description": "Native number increment (number, numeric string, or `\"any\"`).",
+          "group": "Behavior",
+          "subgroup": "Input",
+          "order": 9
         },
         {
           "name": "multiline",
@@ -15417,7 +15505,8 @@
           },
           "required": false,
           "description": "A multi-line field: a `<textarea>`.",
-          "group": "Input",
+          "group": "Behavior",
+          "subgroup": "Input",
           "order": 4
         },
         {
@@ -15425,7 +15514,8 @@
           "type": { "kind": "number", "text": "number", "nullable": true },
           "required": false,
           "description": "A multi-line field's height in lines (default 3).",
-          "group": "Input",
+          "group": "Behavior",
+          "subgroup": "Input",
           "order": 5,
           "control": "number"
         },
@@ -15433,7 +15523,10 @@
           "name": "maxRows",
           "type": { "kind": "number", "text": "number", "nullable": true },
           "required": false,
-          "description": "Grow a multi-line field with its content from `rows` up to this many\nlines, then scroll."
+          "description": "Grow a multi-line field with its content from `rows` up to this many\nlines, then scroll.",
+          "group": "Behavior",
+          "subgroup": "Input",
+          "order": 6
         },
         {
           "name": "disabled",
@@ -15443,8 +15536,9 @@
             "nullable": true
           },
           "required": false,
-          "group": "State",
-          "order": 1
+          "group": "Behavior",
+          "subgroup": "State",
+          "order": 31
         },
         {
           "name": "readOnly",
@@ -15454,8 +15548,9 @@
             "nullable": true
           },
           "required": false,
-          "group": "State",
-          "order": 2
+          "group": "Behavior",
+          "subgroup": "State",
+          "order": 32
         },
         {
           "name": "required",
@@ -15465,8 +15560,9 @@
             "nullable": true
           },
           "required": false,
-          "group": "Validation",
-          "order": 2
+          "group": "Behavior",
+          "subgroup": "Validation",
+          "order": 11
         },
         {
           "name": "autofocus",
@@ -15476,12 +15572,18 @@
             "nullable": true
           },
           "required": false,
-          "description": "Request native focus on insertion or when the containing dialog opens."
+          "description": "Request native focus on insertion or when the containing dialog opens.",
+          "group": "Behavior",
+          "subgroup": "State",
+          "order": 33
         },
         {
           "name": "autocomplete",
           "type": { "kind": "string", "text": "string", "nullable": true },
-          "required": false
+          "required": false,
+          "group": "Behavior",
+          "subgroup": "Typing assistance",
+          "order": 21
         },
         {
           "name": "autocapitalize",
@@ -15492,7 +15594,10 @@
             "nullable": true
           },
           "required": false,
-          "description": "Native capitalization behavior for exact or prose entry."
+          "description": "Native capitalization behavior for exact or prose entry.",
+          "group": "Behavior",
+          "subgroup": "Typing assistance",
+          "order": 22
         },
         {
           "name": "autocorrect",
@@ -15503,7 +15608,10 @@
             "nullable": true
           },
           "required": false,
-          "description": "Native autocorrection hint."
+          "description": "Native autocorrection hint.",
+          "group": "Behavior",
+          "subgroup": "Typing assistance",
+          "order": 23
         },
         {
           "name": "inputMode",
@@ -15523,7 +15631,10 @@
             "nullable": true
           },
           "required": false,
-          "description": "Native virtual-keyboard hint."
+          "description": "Native virtual-keyboard hint.",
+          "group": "Behavior",
+          "subgroup": "Typing assistance",
+          "order": 24
         },
         {
           "name": "spellcheck",
@@ -15534,15 +15645,18 @@
           },
           "required": false,
           "description": "Native spelling check; serialized as the enumerated HTML value.",
-          "group": "Input",
-          "order": 8,
+          "group": "Behavior",
+          "subgroup": "Typing assistance",
+          "order": 25,
           "control": "select"
         },
         {
           "name": "id",
           "type": { "kind": "string", "text": "string", "nullable": true },
           "required": false,
-          "description": "The input's id, for an external label or form."
+          "description": "The input's id, for an external label or form.",
+          "group": "Integration",
+          "order": 1
         },
         {
           "name": "className",
@@ -15575,7 +15689,13 @@
         { "required": ["ariaLabel"], "forbidden": ["label"] }
       ],
       "dataChannel": "rootAttributes",
-      "groups": ["Content", "Input", "Validation", "State"]
+      "groups": [
+        "Content",
+        "Appearance",
+        "Behavior",
+        "Accessibility",
+        "Integration"
+      ]
     },
     {
       "key": "@kerfjs/ui:toolbar",
@@ -24527,12 +24647,16 @@
           "name": "id",
           "type": { "kind": "string", "text": "string" },
           "required": true,
-          "description": "The Workbench's `id`. Each panel's `id` derives from it —\n`<id>-left-rail`, `<id>-right-rail`, `<id>-bottom-drawer` — so a toggle\ncan name the panel it shows and hides with `aria-controls`."
+          "description": "The Workbench's `id`. Each panel's `id` derives from it —\n`<id>-left-rail`, `<id>-right-rail`, `<id>-bottom-drawer` — so a toggle\ncan name the panel it shows and hides with `aria-controls`.",
+          "group": "Integration",
+          "order": 1
         },
         {
           "name": "label",
           "type": { "kind": "string", "text": "string" },
-          "required": true
+          "required": true,
+          "group": "Accessibility",
+          "order": 1
         },
         {
           "name": "main",
@@ -24554,7 +24678,10 @@
             "nullable": true
           },
           "required": false,
-          "description": "The work area's top toolbar. A collapsed left rail's marked groups\nand toggle lead it; a collapsed right rail's trail it. With it, `main`\nrenders in a `Pane` below the toolbar."
+          "description": "The work area's top toolbar. A collapsed left rail's marked groups\nand toggle lead it; a collapsed right rail's trail it. With it, `main`\nrenders in a `Pane` below the toolbar.",
+          "group": "Layout",
+          "subgroup": "Main",
+          "order": 1
         },
         {
           "name": "mainHeader",
@@ -24565,7 +24692,10 @@
           },
           "required": false,
           "description": "Fixed content under `mainToolbar` — supporting copy such as a\ndescription — divided from the scrolling `main` below it.",
-          "slot": true
+          "slot": true,
+          "group": "Layout",
+          "subgroup": "Main",
+          "order": 2
         },
         {
           "name": "mainFooter",
@@ -24576,7 +24706,10 @@
           },
           "required": false,
           "description": "Fixed content over `mainBottomToolbar` — a status line or a resource\ntoolbar — divided from the scrolling `main` above it.",
-          "slot": true
+          "slot": true,
+          "group": "Layout",
+          "subgroup": "Main",
+          "order": 5
         },
         {
           "name": "mainBottomToolbar",
@@ -24587,7 +24720,10 @@
             "nullable": true
           },
           "required": false,
-          "description": "The work area's bottom toolbar. A collapsed drawer's marked groups and\ntoggle trail it; without it they float in the work area's corner."
+          "description": "The work area's bottom toolbar. A collapsed drawer's marked groups and\ntoggle trail it; without it they float in the work area's corner.",
+          "group": "Layout",
+          "subgroup": "Main",
+          "order": 8
         },
         {
           "name": "mainHeaderPlacement",
@@ -24598,7 +24734,10 @@
             "nullable": true
           },
           "required": false,
-          "description": "Whether `mainToolbar` and `mainHeader` stay pinned (`fixed`, default),\nscroll away with `main` (`scroll`) — useful where large text would leave\npinned chrome little room — or stay pinned while the work area is tall\nenough and scroll with `main` when it is short (`auto`)."
+          "description": "Whether `mainToolbar` and `mainHeader` stay pinned (`fixed`, default),\nscroll away with `main` (`scroll`) — useful where large text would leave\npinned chrome little room — or stay pinned while the work area is tall\nenough and scroll with `main` when it is short (`auto`).",
+          "group": "Layout",
+          "subgroup": "Main",
+          "order": 3
         },
         {
           "name": "mainFooterPlacement",
@@ -24610,7 +24749,10 @@
           },
           "required": false,
           "default": "fixed",
-          "description": "The same for `mainFooter` and `mainBottomToolbar` (default `fixed`)."
+          "description": "The same for `mainFooter` and `mainBottomToolbar` (default `fixed`).",
+          "group": "Layout",
+          "subgroup": "Main",
+          "order": 6
         },
         {
           "name": "mainPane",
@@ -24621,13 +24763,19 @@
             "nullable": true
           },
           "required": false,
-          "description": "Configuration for the work area's `Pane` (`contentElement`,\n`contentLabel`, `separators`, `safeAreaEdges`, `chromeDividers`), which it has whenever it\nhas a toolbar, `mainHeader`, or `mainFooter`; without that chrome, `main`\nrenders as given and this is ignored. Omitted or `undefined` fields keep\nthe `Pane` defaults."
+          "description": "Configuration for the work area's `Pane` (`contentElement`,\n`contentLabel`, `separators`, `safeAreaEdges`, `chromeDividers`), which it has whenever it\nhas a toolbar, `mainHeader`, or `mainFooter`; without that chrome, `main`\nrenders as given and this is ignored. Omitted or `undefined` fields keep\nthe `Pane` defaults.",
+          "group": "Layout",
+          "subgroup": "Main",
+          "order": 9
         },
         {
           "name": "mainLabel",
           "type": { "kind": "string", "text": "string", "nullable": true },
           "required": false,
-          "description": "Accessible name for the central region when it needs its own landmark."
+          "description": "Accessible name for the central region when it needs its own landmark.",
+          "group": "Accessibility",
+          "subgroup": "Work area",
+          "order": 11
         },
         {
           "name": "mainTabIndex",
@@ -24638,7 +24786,10 @@
             "nullable": true
           },
           "required": false,
-          "description": "Opt into keyboard (`0`) or programmatic (`-1`) focus on the central region."
+          "description": "Opt into keyboard (`0`) or programmatic (`-1`) focus on the central region.",
+          "group": "Accessibility",
+          "subgroup": "Work area",
+          "order": 12
         },
         {
           "name": "mainOutlined",
@@ -24648,7 +24799,10 @@
             "nullable": true
           },
           "required": false,
-          "description": "Keep the standard focus outline visible on the central region."
+          "description": "Keep the standard focus outline visible on the central region.",
+          "group": "Accessibility",
+          "subgroup": "Work area",
+          "order": 13
         },
         {
           "name": "mainHeaderList",
@@ -24659,7 +24813,10 @@
             "nullable": true
           },
           "required": false,
-          "description": "Configuration for the `List` that holds `mainHeader` (`gap`, `hAlign`,\n`vAlign`, `dividerSides`, `textInsets`, `controlInsets`). Omitted or\n`undefined` fields keep the defaults (no divider: the work area's\n`Pane` draws the line under its header chrome)."
+          "description": "Configuration for the `List` that holds `mainHeader` (`gap`, `hAlign`,\n`vAlign`, `dividerSides`, `textInsets`, `controlInsets`). Omitted or\n`undefined` fields keep the defaults (no divider: the work area's\n`Pane` draws the line under its header chrome).",
+          "group": "Layout",
+          "subgroup": "Main",
+          "order": 4
         },
         {
           "name": "mainFooterList",
@@ -24670,7 +24827,10 @@
             "nullable": true
           },
           "required": false,
-          "description": "The same for the `List` that holds `mainFooter` (no divider by default:\nthe work area's `Pane` draws the line over its footer chrome)."
+          "description": "The same for the `List` that holds `mainFooter` (no divider by default:\nthe work area's `Pane` draws the line over its footer chrome).",
+          "group": "Layout",
+          "subgroup": "Main",
+          "order": 7
         },
         {
           "name": "leftRail",
@@ -24691,7 +24851,10 @@
             "text": "WorkbenchPanel | undefined",
             "nullable": true
           },
-          "required": false
+          "required": false,
+          "group": "Layout",
+          "subgroup": "Left rail",
+          "order": 21
         },
         {
           "name": "rightRail",
@@ -24712,7 +24875,10 @@
             "text": "WorkbenchPanel | undefined",
             "nullable": true
           },
-          "required": false
+          "required": false,
+          "group": "Layout",
+          "subgroup": "Right rail",
+          "order": 31
         },
         {
           "name": "bottomDrawer",
@@ -24733,19 +24899,28 @@
             "text": "WorkbenchPanel | undefined",
             "nullable": true
           },
-          "required": false
+          "required": false,
+          "group": "Layout",
+          "subgroup": "Bottom drawer",
+          "order": 41
         },
         {
           "name": "mainMinSize",
           "type": { "kind": "number", "text": "number", "nullable": true },
           "required": false,
-          "description": "Minimum width, in px, the work area keeps beside the inline rails, fixed\nor `resizable` (default 320; `0` turns it off). Resizing a rail stops\nwhere the work area would drop below it, and inline rails shrink\nproportionally when the Workbench gets narrower. Workbenches without a\nrail ignore it."
+          "description": "Minimum width, in px, the work area keeps beside the inline rails, fixed\nor `resizable` (default 320; `0` turns it off). Resizing a rail stops\nwhere the work area would drop below it, and inline rails shrink\nproportionally when the Workbench gets narrower. Workbenches without a\nrail ignore it.",
+          "group": "Layout",
+          "subgroup": "Main",
+          "order": 10
         },
         {
           "name": "mainMinHeight",
           "type": { "kind": "number", "text": "number", "nullable": true },
           "required": false,
-          "description": "Minimum height, in px, the work area keeps above an inline bottom drawer,\nfixed or `resizable` (default 120; `0` turns it off) — the drawer's\ncounterpart of `mainMinSize`. Resizing the drawer stops where the work\narea would drop below it, and the drawer shrinks when the Workbench gets\nshorter. Workbenches without a drawer ignore it."
+          "description": "Minimum height, in px, the work area keeps above an inline bottom drawer,\nfixed or `resizable` (default 120; `0` turns it off) — the drawer's\ncounterpart of `mainMinSize`. Resizing the drawer stops where the work\narea would drop below it, and the drawer shrinks when the Workbench gets\nshorter. Workbenches without a drawer ignore it.",
+          "group": "Layout",
+          "subgroup": "Main",
+          "order": 11
         },
         {
           "name": "overlayBackdrop",
@@ -24755,7 +24930,9 @@
             "nullable": true
           },
           "required": false,
-          "description": "Dim the work area below any open overlay and absorb outside presses; off by default."
+          "description": "Dim the work area below any open overlay and absorb outside presses; off by default.",
+          "group": "Behavior",
+          "order": 1
         },
         {
           "name": "className",
@@ -24783,7 +24960,8 @@
         }
       ],
       "nativeAttributes": [],
-      "dataChannel": "rootAttributes"
+      "dataChannel": "rootAttributes",
+      "groups": ["Behavior", "Layout", "Accessibility", "Integration"]
     },
     {
       "key": "@kerfjs/ui:workbench-dialog",

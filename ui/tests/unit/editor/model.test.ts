@@ -10,6 +10,8 @@ import {
 } from '../../../src/editor/model/document.js';
 import {
   formatValue,
+  groupedProps,
+  type InspectorProp,
   inspectorSections,
 } from '../../../src/editor/model/inspector.js';
 import {
@@ -185,20 +187,23 @@ describe('inspector', () => {
   const button = propsByKey.get('@kerfjs/ui:button')!;
   const node = findNode(inbox, '01JB8Z1M6Q8E1X9V4S7K2R3T5D')!.node;
 
-  it('groups a node’s props by curated group, hiding plumbing and zones', () => {
+  it('groups a node’s props by family, hiding plumbing and zones', () => {
     const sections = inspectorSections(node, button);
+    // KF-4BPSTB: the families, in their fixed order; no "Other".
     expect(sections.map((section) => section.title)).toEqual([
       'Content',
       'Appearance',
-      'State',
-      'Form',
-      'Other',
-      // KF-X8X8VX: the class list, last.
-      'Advanced',
+      'Behavior',
+      'Accessibility',
+      'Integration',
     ]);
+    // KF-X8X8VX: the class list sits with the other integration hooks.
     expect(
-      sections.find((section) => section.title === 'Advanced')!.rows,
-    ).toEqual([{ name: 'className', value: '—', set: false }]);
+      sections.find((section) => section.title === 'Integration')!.rows,
+    ).toEqual([
+      { name: 'id', value: '—', set: false },
+      { name: 'className', value: '—', set: false },
+    ]);
     const appearance = sections.find(
       (section) => section.title === 'Appearance',
     )!;
@@ -216,9 +221,171 @@ describe('inspector', () => {
     expect(all).not.toContain('rootAttributes');
     expect(
       sections
-        .find((section) => section.title === 'Other')!
+        .find((section) => section.title === 'Behavior')!
         .rows.find((row) => row.name === 'action')?.value,
     ).toBe('action compose');
+  });
+
+  it('gives Button, TextField and Workbench task subgroups (KF-4BPSTB)', () => {
+    const shape = (key: string) =>
+      groupedProps(propsByKey.get(key)!).map((group) => [
+        group.title,
+        group.subgroups.map((subgroup) => subgroup.title ?? ''),
+      ]);
+    expect(shape('@kerfjs/ui:button')).toEqual([
+      ['Content', ['', 'Badge']],
+      ['Appearance', ['']],
+      ['Behavior', ['', 'State', 'Link', 'Form', 'Popup']],
+      ['Accessibility', ['']],
+      ['Integration', ['']],
+    ]);
+    expect(shape('@kerfjs/ui:text-field')).toEqual([
+      ['Content', ['']],
+      ['Appearance', ['', 'Optional controls']],
+      ['Behavior', ['Input', 'Validation', 'Typing assistance', 'State']],
+      ['Accessibility', ['']],
+      ['Integration', ['']],
+    ]);
+    // A region keeps its toolbar, header, footer, and placements together.
+    const workbench = groupedProps(propsByKey.get('@kerfjs/ui:workbench')!);
+    expect(shape('@kerfjs/ui:workbench')).toEqual([
+      ['Behavior', ['']],
+      ['Layout', ['Main', 'Left rail', 'Right rail', 'Bottom drawer']],
+      ['Accessibility', ['', 'Work area']],
+      ['Integration', ['']],
+    ]);
+    expect(
+      workbench
+        .find((group) => group.title === 'Layout')!
+        .subgroups[0]!.props.map((prop) => prop.name),
+    ).toEqual(
+      expect.arrayContaining([
+        'mainToolbar',
+        'mainHeader',
+        'mainHeaderPlacement',
+        'mainFooter',
+        'mainFooterPlacement',
+      ]),
+    );
+  });
+
+  it('places every visible prop exactly once (KF-4BPSTB)', () => {
+    for (const component of propsByKey.values()) {
+      const placed = groupedProps(component).flatMap((group) =>
+        group.props.map((prop) => prop.name),
+      );
+      const visible = component.props
+        .filter(
+          (prop) =>
+            prop.control !== 'hidden' &&
+            !prop.zone &&
+            prop.type.kind !== 'never',
+        )
+        .map((prop) => prop.name);
+      expect(placed.slice().sort()).toEqual(visible.slice().sort());
+    }
+  });
+
+  it('reads legacy and custom group names, and places uncurated props', () => {
+    const groups = groupedProps({
+      key: 'app:thing',
+      groups: ['State', 'Shipping', 'Content'],
+      props: [
+        { name: 'label', type: { kind: 'string' }, required: false },
+        {
+          name: 'open',
+          type: { kind: 'boolean' },
+          required: false,
+          group: 'State',
+          order: 1,
+        },
+        {
+          name: 'carrier',
+          type: { kind: 'string' },
+          required: false,
+          group: 'Shipping',
+        },
+        // A group the component never declared falls back to its name.
+        {
+          name: 'ariaLabel',
+          type: { kind: 'string' },
+          required: false,
+          group: 'Nowhere',
+        },
+        { name: 'clearLabel', type: { kind: 'string' }, required: false },
+        { name: 'tone', type: { kind: 'string' }, required: false },
+        { name: 'listWidth', type: { kind: 'number' }, required: false },
+        { name: 'detailActive', type: { kind: 'boolean' }, required: false },
+        { name: 'headingLevel', type: { kind: 'number' }, required: false },
+        { name: 'onPick', type: { kind: 'function' }, required: false },
+        { name: 'id', type: { kind: 'string' }, required: false },
+        {
+          name: 'className',
+          type: { kind: 'string' },
+          required: false,
+          control: 'classes',
+        },
+      ],
+    });
+    expect(
+      groups.map((group) => [
+        group.title,
+        group.subgroups.map((subgroup) => [
+          subgroup.title ?? '',
+          subgroup.props.map((prop) => prop.name),
+        ]),
+      ]),
+    ).toEqual([
+      ['Content', [['', ['label']]]],
+      ['Appearance', [['', ['tone']]]],
+      [
+        'Behavior',
+        [
+          ['', ['detailActive', 'onPick']],
+          ['State', ['open']],
+        ],
+      ],
+      ['Layout', [['', ['listWidth']]]],
+      ['Accessibility', [['', ['ariaLabel', 'clearLabel', 'headingLevel']]]],
+      ['Integration', [['', ['className', 'id']]]],
+      // A catalog's own group follows the families.
+      ['Shipping', [['', ['carrier']]]],
+    ]);
+  });
+
+  it('orders a family’s subgroups by curated order, then catalog order, then name', () => {
+    const prop = (name: string, fields: Partial<InspectorProp>) => ({
+      name,
+      type: { kind: 'string' },
+      required: false,
+      ...fields,
+    });
+    const behavior = groupedProps({
+      key: 'app:thing',
+      groups: ['Behavior', 'Mode', 'State'],
+      props: [
+        prop('zeta', { group: 'Behavior', subgroup: 'Zeta' }),
+        prop('alpha', { group: 'Behavior', subgroup: 'Alpha' }),
+        prop('state', { group: 'State' }),
+        prop('mode', { group: 'Mode' }),
+        // A legacy group's prop may name its own task.
+        prop('toggle', { group: 'State', subgroup: 'Toggles', order: 0 }),
+      ],
+    }).find((group) => group.title === 'Behavior')!;
+    expect(behavior.subgroups.map((subgroup) => subgroup.title)).toEqual([
+      'Toggles',
+      'Mode',
+      'State',
+      'Alpha',
+      'Zeta',
+    ]);
+    // A group named on a component that declares none is not a place.
+    expect(
+      groupedProps({
+        key: 'app:other',
+        props: [prop('tone', { group: 'Content' })],
+      }).map((group) => group.title),
+    ).toEqual(['Appearance']);
   });
 
   it('documents prop types for a palette component', () => {

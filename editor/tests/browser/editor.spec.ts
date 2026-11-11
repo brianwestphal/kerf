@@ -480,10 +480,11 @@ test('splits a List gap into columns and rows, one with a builder call', async (
   });
 });
 
-test('sets a component’s classes from the Inspector’s Advanced section', async ({
+test('sets a component’s classes from the Inspector’s Integration group', async ({
   page,
 }, info) => {
-  // KF-X8X8VX: `className` is an advanced Classes field, not hidden.
+  // KF-X8X8VX: `className` is a Classes field, not hidden; KF-4BPSTB puts
+  // it in the Integration family.
   await page.setViewportSize({ width: 1440, height: 900 });
   const FOLDERS = '01JB8Z1M6Q8E1X9V4S7K2R3T5E';
   await page
@@ -493,7 +494,7 @@ test('sets a component’s classes from the Inspector’s Advanced section', asy
     `[data-editor-canvas] [data-kerf-node="${FOLDERS}"]`,
   );
   const classes = page.locator('[data-editor-prop="className"]');
-  await expect(page.getByText('Advanced', { exact: true })).toBeVisible();
+  await expect(page.getByText('Integration', { exact: true })).toBeVisible();
   await expect(classes).toContainText('Classes');
   const input = classes.getByRole('textbox');
   await input.fill('kui-dark');

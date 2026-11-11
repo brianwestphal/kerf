@@ -714,14 +714,23 @@ types are listed only by name in `nativeAttributes`. Web Awesome entries carry
 attribute props (with `property` when the field name differs) and `slots`.
 
 `ui/ai/component-props-overlay.json` (schema-validated) adds only what types
-cannot express: inspector `control` hints, `group`/`order`, a missing
+cannot express: inspector `control` hints, `group`/`subgroup`/`order`, a missing
 `default`, and `choicesFrom`, the sibling list a value prop picks from when it
 is not `choices` (ColorSwatches' `value` takes `swatches`; KF-H1X3S7). The generator marks plumbing props as `control: "hidden"` by default
 (`className`, `*ClassName`, `slot`, `rootAttributes`, `triggerAttributes`),
-and the overlay can override that. Sixteen palette components carry curated
-groups and controls: Button, ListHeader, Pane, Toolbar, ToolbarText,
-ToolbarControlGroup, List, ListItem, Text, TextField, Select, Switch, Checkbox,
-SegmentedControl, StateBanner, and EmptyState. Run `npm run props:sync` after the build. `check:props` (in the ui
+and the overlay can override that. A `group` names one of the Inspector's
+families — Content, Appearance, Behavior, Layout, Accessibility, Integration
+(KF-4BPSTB: consistent families) — and an optional `subgroup` names a
+component-specific task inside it (Button's Behavior › Link, TextField's
+Behavior › Typing assistance, Workbench's Layout › Main). Older group names
+still read: `State`, `Form`, `Input`, `Validation`, and `Mode` become Behavior
+subgroups, `Surface` and `Chrome` Appearance ones, `Wrapping` and `Responsive`
+Layout ones, `Icon` a Content one and `Semantics` an Accessibility one; any
+other name stays its own section after the families. Seventeen palette
+components carry curated groups and controls: Button, ListHeader, Pane,
+Toolbar, ToolbarText, ToolbarControlGroup, List, ListItem, Text, TextField,
+Select, Switch, Checkbox, SegmentedControl, StateBanner, EmptyState, and
+Workbench; Button, TextField, and Workbench use the families directly. Run `npm run props:sync` after the build. `check:props` (in the ui
 `check` chain, after the build) fails on drift, on a schema violation, on an
 overlay key naming no component, prop, or declared group, on a `choicesFrom`
 naming no sibling prop, and on a catalog

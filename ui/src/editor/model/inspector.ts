@@ -8,6 +8,8 @@ export interface InspectorProp {
   readonly required: boolean;
   readonly default?: string | number | boolean;
   readonly group?: string;
+  /** A component-specific task inside its group (KF-4BPSTB: Link, Popup). */
+  readonly subgroup?: string;
   readonly order?: number;
   readonly control?: string;
   readonly zone?: string;
@@ -53,50 +55,244 @@ export function formatValue(value: ViewValue): string {
   return JSON.stringify(value);
 }
 
-const OTHER = 'Other';
+/**
+ * KF-4BPSTB: every component's props sort into the same semantic families,
+ * in this order, so a group means one thing on every component.
+ */
+export const PROP_FAMILIES = [
+  'Content',
+  'Appearance',
+  'Behavior',
+  'Layout',
+  'Accessibility',
+  'Integration',
+] as const;
 
-/** The trailing section for a component's class list (KF-X8X8VX). */
-const ADVANCED = 'Advanced';
+export type PropFamily = (typeof PROP_FAMILIES)[number];
 
 /**
- * A component's visible props in its curated group order, then "Other",
- * then "Advanced" (its class list), props in curated order then by name.
- * Hidden plumbing props and zones are left out: zones appear in the
- * outline instead.
+ * Group names catalogs used before the families, read as a family and a
+ * subgroup, so a custom catalog's curation keeps its meaning.
  */
-export function groupedProps(
-  component: InspectorComponent,
-): { readonly title: string; readonly props: readonly InspectorProp[] }[] {
+const LEGACY_GROUPS: Readonly<
+  Record<string, { family: PropFamily; subgroup?: string }>
+> = {
+  State: { family: 'Behavior', subgroup: 'State' },
+  Form: { family: 'Behavior', subgroup: 'Form' },
+  Input: { family: 'Behavior', subgroup: 'Input' },
+  Validation: { family: 'Behavior', subgroup: 'Validation' },
+  Mode: { family: 'Behavior', subgroup: 'Mode' },
+  Surface: { family: 'Appearance', subgroup: 'Surface' },
+  Chrome: { family: 'Appearance', subgroup: 'Chrome' },
+  Wrapping: { family: 'Layout', subgroup: 'Wrapping' },
+  Responsive: { family: 'Layout', subgroup: 'Responsive' },
+  Icon: { family: 'Content', subgroup: 'Icon' },
+  Semantics: { family: 'Accessibility', subgroup: 'Semantics' },
+};
+
+const isFamily = (name: string): name is PropFamily =>
+  (PROP_FAMILIES as readonly string[]).includes(name);
+
+// The words of a camelCase prop name that place it when no catalog does.
+const CONTENT_WORDS = new Set([
+  'children',
+  'label',
+  'text',
+  'title',
+  'description',
+  'detail',
+  'placeholder',
+  'hint',
+  'icon',
+  'badge',
+  'items',
+  'choices',
+  'options',
+  'content',
+]);
+const APPEARANCE_WORDS = new Set([
+  'tone',
+  'emphasis',
+  'size',
+  'shape',
+  'variant',
+  'appearance',
+  'density',
+  'color',
+  'background',
+  'presentation',
+  'divider',
+  'dividers',
+  'outlined',
+  'surface',
+  'frame',
+  'font',
+  'elevation',
+  'caret',
+  'inline',
+]);
+const LAYOUT_WORDS = new Set([
+  'placement',
+  'position',
+  'side',
+  'orientation',
+  'layout',
+  'gap',
+  'align',
+  'width',
+  'height',
+  'wrap',
+  'responsive',
+  'collapsed',
+  'resizable',
+  'scrollable',
+  'sticky',
+  'insets',
+  'columns',
+  // A breakpoint (`iconOnlyAt`, `hideBelow`).
+  'at',
+  'below',
+  'above',
+]);
+// A state word settles a name another word would misplace (`detailActive`).
+const BEHAVIOR_WORDS = new Set([
+  'active',
+  'open',
+  'expanded',
+  'selected',
+  'checked',
+  'pressed',
+  'disabled',
+  'busy',
+  'loading',
+]);
+const ACCESSIBILITY_WORDS = new Set([
+  'role',
+  'heading',
+  'tab',
+  'live',
+  'element',
+]);
+
+/**
+ * The family a prop no catalog places belongs to, from its name: an `aria`
+ * prop or another name for the component (`clearLabel`) is Accessibility,
+ * `id` and class lists are Integration, and the rest by their last word,
+ * then their first. What says how it works (and anything else) is Behavior.
+ */
+export function inferredFamily(prop: InspectorProp): PropFamily {
+  if (prop.control === 'classes' || prop.name === 'id') return 'Integration';
+  if (prop.type.kind === 'content' || prop.slot) return 'Content';
+  const words = prop.name
+    .replace(/([a-z0-9])([A-Z])/g, '$1 $2')
+    .toLowerCase()
+    .split(' ');
+  if (words[0] === 'aria') return 'Accessibility';
+  if (words.length > 1 && words.at(-1) === 'label') return 'Accessibility';
+  for (const word of [words.at(-1)!, words[0]!]) {
+    if (BEHAVIOR_WORDS.has(word)) return 'Behavior';
+    if (CONTENT_WORDS.has(word)) return 'Content';
+    if (APPEARANCE_WORDS.has(word)) return 'Appearance';
+    if (LAYOUT_WORDS.has(word)) return 'Layout';
+    if (ACCESSIBILITY_WORDS.has(word)) return 'Accessibility';
+  }
+  return 'Behavior';
+}
+
+/** Where a prop belongs: its group (a family or the catalog's own) and task. */
+export function propPlace(
+  prop: InspectorProp,
+  component: Pick<InspectorComponent, 'groups'>,
+): { readonly group: string; readonly subgroup?: string } {
+  // KF-X8X8VX: the class list, now with the other integration hooks.
+  if (prop.control === 'classes') return { group: 'Integration' };
+  const declared =
+    prop.group && (component.groups ?? []).includes(prop.group)
+      ? prop.group
+      : undefined;
+  if (declared && isFamily(declared))
+    return prop.subgroup
+      ? { group: declared, subgroup: prop.subgroup }
+      : { group: declared };
+  if (declared && LEGACY_GROUPS[declared]) {
+    const { family, subgroup } = LEGACY_GROUPS[declared];
+    return { group: family, subgroup: prop.subgroup ?? subgroup };
+  }
+  // A custom catalog's own group keeps its section.
+  if (declared) return { group: declared };
+  return { group: inferredFamily(prop) };
+}
+
+export interface PropSubgroup {
+  /** Undefined for the group's own props, which come first. */
+  readonly title?: string;
+  readonly props: readonly InspectorProp[];
+}
+
+export interface PropGroup {
+  readonly title: string;
+  /** Every prop of the group, subgroup by subgroup. */
+  readonly props: readonly InspectorProp[];
+  readonly subgroups: readonly PropSubgroup[];
+}
+
+const byOrder = (a: InspectorProp, b: InspectorProp) =>
+  (a.order ?? 999) - (b.order ?? 999) || a.name.localeCompare(b.name);
+
+/**
+ * A component's visible props by family (KF-4BPSTB), families in their fixed
+ * order and then any custom group in the catalog's order; inside a family,
+ * its own props, then each subgroup by its first prop's curated order.
+ * Every prop has exactly one place. Hidden plumbing props and zones are left
+ * out: zones appear in the outline instead.
+ */
+export function groupedProps(component: InspectorComponent): PropGroup[] {
   const visible = component.props.filter(
     (prop) =>
       prop.control !== 'hidden' && !prop.zone && prop.type.kind !== 'never',
   );
-  const order = [...(component.groups ?? [])];
-  const byGroup = new Map<string, InspectorProp[]>();
+  const byGroup = new Map<string, Map<string | undefined, InspectorProp[]>>();
   for (const prop of visible) {
-    const group =
-      prop.control === 'classes'
-        ? ADVANCED
-        : prop.group && order.includes(prop.group)
-          ? prop.group
-          : OTHER;
-    byGroup.set(group, [...(byGroup.get(group) ?? []), prop]);
+    const { group, subgroup } = propPlace(prop, component);
+    const subgroups = byGroup.get(group) ?? new Map();
+    subgroups.set(subgroup, [...(subgroups.get(subgroup) ?? []), prop]);
+    byGroup.set(group, subgroups);
   }
   const titles = [
-    ...order.filter((title) => byGroup.has(title)),
-    ...(byGroup.has(OTHER) ? [OTHER] : []),
-    ...(byGroup.has(ADVANCED) ? [ADVANCED] : []),
+    ...PROP_FAMILIES.filter((title) => byGroup.has(title)),
+    ...(component.groups ?? []).filter(
+      (title) =>
+        !isFamily(title) && !LEGACY_GROUPS[title] && byGroup.has(title),
+    ),
   ];
-  return titles.map((title) => ({
-    title,
-    props: byGroup
-      .get(title)!
-      .slice()
+  // A legacy group's subgroups keep the order the catalog listed them in.
+  const declaredRank = (title: string) => {
+    const index = (component.groups ?? []).indexOf(title);
+    return index < 0 ? 999 : index;
+  };
+  return titles.map((title) => {
+    const subgroups = [...byGroup.get(title)!]
+      .map(([subtitle, props]) => ({
+        title: subtitle,
+        props: props.slice().sort(byOrder),
+      }))
       .sort(
         (a, b) =>
-          (a.order ?? 999) - (b.order ?? 999) || a.name.localeCompare(b.name),
-      ),
-  }));
+          Number(a.title !== undefined) - Number(b.title !== undefined) ||
+          (a.props[0]!.order ?? 999) - (b.props[0]!.order ?? 999) ||
+          // Map keys are unique, so a tie here is two titled subgroups.
+          declaredRank(a.title!) - declaredRank(b.title!) ||
+          a.title!.localeCompare(b.title!),
+      )
+      .map((subgroup) =>
+        subgroup.title === undefined ? { props: subgroup.props } : subgroup,
+      );
+    return {
+      title,
+      props: subgroups.flatMap((subgroup) => subgroup.props),
+      subgroups,
+    };
+  });
 }
 
 export function inspectorSections(

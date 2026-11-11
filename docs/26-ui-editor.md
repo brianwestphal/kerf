@@ -296,6 +296,24 @@ Turning `multiple` on or off reshapes the value in the same undo step
 keeps its first entry. Renaming a choice's value renames it inside a list
 value too.
 
+The selected node's props sort into the same semantic families on every
+component (KF-4BPSTB: consistent Inspector groups), in a fixed order:
+**Content**, **Appearance**, **Behavior**, **Layout**, **Accessibility**, and
+**Integration**, omitting an empty one. A family may hold component-specific
+tasks under their own heading after its own fields: Button's Badge (Content)
+and State, Link, Form, and Popup (Behavior); TextField's Optional controls
+(Appearance) and Input, Validation, Typing assistance, and State (Behavior);
+Workbench's Main, Left rail, Right rail, and Bottom drawer (Layout), each
+region keeping its toolbar, header, footer, and placement fields together,
+and its Work area (Accessibility) apart from the component's own label. Every
+prop has exactly one place. The overlay's `group` and `subgroup` place a prop
+(`docs/21-ui-package.md`); an older group name reads as a family and subgroup
+(`State` is Behavior › State); a prop no catalog places takes a family from its
+name (`ariaLabel` and other `…Label`s are Accessibility, `id` Integration,
+`…Placement` Layout, a state word such as `detailActive` Behavior, and
+anything else Behavior); and a custom catalog's own group name keeps its own
+section after the families. There is no "Other" section.
+
 Inspector rows, and an item form's fields, follow their prop or field
 order, whatever control each takes (KF-DQFXWG: LucideIcon inspector;
 KF-3J47BY: item forms): an icon or Configure row sits where its prop does
@@ -306,8 +324,8 @@ old icon's name, or the seeded default.
 The node's own name field reads "Ref name".
 
 A component's own class list (`className`, or `class`) is a **Classes** text
-field in a trailing **Advanced** section (KF-X8X8VX: editable classes), after
-its curated groups and Other; `component-props.json` marks it
+field in the **Integration** family (KF-X8X8VX: editable classes; it was a
+trailing Advanced section before KF-4BPSTB); `component-props.json` marks it
 `control: "classes"`. It is a visual edit: the class list renders on the
 component's root and never changes the view's contract. Other styling hooks
 (`headerClassName` and the like), `slot`, `rootAttributes`, and

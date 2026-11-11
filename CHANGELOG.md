@@ -318,6 +318,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Changed
 
+- **Consistent Inspector groups (KF-4BPSTB).** The editor's Inspector sorts every component's props into the same families — Content, Appearance, Behavior, Layout, Accessibility, Integration — with component-specific tasks under them (Button's Link, Form and Popup; TextField's Typing assistance; Workbench's Main, rail and drawer regions). The "Other" and "Advanced" sections are gone: uncurated props take a family from their name, and Classes sits in Integration. The props overlay gains an optional `subgroup`; older group names such as `State` still read, as Behavior › State, and a custom catalog's own group names keep their sections.
 - **The Kerf UI editor's view and wiring regions are separate modules (KF-YF1PDR, KF-N0CSVT).** Inspector controls, field editors, Library drag and drop, dialogs, and event handlers now receive typed state from `createEditor`; behavior and public entry points are unchanged.
 - **UI source registration survives tree shaking (KF-TA779Y).** The source PopupMenu registration module is listed as side effectful, so Select's public registration import remains in source-built demos.
 - **Browser waits follow UI state (KF-BG83G7).** Browser suites wait for navigation, animation, and rendered state instead of fixed sleeps, with bounded transition-settling checks.

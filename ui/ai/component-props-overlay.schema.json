@@ -51,7 +51,16 @@
             "hidden"
           ]
         },
-        "group": { "type": "string", "minLength": 1 },
+        "group": {
+          "description": "Inspector group: one of the families Content, Appearance, Behavior, Layout, Accessibility, Integration, or a name in groups.",
+          "type": "string",
+          "minLength": 1
+        },
+        "subgroup": {
+          "description": "A component-specific task inside the group (Link, Typing assistance), shown under its own heading.",
+          "type": "string",
+          "minLength": 1
+        },
         "order": { "type": "integer", "minimum": 0 },
         "default": {
           "description": "A default the types and JSDoc do not state.",

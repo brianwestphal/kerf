@@ -3,7 +3,13 @@
   "description": "Curated additions to the generated component-props.json for what types cannot express: inspector control hints, grouping, and order. Every key must name a generated component and prop; npm run props:sync fails otherwise.",
   "components": {
     "@kerfjs/ui:button": {
-      "groups": ["Content", "Appearance", "State", "Form"],
+      "groups": [
+        "Content",
+        "Appearance",
+        "Behavior",
+        "Accessibility",
+        "Integration"
+      ],
       "props": {
         "children": {
           "group": "Content",
@@ -12,6 +18,26 @@
         "icon": {
           "group": "Content",
           "order": 2
+        },
+        "badge": {
+          "group": "Content",
+          "subgroup": "Badge",
+          "order": 11
+        },
+        "badgeMax": {
+          "group": "Content",
+          "subgroup": "Badge",
+          "order": 12
+        },
+        "badgeLabel": {
+          "group": "Content",
+          "subgroup": "Badge",
+          "order": 13
+        },
+        "badgeTone": {
+          "group": "Content",
+          "subgroup": "Badge",
+          "order": 14
         },
         "tone": {
           "group": "Appearance",
@@ -33,28 +59,106 @@
           "order": 4,
           "control": "segmented"
         },
+        "fill": {
+          "group": "Appearance",
+          "order": 5
+        },
+        "focusRingInset": {
+          "group": "Appearance",
+          "order": 6
+        },
+        "action": {
+          "group": "Behavior",
+          "order": 1
+        },
         "pressed": {
-          "group": "State",
-          "order": 1,
+          "group": "Behavior",
+          "subgroup": "State",
+          "order": 11,
           "control": "select"
         },
         "expanded": {
-          "group": "State",
-          "order": 2,
+          "group": "Behavior",
+          "subgroup": "State",
+          "order": 12,
           "control": "select"
         },
         "loading": {
-          "group": "State",
-          "order": 3
+          "group": "Behavior",
+          "subgroup": "State",
+          "order": 13
         },
         "disabled": {
-          "group": "State",
-          "order": 4
+          "group": "Behavior",
+          "subgroup": "State",
+          "order": 14
+        },
+        "link": {
+          "group": "Behavior",
+          "subgroup": "Link",
+          "order": 21
+        },
+        "href": {
+          "group": "Behavior",
+          "subgroup": "Link",
+          "order": 22
+        },
+        "target": {
+          "group": "Behavior",
+          "subgroup": "Link",
+          "order": 23
         },
         "type": {
-          "group": "Form",
-          "order": 1,
+          "group": "Behavior",
+          "subgroup": "Form",
+          "order": 31,
           "control": "segmented"
+        },
+        "name": {
+          "group": "Behavior",
+          "subgroup": "Form",
+          "order": 32
+        },
+        "value": {
+          "group": "Behavior",
+          "subgroup": "Form",
+          "order": 33
+        },
+        "form": {
+          "group": "Behavior",
+          "subgroup": "Form",
+          "order": 34
+        },
+        "popoverTarget": {
+          "group": "Behavior",
+          "subgroup": "Popup",
+          "order": 41
+        },
+        "popoverTargetAction": {
+          "group": "Behavior",
+          "subgroup": "Popup",
+          "order": 42
+        },
+        "ariaHasPopup": {
+          "group": "Behavior",
+          "subgroup": "Popup",
+          "order": 43
+        },
+        "ariaLabel": {
+          "group": "Accessibility",
+          "order": 1
+        },
+        "title": {
+          "group": "Accessibility",
+          "order": 2
+        },
+        "currentStep": {
+          "group": "Accessibility",
+          "order": 3
+        },
+        "id": {
+          "group": "Integration",
+          "order": 1
         }
       }
     },
@@ -686,7 +790,13 @@
       }
     },
     "@kerfjs/ui:text-field": {
-      "groups": ["Content", "Input", "Validation", "State"],
+      "groups": [
+        "Content",
+        "Appearance",
+        "Behavior",
+        "Accessibility",
+        "Integration"
+      ],
       "props": {
         "label": {
           "group": "Content",
@@ -700,70 +810,146 @@
           "group": "Content",
           "order": 3
         },
-        "ariaLabel": {
+        "icon": {
           "group": "Content",
           "order": 4
         },
-        "name": {
-          "group": "Input",
-          "order": 1
-        },
-        "value": {
-          "group": "Input",
-          "order": 2
-        },
-        "type": {
-          "group": "Input",
-          "order": 3,
-          "control": "select"
-        },
-        "multiline": {
-          "group": "Input",
-          "order": 4
-        },
-        "rows": {
-          "group": "Input",
-          "order": 5,
-          "control": "number"
-        },
         "size": {
-          "group": "Input",
-          "order": 6,
+          "group": "Appearance",
+          "order": 1,
           "control": "segmented"
         },
         "clearable": {
-          "group": "Input",
-          "order": 7
+          "group": "Appearance",
+          "subgroup": "Optional controls",
+          "order": 11
         },
-        "spellcheck": {
-          "group": "Input",
-          "order": 8,
+        "clearLabel": {
+          "group": "Appearance",
+          "subgroup": "Optional controls",
+          "order": 12
+        },
+        "toggle": {
+          "group": "Appearance",
+          "subgroup": "Optional controls",
+          "order": 13
+        },
+        "type": {
+          "group": "Behavior",
+          "subgroup": "Input",
+          "order": 1,
           "control": "select"
         },
-        "error": {
-          "group": "Validation",
-          "order": 1
-        },
-        "required": {
-          "group": "Validation",
+        "value": {
+          "group": "Behavior",
+          "subgroup": "Input",
           "order": 2
         },
+        "name": {
+          "group": "Behavior",
+          "subgroup": "Input",
+          "order": 3
+        },
+        "multiline": {
+          "group": "Behavior",
+          "subgroup": "Input",
+          "order": 4
+        },
+        "rows": {
+          "group": "Behavior",
+          "subgroup": "Input",
+          "order": 5,
+          "control": "number"
+        },
+        "maxRows": {
+          "group": "Behavior",
+          "subgroup": "Input",
+          "order": 6
+        },
+        "min": {
+          "group": "Behavior",
+          "subgroup": "Input",
+          "order": 7
+        },
+        "max": {
+          "group": "Behavior",
+          "subgroup": "Input",
+          "order": 8
+        },
+        "step": {
+          "group": "Behavior",
+          "subgroup": "Input",
+          "order": 9
+        },
+        "required": {
+          "group": "Behavior",
+          "subgroup": "Validation",
+          "order": 11
+        },
+        "error": {
+          "group": "Behavior",
+          "subgroup": "Validation",
+          "order": 12
+        },
         "maxLength": {
-          "group": "Validation",
-          "order": 3,
+          "group": "Behavior",
+          "subgroup": "Validation",
+          "order": 13,
           "control": "number"
         },
         "showCount": {
-          "group": "Validation",
-          "order": 4
+          "group": "Behavior",
+          "subgroup": "Validation",
+          "order": 14
+        },
+        "autocomplete": {
+          "group": "Behavior",
+          "subgroup": "Typing assistance",
+          "order": 21
+        },
+        "autocapitalize": {
+          "group": "Behavior",
+          "subgroup": "Typing assistance",
+          "order": 22
+        },
+        "autocorrect": {
+          "group": "Behavior",
+          "subgroup": "Typing assistance",
+          "order": 23
+        },
+        "inputMode": {
+          "group": "Behavior",
+          "subgroup": "Typing assistance",
+          "order": 24
+        },
+        "spellcheck": {
+          "group": "Behavior",
+          "subgroup": "Typing assistance",
+          "order": 25,
+          "control": "select"
         },
         "disabled": {
-          "group": "State",
-          "order": 1
+          "group": "Behavior",
+          "subgroup": "State",
+          "order": 31
         },
         "readOnly": {
-          "group": "State",
-          "order": 2
+          "group": "Behavior",
+          "subgroup": "State",
+          "order": 32
+        },
+        "autofocus": {
+          "group": "Behavior",
+          "subgroup": "State",
+          "order": 33
+        },
+        "ariaLabel": {
+          "group": "Accessibility",
+          "order": 1
+        },
+        "id": {
+          "group": "Integration",
+          "order": 1
         }
       }
     },
@@ -945,6 +1131,108 @@
         },
         "embeddedSubmenu": {
           "control": "hidden"
+        }
+      }
+    },
+    "@kerfjs/ui:workbench": {
+      "groups": ["Behavior", "Layout", "Accessibility", "Integration"],
+      "props": {
+        "overlayBackdrop": {
+          "group": "Behavior",
+          "order": 1
+        },
+        "mainToolbar": {
+          "group": "Layout",
+          "subgroup": "Main",
+          "order": 1
+        },
+        "mainHeader": {
+          "group": "Layout",
+          "subgroup": "Main",
+          "order": 2
+        },
+        "mainHeaderPlacement": {
+          "group": "Layout",
+          "subgroup": "Main",
+          "order": 3
+        },
+        "mainHeaderList": {
+          "group": "Layout",
+          "subgroup": "Main",
+          "order": 4
+        },
+        "mainFooter": {
+          "group": "Layout",
+          "subgroup": "Main",
+          "order": 5
+        },
+        "mainFooterPlacement": {
+          "group": "Layout",
+          "subgroup": "Main",
+          "order": 6
+        },
+        "mainFooterList": {
+          "group": "Layout",
+          "subgroup": "Main",
+          "order": 7
+        },
+        "mainBottomToolbar": {
+          "group": "Layout",
+          "subgroup": "Main",
+          "order": 8
+        },
+        "mainPane": {
+          "group": "Layout",
+          "subgroup": "Main",
+          "order": 9
+        },
+        "mainMinSize": {
+          "group": "Layout",
+          "subgroup": "Main",
+          "order": 10
+        },
+        "mainMinHeight": {
+          "group": "Layout",
+          "subgroup": "Main",
+          "order": 11
+        },
+        "leftRail": {
+          "group": "Layout",
+          "subgroup": "Left rail",
+          "order": 21
+        },
+        "rightRail": {
+          "group": "Layout",
+          "subgroup": "Right rail",
+          "order": 31
+        },
+        "bottomDrawer": {
+          "group": "Layout",
+          "subgroup": "Bottom drawer",
+          "order": 41
+        },
+        "label": {
+          "group": "Accessibility",
+          "order": 1
+        },
+        "mainLabel": {
+          "group": "Accessibility",
+          "subgroup": "Work area",
+          "order": 11
+        },
+        "mainTabIndex": {
+          "group": "Accessibility",
+          "subgroup": "Work area",
+          "order": 12
+        },
+        "mainOutlined": {
+          "group": "Accessibility",
+          "subgroup": "Work area",
+          "order": 13
+        },
+        "id": {
+          "group": "Integration",
+          "order": 1
         }
       }
     }
