@@ -84,6 +84,11 @@ import {
   valueTable,
 } from './helpers.js';
 
+// They build documents rather than test motion, so the Inspector's NavStack
+// pushes and pops skip their transitions (KF-QWDPM3: every field opens its
+// group's page; WebKit on CI passed 60s on the longest builds).
+test.use({ contextOptions: { reducedMotion: 'reduce' } });
+
 test.beforeEach(async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await newDocument(page);
@@ -1231,9 +1236,6 @@ test('builds ListActionRow › Compact Rows', async ({ page }) => {
 // The reorder itself is the app's wiring (wireListReorder); rows start
 // unpressed, a toggle that is off rather than a plain action.
 test('builds ListActionRow › Drag to Reorder', async ({ page }) => {
-  // Three rows of nine fields each, across ListActionRow's Behavior task
-  // pages (KF-DXTRPR), take about 30s locally.
-  test.slow();
   const files = [
     ['readme', 'README.md'],
     ['changelog', 'CHANGELOG.md'],

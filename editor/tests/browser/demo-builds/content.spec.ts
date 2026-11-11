@@ -36,6 +36,11 @@ import {
   textRun,
 } from './helpers.js';
 
+// They build documents rather than test motion, so the Inspector's NavStack
+// pushes and pops skip their transitions (KF-QWDPM3: every field opens its
+// group's page; WebKit on CI passed 60s on the longest builds).
+test.use({ contextOptions: { reducedMotion: 'reduce' } });
+
 test.beforeEach(async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await newDocument(page);
