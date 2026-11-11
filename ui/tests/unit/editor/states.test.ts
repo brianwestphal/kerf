@@ -6,7 +6,7 @@ import { mount } from 'kerfjs';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { findNode } from '../../../src/editor/model/document.js';
-import { field, showProp } from './editing-harness.js';
+import { field, inspectorBack, showBind, showProp } from './editing-harness.js';
 import { createEditor, sample } from './kerf-catalog.js';
 
 const PANE = '01JB8Z1M6Q8E1X9V4S7K2R3T5A';
@@ -297,15 +297,24 @@ describe('binding a prop', () => {
   it('binds, rebinds, unbinds, and undoes a prop', () => {
     const { root, editor } = open();
     editor.selection.value = { kind: 'node', id: ROW };
-    const prop = () => root.querySelector('[data-editor-bind="prop"]')!;
     const source = () => root.querySelector('[data-editor-bind="source"]')!;
     const label = () => findNode(editor.document.value, ROW)!.node.props?.label;
-    choose(prop(), 'label');
+    // KF-FN28S3: the label's row names what it reads, and opens its page.
+    expect(root.querySelector('[data-editor-bind-row="label"]')).toBeNull();
+    showProp(root, 'label');
+    expect(
+      root.querySelector('[data-editor-bind-row="label"]')!.textContent,
+    ).toContain('Item field item.label');
+    showBind(root, 'label');
     // The row's label is bound to its item already.
     expect(source().getAttribute('value')).toBe('{"$bind":"item.label"}');
     expect(source().innerHTML).toContain('Param title');
     choose(source(), '{"$param":"title"}');
     expect(label()).toEqual({ $param: 'title' });
+    // Bound, it offers no Promote; the page stays on the same node.
+    expect(
+      root.querySelector('[data-editor-bind-page="label"] [data-action]'),
+    ).toBeNull();
     choose(source(), '');
     expect(label()).toBeUndefined();
     act(root, 'editor-undo');
@@ -316,14 +325,22 @@ describe('binding a prop', () => {
     const { root, editor } = open();
     editor.selection.value = { kind: 'node', id: COMPOSE };
     const before = editor.document.value;
-    choose(root.querySelector('[data-editor-bind="prop"]')!, 'children');
+    showBind(root, 'children');
     choose(root.querySelector('[data-editor-bind="source"]')!, '');
     expect(editor.document.value).toBe(before);
-    // No param fits the Button's emphasis enum.
-    choose(root.querySelector('[data-editor-bind="prop"]')!, 'emphasis');
+    // No param fits the Button's emphasis enum: its page says so in place
+    // of a Source, and offers Promote.
+    inspectorBack(root);
+    inspectorBack(root);
+    showBind(root, 'emphasis');
+    const page = root.querySelector('[data-editor-bind-page="emphasis"]')!;
+    expect(page.querySelector('[data-editor-bind="source"]')).toBeNull();
+    expect(page.textContent).toContain(
+      'No param or item field in scope fits emphasis.',
+    );
     expect(
-      root.querySelector('[data-editor-bind="source"]')!.textContent,
-    ).toContain('No param or item field in scope fits this prop.');
+      page.querySelector('[data-action="editor-promote-prop"]'),
+    ).not.toBeNull();
     // With nothing selected, a source change does nothing.
     editor.selection.value = null;
     const host = document.createElement('kui-select');

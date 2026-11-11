@@ -335,6 +335,19 @@ export function inspectorSections(
  * subgroups become pages of their own, the same bound that sends a larger
  * object form to a dialog (KF-Z9S029).
  */
+/**
+ * The groups the Properties directory lists (KF-FN28S3): `groupedProps`,
+ * with an Integration group for a component whose only integration is its
+ * data attributes, which that group's page edits.
+ */
+export function propertiesGroups(component: InspectorComponent): PropGroup[] {
+  const groups = groupedProps(component);
+  return component.props.some((prop) => prop.name === 'rootAttributes') &&
+    !groups.some((group) => group.title === 'Integration')
+    ? [...groups, { title: 'Integration', props: [], subgroups: [] }]
+    : groups;
+}
+
 export const FOCUSED_FIELD_LIMIT = 10;
 
 /** Whether a group's page lists its subgroups as rows instead of fields. */

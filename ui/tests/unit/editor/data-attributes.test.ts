@@ -160,6 +160,10 @@ function addedBadge() {
   root.querySelector<HTMLElement>('[data-action="editor-add-child"]')!.click();
   const { id } = editor.selection.value as { id: string };
   const props = () => findNode(editor.document.value, id)!.node.props ?? {};
+  // KF-FN28S3: data attributes sit on the Integration page.
+  root
+    .querySelector<HTMLElement>('[data-editor-prop-group="Integration"]')!
+    .click();
   return { root, editor, id, props };
 }
 
@@ -178,6 +182,11 @@ describe(
         )!
         .click();
       expect(props().rootAttributes).toEqual({ 'data-name': '' });
+      // The Integration row counts them among what the node sets.
+      expect(
+        root.querySelector('[data-editor-prop-group="Integration"]')!
+          .textContent,
+      ).toContain('Data attributes');
       type(field(root, 0, 'name'), 'data-band');
       type(field(root, 0, 'value'), 'high');
       expect(props().rootAttributes).toEqual({ 'data-band': 'high' });

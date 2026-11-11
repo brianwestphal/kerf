@@ -4,7 +4,8 @@
 // row of either design.
 import { expect, type Page, test } from '@playwright/test';
 
-import { area } from './areas.js';
+import { area, inspectorTop } from './areas.js';
+import { openBind } from './build.js';
 
 const ids = {
   pane: '01JB8Z1M6Q8E1X9V4S7K2R3W0A',
@@ -111,10 +112,8 @@ test('a list renders a row design per item', async ({ page }, info) => {
   );
   // The new design starts seeded; binding its label shows the item's.
   await expect(canvasRow(page, 'today')).toContainText('ListHeader');
-  await area(page, 'Properties');
-  await page.locator('[data-editor-bind="prop"]').click();
-  await page.getByRole('option', { name: 'Label', exact: true }).click();
-  await page.locator('[data-editor-bind="source"]').click();
+  await openBind(page, 'Label');
+  await inspectorTop(page).locator('[data-editor-bind="source"]').click();
   await page.getByRole('option', { name: 'item.label', exact: true }).click();
   await expect(canvasRow(page, 'today')).toContainText('Today');
   await area(page, 'Flow');

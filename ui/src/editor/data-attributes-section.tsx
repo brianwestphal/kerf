@@ -12,7 +12,6 @@ import { Row } from '../components/layout/row/row.js';
 import { LucideIcon } from '../components/media/lucide-icon/lucide-icon.js';
 import { Text } from '../components/typography/text/text.js';
 import { px } from '../shared/styles/css-values.js';
-import type { PropsComponent } from './catalog.js';
 import { HOOK } from './dom-hooks.js';
 import type { EditorContext } from './editor-context.js';
 import {
@@ -25,16 +24,11 @@ import {
   DATA_ATTRIBUTE_REMOVE_ACTION,
 } from './shell-names.js';
 
-/** The node's unreserved data-* fields, or nothing without this prop. */
-export function dataAttributesSection(
-  ctx: EditorContext,
-  node: ViewNode,
-  component: PropsComponent,
-) {
-  const prop = component.props.find(
-    (item) => item.name === DATA_ATTRIBUTES_PROP,
-  );
-  if (!prop) return undefined;
+/**
+ * The node's unreserved data-* fields, for a component that takes them
+ * (KF-FN28S3: the Integration page shows them).
+ */
+export function dataAttributesSection(ctx: EditorContext, node: ViewNode) {
   const value = node.props?.[DATA_ATTRIBUTES_PROP] as ViewValue | undefined;
   const attributes = dataAttributes(value);
   // A hand-edited document's KUI-V015 shows at the name it is about.

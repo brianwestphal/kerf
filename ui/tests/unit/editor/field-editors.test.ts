@@ -155,7 +155,7 @@ describe('field editor model', () => {
     expect(propLabel('ariaLabel')).toBe('ARIA label');
     expect(propLabel('id')).toBe('ID');
     expect(propLabel('wrap')).toBe('Wrap');
-    expect(propLabel('rootAttributes')).toBe('Root attributes');
+    expect(propLabel('rootAttributes')).toBe('Data attributes');
     expect(propLabel('maxHTMLLength')).toBe('Max HTML length');
     expect(propLabel('size2x')).toBe('Size 2x');
   });

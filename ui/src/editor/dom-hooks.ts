@@ -44,7 +44,6 @@ export const HOOK = {
   paletteDocument: 'data-editor-palette-document',
   paletteFilter: 'data-editor-palette-filter',
   param: 'data-editor-param',
-  promote: 'data-editor-promote',
   propertiesSearch: 'data-editor-properties-search',
   prop: 'data-editor-prop',
 } as const;

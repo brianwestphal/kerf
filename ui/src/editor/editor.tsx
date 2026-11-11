@@ -265,7 +265,7 @@ import {
   insertProblem,
   libraryDocuments,
 } from './model/insert-view.js';
-import { groupedProps, inspectorSections } from './model/inspector.js';
+import { inspectorSections, propertiesGroups } from './model/inspector.js';
 import {
   isDocumentFolderId,
   libraryDocumentTree,
@@ -325,6 +325,7 @@ import type { ProjectTypeService } from './project-type-service.js';
 import {
   ADD_ACTION,
   ALL_PROPERTIES,
+  BIND_STEP,
   CONTENT_ADD_ACTION,
   CONTENT_TO_NODES_ACTION,
   CONTENT_TO_TEXT_ACTION,
@@ -395,7 +396,6 @@ import {
   PLAY_ACTION,
   PLAY_DONE_ACTION,
   PROBLEM_ACTION,
-  PROMOTE_ACTION,
   PROMOTE_FIELD_ACTION,
   PROMOTE_PROP_ACTION,
   PROPERTIES_CLEAR_ACTION,
@@ -849,7 +849,6 @@ export function createEditor(options: EditorOptions) {
   const addZone = signal('');
   const addComponent = signal('');
   const rootComponent = signal('');
-  const promoteProp = signal('');
   const bindProp = signal('');
   const bindField = signal('');
   /**
@@ -938,11 +937,17 @@ export function createEditor(options: EditorOptions) {
   const collapsed = signal<ReadonlySet<string>>(new Set());
 
   const select = (next: Selection) => {
+    const previous = selection.peek();
     selection.value = next;
     // A field editor belongs to the node it opened on (KF-Z9S029).
     if (next?.kind !== 'node' || next.id !== openField.value?.node)
       openField.value = null;
-    keepPropertiesPage(next);
+    keepPropertiesPage(
+      next,
+      previous?.kind === 'node' &&
+        next?.kind === 'node' &&
+        previous.id === next.id,
+    );
     // A node chosen elsewhere (the canvas, a problem) shows in the outline.
     if (next?.kind !== 'node' && next?.kind !== 'slot') return;
     const visit = findNode(
@@ -972,22 +977,29 @@ export function createEditor(options: EditorOptions) {
    * still means something: the group (and its task) the new node also has,
    * or All properties. Anything else returns to the overview.
    */
-  function keepPropertiesPage(next: Selection) {
-    const path = inspectorGroup.peek();
+  function keepPropertiesPage(next: Selection, same: boolean) {
+    // KF-FN28S3: a field's Bind page belongs to the node it opened on.
+    const steps = inspectorGroup.peek();
+    const path = same
+      ? steps
+      : steps.filter((step) => !step.startsWith(BIND_STEP));
     if (next?.kind !== 'node') {
       inspectorGroup.value = [];
       return;
     }
+    // Only a dropped step rewrites the path, so the open pages stay put.
+    if (path.length !== steps.length) inspectorGroup.value = path;
     if (path[0] === undefined || path[0] === ALL_PROPERTIES) return;
     // A node select() is handed is in the document; a `#view` or text run
     // has no catalog entry, so no groups.
     const component = propsByKey.get(findNode(doc.peek(), next.id)!.node.type);
-    const group = groupedProps(component ?? { key: '', props: [] }).find(
+    const group = propertiesGroups(component ?? { key: '', props: [] }).find(
       (item) => item.title === path[0],
     );
     if (!group) inspectorGroup.value = [];
     else if (
       path.length > 1 &&
+      !path[1]!.startsWith(BIND_STEP) &&
       !group.subgroups.some((subgroup) => subgroup.title === path[1])
     )
       inspectorGroup.value = [group.title];
@@ -2973,7 +2985,6 @@ export function createEditor(options: EditorOptions) {
     bindProp,
     addZone,
     addComponent,
-    promoteProp,
     fieldProblems,
   });
 
@@ -3140,24 +3151,20 @@ export function createEditor(options: EditorOptions) {
     );
   };
 
-  /** Promotes the chosen prop to a document param named after it. */
-  const promote = (chosen?: string) => {
-    const id = selectedNodeId();
-    if (!id) return;
+  /**
+   * Promotes the chosen prop to a document param named after it. Promote
+   * shows only for a selected node's literal (or unset) prop whose type a
+   * param can take (KF-FN28S3: on the prop's Bind page or app-supplied row).
+   */
+  const promote = (name: string) => {
+    const id = selectedNodeId()!;
     const node = findNode(doc.value, id)!.node;
-    const component = propsByKey.get(node.type);
-    const picker = document.querySelector<HTMLElement>(hook(HOOK.promote));
-    const name =
-      chosen ?? (picker ? String(controlValue(picker)) : promoteProp.value);
-    const prop = component?.props.find((item) => item.name === name);
+    const prop = propsByKey
+      .get(node.type)!
+      .props.find((item) => item.name === name)!;
     // A function, signal, or model becomes a param of its prop's own type.
-    const type =
-      prop &&
-      (paramTypeFor(prop.type as never) ??
-        appParamFor(node.type, prop, definitionsOf(node.type)));
-    const current = node.props?.[name];
-    // Only a literal (or unset) prop promotes; one already bound stays as is.
-    if (!prop || !type || isBinding(current)) return;
+    const type = (paramTypeFor(prop.type as never) ??
+      appParamFor(node.type, prop, definitionsOf(node.type)))!;
     const base = `${node.name ?? 'node'}${name[0]!.toUpperCase()}${name.slice(1)}`;
     let param = base;
     for (
@@ -3904,14 +3911,6 @@ export function createEditor(options: EditorOptions) {
         );
       },
     ),
-    delegate<HTMLElement>(
-      root,
-      'change',
-      hook(HOOK.promote),
-      (_event, field) => {
-        promoteProp.value = String(controlValue(field));
-      },
-    ),
   ];
 
   const wireSearch = (root: HTMLElement) => [
@@ -4368,9 +4367,8 @@ export function createEditor(options: EditorOptions) {
       commit(moveRowDesign(doc.value, selectedNodeId()!, -1)),
     [MOVE_ROW_DESIGN_LATER_ACTION]: () =>
       commit(moveRowDesign(doc.value, selectedNodeId()!, 1)),
-    [PROMOTE_ACTION]: () => promote(),
     [PROMOTE_PROP_ACTION]: (_event, target) =>
-      promote(target.dataset.editorPromoteProp),
+      promote(target.dataset.editorPromoteProp!),
     [PROMOTE_FIELD_ACTION]: (_event, target) =>
       promoteField(
         JSON.parse(target.dataset.editorPromoteField!) as FieldPlace,

@@ -35,6 +35,8 @@ export type InspectorArea = 'properties' | 'flow' | 'children';
  */
 export const INSPECTOR_GROUP_ACTION = 'editor-inspector-group';
 export const ALL_PROPERTIES = 'All properties';
+/** Marks a field's Bind page in the Inspector's Properties path (KF-FN28S3). */
+export const BIND_STEP = '#bind:';
 export const PROPERTIES_CLEAR_ACTION = 'editor-properties-clear';
 export const SAVE_ACTION = 'editor-save';
 export const SAVE_AS_ACTION = 'editor-save-as';
@@ -171,7 +173,6 @@ export const FIELD_ADD_ITEM_ACTION = 'editor-add-item';
 export const FIELD_REMOVE_ITEM_ACTION = 'editor-remove-item';
 // KF-EXA2WH: an application field editor's button sets its value.
 export const FIELD_SET_ACTION = 'editor-set-field';
-export const PROMOTE_ACTION = 'editor-promote';
 /** Promotes one app-supplied prop from its own row (KF-D85GY0). */
 export const PROMOTE_PROP_ACTION = 'editor-promote-prop';
 /** Promotes one field inside an object prop to a param (KF-3QEZFB). */

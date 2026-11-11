@@ -144,7 +144,8 @@ export async function reveal(page: Page, target: Locator, hint?: string) {
   if (await shown()) return;
   const rows = (scope: Locator) =>
     scope.locator(
-      `[data-action="editor-inspector-group"]:not([data-editor-prop-group="All properties"])`,
+      // A group's or task's row; not All properties or a field's Bind row.
+      `[data-action="editor-inspector-group"][data-editor-group-props]`,
     );
   const groups = await rows(inspectorTop(page)).evaluateAll((items) =>
     items.map((item) => item.getAttribute('data-editor-prop-group')!),
@@ -169,6 +170,41 @@ export async function reveal(page: Page, target: Locator, hint?: string) {
     await inspectorBack(page);
   }
   await expect(target.filter({ visible: true }).first()).toBeVisible();
+}
+
+/**
+ * KF-FN28S3: opens the Bind page of the selected node's prop labeled
+ * `label` (as the Inspector words it), from its row on the prop's page.
+ */
+export async function openBind(page: Page, label: string) {
+  const words = label.split(' ');
+  const hint = words
+    .map((word, index) =>
+      index ? word[0]!.toUpperCase() + word.slice(1) : word.toLowerCase(),
+    )
+    .join('');
+  const row = page.getByRole('button', {
+    name: new RegExp(`^Bind or promote ${label.toLowerCase()}:`),
+  });
+  await reveal(page, row, hint);
+  await row.filter({ visible: true }).first().click();
+  await expect(
+    inspectorTop(page).locator('[data-editor-bind-page]'),
+  ).toBeVisible();
+  await inspectorSettled(page);
+}
+
+/** KF-FN28S3: shows the selected node's data attributes, on Integration. */
+export async function showDataAttributes(page: Page) {
+  const add = page
+    .locator('[data-action="editor-add-data-attribute"]')
+    .filter({ visible: true });
+  if (await add.count()) return;
+  await area(page, 'Properties');
+  await openGroupRow(
+    page,
+    inspectorTop(page).locator('[data-editor-prop-group="Integration"]'),
+  );
 }
 
 /** Shows the field of param `param`, on the page of the prop it binds. */

@@ -83,6 +83,19 @@ export function showProp(root: HTMLElement, name: string) {
   }
 }
 
+/** Goes back one page in the Inspector's NavStack. */
+export const inspectorBack = (root: HTMLElement) =>
+  root
+    .querySelector<HTMLElement>('#editor-inspector-stack [data-nav-back]')!
+    .click();
+
+/** KF-FN28S3: opens a field's Bind page from its row on the field's page. */
+export function showBind(root: HTMLElement, name: string) {
+  if (root.querySelector(`[data-editor-bind-page="${name}"]`)) return;
+  showProp(root, name);
+  root.querySelector<HTMLElement>(`[data-editor-bind-row="${name}"]`)!.click();
+}
+
 /**
  * KF-QWDPM3: opens the All properties page, which lists every field of the
  * selected node and stays open as another node is selected.

@@ -17,6 +17,7 @@ import {
   exported,
   icon,
   node,
+  openBind,
   outlineRow,
   page as pane,
   pickIcon,
@@ -24,6 +25,7 @@ import {
   setField,
   setText,
   showConfigure,
+  showDataAttributes,
   showParam,
   showProp,
   turnFieldOn,
@@ -111,12 +113,11 @@ export const buttonRowNode = (
 
 /** Promotes prop `label` of the selected node to a param. */
 export async function promote(page: Page, label: string) {
-  // KF-QWDPM3: Promote to a param is on the Properties overview.
-  await area(page, 'Properties');
-  const picker = page.locator('[data-editor-promote]');
-  await picker.locator('.kui-select__trigger').click();
-  await picker.getByRole('option', { name: label, exact: true }).click();
-  await page.getByRole('button', { name: 'Promote', exact: true }).click();
+  // KF-FN28S3: Promote to a param is on the prop's own Bind page.
+  await openBind(page, label);
+  await inspectorTop(page)
+    .getByRole('button', { name: 'Promote to a param', exact: true })
+    .click();
 }
 
 /**
@@ -139,16 +140,11 @@ export async function nameParam(page: Page, from: string, to: string) {
 
 /** Binds prop `label` of the selected node to source `source`. */
 export async function bind(page: Page, label: string, source: string) {
-  // KF-QWDPM3: Bind a prop is on the Properties overview.
-  await area(page, 'Properties');
-  for (const [part, option] of [
-    ['prop', label],
-    ['source', source],
-  ] as const) {
-    const control = page.locator(`[data-editor-bind="${part}"]`);
-    await control.locator('.kui-select__trigger').click();
-    await control.getByRole('option', { name: option, exact: true }).click();
-  }
+  // KF-FN28S3: a prop binds from its own Bind page.
+  await openBind(page, label);
+  const control = inspectorTop(page).locator('[data-editor-bind="source"]');
+  await control.locator('.kui-select__trigger').click();
+  await control.getByRole('option', { name: source, exact: true }).click();
 }
 
 /** The four focus-ring-inset Buttons of the clipping examples. */
@@ -3790,9 +3786,12 @@ export async function dataAttribute(
   value: string,
   index = 0,
 ) {
-  // KF-QWDPM3: Data attributes are on the Properties overview.
-  await area(page, 'Properties');
-  await page.locator('[data-action="editor-add-data-attribute"]').click();
+  // KF-FN28S3: data attributes are on the Integration page.
+  await showDataAttributes(page);
+  await page
+    .locator('[data-action="editor-add-data-attribute"]')
+    .filter({ visible: true })
+    .click();
   const part = (which: string) =>
     page
       .locator(

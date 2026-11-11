@@ -10,9 +10,11 @@ import {
   COMPOSE,
   field,
   FOLDERS,
+  inspectorBack,
   open,
   PANE,
   showAllProperties,
+  showBind,
   showProp,
   teardown,
   TOOLBAR,
@@ -129,18 +131,24 @@ describe('editing the selected node', () => {
 
   it('promotes a prop to a document param', () => {
     const { root, editor, node } = open();
-    choose(field(root, '[data-editor-promote]'), 'tone');
-    click(root, 'editor-promote');
+    // KF-FN28S3: Promote sits on the field's own Bind page.
+    showBind(root, 'tone');
+    click(root, 'editor-promote-prop');
     expect(node()?.props?.tone).toEqual({ $param: 'composeButtonTone' });
     expect(editor.document.value.params?.composeButtonTone).toMatchObject({
       default: 'brand',
     });
-    // A prop that is already a param stays bound to it.
-    const promoted = editor.document.value;
-    click(root, 'editor-promote');
-    expect(editor.document.value).toBe(promoted);
-    choose(field(root, '[data-editor-promote]'), 'children');
-    click(root, 'editor-promote');
+    // A prop that is already a param offers no Promote; its page stays open
+    // and shows the param it reads.
+    const page = root.querySelector('[data-editor-bind-page="tone"]')!;
+    expect(
+      page.querySelector('[data-action="editor-promote-prop"]'),
+    ).toBeNull();
+    expect(page.textContent).toContain('composeButtonTone');
+    inspectorBack(root);
+    inspectorBack(root);
+    showBind(root, 'children');
+    click(root, 'editor-promote-prop');
     expect(editor.document.value.params?.composeButtonChildren).toMatchObject({
       default: 'Compose',
     });

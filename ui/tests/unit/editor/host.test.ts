@@ -10,7 +10,7 @@ import compositionJson from '../../../ai/component-composition.json';
 import propsJson from '../../../ai/component-props.json';
 import { findNode } from '../../../src/editor/model/document.js';
 import { setProp } from '../../../src/editor/model/edits.js';
-import { showProp } from './editing-harness.js';
+import { showBind, showProp } from './editing-harness.js';
 import {
   componentFunctions,
   createEditor,
@@ -306,14 +306,9 @@ describe('inspector edits a host can reach', () => {
         .click();
     };
     const promoteChildren = () => {
-      const picker = root.querySelector<HTMLElement>('[data-editor-promote]')!;
-      picker.setAttribute('value', 'children');
-      Object.defineProperty(picker, 'value', {
-        configurable: true,
-        value: 'children',
-      });
+      showBind(root, 'children');
       root
-        .querySelector<HTMLElement>('[data-action="editor-promote"]')!
+        .querySelector<HTMLElement>('[data-action="editor-promote-prop"]')!
         .click();
     };
     add();

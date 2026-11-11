@@ -21,7 +21,11 @@ import { HOOK } from './dom-hooks.js';
 import type { EditorContext } from './editor-context.js';
 import { embedSection, extractSection } from './embed-extract-views.js';
 import type { createFieldEditorViews } from './field-editor-views.js';
-import { inspectorBindSection } from './inspector-bind-section.js';
+import {
+  bindingSummary,
+  bindPropPage,
+  inspectorBindSection,
+} from './inspector-bind-section.js';
 import type { createInspectorControls } from './inspector-controls.js';
 import {
   propertiesDirectory,
@@ -29,6 +33,7 @@ import {
   type PropertiesState,
 } from './inspector-groups.js';
 import { controlFor, isBinding } from './model/controls.js';
+import { DATA_ATTRIBUTES_PROP } from './model/data-attributes.js';
 import { findNode } from './model/document.js';
 import {
   isMovable,
@@ -43,7 +48,7 @@ import {
   propLabel,
 } from './model/fields.js';
 import type { InspectorProp } from './model/inspector.js';
-import { groupedProps, inspectorSections } from './model/inspector.js';
+import { inspectorSections, propertiesGroups } from './model/inspector.js';
 import { zoneLabel } from './model/outline.js';
 import { rowDesignChoices } from './model/row-designs.js';
 import { viewPath } from './model/views.js';
@@ -55,7 +60,6 @@ import {
   type InspectorArea,
   type InspectorRow,
   OPEN_VIEW_ACTION,
-  PROMOTE_ACTION,
   PROMOTE_PROP_ACTION,
   TEXT_RUN,
 } from './shell-names.js';
@@ -103,7 +107,6 @@ export interface NodeInspectorState {
   readonly bindProp: Signal<string>;
   readonly addZone: Signal<string>;
   readonly addComponent: Signal<string>;
-  readonly promoteProp: Signal<string>;
   /** The selected node's problems by prop (KF-H782W9). */
   readonly fieldProblems: ReadonlySignal<ReadonlyMap<string, string>>;
 }
@@ -147,7 +150,6 @@ export function createNodeInspectorViews(
     bindProp,
     addZone,
     addComponent,
-    promoteProp,
     fieldProblems,
   } = state;
   /**
@@ -433,12 +435,36 @@ export function createNodeInspectorViews(
         ];
       });
     // KF-QWDPM3: Properties lists the node's groups; each opens as a page.
+    // KF-FN28S3: data attributes sit with Classes in Integration.
+    const dataAttributes = component.props.find(
+      (prop) => prop.name === DATA_ATTRIBUTES_PROP,
+    );
+    const groups = propertiesGroups(component);
     const propertiesState: PropertiesState = {
-      groups: groupedProps(component),
+      groups,
       values: props,
       problems: fieldProblems.value,
       fieldsOf: (group, label) => inspectorRuns(rowsOf(group), label),
       title,
+      bindingOf: (prop) => bindingSummary(props[prop.name]),
+      bindPage: (name) =>
+        groups.some((group) => group.props.some((prop) => prop.name === name))
+          ? bindPropPage(
+              ctx,
+              node,
+              name,
+              promotable.some((prop) => prop.name === name),
+            )
+          : undefined,
+      ...(dataAttributes
+        ? {
+            extra: {
+              group: 'Integration',
+              props: [dataAttributes],
+              content: dataAttributesSection(ctx, node),
+            },
+          }
+        : {}),
     };
     // KF-H782W9: the node's own problems lead its Properties.
     const own = currentProblems.value.filter(
@@ -475,36 +501,6 @@ export function createNodeInspectorViews(
           />
         </List>
         {propertiesDirectory(propertiesState)}
-        {dataAttributesSection(ctx, node, component)}
-        {promotable.length ? (
-          <>
-            <ListHeader label="Promote to a param" size="xs" />
-            <List controlInsets="trbl" gap>
-              <Select
-                name="promote-prop"
-                label="Prop"
-                value={
-                  promotable.some((prop) => prop.name === promoteProp.value)
-                    ? promoteProp.value
-                    : promotable[0]!.name
-                }
-                choices={promotable.map((prop) => ({
-                  value: prop.name,
-                  label: propLabel(prop.name),
-                }))}
-                rootAttributes={{ [HOOK.promote]: 'true' }}
-              />
-              <Button
-                emphasis="secondary"
-                size="compact"
-                action={PROMOTE_ACTION}
-              >
-                Promote
-              </Button>
-            </List>
-          </>
-        ) : undefined}
-        {inspectorBindSection(ctx, bindProp, node, component)}
       </List>
     );
     const flow = (

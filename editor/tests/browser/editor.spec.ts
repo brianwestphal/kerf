@@ -12,6 +12,7 @@ import {
   emptySpot,
   exported,
   newDocument,
+  openBind,
   outlineRow,
   select,
   setField,
@@ -536,20 +537,17 @@ test('binds a repeated row’s label to a document param', async ({
       '[data-action="editor-select-node"][data-item-id="01JB8Z1M6Q8E1X9V4S7K2R3T5F"]',
     )
     .click();
-  await page.locator('[data-editor-bind="prop"]').click();
-  await page.getByRole('option', { name: 'Label', exact: true }).click();
-  await expect(page.locator('[data-editor-bind="source"]')).toHaveAttribute(
-    'value',
-    '{"$bind":"item.label"}',
-  );
-  await page.locator('[data-editor-bind="source"]').click();
+  // KF-FN28S3: the label binds from its own Bind page.
+  await openBind(page, 'Label');
+  const source = inspectorTop(page).locator('[data-editor-bind="source"]');
+  await expect(source).toHaveAttribute('value', '{"$bind":"item.label"}');
+  await source.click();
   await page.getByRole('option', { name: 'Param title' }).click();
   // Every repeated row now shows the title param's sample value.
   await expect(
     page.locator('[data-editor-canvas]').getByText('Inbox', { exact: true }),
   ).toHaveCount(4);
   await expect(page.getByText('7 nodes · valid')).toBeVisible();
-  await page.locator('[data-editor-bind="prop"]').scrollIntoViewIfNeeded();
   await page.mouse.move(1, 1);
   await page.screenshot({
     path: info.outputPath('kf-k5tkcv-editor-bind-1440.png'),
@@ -1342,12 +1340,9 @@ for (const width of [1440, 900]) {
     const rail = page.locator('[data-workbench-rail="right"]');
     const properties = rail.getByRole('tab', { name: 'Properties' });
     await expect(properties).toBeInViewport();
-    // Scroll the overview to its end (KF-QWDPM3: its directory, data
-    // attributes, Promote and Bind sections).
+    // Scroll the overview to its end (KF-QWDPM3: its directory).
     await rail
-      .locator(
-        '[data-editor-prop-group], [data-action="editor-add-data-attribute"], [data-editor-promote], [data-editor-bind]',
-      )
+      .locator('[data-editor-prop-group]')
       .filter({ visible: true })
       .last()
       .scrollIntoViewIfNeeded();
@@ -1902,9 +1897,10 @@ test('promotes a Select’s choices to a param that keeps the list', async ({
 }, info) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await addToPane(page, 'Select');
-  await page.locator('[data-editor-promote]').click();
-  await page.getByRole('option', { name: 'Choices', exact: true }).click();
-  await page.getByRole('button', { name: 'Promote', exact: true }).click();
+  await openBind(page, 'Choices');
+  await page
+    .getByRole('button', { name: 'Promote to a param', exact: true })
+    .click();
   await expect(page.getByText(/· valid$/)).toBeVisible();
   await expect(
     page.locator('[data-editor-canvas] [data-component="select"]').first(),

@@ -332,8 +332,20 @@ editable there, and an empty search lists every field. The search starts
 empty each time the page opens. A new selection keeps the open page where it
 still applies — the same group, or task, on the new node, or All properties —
 and otherwise returns to the overview; a field editor still closes when its
-node is no longer selected. Data attributes, Promote to a param, and Bind a
-prop stay on the overview for now.
+node is no longer selected.
+
+Binding and promotion sit with the field they change (KF-FN28S3: contextual
+binding). Each Properties page ends with **Bindings**, a row per field on
+that page named for the field and summarizing what it reads: "Not bound",
+"Param composeLabel", or "Item field item.label". A row pushes the field's
+**Bind <Field>** page: its **Source** select offers the params and item
+fields in scope that fit, and **Promote to a param** shows while the field
+holds a literal (or nothing) whose type a param can take. When nothing in
+scope fits, the page says so in place of the select. A field bound to a param
+keeps its param's name field on the group page, where renaming it renames
+every use. The page stays open across the edits made on it and closes when
+another node is selected; the group page under it follows the rule above.
+There is no separate Promote or Bind section with its own property picker.
 
 Inspector rows, and an item form's fields, follow their prop or field
 order, whatever control each takes (KF-DQFXWG: LucideIcon inspector;
@@ -353,7 +365,10 @@ component's root and never changes the view's contract. Other styling hooks
 `triggerAttributes` stay hidden.
 
 A component's `rootAttributes` (its `data-*` channel, §4.5) edits in the
-Inspector's **Data attributes** section (KF-65FTKX: data attributes), not as
+**Data attributes** section of the Inspector's **Integration** page, after
+Classes (KF-65FTKX: data attributes; KF-FN28S3 moved it from the overview,
+and adds an Integration row for a component with no other integration
+field, and its row's summary names Data attributes once set), not as
 JSON: one Name and one Value field per attribute, side by side where the rail
 is wide and stacked where it is narrow, a Remove button for each, and **Add
 data attribute**, which appends an unused `data-name`. A name is checked as it

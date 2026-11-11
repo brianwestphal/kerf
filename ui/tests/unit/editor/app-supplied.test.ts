@@ -16,7 +16,7 @@ import {
   isAppSupplied,
 } from '../../../src/editor/model/fields.js';
 import { sampleInputs } from '../../../src/editor/model/sample-inputs.js';
-import { field, showProp } from './editing-harness.js';
+import { field, showBind, showProp } from './editing-harness.js';
 import {
   componentFunctions,
   createEditor,
@@ -113,10 +113,13 @@ function added(key: string, options = {}) {
   return { root, editor, node, id };
 }
 
-/** Promotes `prop` of the selected node from the Promote section. */
+/** Promotes `prop` of the selected node from its Bind page (KF-FN28S3). */
 function promote(root: HTMLElement, prop: string) {
-  choose(field(root, '[data-editor-promote]'), prop);
-  field(root, '[data-action="editor-promote"]').click();
+  showBind(root, prop);
+  field(
+    root,
+    `[data-editor-bind-page="${prop}"] [data-action="editor-promote-prop"]`,
+  ).click();
 }
 
 describe('promoting an app-supplied prop (KF-H3CB2P)', () => {
@@ -159,10 +162,11 @@ describe('promoting an app-supplied prop (KF-H3CB2P)', () => {
     // Promoted, it is no longer offered on the page that held it.
     expect(root.querySelector('[data-editor-properties-page]')).toBe(page);
     expect(row()).toBeNull();
-    // The Promote section names props in words too.
-    expect(field(root, '[data-editor-promote]').textContent).toContain(
-      'Placeholder text',
-    );
+    // Its Bind row names the param it now reads (KF-FN28S3).
+    expect(
+      root.querySelector('[data-editor-bind-row="renderSelected"]')!
+        .textContent,
+    ).toContain(`Param ${bound.$param}`);
   });
 
   it('previews a SearchField’s model with a working placeholder', () => {

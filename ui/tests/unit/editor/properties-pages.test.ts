@@ -2,6 +2,7 @@
 // focused pages over the Inspector.
 import { afterEach, describe, expect, it } from 'vitest';
 
+import { setProp } from '../../../src/editor/model/edits.js';
 import {
   attach,
   choose,
@@ -10,6 +11,7 @@ import {
   field,
   FOLDERS,
   open,
+  showBind,
   teardown,
   TOOLBAR,
   type,
@@ -100,7 +102,7 @@ describe('the Properties directory (KF-QWDPM3)', () => {
     expect(page.textContent).toContain('action compose');
     expect(page.querySelector('[data-editor-prop="href"]')).toBeNull();
     expect(
-      [...page.querySelectorAll<HTMLElement>('[data-editor-prop-group]')].map(
+      [...page.querySelectorAll<HTMLElement>('[data-editor-group-props]')].map(
         (item) => item.dataset.editorPropGroup,
       ),
     ).toEqual([
@@ -287,5 +289,102 @@ describe('a new selection and the open page (KF-QWDPM3)', () => {
       )!
       .click();
     expect(views(root)).toEqual(['inspector', 'properties-All-properties']);
+  });
+});
+
+describe('binding and promotion beside each field (KF-FN28S3)', () => {
+  const bindRows = (root: HTMLElement, path: string) =>
+    [
+      ...root.querySelectorAll<HTMLElement>(
+        `[data-editor-bind-rows="${path}"] [data-editor-bind-row]`,
+      ),
+    ].map((item) => item.dataset.editorBindRow);
+
+  it('ends each page with a row per field it holds', () => {
+    const { root } = open();
+    // The overview has no Promote or Bind picker of its own.
+    expect(root.querySelector('[data-editor-bind="prop"]')).toBeNull();
+    expect(root.querySelector('[data-editor-bind-row]')).toBeNull();
+    row(root, 'Appearance').click();
+    expect(bindRows(root, 'Appearance')).toContain('tone');
+    expect(
+      root.querySelector('[data-editor-bind-row="tone"]')!.textContent,
+    ).toContain('Not bound');
+    // A split group's page binds its own fields; each task binds its own.
+    row(root, 'Behavior').click();
+    expect(bindRows(root, 'Behavior')).toEqual(['action']);
+    row(root, 'Behavior/Link').click();
+    expect(bindRows(root, 'Behavior/Link')).toEqual(['link', 'href', 'target']);
+  });
+
+  it('opens a field’s Bind page and keeps it across an edit', () => {
+    const { root, editor, node } = open();
+    showBind(root, 'tone');
+    expect(views(root)).toEqual([
+      'inspector',
+      'properties-Appearance',
+      'properties-Appearance-bind-tone',
+    ]);
+    expect(
+      root.querySelector('#editor-inspector-stack')!.textContent,
+    ).toContain('Bind Tone');
+    root
+      .querySelector<HTMLElement>(
+        '[data-editor-bind-page="tone"] [data-action="editor-promote-prop"]',
+      )!
+      .click();
+    expect(node()!.props?.tone).toEqual({ $param: 'composeButtonTone' });
+    expect(views(root).at(-1)).toBe('properties-Appearance-bind-tone');
+    // Selecting the same node again keeps the page.
+    root
+      .querySelector<HTMLElement>(
+        `[data-action="editor-select-node"][data-item-id="${COMPOSE}"]`,
+      )!
+      .click();
+    expect(views(root).at(-1)).toBe('properties-Appearance-bind-tone');
+    expect(
+      root.querySelector('[data-editor-bind-row="tone"]')!.textContent,
+    ).toContain('Param composeButtonTone');
+    expect(row(root, 'Appearance').textContent).toContain('Tone (bound)');
+    back(root);
+    expect(views(root).at(-1)).toBe('properties-Appearance');
+    expect(editor.selection.value).toEqual({ kind: 'node', id: COMPOSE });
+  });
+
+  it('closes a Bind page when another node is selected', () => {
+    const { root } = open();
+    showBind(root, 'tone');
+    root
+      .querySelector<HTMLElement>(
+        `[data-action="editor-select-node"][data-item-id="${FOLDERS}"]`,
+      )!
+      .click();
+    expect(views(root)).toEqual(['inspector', 'properties-Appearance']);
+  });
+
+  it('shows no Bind page for a field the node lacks', () => {
+    const { root, editor } = open();
+    row(root, 'Behavior').click();
+    row(root, 'Behavior/Link').click();
+    showBind(root, 'href');
+    // A selection made without the editor's select keeps the path.
+    editor.selection.value = { kind: 'node', id: TOOLBAR };
+    expect(root.querySelector('[data-editor-bind-page]')).toBeNull();
+  });
+
+  it('shows a binding the scope no longer offers on its row, not as a source', () => {
+    const { root, editor, node } = open();
+    editor.document.value = setProp(editor.document.value, COMPOSE, 'tone', {
+      $param: 'gone',
+    });
+    showBind(root, 'tone');
+    expect(
+      root.querySelector('[data-editor-bind-row="tone"]')!.textContent,
+    ).toContain('Param gone');
+    const source = root.querySelector<HTMLElement>(
+      '[data-editor-bind-page="tone"] [data-editor-bind="source"]',
+    )!;
+    expect(source.getAttribute('value')).toBe('');
+    expect(node()!.props?.tone).toEqual({ $param: 'gone' });
   });
 });

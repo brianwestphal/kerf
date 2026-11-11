@@ -22,6 +22,7 @@ import {
   pickIcon,
   select,
   setText,
+  showDataAttributes,
   showProp,
   turnOn,
   unset,
@@ -828,9 +829,12 @@ test('builds Badge › Icon and Title', async ({ page }) => {
   await choose(page, 'tone', 'success');
   await setText(page, 'title', 'Confidence of the latest completion');
   await setText(page, 'label', '82% confidence');
-  // KF-QWDPM3: Data attributes are on the Properties overview.
-  await area(page, 'Properties');
-  await page.locator('[data-action="editor-add-data-attribute"]').click();
+  // KF-FN28S3: data attributes are on the Integration page.
+  await showDataAttributes(page);
+  await page
+    .locator('[data-action="editor-add-data-attribute"]')
+    .filter({ visible: true })
+    .click();
   const attribute = (part: string) =>
     page.locator(
       `[data-editor-attribute="0"][data-editor-attribute-part="${part}"]`,
@@ -891,9 +895,12 @@ test('builds Badge › Long Text', async ({ page }) => {
     .getByRole('textbox');
   await maxWidth.fill('px(120)');
   await maxWidth.press('Enter');
-  // KF-QWDPM3: Data attributes are on the Properties overview.
-  await area(page, 'Properties');
-  await page.locator('[data-action="editor-add-data-attribute"]').click();
+  // KF-FN28S3: data attributes are on the Integration page.
+  await showDataAttributes(page);
+  await page
+    .locator('[data-action="editor-add-data-attribute"]')
+    .filter({ visible: true })
+    .click();
   const attribute = (part: string) =>
     page.locator(
       `[data-editor-attribute="0"][data-editor-attribute-part="${part}"]`,
