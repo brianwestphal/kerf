@@ -1231,6 +1231,9 @@ test('builds ListActionRow › Compact Rows', async ({ page }) => {
 // The reorder itself is the app's wiring (wireListReorder); rows start
 // unpressed, a toggle that is off rather than a plain action.
 test('builds ListActionRow › Drag to Reorder', async ({ page }) => {
+  // Three rows of nine fields each, across ListActionRow's Behavior task
+  // pages (KF-DXTRPR), take about 30s locally.
+  test.slow();
   const files = [
     ['readme', 'README.md'],
     ['changelog', 'CHANGELOG.md'],
