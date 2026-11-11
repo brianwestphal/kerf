@@ -16,6 +16,8 @@ export interface WorkbenchOverlayPanel {
   keepOpenOn?: (target: Node) => boolean;
   /** Stay open as the overlay when it holds focus as its breakpoint begins. */
   keepFocusedOpen?: boolean;
+  /** Kept equal to whether the panel presents as an overlay. */
+  overlay?: Signal<boolean>;
 }
 
 /** Each panel's own element, never a nested Workbench's. */
@@ -315,6 +317,12 @@ export function wireWorkbenchOverlays(
       ) {
         rendered.dataset.responsiveOverlayActive = 'true';
         outOfFlow.delete(rendered);
+      }
+      // Last, after any collapse above, so a toggle that renders from it
+      // reads the panel's settled presentation.
+      if (panel.overlay && rendered) {
+        const overlay = overlaid(rendered);
+        if (panel.overlay.peek() !== overlay) panel.overlay.value = overlay;
       }
     }
     if (!workbench) return;

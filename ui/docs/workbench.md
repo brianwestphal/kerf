@@ -505,6 +505,16 @@ presents as one, mirroring `wireSidebar`'s compact overlay:
   focus and all, when it holds focus at that moment. A narrowing window then
   never takes away the field being edited. Without focus inside, it collapses
   as any panel does.
+- **Name the return from an overlay:** give a panel's `toolbar.toggle` an
+  `overlayLabel` naming the work area its closing returns to ("Preview"),
+  pass an app-owned `overlay` signal to the panel in `wireWorkbench`, and
+  render it as the panel's `overlaid` (`overlaid={overlay.value}`). The
+  wiring keeps the signal equal to whether the panel presents as an overlay,
+  through `presentation: "overlay"` or its breakpoint. While the panel is
+  open and overlaid, its toggle shows that text beside its icon, which then
+  names it. Inline, or collapsed in the work area's toolbar, it stays the
+  icon-only Show/Hide toggle. Use it where the overlay is a focused surface
+  covering the work area; it is still the panel's only collapse control.
 - **Focus:** when a panel closes with focus inside it — whatever closed it,
   including the app's own control inside the panel — focus returns to the
   control that had it when the panel opened (typically its toggle; one inside

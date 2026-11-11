@@ -325,6 +325,7 @@ import {
   workbenchConsoleCollapsed,
   workbenchConsoleSize,
   workbenchInspectorCollapsed,
+  workbenchInspectorOverlay,
   workbenchInspectorSize,
   workbenchNavigatorCollapsed,
   workbenchNavigatorSize,
@@ -1980,6 +1981,7 @@ const routeWires: Partial<Record<string, RouteWire>> = {
             size: workbenchInspectorSize,
             storageKey: 'kerf-ui-demo.workbench.inspector',
             collapsed: workbenchInspectorCollapsed,
+            overlay: workbenchInspectorOverlay,
           },
           bottomDrawer: {
             size: workbenchConsoleSize,

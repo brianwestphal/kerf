@@ -1,4 +1,4 @@
-import { mount, raw, signal } from 'kerfjs';
+import { mount, raw, type Signal, signal } from 'kerfjs';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { wireWorkbench } from '../../src/components/layout/workbench/wiring/wire-workbench.js';
@@ -200,14 +200,27 @@ function studio({
         exclusiveOverlays?: boolean;
         keepOpenOn?: (target: Node) => boolean;
         keepFocusedOpen?: boolean;
+        leftOverlay?: Signal<boolean>;
+        rightOverlay?: Signal<boolean>;
       } = {},
     ) => {
-      const { keepOpenOn, keepFocusedOpen, ...wireOptions } = options;
+      const {
+        keepOpenOn,
+        keepFocusedOpen,
+        leftOverlay,
+        rightOverlay,
+        ...wireOptions
+      } = options;
       const dispose = wireWorkbench(root, {
         id: 'studio',
         panels: {
-          leftRail: { collapsed: left, keepOpenOn, keepFocusedOpen },
-          rightRail: { collapsed: right },
+          leftRail: {
+            collapsed: left,
+            keepOpenOn,
+            keepFocusedOpen,
+            overlay: leftOverlay,
+          },
+          rightRail: { collapsed: right, overlay: rightOverlay },
           bottomDrawer: { collapsed: drawer },
         },
         ...wireOptions,
@@ -436,6 +449,33 @@ describe('wireWorkbench transient overlays', () => {
     app.button('Plain').focus();
     resize(true);
     expect(app.left.value).toBe(true);
+  });
+
+  it('keeps each overlay signal equal to its panel presentation', async () => {
+    // KF-9H30XE: the app renders this as the panel's `overlaid`, so its
+    // toggle can name its return while it is an overlay.
+    const app = studio();
+    const leftOverlay = signal(true);
+    const rightOverlay = signal(true);
+    app.wire({ leftOverlay, rightOverlay });
+    expect(leftOverlay.value).toBe(false);
+    expect(rightOverlay.value).toBe(false);
+    // A breakpoint crossing, open or collapsed.
+    resize(true);
+    expect(leftOverlay.value).toBe(true);
+    expect(app.left.value).toBe(true);
+    app.left.value = false;
+    expect(leftOverlay.value).toBe(true);
+    resize(false);
+    expect(leftOverlay.value).toBe(false);
+    // A static overlay presentation, whoever renders it, once the
+    // presentation mutation is observed.
+    app.rightMode.value = 'overlay';
+    await flush();
+    expect(rightOverlay.value).toBe(true);
+    app.rightMode.value = 'inline';
+    await flush();
+    expect(rightOverlay.value).toBe(false);
   });
 
   it('returns focus to an aria-controls toggle for a panel open at wire-up', () => {

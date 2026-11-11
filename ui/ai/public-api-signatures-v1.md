@@ -2204,7 +2204,7 @@ export { wireSummaryRows };
 ## `@kerfjs/ui/nav-stack`
 
 ```ts
-export { c as NavStack, d as NavStackBottomToolbarPresentation, e as NavStackChromePresentation, N as NavStackProps, f as NavStackToolbarConfig, a as NavStackView, g as NavStackViewBottomToolbar, h as NavStackViewToolbar } from './nav-stack-vQ3ieerq.js';
+export { c as NavStack, d as NavStackBottomToolbarPresentation, e as NavStackChromePresentation, N as NavStackProps, f as NavStackToolbarConfig, a as NavStackView, g as NavStackViewBottomToolbar, h as NavStackViewToolbar } from './nav-stack-DKrvqFjA.js';
 import 'kerfjs';
 import './list.js';
 import './semantic-content-BbzjvSu9.js';
@@ -2216,7 +2216,7 @@ import './css-values.js';
 import './pane.js';
 import './anchor-name-BZ1rpxaw.js';
 import './surface-tint-DQgYCaP9.js';
-import './panel-toolbar-vg6Ir5Dy.js';
+import './panel-toolbar-CEcHHDkn.js';
 import './toolbar.js';
 import './lucide-icon.js';
 import 'lucide';
@@ -2252,7 +2252,7 @@ export { type WireNavStackOptions, wireNavStack };
 import * as kerfjs from 'kerfjs';
 import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
 import { R as RootDataAttributes } from './extension-attributes-IJ4decoa.js';
-import { N as NavStackProps, a as NavStackView } from './nav-stack-vQ3ieerq.js';
+import { N as NavStackProps, a as NavStackView } from './nav-stack-DKrvqFjA.js';
 import { ResizableRegionProps } from './resizable-region.js';
 import './list.js';
 import './flex-alignment-4ms8ZbV8.js';
@@ -2262,7 +2262,7 @@ import './css-values.js';
 import './pane.js';
 import './anchor-name-BZ1rpxaw.js';
 import './surface-tint-DQgYCaP9.js';
-import './panel-toolbar-vg6Ir5Dy.js';
+import './panel-toolbar-CEcHHDkn.js';
 import './toolbar.js';
 import './lucide-icon.js';
 import 'lucide';
@@ -2642,13 +2642,13 @@ export { Pane, type PaneAppearance, type PaneChromeDividers, type PaneChromePlac
 
 ```ts
 import { SafeHtml } from 'kerfjs';
-import { b as NavPane, N as NavStackProps } from './nav-stack-vQ3ieerq.js';
+import { b as NavPane, N as NavStackProps } from './nav-stack-DKrvqFjA.js';
 import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
 import { R as RootDataAttributes } from './extension-attributes-IJ4decoa.js';
 import { ListConfig } from './list.js';
 import { PaneConfig } from './pane.js';
 import { ResizableRegionSeparator, ResizableRegionCollapseMotion, ResizableRegionContentOverflow, ResizableRegionPresentation, ResizableRegionRestorePosition } from './resizable-region.js';
-import { a as PanelToolbar, c as PanelBottomToolbar, b as PanelChromePlacement, d as PanelToggle } from './panel-toolbar-vg6Ir5Dy.js';
+import { a as PanelToolbar, c as PanelBottomToolbar, b as PanelChromePlacement, d as PanelToggle } from './panel-toolbar-CEcHHDkn.js';
 import { ToolbarConfig } from './toolbar.js';
 import './css-values.js';
 import './surface-tint-DQgYCaP9.js';
@@ -2775,6 +2775,14 @@ interface WorkbenchPanelBase {
      * (pass `never` to keep one inline); the drawer defaults to inline.
      */
     responsiveOverlayAt?: WorkbenchResponsiveOverlayAt;
+    /**
+     * Whether the panel presents as an overlay right now. Render the `overlay`
+     * signal `wireWorkbench` writes for the panel (`overlaid={overlay.value}`);
+     * while it is true and the panel is open, its toolbar toggle shows its
+     * `overlayLabel`. It changes nothing else: the presentation itself stays
+     * `presentation` and `responsiveOverlayAt`.
+     */
+    overlaid?: boolean;
     /**
      * A rail's overlay width in a compact Workbench (default `inset`: the
      * Workbench less `--kui-workbench-overlay-dismiss-margin`, 44px). Ignored
@@ -2980,6 +2988,14 @@ interface WireWorkbenchPanel {
      * editing. An inspector or form panel opts in; a navigator usually does not.
      */
     keepFocusedOpen?: boolean;
+    /**
+     * An app-owned signal `wireWorkbench` keeps equal to whether the panel
+     * presents as an overlay right now, whether through `presentation:
+     * "overlay"` or its `responsiveOverlayAt` breakpoint. Render it as the
+     * panel's `overlaid`, so the panel's toggle can show its `overlayLabel`.
+     * Written only with `collapsed` and `dismissOverlays`.
+     */
+    overlay?: Signal<boolean>;
 }
 /** A resize the user made, after `wireWorkbench` wrote it to the size signal. */
 interface WorkbenchResize {
@@ -3062,8 +3078,8 @@ export { type WireWorkbenchOptions, type WireWorkbenchPanel, type WorkbenchPanel
 
 ```ts
 import { SafeHtml } from 'kerfjs';
-import { P as PanelSide, a as PanelToolbar, b as PanelChromePlacement, c as PanelBottomToolbar, d as PanelToggle } from './panel-toolbar-vg6Ir5Dy.js';
-export { e as collapsiblePanelToggleIcon } from './panel-toolbar-vg6Ir5Dy.js';
+import { P as PanelSide, a as PanelToolbar, b as PanelChromePlacement, c as PanelBottomToolbar, d as PanelToggle } from './panel-toolbar-CEcHHDkn.js';
+export { e as collapsiblePanelToggleIcon } from './panel-toolbar-CEcHHDkn.js';
 import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
 import { R as RootDataAttributes } from './extension-attributes-IJ4decoa.js';
 import { ToolbarConfig } from './toolbar.js';
@@ -3650,10 +3666,10 @@ import './anchor-name-BZ1rpxaw.js';
 import './css-values.js';
 import './surface-tint-DQgYCaP9.js';
 import './workbench.js';
-import './nav-stack-vQ3ieerq.js';
+import './nav-stack-DKrvqFjA.js';
 import './list.js';
 import './flex-alignment-4ms8ZbV8.js';
-import './panel-toolbar-vg6Ir5Dy.js';
+import './panel-toolbar-CEcHHDkn.js';
 import './lucide-icon.js';
 import 'lucide';
 import './toolbar-text.js';
@@ -3807,10 +3823,10 @@ import './anchor-name-BZ1rpxaw.js';
 import './css-values.js';
 import './surface-tint-DQgYCaP9.js';
 import './workbench.js';
-import './nav-stack-vQ3ieerq.js';
+import './nav-stack-DKrvqFjA.js';
 import './list.js';
 import './flex-alignment-4ms8ZbV8.js';
-import './panel-toolbar-vg6Ir5Dy.js';
+import './panel-toolbar-CEcHHDkn.js';
 import './lucide-icon.js';
 import 'lucide';
 import './toolbar-text.js';
@@ -3864,10 +3880,10 @@ import './anchor-name-BZ1rpxaw.js';
 import './css-values.js';
 import './surface-tint-DQgYCaP9.js';
 import './workbench.js';
-import './nav-stack-vQ3ieerq.js';
+import './nav-stack-DKrvqFjA.js';
 import './list.js';
 import './flex-alignment-4ms8ZbV8.js';
-import './panel-toolbar-vg6Ir5Dy.js';
+import './panel-toolbar-CEcHHDkn.js';
 import './lucide-icon.js';
 import 'lucide';
 import './toolbar-text.js';
@@ -5683,7 +5699,7 @@ import { SplitViewListWidth } from './split-view.js';
 import { n as DialogSurfaceSize, f as DialogSurfaceHeight, g as DialogSurfaceMaxHeight, l as DialogSurfaceRootAttributes } from './dialog-surface-controller-BeKZ3e8Z.js';
 export { D as DialogCloseSource, a as DialogRequestCloseDetail, o as closeDialog, p as openDialog } from './dialog-surface-controller-BeKZ3e8Z.js';
 import './extension-attributes-IJ4decoa.js';
-import './nav-stack-vQ3ieerq.js';
+import './nav-stack-DKrvqFjA.js';
 import './list.js';
 import './flex-alignment-4ms8ZbV8.js';
 import './scroll-clearance-BikHljTc.js';
@@ -5691,7 +5707,7 @@ import './sides-BPSWde0A.js';
 import './pane.js';
 import './anchor-name-BZ1rpxaw.js';
 import './surface-tint-DQgYCaP9.js';
-import './panel-toolbar-vg6Ir5Dy.js';
+import './panel-toolbar-CEcHHDkn.js';
 import './toolbar.js';
 import './lucide-icon.js';
 import 'lucide';
@@ -5818,7 +5834,7 @@ import { CssLength } from './css-values.js';
 import { WorkbenchMainBottomToolbar, WorkbenchPanel } from './workbench.js';
 import { n as DialogSurfaceSize, f as DialogSurfaceHeight, g as DialogSurfaceMaxHeight, l as DialogSurfaceRootAttributes } from './dialog-surface-controller-BeKZ3e8Z.js';
 export { D as DialogCloseSource, a as DialogRequestCloseDetail, o as closeDialog, p as openDialog } from './dialog-surface-controller-BeKZ3e8Z.js';
-import './nav-stack-vQ3ieerq.js';
+import './nav-stack-DKrvqFjA.js';
 import './list.js';
 import './extension-attributes-IJ4decoa.js';
 import './flex-alignment-4ms8ZbV8.js';
@@ -5827,7 +5843,7 @@ import './sides-BPSWde0A.js';
 import './pane.js';
 import './anchor-name-BZ1rpxaw.js';
 import './surface-tint-DQgYCaP9.js';
-import './panel-toolbar-vg6Ir5Dy.js';
+import './panel-toolbar-CEcHHDkn.js';
 import './toolbar.js';
 import './lucide-icon.js';
 import 'lucide';

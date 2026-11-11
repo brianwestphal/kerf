@@ -114,6 +114,14 @@ interface WorkbenchPanelBase {
    */
   responsiveOverlayAt?: WorkbenchResponsiveOverlayAt;
   /**
+   * Whether the panel presents as an overlay right now. Render the `overlay`
+   * signal `wireWorkbench` writes for the panel (`overlaid={overlay.value}`);
+   * while it is true and the panel is open, its toolbar toggle shows its
+   * `overlayLabel`. It changes nothing else: the presentation itself stays
+   * `presentation` and `responsiveOverlayAt`.
+   */
+  overlaid?: boolean;
+  /**
    * A rail's overlay width in a compact Workbench (default `inset`: the
    * Workbench less `--kui-workbench-overlay-dismiss-margin`, 44px). Ignored
    * by the drawer.

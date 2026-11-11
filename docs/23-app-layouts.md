@@ -577,7 +577,12 @@ anchor(--kui-restore-drawer top, <safe-area fallback>))` with
     the wiring collapses a panel when its `responsiveOverlayAt` breakpoint
     begins to apply (a panel with `keepFocusedOpen` that holds focus then
     stays open as the overlay instead, focus and all — KF-EGNN3J: the
-    editor's Inspector keeps the field being edited across a narrowing) — detected by the panel computing `position: absolute`
+    editor's Inspector keeps the field being edited across a narrowing; a
+    panel's optional `overlay` signal is kept equal to whether it presents as
+    an overlay, which the app renders as the panel's `overlaid` so its toggle
+    shows its `PanelToggle.overlayLabel` beside its icon while open as an
+    overlay — KF-9H30XE: the narrow editor Inspector's toggle reads
+    "Preview") — detected by the panel computing `position: absolute`
     while `data-presentation` stays `inline`, re-checked by a
     `ResizeObserver` on the Workbench plus a `MutationObserver` for a
     Workbench that renders later or a changed presentation (KF-CRRD70: the

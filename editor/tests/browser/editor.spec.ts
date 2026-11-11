@@ -2617,6 +2617,14 @@ test('keeps the Inspector’s editing context across a narrow round trip', async
         `[data-action="editor-select-node"][data-item-id="${COMPOSE}"]`,
       ),
     ).toHaveAttribute('aria-selected', 'true');
+    // KF-9H30XE: as an overlay the toggle names its return to the preview.
+    const toggle = page.locator(
+      '[data-workbench-rail="right"] [data-workbench-toggle]',
+    );
+    await expect(toggle).toHaveAccessibleName(
+      width === 390 ? 'Preview' : 'Hide Inspector',
+    );
+    await expect(toggle).toHaveText(width === 390 ? 'Preview' : '');
     if (width === 390)
       await page.screenshot({
         path: info.outputPath('kf-egnn3j-narrow-editing-390.png'),

@@ -104,6 +104,8 @@ export interface WorkbenchToolbarPanel {
   pane?: PaneConfig;
   content?: KerfUiContent;
   collapsed?: boolean;
+  /** Whether the panel presents as an overlay right now. */
+  overlaid?: boolean;
   /** The corner a collapsed panel's restore controls float in. */
   restorePosition?: FloatingToolbarPosition;
 }
@@ -187,6 +189,7 @@ export function panelBody(
             Boolean(panel.collapsed),
             toggleAttributes(workbenchId, key),
             groupSizeFor(stack.toolbarConfig?.density ?? toolbar.density),
+            Boolean(panel.overlaid),
           )
         : undefined,
     });
@@ -197,6 +200,7 @@ export function panelBody(
     side: SIDES[key],
     collapsed: Boolean(panel.collapsed),
     attributes: toggleAttributes(workbenchId, key),
+    overlaid: Boolean(panel.overlaid),
     pane: panel.pane,
     header: panel.header,
     headerList: panel.headerList,

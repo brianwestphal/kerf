@@ -71,6 +71,14 @@ export interface PanelToggle {
   showLabel?: string;
   /** Accessible label while the panel is open. Defaults to `Hide {name}`. */
   hideLabel?: string;
+  /**
+   * Visible text the toggle shows beside its icon while the panel is open
+   * and presents as an overlay ("Preview"), naming where closing it returns.
+   * It is then also the toggle's accessible name. Inline, or without it, the
+   * toggle stays icon-only. A Workbench panel learns its presentation from
+   * the `overlay` signal `wireWorkbench` writes (the panel's `overlaid`).
+   */
+  overlayLabel?: string;
 }
 
 /**
@@ -140,20 +148,27 @@ export function groupSizeFor(
   return density === 'compact' ? 'compact' : 'default';
 }
 
-/** The standard toggle, alone in a borderless group. */
+/**
+ * The standard toggle, alone in a borderless group. While the panel is open
+ * and `overlaid`, a toggle with an `overlayLabel` shows that text beside its
+ * icon; otherwise it is icon-only.
+ */
 export function panelToggleGroup(
   side: PanelSide,
   toggle: PanelToggle,
   collapsed: boolean,
   attributes: PanelToggleAttributes,
   size: ToolbarControlGroupSize = 'default',
+  overlaid = false,
 ): SafeHtml {
   const glyph = collapsiblePanelToggleIcon(side, collapsed);
+  const text = !collapsed && overlaid ? toggle.overlayLabel : undefined;
   return (
     <ToolbarControlGroup
       label={toggle.name}
       appearance="borderless"
       size={size}
+      content={text ? 'mixed' : 'icon'}
       single
     >
       <button
@@ -162,12 +177,15 @@ export function panelToggleGroup(
         data-action={toggle.action}
         aria-expanded={String(!collapsed)}
         aria-label={
-          collapsed
-            ? (toggle.showLabel ?? `Show ${toggle.name}`)
-            : (toggle.hideLabel ?? `Hide ${toggle.name}`)
+          text
+            ? undefined
+            : collapsed
+              ? (toggle.showLabel ?? `Show ${toggle.name}`)
+              : (toggle.hideLabel ?? `Hide ${toggle.name}`)
         }
       >
         <LucideIcon icon={glyph.icon} name={glyph.name} />
+        {text ? <span>{text}</span> : null}
       </button>
     </ToolbarControlGroup>
   );
@@ -181,6 +199,7 @@ export function composedPanelToolbar(
   side: PanelSide,
   collapsed: boolean,
   attributes: PanelToggleAttributes,
+  overlaid = false,
 ): SafeHtml {
   return (
     <Toolbar
@@ -208,6 +227,7 @@ export function composedPanelToolbar(
                 collapsed,
                 attributes,
                 groupSizeFor(toolbar.density),
+                overlaid,
               )
             : null}
         </>
@@ -226,6 +246,7 @@ export function composedPanelBody({
   side,
   collapsed,
   attributes,
+  overlaid = false,
   pane,
   header,
   headerList,
@@ -240,6 +261,8 @@ export function composedPanelBody({
   side: PanelSide;
   collapsed: boolean;
   attributes: PanelToggleAttributes;
+  /** Whether the panel presents as an overlay (see `PanelToggle.overlayLabel`). */
+  overlaid?: boolean;
   pane: PaneConfig | undefined;
   header?: KerfUiContent;
   headerList?: ListConfig;
@@ -252,7 +275,7 @@ export function composedPanelBody({
 }): SafeHtml {
   const panelHeader = (
     <>
-      {composedPanelToolbar(toolbar, side, collapsed, attributes)}
+      {composedPanelToolbar(toolbar, side, collapsed, attributes, overlaid)}
       {header ? panelChromeList(header, headerList) : null}
     </>
   );

@@ -160,6 +160,82 @@ describe('Workbench panel toolbars', () => {
     ]);
   });
 
+  it('shows an overlay label beside the toggle icon only while the open panel is overlaid', () => {
+    // KF-9H30XE: an overlay's toggle names where closing it returns.
+    const toggle = {
+      action: 'toggle-inspector',
+      name: 'Inspector',
+      overlayLabel: 'Preview',
+    };
+    const staticPanel = (collapsed: boolean, overlaid?: boolean) =>
+      rail('inspector', collapsed, {
+        overlaid,
+        toolbar: { ...rail('inspector', collapsed).toolbar!, toggle },
+      });
+    const stackPanel = (collapsed: boolean, overlaid?: boolean) => ({
+      label: 'Inspector',
+      collapsed,
+      overlaid,
+      toolbar: { label: 'Inspector', toggle },
+      navStack: {
+        id: 'inspector-nav',
+        label: 'Inspector Navigation',
+        views: [
+          {
+            key: 'root',
+            toolbar: { title: 'Inspector' },
+            content: raw('<p>Fields</p>'),
+          },
+        ],
+      },
+    });
+    const button = (rightRail: WorkbenchPanel, place = 'panel') => {
+      const host = render({
+        id: 'wb',
+        label: 'Studio',
+        main: raw('<p>main</p>'),
+        mainToolbar: { label: 'Editor', title: title('Editor') },
+        rightRail,
+      });
+      const scope =
+        place === 'panel'
+          ? host.querySelector('[data-workbench-rail="right"]')!
+          : mainToolbar(host)!;
+      const element = scope.querySelector('[data-workbench-toggle]')!;
+      return {
+        name: element.getAttribute('aria-label'),
+        text: element.textContent,
+        content: element
+          .closest('.kui-toolbar-control-group')!
+          .getAttribute('data-content'),
+        icon: element.querySelector('svg')!.getAttribute('data-lucide'),
+      };
+    };
+    for (const make of [staticPanel, stackPanel]) {
+      // Overlaid and open: icon plus visible text, which names the button.
+      expect(button(make(false, true))).toEqual({
+        name: null,
+        text: 'Preview',
+        content: 'mixed',
+        icon: 'panel-right-close',
+      });
+      // Inline: the icon-only toggle at its usual geometry.
+      expect(button(make(false))).toEqual({
+        name: 'Hide Inspector',
+        text: '',
+        content: 'icon',
+        icon: 'panel-right-close',
+      });
+      // Collapsed, in the work area's toolbar: icon-only, even overlaid.
+      expect(button(make(true, true), 'main')).toEqual({
+        name: 'Show Inspector',
+        text: '',
+        content: 'icon',
+        icon: 'panel-right-open',
+      });
+    }
+  });
+
   it('composes an open panel toolbar: title and unmarked groups lead; marked groups and the toggle trail', () => {
     const host = render({
       id: 'wb',

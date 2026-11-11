@@ -28835,6 +28835,12 @@
           "required": false,
           "default": "Hide {name}",
           "description": "Accessible label while the panel is open. Defaults to `Hide {name}`."
+        },
+        {
+          "name": "overlayLabel",
+          "type": { "kind": "string", "text": "string", "nullable": true },
+          "required": false,
+          "description": "Visible text the toggle shows beside its icon while the panel is open\nand presents as an overlay (\"Preview\"), naming where closing it returns.\nIt is then also the toggle's accessible name. Inline, or without it, the\ntoggle stays icon-only. A Workbench panel learns its presentation from\nthe `overlay` signal `wireWorkbench` writes (the panel's `overlaid`)."
         }
       ],
       "text": "PanelToggle"
@@ -31596,6 +31602,16 @@
           "description": "Present the panel as an overlay, without a separator, below a Workbench\ncontainer breakpoint, and inline above it. `compact` and `narrow` use\nCSS container queries; a positive number is a pixel threshold measured\nby `wireWorkbench` and requires a `collapsed` signal. A rail overlays from its side at full\nheight, over the work area and an open drawer; the bottom drawer\noverlays the bottom of the work-area column. Rails default to `narrow`\n(pass `never` to keep one inline); the drawer defaults to inline."
         },
         {
+          "name": "overlaid",
+          "type": {
+            "kind": "boolean",
+            "text": "boolean | undefined",
+            "nullable": true
+          },
+          "required": false,
+          "description": "Whether the panel presents as an overlay right now. Render the `overlay`\nsignal `wireWorkbench` writes for the panel (`overlaid={overlay.value}`);\nwhile it is true and the panel is open, its toolbar toggle shows its\n`overlayLabel`. It changes nothing else: the presentation itself stays\n`presentation` and `responsiveOverlayAt`."
+        },
+        {
           "name": "compactOverlay",
           "type": {
             "kind": "enum",
@@ -31803,6 +31819,16 @@
           },
           "required": false,
           "description": "Present the panel as an overlay, without a separator, below a Workbench\ncontainer breakpoint, and inline above it. `compact` and `narrow` use\nCSS container queries; a positive number is a pixel threshold measured\nby `wireWorkbench` and requires a `collapsed` signal. A rail overlays from its side at full\nheight, over the work area and an open drawer; the bottom drawer\noverlays the bottom of the work-area column. Rails default to `narrow`\n(pass `never` to keep one inline); the drawer defaults to inline."
+        },
+        {
+          "name": "overlaid",
+          "type": {
+            "kind": "boolean",
+            "text": "boolean | undefined",
+            "nullable": true
+          },
+          "required": false,
+          "description": "Whether the panel presents as an overlay right now. Render the `overlay`\nsignal `wireWorkbench` writes for the panel (`overlaid={overlay.value}`);\nwhile it is true and the panel is open, its toolbar toggle shows its\n`overlayLabel`. It changes nothing else: the presentation itself stays\n`presentation` and `responsiveOverlayAt`."
         },
         {
           "name": "compactOverlay",

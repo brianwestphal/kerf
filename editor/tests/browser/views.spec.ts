@@ -508,10 +508,8 @@ for (const width of [1440, 390]) {
     });
     await open.click();
     if (narrow) {
-      await page
-        .getByRole('button', { name: 'Hide Inspector' })
-        .first()
-        .click();
+      // As an overlay, the Inspector's toggle names its return.
+      await page.getByRole('button', { name: 'Preview' }).first().click();
       // The drawer has slid out once no transition is running.
       await expect(
         page.locator('.kui-workbench__rail--right[data-collapsed="true"]'),

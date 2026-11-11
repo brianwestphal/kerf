@@ -343,9 +343,11 @@ before, but it is wired with `keepFocusedOpen`. A window that narrows while
 the author is working in the Inspector keeps it open as the overlay instead
 of collapsing it. The open page, the draft typed in a field, focus, the
 selection, and the page's scroll all survive 1440 → 960 → 390 → 1440, and
-the same group names and order show at every width. Its toggle (Hide
-Inspector), Escape, or a press on the preview beside it returns to the
-preview.
+the same group names and order show at every width. Its toggle, Escape, or
+a press on the preview beside it returns to the preview. While the
+Inspector is an open overlay its toggle shows "Preview" beside its icon,
+named by that text (KF-9H30XE: a clearly named return to preview); inline
+it stays the icon-only Hide Inspector.
 
 Binding and promotion sit with the field they change (KF-FN28S3: contextual
 binding). Each Properties page ends with **Bindings**, a row per field on

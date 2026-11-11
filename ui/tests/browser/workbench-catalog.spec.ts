@@ -1144,6 +1144,77 @@ test.describe('resizable Workbench panels', () => {
     );
   });
 
+  test('an open overlay rail names its return beside the toggle icon; inline it is icon-only', async ({
+    page,
+  }, testInfo) => {
+    // KF-9H30XE: the Inspector's toggle reads "Editor" while it is an open
+    // overlay, through a wide → narrow → wide round trip.
+    const workbench = page.locator('#catalog-workbench-resizable');
+    const right = workbench.locator('[data-workbench-rail="right"]');
+    const toolbar = workbench.locator('.kui-workbench__main');
+    await workbench.scrollIntoViewIfNeeded();
+    await toolbar.getByRole('button', { name: 'Show Inspector' }).click();
+    const inline = right.getByRole('button', { name: 'Hide Inspector' });
+    await expect(inline).toHaveText('');
+    await expect(
+      inline.locator('xpath=ancestor::*[@data-content][1]'),
+    ).toHaveAttribute('data-content', 'icon');
+
+    await page.setViewportSize({ width: 390, height: 844 });
+    await expect(right).toHaveAttribute('data-collapsed', 'true');
+    await toolbar.getByRole('button', { name: 'Show Inspector' }).click();
+    await expect(right).toHaveAttribute('data-collapsed', 'false');
+    const overlay = right.getByRole('button', { name: 'Editor' });
+    await expect(overlay).toBeVisible();
+    await expect(overlay).toHaveAttribute('aria-expanded', 'true');
+    await expect(
+      overlay.locator('xpath=ancestor::*[@data-content][1]'),
+    ).toHaveAttribute('data-content', 'mixed');
+    // Icon and text sit on one row, inside the rail's toolbar, once the
+    // rail's slide settles.
+    const geometry = () =>
+      overlay.evaluate((button) => {
+        const box = button.getBoundingClientRect();
+        const icon = button.querySelector('svg')!.getBoundingClientRect();
+        const text = button.querySelector('span')!.getBoundingClientRect();
+        const rail = button
+          .closest('[data-workbench-rail]')!
+          .getBoundingClientRect();
+        return {
+          oneRow:
+            Math.abs(
+              icon.top + icon.height / 2 - (text.top + text.height / 2),
+            ) <= 2,
+          textAfterIcon: text.left >= icon.right,
+          inside: box.left >= rail.left && box.right <= rail.right + 0.5,
+          unclipped: button.scrollWidth <= button.clientWidth + 1,
+        };
+      });
+    await expect.poll(geometry).toEqual({
+      oneRow: true,
+      textAfterIcon: true,
+      inside: true,
+      unclipped: true,
+    });
+    if (testInfo.project.name === 'chromium')
+      await workbench.screenshot({
+        path: testInfo.outputPath('kf-9h30xe-workbench-overlay-label-390.png'),
+      });
+    // It is still the one collapse control.
+    await overlay.click();
+    await expect(right).toHaveAttribute('data-collapsed', 'true');
+
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await expect(right).toHaveAttribute('data-collapsed', 'false');
+    await expect(
+      right.getByRole('button', { name: 'Hide Inspector' }),
+    ).toHaveText('');
+    if (testInfo.project.name === 'chromium')
+      await workbench.screenshot({
+        path: testInfo.outputPath('kf-9h30xe-workbench-inline-1440.png'),
+      });
+  });
+
   test('opening one overlay rail closes the other, so neither hides its controls', async ({
     page,
   }, testInfo) => {
@@ -1167,7 +1238,7 @@ test.describe('resizable Workbench panels', () => {
     await page.keyboard.press('Enter');
     await expect(right).toHaveAttribute('data-collapsed', 'false');
     await expect(left).toHaveAttribute('data-collapsed', 'true');
-    const close = right.getByRole('button', { name: 'Hide Inspector' });
+    const close = right.getByRole('button', { name: 'Editor' });
     await expect(close).toBeInViewport();
     if (testInfo.project.name === 'chromium')
       await workbench.screenshot({
@@ -1227,7 +1298,7 @@ test.describe('resizable Workbench panels', () => {
         .locator('.kui-workbench__main')
         .locator('[data-workbench-toggle="right"]'),
     ).toHaveCount(0);
-    const close = right.getByRole('button', { name: 'Hide Inspector' });
+    const close = right.getByRole('button', { name: 'Editor' });
     await expect(close).toBeInViewport();
     if (testInfo.project.name === 'chromium')
       await workbench.screenshot({

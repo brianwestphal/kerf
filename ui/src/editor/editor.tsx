@@ -933,6 +933,8 @@ export function createEditor(options: EditorOptions) {
   const inspectorSize = signal(300);
   const documentCollapsed = signal(false);
   const inspectorCollapsed = signal(false);
+  // Whether the Inspector presents as an overlay; wireWorkbench writes it.
+  const inspectorOverlay = signal(false);
 
   /** Outline nodes the author closed; everything else starts open. */
   const collapsed = signal<ReadonlySet<string>>(new Set());
@@ -2432,9 +2434,15 @@ export function createEditor(options: EditorOptions) {
                 size: inspectorSize.value,
                 resizable: { min: 240, max: 480 },
                 collapsed: inspectorCollapsed.value,
+                overlaid: inspectorOverlay.value,
                 toolbar: {
                   label: 'Inspector',
-                  toggle: { action: INSPECTOR_TOGGLE, name: 'Inspector' },
+                  // KF-9H30XE: as an overlay, the toggle names its return.
+                  toggle: {
+                    action: INSPECTOR_TOGGLE,
+                    name: 'Inspector',
+                    overlayLabel: 'Preview',
+                  },
                 },
                 // KF-Z9S029: an object's form pushes onto the Inspector.
                 navStack: {
@@ -4587,6 +4595,7 @@ export function createEditor(options: EditorOptions) {
           rightRail: {
             size: inspectorSize,
             collapsed: inspectorCollapsed,
+            overlay: inspectorOverlay,
             keepFocusedOpen: true,
           },
         },

@@ -59,6 +59,14 @@ export interface WireWorkbenchPanel {
    * editing. An inspector or form panel opts in; a navigator usually does not.
    */
   keepFocusedOpen?: boolean;
+  /**
+   * An app-owned signal `wireWorkbench` keeps equal to whether the panel
+   * presents as an overlay right now, whether through `presentation:
+   * "overlay"` or its `responsiveOverlayAt` breakpoint. Render it as the
+   * panel's `overlaid`, so the panel's toggle can show its `overlayLabel`.
+   * Written only with `collapsed` and `dismissOverlays`.
+   */
+  overlay?: Signal<boolean>;
 }
 
 /** A resize the user made, after `wireWorkbench` wrote it to the size signal. */
@@ -299,6 +307,7 @@ export function wireWorkbench(
             collapsed,
             keepOpenOn: panels[key]?.keepOpenOn,
             keepFocusedOpen: panels[key]?.keepFocusedOpen,
+            overlay: panels[key]?.overlay,
           },
         ]
       : [];

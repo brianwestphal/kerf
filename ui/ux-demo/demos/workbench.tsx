@@ -40,6 +40,11 @@ export const workbenchConsoleSize = signal(160);
 export const workbenchNavigatorCollapsed = signal(false);
 export const workbenchInspectorCollapsed = signal(true);
 export const workbenchConsoleCollapsed = signal(true);
+/**
+ * Whether the resizable example's Inspector presents as an overlay;
+ * `wireWorkbench` writes it, and its toggle then shows "Editor" beside its icon.
+ */
+export const workbenchInspectorOverlay = signal(false);
 
 /** The controlled example's id, which `wireWorkbench` targets. */
 export const COLLAPSED_WORKBENCH_ID = 'catalog-workbench-collapsed';
@@ -369,6 +374,7 @@ export function WorkbenchDemo() {
               toggle: {
                 action: 'toggle-workbench-inspector',
                 name: 'Inspector',
+                overlayLabel: 'Editor',
               },
             },
             header: (
@@ -396,6 +402,7 @@ export function WorkbenchDemo() {
               </List>
             ),
             collapsed: workbenchInspectorCollapsed.value,
+            overlaid: workbenchInspectorOverlay.value,
             size: workbenchInspectorSize.value,
             resizable: { min: 160, max: 360 },
           }}
