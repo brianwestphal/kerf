@@ -577,11 +577,13 @@ export type ChoiceSpec = {
  */
 export async function openConfigure(
   page: Page,
-  name: string,
+  name: string | RegExp,
   scope: Pick<Page, 'getByRole'> = page,
+  // The prop, when the button's label is not its name.
+  prop?: string,
 ) {
   // KF-QWDPM3: a prop's Configure row is on its group's Properties page.
-  if (scope === page) await showConfigure(page, name);
+  if (scope === page) await showConfigure(page, name, prop);
   const backs = page
     .getByRole('button', { name: 'Back', exact: true })
     .filter({ visible: true });
@@ -1796,7 +1798,14 @@ export async function panel(
 /** Opens a Workbench prop's form from its row (`Configure left rail`). */
 export async function configure(page: Page, prop: string) {
   const words = prop.replace(/[A-Z]/g, (letter) => ` ${letter.toLowerCase()}`);
-  await openConfigure(page, `Configure ${words}`);
+  // KF-FPSWVF: under a Main task a field drops the task's name (`toolbar`);
+  // a component without that task keeps it.
+  await openConfigure(
+    page,
+    new RegExp(`^Configure ${words.replace(/^main /, '(main )?')}$`),
+    page,
+    prop,
+  );
 }
 
 /**

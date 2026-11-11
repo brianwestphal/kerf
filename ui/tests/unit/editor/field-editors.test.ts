@@ -333,7 +333,9 @@ describe('object forms in the Inspector (KF-Z9S029)', () => {
       root,
       `[data-editor-open='{"prop":"mainFooterList","path":[]}']`,
     );
-    expect(row.textContent).toContain('Main footer list');
+    // KF-FPSWVF: on the Main page it drops the task's own name.
+    expect(row.textContent).toContain('Footer list');
+    expect(row.textContent).not.toContain('Main footer list');
     expect(row.textContent).toContain('Not set');
     expect(
       root.querySelector('[data-editor-prop="mainFooterList"]'),

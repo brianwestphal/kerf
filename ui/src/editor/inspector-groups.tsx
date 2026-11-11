@@ -66,6 +66,26 @@ export interface PropertiesPage {
 const problemCount = (count: number) =>
   count === 0 ? undefined : `${count} ${count === 1 ? 'problem' : 'problems'}`;
 
+/**
+ * KF-FPSWVF: fields shown under their task's heading or page title drop the
+ * task's name from their labels ("Main toolbar" reads "Toolbar" on Main).
+ * A label that is only the task's name keeps it; summaries, Bindings rows
+ * and search still use the full label.
+ */
+function inTask(
+  props: readonly InspectorProp[],
+  task: string | undefined,
+): readonly InspectorProp[] {
+  if (task === undefined) return props;
+  const prefix = `${task.toLowerCase()} `;
+  return props.map((prop) => {
+    const label = fieldLabel(prop);
+    if (!label.toLowerCase().startsWith(prefix)) return prop;
+    const rest = label.slice(prefix.length);
+    return { ...prop, label: rest[0]!.toUpperCase() + rest.slice(1) };
+  });
+}
+
 /** A row that opens the page at `path`, summarizing `props`. */
 function groupRow(
   state: PropertiesState,
@@ -187,7 +207,7 @@ function groupPage(state: PropertiesState, group: PropGroup): SafeHtml {
                   }}
                 />,
                 ...state.fieldsOf(
-                  subgroup.props,
+                  inTask(subgroup.props, subgroup.title),
                   `${state.title} ${group.title} ${subgroup.title}`,
                 ),
               ],
@@ -271,7 +291,7 @@ function allPropertiesPage(
               size="xs"
             />,
             ...state.fieldsOf(
-              subgroup.props,
+              inTask(subgroup.props, subgroup.title),
               `${state.title} ${group.title} ${subgroup.title ?? ''}`.trim(),
             ),
           ]),
@@ -322,7 +342,7 @@ export function propertiesPages(
             rootAttributes={{ 'data-editor-properties-page': at.join('/') }}
           >
             {state.fieldsOf(
-              subgroup.props,
+              inTask(subgroup.props, subgroup.title),
               `${state.title} ${group.title} ${subgroup.title}`,
             )}
             {bindSection(state, at, subgroup.props)}

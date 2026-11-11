@@ -373,7 +373,12 @@ count (All properties says how many fields there are) (KF-HP1J4Z: selection
 identity). The overlay's optional `label` gives a prop a task-facing name the
 Inspector shows in its field, its group's summary, its Bindings row, and its
 Bind page: Button's `children` reads **Button text**, so it no longer shares a
-name with the Children area. All properties still finds it by its API name.
+name with the Children area. All properties still finds it by its API name. Under a task's heading, or on its page, a field drops the
+task's own name from its label (KF-FPSWVF): Workbench's Main page reads
+Toolbar, Header and Footer list rather than Main toolbar and so on, and
+Button's Badge heading holds Max, Label and Tone. A field named only for its
+task keeps the name (Left rail, Badge type). Its group's summary, its
+Bindings row, its Bind page and All properties search keep the full label.
 
 A component's own class list (`className`, or `class`) is a **Classes** text
 field in the **Integration** family (KF-X8X8VX: editable classes; it was a

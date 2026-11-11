@@ -1414,10 +1414,8 @@ for (const width of [1440, 900]) {
   }, info) => {
     await page.setViewportSize({ width, height: 900 });
     await workbenchRoot(page);
-    await showConfigure(page, 'Configure main footer list');
-    await page
-      .getByRole('button', { name: 'Configure main footer list' })
-      .click();
+    await showConfigure(page, 'Configure footer list', 'mainFooterList');
+    await page.getByRole('button', { name: 'Configure footer list' }).click();
     const stack = page.locator('#editor-inspector-stack');
     await expect(stack.getByText('Main footer list').first()).toBeVisible();
     const align = page.locator(
@@ -1434,7 +1432,7 @@ for (const width of [1440, 900]) {
     });
     await stack.getByRole('button', { name: 'Back' }).click();
     await expect(
-      page.getByRole('button', { name: 'Configure main footer list' }),
+      page.getByRole('button', { name: 'Configure footer list' }),
     ).toContainText('1 field set');
   });
 }
@@ -1444,8 +1442,8 @@ test('edits a Workbench mainPane of more than 10 fields in a dialog', async ({
 }, info) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await workbenchRoot(page);
-  await showConfigure(page, 'Configure main pane');
-  await page.getByRole('button', { name: 'Configure main pane' }).click();
+  await showConfigure(page, 'Configure pane', 'mainPane');
+  await page.getByRole('button', { name: 'Configure pane' }).click();
   const dialog = page.locator('#editor-field-dialog');
   await expect(dialog).toBeVisible();
   const dividers = dialog.locator(
@@ -1474,7 +1472,7 @@ test('edits a Workbench mainPane of more than 10 fields in a dialog', async ({
   await dialog.getByRole('button', { name: 'Done' }).click();
   await expect(dialog).toBeHidden();
   await expect(
-    page.getByRole('button', { name: 'Configure main pane' }),
+    page.getByRole('button', { name: 'Configure pane' }),
   ).toContainText('1 field set');
 });
 
@@ -1827,8 +1825,8 @@ test('composes a Workbench’s left rail and toolbar title from nodes', async ({
     .locator('[data-editor-prop="leftRail"][data-editor-kind="choice"]')
     .click();
   await page.getByRole('option', { name: 'Static panel…' }).click();
-  await showConfigure(page, 'Configure main toolbar');
-  await page.getByRole('button', { name: 'Configure main toolbar' }).click();
+  await showConfigure(page, 'Configure toolbar', 'mainToolbar');
+  await page.getByRole('button', { name: 'Configure toolbar' }).click();
   const label = page
     .locator(`[data-editor-field='{"prop":"mainToolbar","path":["label"]}']`)
     .getByRole('textbox');

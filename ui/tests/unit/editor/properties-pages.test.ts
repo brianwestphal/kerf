@@ -441,3 +441,32 @@ describe('selection identity and labels (KF-HP1J4Z)', () => {
     ).toBe('children');
   });
 });
+
+describe('fields under their task (KF-FPSWVF)', () => {
+  it('drop the task’s name from their labels where its heading shows', () => {
+    const { root } = open();
+    row(root, 'Content').click();
+    const page = root.querySelector<HTMLElement>(
+      '[data-editor-properties-page="Content"]',
+    )!;
+    // Under the Badge heading: Max, Label, and Tone, not Badge max…
+    const max = page.querySelector('[data-editor-prop="badgeMax"]')!;
+    expect(max.textContent).toContain('Max');
+    expect(max.textContent).not.toContain('Badge max');
+    // …while its Bindings row, named outside the heading, keeps it.
+    expect(
+      page.querySelector('[data-editor-bind-row="badgeMax"]')!.textContent,
+    ).toContain('Badge max');
+    // A field named only for its task keeps that name.
+    expect(page.textContent).toContain('Badge type');
+    // Search still finds it by its full label.
+    back(root);
+    row(root, 'All properties').click();
+    search(root, 'badge max');
+    expect(
+      root.querySelector<HTMLElement>(
+        '[data-editor-properties-page="All properties"] [data-editor-prop]',
+      )?.dataset.editorProp,
+    ).toBe('badgeMax');
+  });
+});

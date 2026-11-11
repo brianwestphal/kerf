@@ -212,13 +212,23 @@ export const showParam = (page: Page, param: string) =>
   reveal(page, page.locator(`[data-editor-param="${param}"]`));
 
 /** Shows a prop's Configure row by its button label (`Configure tabs`). */
-export async function showConfigure(page: Page, label: string) {
-  const words = label.replace(/^Configure /, '').split(' ');
-  const hint = words
-    .map((word, index) =>
-      index ? word[0]!.toUpperCase() + word.slice(1) : word,
-    )
-    .join('');
+export async function showConfigure(
+  page: Page,
+  label: string | RegExp,
+  // The prop, when its label is not its name (KF-FPSWVF: "Configure
+  // toolbar" on Main is `mainToolbar`).
+  prop?: string,
+) {
+  const words = String(label)
+    .replace(/^Configure /, '')
+    .split(' ');
+  const hint =
+    prop ??
+    words
+      .map((word, index) =>
+        index ? word[0]!.toUpperCase() + word.slice(1) : word,
+      )
+      .join('');
   await reveal(page, page.getByRole('button', { name: label }), hint);
 }
 
