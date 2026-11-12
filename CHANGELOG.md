@@ -8,6 +8,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Fixed
 
+- **The Kerf UI editor's parameter dialog reopens when a row is chosen while it closes (KF-8SPEG7).** The new choice was lost when the exit motion ended.
 - **Kerf UI relocated toolbar groups keep keyboard focus when the relocated set changes (KF-KHTDC2).** A labeled `ToolbarControlGroup` with `relocateOnCollapse` now renders a stable `data-key` from its `label`; a `data-key` in `rootAttributes` overrides it. When groups join or leave the set a collapsed panel relocates, a focused control in an unchanged group keeps its DOM node and focus instead of dropping to `<body>`.
 
 - **Homepage size claims (KF-60YNT1).** The homepage advertises the measured ~15 KB core bundle, and all four claims now participate in the existing bundle-size gate.
