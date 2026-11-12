@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 164600,
-  "totalJavaScriptGzip": 469800,
-  "measuredLargestJavaScriptGzip": 164545,
-  "measuredTotalJavaScriptGzip": 469746,
+  "totalJavaScriptGzip": 469900,
+  "measuredLargestJavaScriptGzip": 164546,
+  "measuredTotalJavaScriptGzip": 469876,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -7267,6 +7267,22 @@
         "measuredTotalJavaScriptGzip": 469746,
         "largestJavaScriptGzip": 164600,
         "totalJavaScriptGzip": 469800
+      }
+    },
+    {
+      "at": "2026-11-12T00:40:00.189Z",
+      "reason": "show the Workbench Inspector toggle's overlay label (KF-9H30XE)",
+      "old": {
+        "measuredLargestJavaScriptGzip": 164545,
+        "measuredTotalJavaScriptGzip": 469746,
+        "largestJavaScriptGzip": 164600,
+        "totalJavaScriptGzip": 469800
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 164546,
+        "measuredTotalJavaScriptGzip": 469876,
+        "largestJavaScriptGzip": 164600,
+        "totalJavaScriptGzip": 469900
       }
     }
   ]
