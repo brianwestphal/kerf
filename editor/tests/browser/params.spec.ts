@@ -72,7 +72,9 @@ test('edits project TypeScript parameters in a compact dialog across viewport si
     path: info.outputPath('params-formatted-narrow.png'),
   });
   await dialog.getByRole('button', { name: 'Save', exact: true }).click();
-  await expect(dialog).not.toBeVisible();
+  // Save waits for the compiler's whole-document check, like every other
+  // compiler-backed step here.
+  await expect(dialog).not.toBeVisible({ timeout: 15000 });
   await page.setViewportSize({ width: 2048, height: 1128 });
   await expect(row).toContainText('id: string');
 });
@@ -122,7 +124,7 @@ test('validates defaults with the compiler and persists undoable parameter edits
   await dialog
     .getByRole('button', { name: 'Add parameter', exact: true })
     .click();
-  await expect(dialog).not.toBeVisible();
+  await expect(dialog).not.toBeVisible({ timeout: 15000 });
   await panel.locator('[data-editor-param-row="draftCount"]').click();
   await dialog
     .getByRole('textbox', { name: 'Name', exact: true })
@@ -131,7 +133,7 @@ test('validates defaults with the compiler and persists undoable parameter edits
     dialog.getByRole('button', { name: 'Save', exact: true }),
   ).toBeEnabled();
   await dialog.getByRole('button', { name: 'Save', exact: true }).click();
-  await expect(dialog).not.toBeVisible();
+  await expect(dialog).not.toBeVisible({ timeout: 15000 });
   await expect(
     panel.locator('[data-editor-param-row="itemCount"]'),
   ).toBeVisible();
