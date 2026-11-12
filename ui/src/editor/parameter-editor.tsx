@@ -255,7 +255,10 @@ export function createParameterEditor(options: ParameterEditorOptions) {
     const dialog = root!.querySelector<HTMLDialogElement>(
       `#${PARAMETER_DIALOG}`,
     )!;
-    if (!dialog.open) openDialog(dialog);
+    // KF-8SPEG7: openDialog also cancels an exit motion still under way, so a
+    // row chosen while the dialog closes reopens it instead of being lost
+    // when the native close event clears the new draft.
+    openDialog(dialog);
   };
   const close = () => {
     const dialog = root?.querySelector<HTMLDialogElement>(

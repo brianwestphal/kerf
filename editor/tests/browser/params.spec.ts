@@ -54,8 +54,11 @@ test('edits project TypeScript parameters in a compact dialog across viewport si
     'Member 1',
   );
   await page.screenshot({ path: info.outputPath('params-navstack-wide.png') });
+  // Choose the row again at once: a row chosen while the dialog is still
+  // closing reopens it (KF-8SPEG7).
   await dialog.getByRole('button', { name: 'Close parameter' }).click();
   await row.click();
+  await expect(dialog).toBeVisible();
   await type.fill('MissingProjectType');
   await expect(dialog).toContainText('Cannot find name', { timeout: 15000 });
   await expect(

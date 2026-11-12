@@ -150,6 +150,24 @@ describe('compact parameter dialog', () => {
     expect(f.dialog.querySelector('[data-nav-stack-id]')).not.toBeNull();
     expect(f.dialog.textContent).not.toContain('Item fields');
   });
+  it('reopens on a row chosen while the dialog is still closing (KF-8SPEG7)', async () => {
+    const f = setup();
+    await f.open('title');
+    // A real exit motion, so the native close waits for it.
+    f.dialog.style.animationName = 'kui-test-motion';
+    f.dialog.style.animationDuration = '200ms';
+    f.dialog
+      .querySelector<HTMLElement>('[aria-label="Close parameter"]')!
+      .click();
+    // The exit motion is under way: the native dialog is still open.
+    expect(f.dialog.open).toBe(true);
+    await f.open('showEmpty');
+    // Past the exit motion's end, the reopened dialog and its draft remain.
+    await new Promise((resolve) => globalThis.setTimeout(resolve, 400));
+    expect(f.dialog.open).toBe(true);
+    expect(f.field('name').value).toBe('showEmpty');
+  });
+
   it('creates a typed parameter/default in one document edit', async () => {
     const f = setup();
     await f.open();
