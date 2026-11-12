@@ -70,6 +70,10 @@ That mode writes `demo-bundle-budget.json`, records the previous and new exact
 measurements and budgets with the reason and timestamp, and rounds the total
 budget to the next 100 bytes. Gzip output depends on the zlib bundled with
 Node, so reviewed baselines are recorded on the repository's pinned Node major
-(`.nvmrc`, also CI's version): an update on another major is refused, and a
-plain check on one prints a warning. Do not edit the budget or add a history comment
-by hand.
+(`.nvmrc`, also CI's version). On another major, the check and an update
+measure the bundle under the pinned major through `npx node@<major>`, which
+prefers the npx cache, so a local pass matches CI. If that Node cannot run
+(offline before its first fetch), an update is refused. A plain check then
+warns, and it fails when a size lies within the zlib drift (1.5 kB) of its
+budget, where CI might measure it over. Do not edit the budget or add a
+history comment by hand.

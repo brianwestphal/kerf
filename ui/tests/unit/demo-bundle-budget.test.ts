@@ -1,10 +1,14 @@
+// @vitest-environment node
 import { describe, expect, it } from 'vitest';
 
 import {
   gzipDelta,
+  measureOnPinnedNode,
   measuringNodeMismatch,
   roundedBudget,
   updateDemoBundleBudget,
+  ZLIB_DRIFT_BYTES,
+  zlibDriftRisk,
 } from '../../scripts/lib/demo-bundle-budget.mjs';
 
 const budget = {
@@ -80,5 +84,60 @@ describe('demo bundle measuring Node', () => {
     expect(message).toContain('Node v26.7.0');
     expect(message).toContain('pinned Node 22 (.nvmrc)');
     expect(message).toContain('zlib');
+  });
+});
+
+// KF-J1Z4VA: off the pinned Node, the check measures under it, and fails a
+// size too close to call when it cannot.
+describe('demo bundle on the pinned Node', () => {
+  const reply =
+    (node: string, status = 0) =>
+    () => ({
+      status,
+      stdout: `npm notice\n${JSON.stringify({ node, measurement })}\n`,
+    });
+
+  it('measures under the pinned major through npx', () => {
+    const calls: string[][] = [];
+    const measured = measureOnPinnedNode('/assets', '22\n', (command, args) => {
+      calls.push([command, ...args]);
+      return reply('v22.23.4')();
+    });
+    expect(measured).toEqual(measurement);
+    expect(calls[0]!.slice(0, 4)).toEqual([
+      'npx',
+      '--yes',
+      '--prefer-offline',
+      'node@22',
+    ]);
+    expect(calls[0]!.at(-1)).toBe('/assets');
+  });
+
+  it('returns null when the pinned Node cannot run or is not what ran', () => {
+    expect(measureOnPinnedNode('/a', '22', reply('v22.1.0', 1))).toBeNull();
+    expect(measureOnPinnedNode('/a', '22', reply('v26.13.0'))).toBeNull();
+    expect(
+      measureOnPinnedNode('/a', '22', () => ({ status: 0, stdout: 'oops' })),
+    ).toBeNull();
+  });
+
+  it('fails a size within the zlib drift of either budget', () => {
+    const roomy = { ...budget, totalJavaScriptGzip: 300_000 };
+    expect(zlibDriftRisk(measurement, roomy, 'v26.13.0')).toBeNull();
+    const close = {
+      ...roomy,
+      totalJavaScriptGzip:
+        measurement.totalJavaScriptGzip + ZLIB_DRIFT_BYTES - 1,
+    };
+    expect(zlibDriftRisk(measurement, close, 'v26.13.0')).toMatch(
+      /total measures 277021 bytes gzip on Node v26\.13\.0/,
+    );
+    const largest = {
+      ...roomy,
+      largestJavaScriptGzip: measurement.largestJavaScriptGzip + 10,
+    };
+    expect(zlibDriftRisk(measurement, largest, 'v26.13.0')).toMatch(
+      /largest chunk/,
+    );
   });
 });

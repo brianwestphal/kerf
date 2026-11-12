@@ -32,3 +32,18 @@ export function measuringNodeMismatch(
   nodeVersion: string,
   pinnedVersion: string,
 ): string | null;
+export const ZLIB_DRIFT_BYTES: number;
+export function measureOnPinnedNode(
+  assetsDir: string,
+  pinnedVersion: string,
+  run?: (
+    command: string,
+    args: string[],
+    options: { encoding: 'utf8'; timeout: number },
+  ) => { status: number | null; stdout: string | Buffer },
+): DemoBundleMeasurement | null;
+export function zlibDriftRisk(
+  measurement: DemoBundleMeasurement,
+  budget: DemoBundleBudget,
+  nodeVersion: string,
+): string | null;

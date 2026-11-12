@@ -4,8 +4,10 @@ import { fileURLToPath } from 'node:url';
 import {
   gzipDelta,
   measureDemoBundle,
+  measureOnPinnedNode,
   measuringNodeMismatch,
   updateDemoBundleBudget,
+  zlibDriftRisk,
 } from './lib/demo-bundle-budget.mjs';
 
 const assetsDir = fileURLToPath(
@@ -58,14 +60,21 @@ for (const name of stylesheets) {
   }
 }
 
-const nodeMismatch = measuringNodeMismatch(
-  process.version,
-  await readFile(new URL('../../.nvmrc', import.meta.url), 'utf8'),
+const pinnedVersion = await readFile(
+  new URL('../../.nvmrc', import.meta.url),
+  'utf8',
 );
+let nodeMismatch = measuringNodeMismatch(process.version, pinnedVersion);
+// KF-J1Z4VA: gzip sizes differ across Node majors' zlib, and CI measures on
+// the pinned one. Off that major, measure under it when it can run, so a
+// local pass means a CI pass.
+let measurement = nodeMismatch
+  ? measureOnPinnedNode(assetsDir, pinnedVersion)
+  : undefined;
+if (measurement) nodeMismatch = null;
+measurement ??= await measureDemoBundle(assetsDir);
 if (nodeMismatch && updateBudget) throw new Error(nodeMismatch);
 if (nodeMismatch) console.warn(`Warning: ${nodeMismatch}`);
-
-const measurement = await measureDemoBundle(assetsDir);
 const delta = gzipDelta(measurement, limits);
 
 if (updateBudget) {
@@ -105,6 +114,13 @@ if (measurement.totalJavaScriptGzip > limits.totalJavaScriptGzip) {
     `UX demo JavaScript totals ${kb(measurement.totalJavaScriptGzip)} gzip; budget is ${kb(limits.totalJavaScriptGzip)}. If reviewed, run npm run check:change -- --update-bundle-budget --reason "why the growth is intentional".`,
   );
 }
+
+// Measured on another Node only: a size this close to a budget may be over
+// it on the pinned Node, so fail rather than pass what CI may reject.
+const driftRisk = nodeMismatch
+  ? zlibDriftRisk(measurement, limits, process.version)
+  : null;
+if (driftRisk) overBudget(driftRisk);
 
 if (json) console.log(JSON.stringify({ ...measurement, delta }));
 else
