@@ -58,6 +58,15 @@ export async function openLibrary(page: Page) {
   if (!(await library.evaluate((element) => element.matches(':popover-open'))))
     await page.locator('[data-editor-library-button]').click();
   await expect(library).toBeVisible();
+  // KF-TR23QS: let its opening motion finish, so geometry read next is where
+  // the Library rests (under load, a box read mid-animation sat 168px low).
+  await library.evaluate((element) =>
+    Promise.all(
+      element
+        .getAnimations({ subtree: true })
+        .map((animation) => animation.finished.catch(() => undefined)),
+    ),
+  );
 }
 
 /**
