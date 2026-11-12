@@ -17,7 +17,12 @@ async function openLibrary(page: Page): Promise<Locator> {
   await expect(
     page.getByRole('dialog', { name: 'Library', exact: true }),
   ).toBeVisible();
-  return page.locator('#catalog-library-popover');
+  // The surface opens centered and moves under its button on the next frame
+  // (data-placed). Measuring before then aims a drag at where the title was,
+  // which misses it and starts no drag (KF-ZS94HM).
+  const surface = page.locator('#catalog-library-popover');
+  await expect(surface).toHaveAttribute('data-placed', '');
+  return surface;
 }
 
 const box = async (locator: Locator) => (await locator.boundingBox())!;
@@ -164,9 +169,14 @@ test('reopens at the saved pinned placement', async ({ page }) => {
 
   await page.getByRole('button', { name: 'Reopen Saved', exact: true }).click();
   await expect.poll(() => isOpen(surface)).toBe(true);
-  const restored = await box(surface);
-  expect(restored.x).toBeCloseTo(saved.x, 0);
-  expect(restored.y).toBeCloseTo(saved.y, 0);
+  // Restored on the frame after it opens, like the first placement.
+  await expect(surface).toHaveAttribute('data-placed', '');
+  await expect
+    .poll(async () => {
+      const restored = await box(surface);
+      return [Math.round(restored.x), Math.round(restored.y)];
+    })
+    .toEqual([Math.round(saved.x), Math.round(saved.y)]);
   await expect(surface).toHaveAttribute('data-pinned', '');
 });
 
