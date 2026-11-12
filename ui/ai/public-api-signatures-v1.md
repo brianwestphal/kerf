@@ -7684,11 +7684,17 @@ export { CheckboxGroup, type CheckboxGroupChoice, type CheckboxGroupName, type C
 
 ```ts
 import * as kerfjs from 'kerfjs';
+import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
 
 /** `default` is a 20px circle beside 16px text; `compact` 18px and 14px. */
 type RadioGroupSize = 'default' | 'compact';
 /** `vertical` stacks the choices; `horizontal` lines them up and wraps. */
 type RadioGroupOrientation = 'vertical' | 'horizontal';
+/**
+ * `list` draws a circle beside each label; `tiles` draws each choice as a
+ * framed preview with its label underneath, in a wrapping grid (KF-C29WJ9).
+ */
+type RadioGroupPresentation = 'list' | 'tiles';
 /** Application `data-*` metadata; the RadioGroup's own markers stay protected. */
 type RadioGroupRootAttributes = Readonly<Record<`data-${string}`, string | undefined>>;
 interface RadioGroupChoice<Value extends string = string> {
@@ -7698,6 +7704,12 @@ interface RadioGroupChoice<Value extends string = string> {
     /** Supporting text under this choice's label, also its description. */
     hint?: string;
     disabled?: boolean;
+    /**
+     * Decorative artwork for a `tiles` choice (a small SVG or image of what
+     * choosing it looks like), framed above the label and hidden from
+     * assistive technology: the label names the choice. Ignored by `list`.
+     */
+    preview?: KerfUiContent;
 }
 /** A group is named by a visible `label` (its legend) or by `ariaLabel`. */
 type RadioGroupName = {
@@ -7718,7 +7730,10 @@ interface RadioGroupOptions<Value extends string = string> {
     /** A validation message: shown in the danger color and marking it invalid. */
     error?: string;
     size?: RadioGroupSize;
+    /** Ignored by `tiles`, whose grid always wraps. */
     orientation?: RadioGroupOrientation;
+    /** `list` (default) or `tiles`, for choices best told apart by a preview. */
+    presentation?: RadioGroupPresentation;
     /** Require a selection for native form validation. */
     required?: boolean;
     /** Disable the whole group. */
@@ -7741,10 +7756,12 @@ type RadioGroupProps<Value extends string = string> = RadioGroupName & RadioGrou
  * radios, each drawn as a Kerf circle beside its label, with the group label
  * above and hint and error text below. The browser owns the interaction: one
  * Tab stop, arrow keys move and select, and the checked value submits.
+ * `presentation="tiles"` draws each choice as a framed preview tile with a
+ * selected ring and check, for choices such as a color scheme.
  */
-declare function RadioGroup<Value extends string>({ label, ariaLabel, name, choices, value, hint, error, size, orientation, required, disabled, action, form, id, className, rootAttributes, slot, }: RadioGroupProps<Value>): kerfjs.SafeHtml;
+declare function RadioGroup<Value extends string>({ label, ariaLabel, name, choices, value, hint, error, size, orientation, presentation, required, disabled, action, form, id, className, rootAttributes, slot, }: RadioGroupProps<Value>): kerfjs.SafeHtml;
 
-export { RadioGroup, type RadioGroupChoice, type RadioGroupName, type RadioGroupOptions, type RadioGroupOrientation, type RadioGroupProps, type RadioGroupRootAttributes, type RadioGroupSize };
+export { RadioGroup, type RadioGroupChoice, type RadioGroupName, type RadioGroupOptions, type RadioGroupOrientation, type RadioGroupPresentation, type RadioGroupProps, type RadioGroupRootAttributes, type RadioGroupSize };
 ```
 
 ## `@kerfjs/ui/switch`

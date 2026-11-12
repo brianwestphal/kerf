@@ -189,4 +189,5 @@ export const checkboxGroupPlatforms = signal<
 export const radioDensity = signal<'compact' | 'balanced' | 'roomy'>(
   'balanced',
 );
+export const radioTheme = signal<'auto' | 'light' | 'dark'>('auto');
 export const switchLiveUpdates = signal(true);

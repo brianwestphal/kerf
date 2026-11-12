@@ -241,6 +241,7 @@ import {
   popupContextAnchor,
   popupSortChoice,
   radioDensity,
+  radioTheme,
   regionSize,
   reorderCommands,
   reorderFiles,
@@ -2471,6 +2472,8 @@ const stopChoiceChipsDemo = delegateActions(app, 'change', {
     const input = element as HTMLInputElement;
     if (input.name === 'layout-density')
       radioDensity.value = input.value as typeof radioDensity.value;
+    if (input.name === 'appearance-theme')
+      radioTheme.value = input.value as typeof radioTheme.value;
     actionLog.value = `Choice: ${input.value}`;
   },
   'switch-demo': (_event, element) => {

@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 164600,
-  "totalJavaScriptGzip": 470500,
+  "totalJavaScriptGzip": 471300,
   "measuredLargestJavaScriptGzip": 164546,
-  "measuredTotalJavaScriptGzip": 470435,
+  "measuredTotalJavaScriptGzip": 471218,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -7331,6 +7331,22 @@
         "measuredTotalJavaScriptGzip": 470435,
         "largestJavaScriptGzip": 164600,
         "totalJavaScriptGzip": 470500
+      }
+    },
+    {
+      "at": "2026-11-12T06:00:23.389Z",
+      "reason": "KF-C29WJ9: RadioGroup preview tiles plus the catalog Theme example",
+      "old": {
+        "measuredLargestJavaScriptGzip": 164546,
+        "measuredTotalJavaScriptGzip": 470435,
+        "largestJavaScriptGzip": 164600,
+        "totalJavaScriptGzip": 470500
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 164546,
+        "measuredTotalJavaScriptGzip": 471218,
+        "largestJavaScriptGzip": 164600,
+        "totalJavaScriptGzip": 471300
       }
     }
   ]

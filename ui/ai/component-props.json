@@ -10769,7 +10769,7 @@
       "source": "kerf",
       "import": "@kerfjs/ui/radio-group",
       "export": "RadioGroup",
-      "description": "One exclusive choice among a few visible options: a native fieldset of\nradios, each drawn as a Kerf circle beside its label, with the group label\nabove and hint and error text below. The browser owns the interaction: one\nTab stop, arrow keys move and select, and the checked value submits.",
+      "description": "One exclusive choice among a few visible options: a native fieldset of\nradios, each drawn as a Kerf circle beside its label, with the group label\nabove and hint and error text below. The browser owns the interaction: one\nTab stop, arrow keys move and select, and the checked value submits.\n`presentation=\"tiles\"` draws each choice as a framed preview tile with a\nselected ring and check, for choices such as a color scheme.",
       "typeParameters": [{ "name": "Value", "constraint": "string" }],
       "props": [
         {
@@ -10855,7 +10855,21 @@
             "nullable": true
           },
           "required": false,
+          "description": "Ignored by `tiles`, whose grid always wraps.",
           "group": "Layout"
+        },
+        {
+          "name": "presentation",
+          "type": {
+            "kind": "enum",
+            "values": ["list", "tiles"],
+            "text": "RadioGroupPresentation | undefined",
+            "nullable": true
+          },
+          "required": false,
+          "default": "list",
+          "description": "`list` (default) or `tiles`, for choices best told apart by a preview.",
+          "group": "Appearance"
         },
         {
           "name": "required",
@@ -31499,6 +31513,16 @@
             "nullable": true
           },
           "required": false
+        },
+        {
+          "name": "preview",
+          "type": {
+            "kind": "content",
+            "text": "KerfUiContent",
+            "nullable": true
+          },
+          "required": false,
+          "description": "Decorative artwork for a `tiles` choice (a small SVG or image of what\nchoosing it looks like), framed above the label and hidden from\nassistive technology: the label names the choice. Ignored by `list`."
         }
       ],
       "text": "RadioGroupChoice<Value>"

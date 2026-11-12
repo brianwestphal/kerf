@@ -234,6 +234,85 @@ describe('RadioGroup', () => {
     expect(radio.getAttribute('form')).toBe('settings');
     expect(radio.checked).toBe(false);
   });
+
+  it('draws preview tiles with the same native radios (KF-C29WJ9)', () => {
+    const root = render(
+      RadioGroup({
+        label: 'Theme',
+        name: 'theme',
+        presentation: 'tiles',
+        orientation: 'horizontal',
+        value: 'dark',
+        rootAttributes: { 'data-presentation': 'list' },
+        choices: [
+          {
+            value: 'light',
+            label: 'Light',
+            hint: 'Bright surfaces.',
+            preview: <svg data-art="light" />,
+          },
+          { value: 'dark', label: 'Dark', preview: <svg data-art="dark" /> },
+          { value: 'plain', label: 'Plain', disabled: true },
+        ],
+      }),
+    );
+    expect(root.dataset.presentation).toBe('tiles');
+    // The grid always wraps, so the orientation marker is not rendered.
+    expect(root.hasAttribute('data-orientation')).toBe(false);
+    const tiles = [...root.querySelectorAll('.kui-radio-group__tile')];
+    expect(tiles).toHaveLength(3);
+    expect(root.querySelector('.kui-radio-group__circle')).toBe(null);
+    const radios = [...root.querySelectorAll<HTMLInputElement>('input')];
+    expect(radios.map((radio) => [radio.value, radio.checked])).toEqual([
+      ['light', false],
+      ['dark', true],
+      ['plain', false],
+    ]);
+    expect(radios.every((radio) => radio.name === 'theme')).toBe(true);
+    expect(radios[2]!.disabled).toBe(true);
+    // The radio comes first, then the decorative frame with the artwork and
+    // the check, then the label (its name) and the hint (its description).
+    const [first] = tiles;
+    expect([...first!.children].map((child) => child.className)).toEqual([
+      'kui-radio-group__input',
+      'kui-radio-group__preview',
+      'kui-radio-group__choice-label',
+      'kui-radio-group__choice-hint',
+    ]);
+    const preview = first!.querySelector('.kui-radio-group__preview')!;
+    expect(preview.getAttribute('aria-hidden')).toBe('true');
+    expect(preview.querySelector('svg[data-art="light"]')).not.toBe(null);
+    expect(
+      preview.querySelector('.kui-radio-group__check [data-lucide="check"]'),
+    ).not.toBe(null);
+    expect(
+      first!.querySelector('.kui-radio-group__choice-label')!.textContent,
+    ).toBe('Light');
+    expect(radios[0]!.getAttribute('aria-description')).toBe(
+      'Bright surfaces.',
+    );
+    // A choice without artwork still draws its frame and check.
+    expect(
+      tiles[2]!.querySelector(
+        '.kui-radio-group__preview > svg:not([data-lucide])',
+      ),
+    ).toBe(null);
+    expect(tiles[2]!.querySelector('.kui-radio-group__check')).not.toBe(null);
+    expect(tiles[2]!.querySelector('.kui-radio-group__choice-hint')).toBe(null);
+  });
+
+  it('ignores a preview in the default list presentation', () => {
+    const root = render(
+      RadioGroup({
+        label: 'Theme',
+        name: 'theme',
+        choices: [{ value: 'light', label: 'Light', preview: <svg /> }],
+      }),
+    );
+    expect(root.hasAttribute('data-presentation')).toBe(false);
+    expect(root.querySelector('.kui-radio-group__preview')).toBe(null);
+    expect(root.querySelector('svg')).toBe(null);
+  });
 });
 
 describe('Switch', () => {

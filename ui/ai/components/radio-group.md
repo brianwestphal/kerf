@@ -4,19 +4,21 @@
 
 `@kerfjs/ui:radio-group` · Kerf UI · component · Controls
 
-A native fieldset of radios, each drawn as a Kerf circle beside its label, with the group label above, per-choice hints, and hint and error text below, stacked or wrapping.
+A native fieldset of radios, each drawn as a Kerf circle beside its label or, with presentation="tiles", as a framed preview tile with its label under it, with the group label above, per-choice hints, and hint and error text below, stacked or wrapping.
 
 ## When to use
 
 Choose exactly one of a few options that should stay visible with room for a label and hint each, with native keyboard behavior and form participation.
 
 - A form asks for one of two to about six options that people should compare at a glance, each with a readable label and an optional hint.
+- The options are best told apart by a picture of their result (a color scheme, a layout, a theme): use presentation="tiles" with a decorative preview per choice.
 
 **Not when:**
 
 - Do not use for many options or a compact toolbar value; use Select.
 - Do not use to switch a view; use SegmentedControl.
 - Do not use for chip-styled or color choices; use ChoiceChips.
+- Do not hand-build preview tiles from native radios and app CSS; use presentation="tiles".
 
 **Alternatives:**
 
@@ -46,6 +48,7 @@ Exact prop names and types: [`@kerfjs/ui/radio-group`](../public-api-signatures-
 - error
 - required
 - default or compact size
+- list or preview tiles: a framed decorative preview per choice above its label, a selected ring plus check, wrapping whole tiles
 
 ## Composition
 
@@ -69,6 +72,7 @@ Margin: none · border: none · padding: self (layout role: controls). `self` me
 
 - A native \<fieldset role="radiogroup"> named by its legend (label) or ariaLabel; each choice is a native radio inside its \<label>, invisibly over the drawn circle. The browser owns the interaction: one Tab stop, arrow keys move and select, and the checked radio submits its value under name.
 - The group's hint and error form its aria-description; an error sets aria-invalid on the group and the danger border on each circle. required sets each radio's native required and aria-required on the group. A choice's hint is that radio's aria-description.
+- With presentation="tiles" each choice's native radio covers its whole tile, so the semantics, Tab stop, and arrow keys are unchanged; the preview artwork is aria-hidden (the label names the choice), and the selection is a ring and a check mark, never color alone.
 
 The component renders controls inside it, so it cannot sit in the zones of a component whose root is a control or link. (`KUI-V014`)
 

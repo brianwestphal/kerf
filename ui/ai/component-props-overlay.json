@@ -2499,6 +2499,9 @@
         "orientation": {
           "group": "Layout"
         },
+        "presentation": {
+          "group": "Appearance"
+        },
         "required": {
           "group": "Behavior",
           "subgroup": "Validation"

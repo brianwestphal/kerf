@@ -891,7 +891,9 @@ headingLevel`, `SearchField clearIcon`, `ContentItem frame="framed"` for a
   `wireCheckboxes(root)` from `@kerfjs/ui/wire-checkboxes`),
   `@kerfjs/ui/checkbox-group` (`label`, `name`, `choices`, an array `value`;
   a labeled set laid out like RadioGroup), `@kerfjs/ui/radio-group` (`label`,
-  `name`, `choices`, `value`; one Tab stop, arrow keys), and
+  `name`, `choices`, `value`; one Tab stop, arrow keys;
+  `presentation="tiles"` with a decorative `preview` per choice draws framed
+  preview tiles, as for a Theme picker), and
   `@kerfjs/ui/switch` (`role="switch"`, only for a setting that applies
   immediately) draw Kerf boxes over native inputs with hint and error text.
   Stack standalone Checkboxes in a `List gap="xs"`: 8px apart, the same 28px

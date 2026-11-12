@@ -145,6 +145,102 @@
 .kui-radio-group__hint + .kui-radio-group__error {
   margin-block-start: 0;
 }
+/* Tiles (KF-C29WJ9): each choice is a framed preview above its label, in a
+   row that wraps whole tiles.
+   The native radio covers the whole tile, so a press anywhere on it selects
+   and the browser keeps one Tab stop with arrow-key selection. Selection is
+   a brand ring around the frame plus a check badge, never color alone. */
+.kui-radio-group[data-presentation="tiles"] .kui-radio-group__choices {
+  display: flex;
+  flex-flow: row wrap;
+  gap: var(--kui-space-m, remify(16px));
+}
+/* A definite tile width keeps the group's intrinsic width a row of whole
+   tiles, so it lines them up wherever it is shrink-wrapped and wraps them
+   when its container is narrower (three fit a phone-width column); the cap
+   keeps one tile inside a container narrower than a tile. */
+.kui-radio-group[data-presentation="tiles"] .kui-radio-group__choice {
+  width: remify(104px);
+  max-width: 100%;
+}
+.kui-radio-group__tile {
+  position: relative;
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: var(--kui-space-xs, remify(8px));
+  color: var(--kui-color-text);
+  cursor: pointer;
+}
+.kui-radio-group__tile > .kui-radio-group__input {
+  z-index: 1;
+}
+.kui-radio-group__preview {
+  position: relative;
+  display: block;
+  overflow: hidden;
+  box-sizing: border-box;
+  aspect-ratio: 4 / 3;
+  border: 1px solid var(--kui-color-neutral-border-normal);
+  border-radius: var(--kui-radius-m, remify(8px));
+  background-color: var(--kui-color-neutral-fill-quiet);
+}
+/* The app's decorative artwork fills the frame. */
+.kui-radio-group__preview > :is(svg, img, picture) {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.kui-radio-group__input:checked + .kui-radio-group__preview {
+  border-color: var(--kui-color-brand-fill-loud);
+  box-shadow: 0 0 0 1px var(--kui-color-brand-fill-loud);
+}
+.kui-radio-group__input:focus-visible + .kui-radio-group__preview {
+  outline: var(--kui-focus-ring);
+  outline-offset: 2px;
+}
+.kui-radio-group[data-invalid] .kui-radio-group__preview {
+  border-color: var(--kui-color-danger-border-loud);
+}
+.kui-radio-group__check {
+  position: absolute;
+  inset-block-start: remify(6px);
+  inset-inline-end: remify(6px);
+  display: none;
+  box-sizing: border-box;
+  width: remify(20px);
+  height: remify(20px);
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--kui-radius-circle, 50%);
+  background-color: var(--kui-color-brand-fill-loud);
+  color: var(--kui-color-brand-on-loud);
+}
+.kui-radio-group__check > [data-lucide] {
+  width: remify(14px);
+  height: remify(14px);
+  stroke-width: 3;
+}
+.kui-radio-group__input:checked
+  + .kui-radio-group__preview
+  > .kui-radio-group__check {
+  display: inline-flex;
+}
+.kui-radio-group__tile > .kui-radio-group__choice-label {
+  padding-block-start: 0;
+  text-align: center;
+}
+.kui-radio-group__tile > .kui-radio-group__choice-hint {
+  margin-block-start: calc(var(--kui-space-2xs) - var(--kui-space-xs));
+  padding-inline-start: 0;
+  text-align: center;
+}
+.kui-radio-group__choice:has(.kui-radio-group__input:disabled)
+  .kui-radio-group__tile {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
 @media (forced-colors: active) {
   .kui-radio-group__circle {
     border-color: CanvasText;
@@ -154,5 +250,16 @@
   }
   .kui-radio-group__input:checked + .kui-radio-group__circle::after {
     background-color: Highlight;
+  }
+  .kui-radio-group__preview {
+    border-color: CanvasText;
+  }
+  .kui-radio-group__input:checked + .kui-radio-group__preview {
+    border-color: Highlight;
+    box-shadow: 0 0 0 1px Highlight;
+  }
+  .kui-radio-group__check {
+    background-color: Highlight;
+    color: HighlightText;
   }
 }
