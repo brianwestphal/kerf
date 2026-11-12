@@ -418,9 +418,14 @@ slot without mixing authoring rules into the per-entry component catalog.
   disposer. Its optional `onFitChange(fit)` (KF-XFG3FZ: a public fit signal so
   apps stop measuring private TabBar parts) reports each bar's `TabBarFit`:
   `overflowing`, `stripWidth`, `tabsWidth`, `free = stripWidth − tabsWidth`
-  (negative by the overflow), `trailingWidth`, and `endWidth`. It fires once per
-  bar element the wiring first sees, then on the next animation frame after a
-  rounded value changes. The frame delay keeps a callback that re-renders the
+  (negative by the overflow), `trailingWidth`, `endWidth`, `barWidth` (the
+  bar's content width), and `endFree` (KF-3A0DBM: the room between the packed
+  leading/tabs/trailing zones and the `end` zone, or the bar's content edge
+  without one; under `trailingPlacement="adjacent"` the strip is only as wide
+  as its tabs, so this, not `free`, is the room an end action can grow into).
+  It fires once per bar element the wiring first sees, then on the next
+  animation frame after a rounded value changes, including when only the bar
+  itself resizes. The frame delay keeps a callback that re-renders the
   end zone out of ResizeObserver delivery. Intrinsic tabs ellipsize before the
   strip scrolls, so `free` reaches 0 before `overflowing`; under
   `allocation="fill"` it stays near 0. The UX catalog's Adaptive End Action

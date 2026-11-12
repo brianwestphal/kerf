@@ -1951,6 +1951,16 @@ interface TabBarFit {
     trailingWidth: number;
     /** Width of the `end` zone, 0 without one. */
     endWidth: number;
+    /** Inline room inside the bar's padding: what its zones share. */
+    barWidth: number;
+    /**
+     * Room the bar leaves unused between its packed zones (leading, tabs,
+     * trailing) and the `end` zone, or the bar's end edge without one. Under
+     * `trailingPlacement="adjacent"` the strip is only as wide as its tabs, so
+     * this is the room an `end` action can grow into; with the default
+     * placement the strip absorbs the room and this stays near 0.
+     */
+    endFree: number;
 }
 
 type TabReorderSource = 'pointer' | 'keyboard';

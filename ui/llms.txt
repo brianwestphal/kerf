@@ -704,7 +704,8 @@ headingLevel`, `SearchField clearIcon`, `ContentItem frame="framed"` for a
   (mark a preferred new-view target with `data-nav-focus`), `wireTabBars` the
   overflow autoscroll, drag preview,
   replacement focus after controlled automatic tab activation, and the
-  `onFitChange` tab-fit report (overflow and zone widths) an app reads instead of
+  `onFitChange` tab-fit report (overflow, zone widths, and the room beside an
+  adjacent strip) an app reads instead of
   measuring TabBar's parts,
   `wireResizableRegions` the live drag preview, `wireScrollDividers` the
   scroll-state attributes from which a `Pane` draws its chrome dividers and a

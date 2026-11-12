@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 164600,
-  "totalJavaScriptGzip": 469900,
-  "measuredLargestJavaScriptGzip": 164546,
-  "measuredTotalJavaScriptGzip": 469876,
+  "totalJavaScriptGzip": 470100,
+  "measuredLargestJavaScriptGzip": 164545,
+  "measuredTotalJavaScriptGzip": 470056,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -7283,6 +7283,22 @@
         "measuredTotalJavaScriptGzip": 469876,
         "largestJavaScriptGzip": 164600,
         "totalJavaScriptGzip": 469900
+      }
+    },
+    {
+      "at": "2026-11-12T05:34:30.507Z",
+      "reason": "KF-3A0DBM: TabBarFit reports barWidth and endFree and observes the bar",
+      "old": {
+        "measuredLargestJavaScriptGzip": 164546,
+        "measuredTotalJavaScriptGzip": 469876,
+        "largestJavaScriptGzip": 164600,
+        "totalJavaScriptGzip": 469900
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 164545,
+        "measuredTotalJavaScriptGzip": 470056,
+        "largestJavaScriptGzip": 164600,
+        "totalJavaScriptGzip": 470100
       }
     }
   ]

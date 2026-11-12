@@ -87,7 +87,7 @@ Margin: none · border: self · padding: self (layout role: navigation). `self` 
 
 - TabBar owns inline flex allocation: tabs shrink and scroll, an adjacent trailing action follows the tab strip, and the end action stays pinned at the far edge; leading, trailing, and end actions do not shrink.
 - In intrinsic allocation, tabs give up width by ellipsizing their names down to a minimum before the strip scrolls; do not cap or clip tab names in app CSS.
-- To adapt zone content to the room, read wireTabBars onFitChange (overflowing, free, tabsWidth, stripWidth, trailingWidth, endWidth); never measure .kui-tab-bar__\* parts in app code.
+- To adapt zone content to the room, read wireTabBars onFitChange (overflowing, free, tabsWidth, stripWidth, trailingWidth, endWidth, barWidth, endFree; with trailingPlacement="adjacent" the room an end action can grow into is endFree, not free); never measure .kui-tab-bar__\* parts in app code.
 
 ## Accessibility
 

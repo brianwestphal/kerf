@@ -75,10 +75,12 @@ function parts(root: HTMLElement) {
 
 /** Lay out tabs of `tabWidth` from x=10 in a strip whose client width is `stripWidth`. */
 function layout(root: HTMLElement, stripWidth: number, tabWidth: number) {
-  const { strip, tabs, end, trailing } = parts(root);
+  const { bar, strip, tabs, end, trailing } = parts(root);
   // The stylesheet's 1px strip padding, which comes out of the room for tabs.
   strip.style.padding = '1px';
   clientWidths.set(strip, stripWidth);
+  setBox(bar, 0, 440);
+  setBox(strip, 10, stripWidth);
   tabs.forEach((tab, index) => setBox(tab, 10 + index * tabWidth, tabWidth));
   if (end) setBox(end, 300, 120);
   if (trailing) setBox(trailing, 250, 44);
@@ -163,9 +165,12 @@ describe('wireTabBars onFitChange', () => {
         free: 198,
         trailingWidth: 0,
         endWidth: 120,
+        barWidth: 440,
+        endFree: 0,
       },
     ]);
-    const { strip, tabs, end } = parts(root);
+    const { bar, strip, tabs, end } = parts(root);
+    expect(observed).toContain(bar);
     expect(observed).toContain(strip);
     tabs.forEach((tab) => expect(observed).toContain(tab));
     expect(observed).toContain(end);
@@ -200,8 +205,108 @@ describe('wireTabBars onFitChange', () => {
       free: -52,
       trailingWidth: 44,
       endWidth: 120,
+      barWidth: 440,
+      endFree: 6,
     });
     stop();
+  });
+
+  /**
+   * KF-3A0DBM: an adjacent strip is only as wide as its tabs, at x=8..208 in
+   * a bar 0..`barRight` with 8px padding and gap, the trailing zone at
+   * 216..260 and the end zone pinned 120px wide at the far edge.
+   */
+  function adjacentLayout(root: HTMLElement, barRight: number, rtl = false) {
+    const { bar, strip, tabs, end, trailing } = parts(root);
+    bar.style.padding = '8px';
+    bar.style.columnGap = '8px';
+    if (rtl) bar.style.direction = 'rtl';
+    const at = (left: number, width: number) =>
+      rtl ? barRight - left - width : left;
+    clientWidths.set(strip, 200);
+    setBox(bar, 0, barRight);
+    setBox(strip, at(8, 200), 200);
+    tabs.forEach((tab, index) => setBox(tab, at(8 + index * 100, 100), 100));
+    if (trailing) setBox(trailing, at(216, 44), 44);
+    if (end) setBox(end, at(barRight - 128, 120), 120);
+  }
+
+  it('reports the room beside an adjacent strip and refits when only the bar grows (KF-3A0DBM)', () => {
+    const root = render({ trailing: true });
+    adjacentLayout(root, 600);
+    const onFitChange = vi.fn();
+    const stop = wireTabBars(root, { onReorder: () => {}, onFitChange });
+    runFrames();
+    expect(onFitChange.mock.lastCall![0]).toMatchObject({
+      free: 0,
+      barWidth: 584,
+      endFree: 204,
+    });
+
+    // The bar grows; no zone resizes, so only the bar's own entry reports.
+    const { bar } = parts(root);
+    adjacentLayout(root, 800);
+    resized!([{ target: bar }]);
+    runFrames();
+    expect(onFitChange).toHaveBeenCalledTimes(2);
+    expect(onFitChange.mock.lastCall![0]).toMatchObject({
+      free: 0,
+      barWidth: 784,
+      endFree: 404,
+    });
+    stop();
+  });
+
+  it('measures the room beside an adjacent strip in RTL and without an end zone (KF-3A0DBM)', () => {
+    const rtl = render({ trailing: true });
+    adjacentLayout(rtl, 600, true);
+    const without = render({ trailing: true, end: false });
+    adjacentLayout(without, 600);
+    const fits: TabBarFit[] = [];
+    const stops = [rtl, without].map((root) =>
+      wireTabBars(root, {
+        onReorder: () => {},
+        onFitChange: (fit) => fits.push(fit),
+      }),
+    );
+    runFrames();
+    expect(
+      fits.map(({ endWidth, endFree }) => ({ endWidth, endFree })),
+    ).toEqual([
+      { endWidth: 120, endFree: 204 },
+      // Up to the bar's padding edge: 592 - 260.
+      { endWidth: 0, endFree: 332 },
+    ]);
+    stops.forEach((stop) => stop());
+  });
+
+  it('measures from the content edge when no packed zone is rendered (KF-3A0DBM)', () => {
+    // Every tab hidden and no trailing zone: the strip collapses to nothing,
+    // so the room runs from the bar's start content edge.
+    const ltr = render();
+    const rtl = render({ end: false });
+    for (const [root, direction] of [
+      [ltr, 'ltr'],
+      [rtl, 'rtl'],
+    ] as const) {
+      const { bar, end } = parts(root);
+      bar.style.padding = '8px';
+      bar.style.columnGap = '8px';
+      bar.style.direction = direction;
+      setBox(bar, 0, 600);
+      if (end) setBox(end, 472, 120);
+    }
+    const fits: TabBarFit[] = [];
+    const stops = [ltr, rtl].map((root) =>
+      wireTabBars(root, {
+        onReorder: () => {},
+        onFitChange: (fit) => fits.push(fit),
+      }),
+    );
+    runFrames();
+    // 472 - 8 - 8, then the whole 584px content box.
+    expect(fits.map(({ endFree }) => endFree)).toEqual([456, 584]);
+    stops.forEach((stop) => stop());
   });
 
   it('does not report overflow for subpixel excess', () => {

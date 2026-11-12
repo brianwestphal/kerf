@@ -1293,12 +1293,15 @@ inside a bar, an inserted bar, a `dir` change above one), and one
 mutations do no style or layout reads (KF-8H2MH2).
 `ui/src/components/navigation/tab-bar/wiring/tab-bar-fit.ts` (internal,
 `trackTabBarFit`) backs `wireTabBars`' optional `onFitChange`. It observes each
-bar's strip, tabs, and trailing and end zones only when the option is passed,
+bar, its strip, tabs, and trailing and end zones only when the option is passed,
 measures on the next frame, and reports a `TabBarFit` per bar element when a
 rounded value changes (KF-XFG3FZ). `ui/tests/unit/wire-tab-bars-fit.test.ts`
 covers report, dedupe, mutation, re-render, dispose, and no-ResizeObserver
 paths. `ui/tests/browser/tab-bar-fit.spec.ts` drives the catalog's adaptive
-end-action example through narrow and wide viewports.
+end-action example through narrow and wide viewports;
+`ui/tests/browser/tab-bar-adjacent-fit.spec.ts` (fixture
+`fixtures/tab-bar-adjacent-fit.tsx`) checks `barWidth` and `endFree` against real
+adjacent-placement layout and a bar-only resize (KF-3A0DBM).
 KF-XJPZJ3's transition tests cover a dragged tab replaced during a render,
 `data-tab-bar-id` rename and re-entry, open Select and PopupMenu item removal,
 and editor undo sequences (`ui/tests/unit/editor/undo-sequences.test.ts`);
