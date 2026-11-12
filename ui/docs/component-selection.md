@@ -713,7 +713,8 @@ other controls; plan for it instead:
   beside the siblings.
 - If a useful search cannot fit beside the other controls, set those controls
   aside while it is open. Mark them `visibility="yield-to-expanded-sibling"`
-  (they leave a 480px-or-narrower toolbar while a sibling is expanded), or, in
+  (they leave a 480px-or-narrower toolbar while a group in any of its zones
+  is expanded, including one relocated from a collapsed panel), or, in
   a `responsive="trailing-priority"` Toolbar,
   `visibility="yield-to-priority-row"` (they leave exactly while the expanded
   control has its own row), or gather them behind a "…" `PopupMenu` overflow

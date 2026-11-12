@@ -17691,7 +17691,7 @@
             "nullable": true
           },
           "required": false,
-          "description": "Responsive visibility owned by the enclosing Toolbar container.\n`yield-to-priority-row` hides this trailing group exactly while its\nToolbar's `responsive=\"trailing-priority\"` row is active (an expanded\ntrailing sibling at the Toolbar's `responsiveAt` width), so the app never\nrestates that breakpoint with `hideBelow`.",
+          "description": "Responsive visibility owned by the enclosing Toolbar container.\n`yield-to-expanded-sibling` hides this group in a 480px-or-narrower\nToolbar while another group in any of its zones is expanded, including\na group relocated there from a collapsed panel.\n`yield-to-priority-row` hides this trailing group exactly while its\nToolbar's `responsive=\"trailing-priority\"` row is active (an expanded\ntrailing sibling at the Toolbar's `responsiveAt` width), so the app never\nrestates that breakpoint with `hideBelow`.",
           "group": "Layout",
           "subgroup": "Responsive",
           "order": 2

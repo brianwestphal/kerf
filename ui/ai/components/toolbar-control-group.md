@@ -59,7 +59,7 @@ Exact prop names and types: [`@kerfjs/ui/toolbar-control-group`](../public-api-s
 - standard, compact, or list-zero dropdown menu inset
 - visible, horizontally scrollable, or whole-action wrapping overflow
 - always visible or compact-only responsive visibility
-- yield to an expanded trailing sibling at 480px, or exactly while a trailing-priority Toolbar row is active (yield-to-priority-row)
+- yield to an expanded group in any zone of the same Toolbar at 480px (including a group relocated from a collapsed panel), or exactly while a trailing-priority Toolbar row is active (yield-to-priority-row)
 - relocate on panel collapse
 - avatar scrim
 - contained avatar background on a single group or selected multi-button highlight

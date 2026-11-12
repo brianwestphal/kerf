@@ -125,11 +125,18 @@
   }
 }
 
-/* An expanded trailing control owns the compact row when sibling groups opt
-   into yielding. Scoping to the trailing zone keeps independent center and
-   leading controls visible, and the siblings return when it closes. */
+/* An expanded control owns the compact row when groups opt into yielding.
+   An opted-in group yields to an expanded group in any zone of the same
+   Toolbar, so a group a collapsed Workbench panel relocated into the leading
+   zone gives way to the work area's expanded trailing search (KF-ZX9Q0X).
+   Groups that do not opt in stay visible, and the yielding groups return when
+   it closes. */
 @container kui-toolbar (max-width: remify(480px)) {
-  .kui-toolbar__trailing:has(> .kui-toolbar-control-group[data-expanded="true"])
+  .kui-toolbar:has(
+      > :is(.kui-toolbar__leading, .kui-toolbar__center, .kui-toolbar__trailing)
+        > .kui-toolbar-control-group[data-expanded="true"]
+    )
+    > :is(.kui-toolbar__leading, .kui-toolbar__center, .kui-toolbar__trailing)
     > .kui-toolbar-control-group[data-visibility="yield-to-expanded-sibling"]:not(
       [data-expanded="true"]
     ) {

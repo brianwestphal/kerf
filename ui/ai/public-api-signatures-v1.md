@@ -531,6 +531,9 @@ interface ToolbarControlGroupProps {
     expandedOverflow?: ToolbarControlGroupExpandedOverflow;
     /**
      * Responsive visibility owned by the enclosing Toolbar container.
+     * `yield-to-expanded-sibling` hides this group in a 480px-or-narrower
+     * Toolbar while another group in any of its zones is expanded, including
+     * a group relocated there from a collapsed panel.
      * `yield-to-priority-row` hides this trailing group exactly while its
      * Toolbar's `responsive="trailing-priority"` row is active (an expanded
      * trailing sibling at the Toolbar's `responsiveAt` width), so the app never
