@@ -614,6 +614,41 @@ const stop = wirePinnablePopover(document.getElementById('library')!, {
 });
 ```
 
+### Persistent floating panels
+
+A panel that an application control shows and hides — a feature detached from
+a sidebar into a floating window — takes two props:
+
+- `pinnable={false}` renders it always pinned, with no Pin toggle. It never
+  re-anchors below an opener or closes on a press outside, and
+  `pinPopover(surface, false)` does nothing. It still drags by its title,
+  moves with the arrow keys, resizes, and stays inside the viewport gutter, and
+  `onChange` still reports moves and resizes.
+- `closable={false}` omits the header Close button. The application hides it
+  (`hidePopover()`, or a `popoverTarget` toggle that it owns), and Escape no
+  longer closes it unless `wirePinnablePopover` is given `closeOnEscape: true`.
+  `closeOnEscape: false` likewise turns Escape off for a closable surface.
+
+`headerActions` stay in the header (a Reattach or Dock control), and the title
+stays the accessible move handle. Opened with nothing stored, a persistent
+panel appears centered; pass its stored `placement` to restore it.
+
+```tsx
+<PinnablePopoverSurface
+  id="announcer"
+  label="Announcer"
+  pinnable={false}
+  closable={false}
+  headerActions={
+    <ToolbarControlGroup appearance="borderless" single>
+      <ToolbarButton ariaLabel="Reattach" icon={<LucideIcon icon={PanelLeftClose} name="panel-left-close" size="m" />} action="reattach" />
+    </ToolbarControlGroup>
+  }
+>
+  {announcer}
+</PinnablePopoverSurface>;
+```
+
 The controller keeps its pinned state, placement, and the Pin toggle's
 `aria-pressed` across application re-renders. An application that closes the
 panel after a task (a drop from a library) checks `isPopoverPinned()` first.

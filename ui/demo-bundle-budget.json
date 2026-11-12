@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 164600,
-  "totalJavaScriptGzip": 470100,
-  "measuredLargestJavaScriptGzip": 164545,
-  "measuredTotalJavaScriptGzip": 470056,
+  "totalJavaScriptGzip": 470500,
+  "measuredLargestJavaScriptGzip": 164546,
+  "measuredTotalJavaScriptGzip": 470435,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -7299,6 +7299,38 @@
         "measuredTotalJavaScriptGzip": 470056,
         "largestJavaScriptGzip": 164600,
         "totalJavaScriptGzip": 470100
+      }
+    },
+    {
+      "at": "2026-11-12T05:43:12.361Z",
+      "reason": "KF-850ZRF: PinnablePopoverSurface persistent and non-closable modes plus the catalog example",
+      "old": {
+        "measuredLargestJavaScriptGzip": 164545,
+        "measuredTotalJavaScriptGzip": 470056,
+        "largestJavaScriptGzip": 164600,
+        "totalJavaScriptGzip": 470100
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 164545,
+        "measuredTotalJavaScriptGzip": 470431,
+        "largestJavaScriptGzip": 164600,
+        "totalJavaScriptGzip": 470500
+      }
+    },
+    {
+      "at": "2026-11-12T05:52:55.921Z",
+      "reason": "KF-850ZRF: PinnablePopoverSurface persistent and non-closable modes plus the catalog example",
+      "old": {
+        "measuredLargestJavaScriptGzip": 164545,
+        "measuredTotalJavaScriptGzip": 470431,
+        "largestJavaScriptGzip": 164600,
+        "totalJavaScriptGzip": 470500
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 164546,
+        "measuredTotalJavaScriptGzip": 470435,
+        "largestJavaScriptGzip": 164600,
+        "totalJavaScriptGzip": 470500
       }
     }
   ]

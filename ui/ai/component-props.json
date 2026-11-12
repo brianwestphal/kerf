@@ -14701,7 +14701,7 @@
       "source": "kerf",
       "import": "@kerfjs/ui/surface-scaffold",
       "export": "PinnablePopoverSurface",
-      "description": "A non-modal surface a person can pin and move. Transient by default: it\nopens below the control that opened it and closes on Escape or a press\noutside. Pinned (by its header Pin toggle or `pinPopover()`), it stays\nopen while the page is used, drags by its title, moves with the arrow\nkeys, resizes, and stays inside the viewport gutter. Open it with a\n`popoverTarget` control or `showPopover()`, and call `wirePinnablePopover()`\nonce for its placement, dismissal, and movement; the application stores\nwhat `onChange` reports. Use `PopoverDialogSurface` for a dialog that only\never light-dismisses.",
+      "description": "A non-modal surface a person can pin and move. Transient by default: it\nopens below the control that opened it and closes on Escape or a press\noutside. Pinned (by its header Pin toggle or `pinPopover()`), it stays\nopen while the page is used, drags by its title, moves with the arrow\nkeys, resizes, and stays inside the viewport gutter. Open it with a\n`popoverTarget` control or `showPopover()`, and call `wirePinnablePopover()`\nonce for its placement, dismissal, and movement; the application stores\nwhat `onChange` reports. `pinnable={false}` makes it a persistent floating\npanel and `closable={false}` leaves its visibility to an application\ncontrol. Use `PopoverDialogSurface` for a dialog that only ever\nlight-dismisses.",
       "props": [
         {
           "name": "id",
@@ -14744,7 +14744,7 @@
             "nullable": true
           },
           "required": false,
-          "description": "Controls before the Pin and Close buttons in the header.",
+          "description": "Controls before the Pin and Close buttons in the header (the only header\ncontrols when both are omitted).",
           "slot": true,
           "group": "Content"
         },
@@ -14900,11 +14900,33 @@
           "group": "Behavior"
         },
         {
+          "name": "pinnable",
+          "type": {
+            "kind": "boolean",
+            "text": "boolean | undefined",
+            "nullable": true
+          },
+          "required": false,
+          "description": "`false` makes it a persistent floating panel: always pinned, with no Pin\ntoggle, it never re-anchors or closes on a press outside (KF-850ZRF).\nIt still drags by its title, moves with the arrow keys, resizes, and\nstays inside the viewport gutter. Default `true`.",
+          "group": "Behavior"
+        },
+        {
+          "name": "closable",
+          "type": {
+            "kind": "boolean",
+            "text": "boolean | undefined",
+            "nullable": true
+          },
+          "required": false,
+          "description": "`false` omits the header Close button, for a surface whose visibility an\napplication control owns (it calls `hidePopover()` or toggles a\n`popoverTarget`). Escape then closes it only when `wirePinnablePopover`\nis given `closeOnEscape: true`. Default `true`.",
+          "group": "Behavior"
+        },
+        {
           "name": "pinLabel",
           "type": { "kind": "string", "text": "string", "nullable": true },
           "required": false,
           "default": "Pin",
-          "description": "The Pin toggle's accessible name (default `Pin`).",
+          "description": "The Pin toggle's accessible name (default `Pin`); unused when not pinnable.",
           "group": "Accessibility"
         },
         {

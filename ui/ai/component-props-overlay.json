@@ -3444,6 +3444,12 @@
         "resizeFromBottom": {
           "group": "Behavior"
         },
+        "pinnable": {
+          "group": "Behavior"
+        },
+        "closable": {
+          "group": "Behavior"
+        },
         "pinLabel": {
           "group": "Accessibility"
         },

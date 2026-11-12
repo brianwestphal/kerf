@@ -5557,7 +5557,10 @@ interface PinnablePopoverSurfaceProps {
     describedBy?: string;
     /** The body content, below the header. */
     children: KerfUiContent;
-    /** Controls before the Pin and Close buttons in the header. */
+    /**
+     * Controls before the Pin and Close buttons in the header (the only header
+     * controls when both are omitted).
+     */
     headerActions?: KerfUiContent;
     /**
      * `overlay` (default) is a native `popover="manual"` in the top layer that
@@ -5595,7 +5598,21 @@ interface PinnablePopoverSurfaceProps {
     bodyInset?: SurfaceInset;
     /** Add a bottom-edge handle that resizes by drag or arrow key without changing pin state. */
     resizeFromBottom?: boolean;
-    /** The Pin toggle's accessible name (default `Pin`). */
+    /**
+     * `false` makes it a persistent floating panel: always pinned, with no Pin
+     * toggle, it never re-anchors or closes on a press outside (KF-850ZRF).
+     * It still drags by its title, moves with the arrow keys, resizes, and
+     * stays inside the viewport gutter. Default `true`.
+     */
+    pinnable?: boolean;
+    /**
+     * `false` omits the header Close button, for a surface whose visibility an
+     * application control owns (it calls `hidePopover()` or toggles a
+     * `popoverTarget`). Escape then closes it only when `wirePinnablePopover`
+     * is given `closeOnEscape: true`. Default `true`.
+     */
+    closable?: boolean;
+    /** The Pin toggle's accessible name (default `Pin`); unused when not pinnable. */
     pinLabel?: string;
     /** The close button's accessible name (default `Close`). */
     closeLabel?: string;
@@ -5614,10 +5631,12 @@ interface PinnablePopoverSurfaceProps {
  * keys, resizes, and stays inside the viewport gutter. Open it with a
  * `popoverTarget` control or `showPopover()`, and call `wirePinnablePopover()`
  * once for its placement, dismissal, and movement; the application stores
- * what `onChange` reports. Use `PopoverDialogSurface` for a dialog that only
- * ever light-dismisses.
+ * what `onChange` reports. `pinnable={false}` makes it a persistent floating
+ * panel and `closable={false}` leaves its visibility to an application
+ * control. Use `PopoverDialogSurface` for a dialog that only ever
+ * light-dismisses.
  */
-declare function PinnablePopoverSurface({ id, label, describedBy, children, headerActions, presentation, pinned, size, preferredWidth, height, minHeight, maxHeight, viewportGutter, bodyLayout, bodyInset, resizeFromBottom, pinLabel, closeLabel, moveDescription, rootAttributes, className, slot, }: PinnablePopoverSurfaceProps): kerfjs.SafeHtml;
+declare function PinnablePopoverSurface({ id, label, describedBy, children, headerActions, presentation, pinned, size, preferredWidth, height, minHeight, maxHeight, viewportGutter, bodyLayout, bodyInset, resizeFromBottom, pinnable, closable, pinLabel, closeLabel, moveDescription, rootAttributes, className, slot, }: PinnablePopoverSurfaceProps): kerfjs.SafeHtml;
 
 type PopupSurfaceInset = 'none' | 'compact' | 'default' | /** @deprecated Use default. */ 'standard' | /** @deprecated Use none. */ 'list-zero';
 interface PopupSurfaceProps {
@@ -5659,7 +5678,10 @@ interface PinnablePopoverOptions {
      * surface. Without one, a transient surface opens centered.
      */
     anchor?: Element | (() => Element | null);
-    /** Start pinned, as the application last stored it. */
+    /**
+     * Start pinned, as the application last stored it. A persistent surface
+     * (`pinnable={false}`) is always pinned and ignores this.
+     */
     pinned?: boolean;
     /** Placement and size to restore; transient surfaces ignore x and y. */
     placement?: PinnablePopoverPlacement;
@@ -5667,6 +5689,12 @@ interface PinnablePopoverOptions {
     step?: number;
     /** A Shift+arrow move, in px (default 40). */
     largeStep?: number;
+    /**
+     * Whether Escape, with focus inside the pinned surface, closes it. Default:
+     * `true` unless the surface was rendered `closable={false}`, whose
+     * visibility belongs to an application control.
+     */
+    closeOnEscape?: boolean;
     /**
      * Called when the person (or `pinPopover`) pins, unpins, moves, or resizes
      * the surface. A clamp after a window resize is not reported: the surface
@@ -5680,7 +5708,8 @@ declare function isPopoverPinned(surface: HTMLElement): boolean;
  * Pin (or, with `false`, unpin) a wired PinnablePopoverSurface, as its
  * header Pin toggle does. Pinned, it no longer closes on a press outside
  * and keeps where it is; unpinned, it returns below its anchor. Reported
- * through `onChange`. Does nothing to a surface that is not wired.
+ * through `onChange`. Does nothing to a surface that is not wired, and a
+ * persistent (`pinnable={false}`) surface never unpins.
  */
 declare function pinPopover(surface: HTMLElement, pinned?: boolean): void;
 /**
@@ -5690,7 +5719,9 @@ declare function pinPopover(surface: HTMLElement, pinned?: boolean): void;
  * (Shift for `largeStep`) moving it, which pins it; resizing without changing
  * pin state; and a clamp inside the viewport gutter, kept after a window
  * resize. Pinned, it closes only by Escape (with focus inside it), its Close
- * button, or `hidePopover()`. The state survives application re-renders and
+ * button, or `hidePopover()`. A persistent surface (`pinnable={false}`) is
+ * always pinned; with `closable={false}` only the application closes it,
+ * unless `closeOnEscape` is set. The state survives application re-renders and
  * closing; `onChange` reports it for the application to store. An
  * `embedded` surface is left alone. Returns a disposer.
  */

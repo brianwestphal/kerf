@@ -1577,7 +1577,11 @@ Pinnable popover (KF-C57ZX0, a non-modal panel the person can pin and move):
 `ui/src/components/surfaces/surface-scaffold/internal/pinnable-popover-surface.tsx` renders a
 `popover="manual"` `role="dialog"` with a component-owned header (the title as
 a focusable move-handle button, `headerActions`, a Pin toggle with
-`aria-pressed`, Close). Its controller,
+`aria-pressed`, Close). `pinnable={false}` (rendered `data-persistent`) and
+`closable={false}` (`data-closable="false"`) drop the Pin toggle and Close for a
+persistent floating panel whose visibility an app control owns; the controller
+reads both from the markup, never unpins it, and leaves Escape to the app unless
+`closeOnEscape` is set (KF-850ZRF). Its controller,
 `ui/src/components/surfaces/surface-scaffold/wiring/wire-pinnable-popover.ts`
 (`wirePinnablePopover`, `pinPopover`, `isPopoverPinned`, exported from
 `@kerfjs/ui/surface-scaffold`), places a transient surface below its

@@ -43,6 +43,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Added
 
+- **Kerf UI `PinnablePopoverSurface` has a persistent, app-owned mode (KF-850ZRF).** `pinnable={false}` renders a floating panel that is always pinned: there's no Pin toggle, and it never re-anchors or closes on a press outside. It still drags by its title, moves with the arrow keys, resizes, stays inside the viewport, and reports moves and resizes through `onChange`. `closable={false}` omits the header Close button so an application control owns visibility; Escape then closes it only when `wirePinnablePopover` is given the new `closeOnEscape: true`. `headerActions` stay, so an app can offer a Reattach control. The UX catalog's surface-scaffold page has a **Persistent Floating Panel** example.
+
 - **Kerf UI `TabBarFit` reports the room beside an adjacent tab strip (KF-3A0DBM).** `wireTabBars`' `onFitChange` adds `barWidth` (the bar's content width) and `endFree` (the room between the leading, tab, and trailing zones and the `end` zone, or the bar's end edge without one). With `trailingPlacement="adjacent"` the strip is only as wide as its tabs, so `free` stays about 0; `endFree` is the room an `end` action can grow into. The wiring now also observes the bar itself, so a bar that grows without any zone resizing reports again.
 
 - **A ListHeader can start on the summary rows' leading edge (KF-J8GMA2).** `leadingEdge="summary-row"` makes a fill-width header span its container as `SummaryRow`s do and start its label (toggle or heading) on their leading-content edge, compacting with them at the same 384px width. Apps no longer mirror SummaryRow's internal inset and compaction width in their own CSS.

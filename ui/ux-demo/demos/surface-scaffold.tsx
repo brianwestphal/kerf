@@ -6,6 +6,7 @@ import { List } from '@kerfjs/ui/list';
 import { ListInsetControl } from '@kerfjs/ui/list-inset-control';
 import { ListInsetText } from '@kerfjs/ui/list-inset-text';
 import { ListItem } from '@kerfjs/ui/list-item';
+import { LucideIcon } from '@kerfjs/ui/lucide-icon';
 import { MessageComposer } from '@kerfjs/ui/message-composer';
 import { PopupMenu } from '@kerfjs/ui/popup-menu';
 import { Row } from '@kerfjs/ui/row';
@@ -31,6 +32,7 @@ import { ToolbarText } from '@kerfjs/ui/toolbar-text';
 import { signal } from 'kerfjs';
 import { delegate } from 'kerfjs';
 import { confirm, overlay } from 'kerfjs/overlay';
+import { PanelLeftClose } from 'lucide';
 
 const QUEUE = [
   'Morning Light',
@@ -128,8 +130,15 @@ export function restoreLibraryPopoverDemo(root: ParentNode = document): void {
   surface.showPopover();
 }
 
+/** The persistent floating panel example's id. */
+export const ANNOUNCER_POPOVER_ID = 'catalog-announcer-popover';
+
 export function wireDialogStackDemo(root: ParentNode): () => void {
   wireLibraryPopover(root);
+  const announcer = root.querySelector<HTMLElement>(`#${ANNOUNCER_POPOVER_ID}`);
+  const unwireAnnouncer = announcer
+    ? wirePinnablePopover(announcer)
+    : undefined;
   const onClose = (event: Event) => {
     const dialog = event.target;
     if (!(dialog instanceof HTMLDialogElement)) return;
@@ -142,6 +151,9 @@ export function wireDialogStackDemo(root: ParentNode): () => void {
     stop();
     unwireLibrary?.();
     unwireLibrary = undefined;
+    // A floating panel left open would outlive the page that showed it.
+    if (announcer?.matches(':popover-open')) announcer.hidePopover();
+    unwireAnnouncer?.();
     root.removeEventListener('kui-request-close', onClose);
   };
 }
@@ -854,6 +866,54 @@ export function SurfaceScaffoldDemo() {
         >
           <List>
             {LIBRARY_COMPONENTS.map((name) => (
+              <ListItem label={name} itemId={name} action="log-more" />
+            ))}
+          </List>
+        </PinnablePopoverSurface>
+      </CatalogExample>
+      <CatalogExample
+        label="Persistent Floating Panel"
+        note="pinnable={false} and closable={false} make a floating panel an app control shows and hides: no Pin toggle and no Close button, and a press outside leaves it open. It still drags by its title, moves with the arrow keys, resizes from its corner, and stays inside the viewport. Its only header control here docks it again."
+        align="inline-control"
+      >
+        <Toolbar
+          label="Persistent Floating Panel"
+          leading={
+            <ToolbarControlGroup single>
+              <ToolbarButton
+                popoverTarget={ANNOUNCER_POPOVER_ID}
+                ariaHasPopup="dialog"
+              >
+                Toggle Announcer
+              </ToolbarButton>
+            </ToolbarControlGroup>
+          }
+        />
+        <PinnablePopoverSurface
+          id={ANNOUNCER_POPOVER_ID}
+          label="Announcer"
+          size="small"
+          pinnable={false}
+          closable={false}
+          headerActions={
+            <ToolbarControlGroup appearance="borderless" single>
+              <ToolbarButton
+                ariaLabel="Dock Announcer"
+                icon={
+                  <LucideIcon
+                    icon={PanelLeftClose}
+                    name="panel-left-close"
+                    size="m"
+                  />
+                }
+                popoverTarget={ANNOUNCER_POPOVER_ID}
+                popoverTargetAction="hide"
+              />
+            </ToolbarControlGroup>
+          }
+        >
+          <List>
+            {QUEUE.slice(0, 4).map((name) => (
               <ListItem label={name} itemId={name} action="log-more" />
             ))}
           </List>

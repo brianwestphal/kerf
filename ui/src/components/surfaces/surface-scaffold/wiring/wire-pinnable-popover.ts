@@ -29,7 +29,10 @@ export interface PinnablePopoverOptions {
    * surface. Without one, a transient surface opens centered.
    */
   anchor?: Element | (() => Element | null);
-  /** Start pinned, as the application last stored it. */
+  /**
+   * Start pinned, as the application last stored it. A persistent surface
+   * (`pinnable={false}`) is always pinned and ignores this.
+   */
   pinned?: boolean;
   /** Placement and size to restore; transient surfaces ignore x and y. */
   placement?: PinnablePopoverPlacement;
@@ -37,6 +40,12 @@ export interface PinnablePopoverOptions {
   step?: number;
   /** A Shift+arrow move, in px (default 40). */
   largeStep?: number;
+  /**
+   * Whether Escape, with focus inside the pinned surface, closes it. Default:
+   * `true` unless the surface was rendered `closable={false}`, whose
+   * visibility belongs to an application control.
+   */
+  closeOnEscape?: boolean;
   /**
    * Called when the person (or `pinPopover`) pins, unpins, moves, or resizes
    * the surface. A clamp after a window resize is not reported: the surface
@@ -81,7 +90,8 @@ export function isPopoverPinned(surface: HTMLElement): boolean {
  * Pin (or, with `false`, unpin) a wired PinnablePopoverSurface, as its
  * header Pin toggle does. Pinned, it no longer closes on a press outside
  * and keeps where it is; unpinned, it returns below its anchor. Reported
- * through `onChange`. Does nothing to a surface that is not wired.
+ * through `onChange`. Does nothing to a surface that is not wired, and a
+ * persistent (`pinnable={false}`) surface never unpins.
  */
 export function pinPopover(surface: HTMLElement, pinned = true): void {
   controllers.get(surface)?.setPinned(pinned);
@@ -94,7 +104,9 @@ export function pinPopover(surface: HTMLElement, pinned = true): void {
  * (Shift for `largeStep`) moving it, which pins it; resizing without changing
  * pin state; and a clamp inside the viewport gutter, kept after a window
  * resize. Pinned, it closes only by Escape (with focus inside it), its Close
- * button, or `hidePopover()`. The state survives application re-renders and
+ * button, or `hidePopover()`. A persistent surface (`pinnable={false}`) is
+ * always pinned; with `closable={false}` only the application closes it,
+ * unless `closeOnEscape` is set. The state survives application re-renders and
  * closing; `onChange` reports it for the application to store. An
  * `embedded` surface is left alone. Returns a disposer.
  */
@@ -107,7 +119,12 @@ export function wirePinnablePopover(
   const view = doc.defaultView ?? globalThis;
   const step = options.step ?? 8;
   const largeStep = options.largeStep ?? 40;
-  let pinned = options.pinned ?? false;
+  // KF-850ZRF: a persistent surface is pinned for good, and one without a
+  // Close button leaves Escape to the application unless it opts in.
+  const persistent = surface.hasAttribute('data-persistent');
+  const closeOnEscape =
+    options.closeOnEscape ?? surface.dataset.closable !== 'false';
+  let pinned = persistent || (options.pinned ?? false);
   let requested: PinnablePopoverPlacement | null = options.placement ?? null;
   /** Inline styles the controller owns, restored after a re-render. */
   const owned = new Map<string, string>();
@@ -225,7 +242,7 @@ export function wirePinnablePopover(
   };
 
   const setPinned = (next: boolean) => {
-    if (next === pinned) return;
+    if (next === pinned || (persistent && !next)) return;
     pinned = next;
     if (pinned) {
       if (isOpen()) {
@@ -467,7 +484,8 @@ export function wirePinnablePopover(
   // An open light-dismiss popover or modal dialog takes Escape first.
   const onDocumentKeyDown = (event: KeyboardEvent) => {
     if (event.key !== 'Escape' || event.defaultPrevented || !isOpen()) return;
-    if (pinned && !surface.contains(doc.activeElement)) return;
+    if (pinned && (!closeOnEscape || !surface.contains(doc.activeElement)))
+      return;
     if (
       doc.querySelector(
         ':is([popover=""], [popover="auto"]):popover-open, dialog:modal',

@@ -37,7 +37,10 @@ export interface PinnablePopoverSurfaceProps {
   describedBy?: string;
   /** The body content, below the header. */
   children: KerfUiContent;
-  /** Controls before the Pin and Close buttons in the header. */
+  /**
+   * Controls before the Pin and Close buttons in the header (the only header
+   * controls when both are omitted).
+   */
   headerActions?: KerfUiContent;
   /**
    * `overlay` (default) is a native `popover="manual"` in the top layer that
@@ -75,7 +78,21 @@ export interface PinnablePopoverSurfaceProps {
   bodyInset?: SurfaceInset;
   /** Add a bottom-edge handle that resizes by drag or arrow key without changing pin state. */
   resizeFromBottom?: boolean;
-  /** The Pin toggle's accessible name (default `Pin`). */
+  /**
+   * `false` makes it a persistent floating panel: always pinned, with no Pin
+   * toggle, it never re-anchors or closes on a press outside (KF-850ZRF).
+   * It still drags by its title, moves with the arrow keys, resizes, and
+   * stays inside the viewport gutter. Default `true`.
+   */
+  pinnable?: boolean;
+  /**
+   * `false` omits the header Close button, for a surface whose visibility an
+   * application control owns (it calls `hidePopover()` or toggles a
+   * `popoverTarget`). Escape then closes it only when `wirePinnablePopover`
+   * is given `closeOnEscape: true`. Default `true`.
+   */
+  closable?: boolean;
+  /** The Pin toggle's accessible name (default `Pin`); unused when not pinnable. */
   pinLabel?: string;
   /** The close button's accessible name (default `Close`). */
   closeLabel?: string;
@@ -100,6 +117,8 @@ const PINNABLE_POPOVER_PROTECTED = new Set([
   'data-placed',
   'data-scrolled',
   'data-resize-from-bottom',
+  'data-persistent',
+  'data-closable',
 ]);
 
 const DEFAULT_MOVE_DESCRIPTION =
@@ -113,8 +132,10 @@ const DEFAULT_MOVE_DESCRIPTION =
  * keys, resizes, and stays inside the viewport gutter. Open it with a
  * `popoverTarget` control or `showPopover()`, and call `wirePinnablePopover()`
  * once for its placement, dismissal, and movement; the application stores
- * what `onChange` reports. Use `PopoverDialogSurface` for a dialog that only
- * ever light-dismisses.
+ * what `onChange` reports. `pinnable={false}` makes it a persistent floating
+ * panel and `closable={false}` leaves its visibility to an application
+ * control. Use `PopoverDialogSurface` for a dialog that only ever
+ * light-dismisses.
  */
 export function PinnablePopoverSurface({
   id,
@@ -133,6 +154,8 @@ export function PinnablePopoverSurface({
   bodyLayout = 'flow',
   bodyInset = 'default',
   resizeFromBottom = false,
+  pinnable = true,
+  closable = true,
   pinLabel = 'Pin',
   closeLabel = 'Close',
   moveDescription = DEFAULT_MOVE_DESCRIPTION,
@@ -160,6 +183,7 @@ export function PinnablePopoverSurface({
     .filter(Boolean)
     .join(';');
   const overlay = presentation === 'overlay';
+  const shownPinned = pinned || !pinnable;
   return (
     <section
       {...filterDataAttributes(rootAttributes, PINNABLE_POPOVER_PROTECTED)}
@@ -174,7 +198,9 @@ export function PinnablePopoverSurface({
       data-body-layout={bodyLayout === 'flow' ? undefined : bodyLayout}
       data-body-inset={bodyInset === 'compact' ? 'default' : bodyInset}
       data-resize-from-bottom={resizeFromBottom ? '' : undefined}
-      data-pinned={pinned ? '' : undefined}
+      data-pinned={shownPinned ? '' : undefined}
+      data-persistent={pinnable ? undefined : ''}
+      data-closable={closable ? undefined : 'false'}
       popover={overlay ? 'manual' : undefined}
       role="dialog"
       aria-labelledby={`${id}-title`}
@@ -197,24 +223,28 @@ export function PinnablePopoverSurface({
         </span>
         <div class="kui-pinnable-popover-surface__header-actions">
           {headerActions}
-          <button
-            type="button"
-            class="kui-pinnable-popover-surface__control"
-            aria-label={pinLabel}
-            aria-pressed={String(pinned)}
-            data-pinnable-popover-pin=""
-          >
-            <LucideIcon icon={Pin} name="pin" size="m" />
-          </button>
-          <button
-            type="button"
-            class="kui-pinnable-popover-surface__control"
-            aria-label={closeLabel}
-            popoverTarget={overlay ? id : undefined}
-            popoverTargetAction={overlay ? 'hide' : undefined}
-          >
-            <LucideIcon icon={X} name="x" size="l" />
-          </button>
+          {pinnable ? (
+            <button
+              type="button"
+              class="kui-pinnable-popover-surface__control"
+              aria-label={pinLabel}
+              aria-pressed={String(pinned)}
+              data-pinnable-popover-pin=""
+            >
+              <LucideIcon icon={Pin} name="pin" size="m" />
+            </button>
+          ) : undefined}
+          {closable ? (
+            <button
+              type="button"
+              class="kui-pinnable-popover-surface__control"
+              aria-label={closeLabel}
+              popoverTarget={overlay ? id : undefined}
+              popoverTargetAction={overlay ? 'hide' : undefined}
+            >
+              <LucideIcon icon={X} name="x" size="l" />
+            </button>
+          ) : undefined}
         </div>
       </header>
       <div class="kui-pinnable-popover-surface__body">{children}</div>

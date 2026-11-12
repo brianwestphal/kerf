@@ -220,3 +220,84 @@ test('fits a phone viewport', async ({ page }) => {
   expect(opened.x + opened.width).toBeLessThanOrEqual(390 - GUTTER + 1);
   expect(opened.y + opened.height).toBeLessThanOrEqual(844 - GUTTER + 1);
 });
+
+// KF-850ZRF: pinnable={false} closable={false} is a persistent floating panel
+// an app control shows and hides, with no Pin toggle and no Close button.
+test('a persistent floating panel has no Pin or Close and only its app control hides it', async ({
+  page,
+  browserName,
+}, testInfo) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto('/?component=surface-scaffold');
+  const toggle = page.getByRole('button', {
+    name: 'Toggle Announcer',
+    exact: true,
+  });
+  await toggle.scrollIntoViewIfNeeded();
+  await toggle.click();
+  const surface = page.locator('#catalog-announcer-popover');
+  await expect(
+    page.getByRole('dialog', { name: 'Announcer', exact: true }),
+  ).toBeVisible();
+  await expect(surface).toHaveAttribute('data-pinned', '');
+  await expect(surface).toHaveCSS('resize', 'both');
+  const header = surface.locator('.kui-pinnable-popover-surface__header');
+  await expect(header.getByRole('button')).toHaveText(['Announcer', '']);
+  await expect(
+    header.getByRole('button', { name: 'Dock Announcer', exact: true }),
+  ).toBeVisible();
+  await expect(
+    header.getByRole('button', { name: /^(Pin|Close)$/ }),
+  ).toHaveCount(0);
+  await surface.screenshot({
+    path: testInfo.outputPath(`persistent-panel-${browserName}.png`),
+  });
+
+  // A press outside leaves it open.
+  await page.mouse.click(1400, 880);
+  await expect.poll(() => isOpen(surface)).toBe(true);
+
+  // Drag by the title and move with the arrow keys; it stays pinned.
+  const handle = surface.locator('.kui-pinnable-popover-surface__handle');
+  const start = await box(surface);
+  const grip = await box(handle);
+  await page.mouse.move(grip.x + 20, grip.y + grip.height / 2);
+  await page.mouse.down();
+  await page.mouse.move(grip.x + 120, grip.y + grip.height / 2 + 60, {
+    steps: 6,
+  });
+  await page.mouse.up();
+  const moved = await box(surface);
+  expect(moved.x - start.x).toBeCloseTo(100, 0);
+  expect(moved.y - start.y).toBeCloseTo(60, 0);
+  await handle.focus();
+  await page.keyboard.press('ArrowRight');
+  expect((await box(surface)).x - moved.x).toBeCloseTo(8, 0);
+  // Escape inside it is the app's to handle: it stays open.
+  await page.keyboard.press('Escape');
+  await expect.poll(() => isOpen(surface)).toBe(true);
+  await expect(surface).toHaveAttribute('data-pinned', '');
+
+  // Clamped inside the viewport when the window shrinks.
+  await page.setViewportSize({ width: 600, height: 500 });
+  await expect
+    .poll(async () => {
+      const shrunk = await box(surface);
+      return (
+        shrunk.x >= GUTTER - 1 &&
+        shrunk.y >= GUTTER - 1 &&
+        shrunk.x + shrunk.width <= 600 - GUTTER + 1 &&
+        shrunk.y + shrunk.height <= 500 - GUTTER + 1
+      );
+    })
+    .toBe(true);
+  await page.setViewportSize({ width: 1440, height: 900 });
+
+  // Its header control and the app toggle hide it.
+  await header.getByRole('button', { name: 'Dock Announcer' }).click();
+  await expect.poll(() => isOpen(surface)).toBe(false);
+  await toggle.click();
+  await expect.poll(() => isOpen(surface)).toBe(true);
+  await toggle.click();
+  await expect.poll(() => isOpen(surface)).toBe(false);
+});

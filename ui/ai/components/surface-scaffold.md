@@ -15,7 +15,7 @@ Configure recurring dialog and popup geometry without consumer ::part() override
 - A modal needs a typed preferred width, viewport gutter, or dynamic viewport-bounded height cap while retaining native body scrolling and footer actions.
 - A dialog needs a less prominent built-in close control: closeEmphasis="quiet" softens the glyph while keeping the native button target and close behavior.
 - A dialog that must leave the page interactive and close on Escape or an outside press uses PopoverDialogSurface; one that fills its body with a SplitView or Pane uses height and bodyLayout="fill".
-- A non-modal panel the person may keep open while working (a component library, a palette, a quick inspector) uses PinnablePopoverSurface with wirePinnablePopover: it opens transient below its button and light-dismisses; pinned (its header Pin toggle or pinPopover()) it stays open, drags by its title, moves with the arrow keys, resizes, and stays inside the viewport gutter, and onChange reports the pinned state and placement for the app to store and restore.
+- A non-modal panel the person may keep open while working (a component library, a palette, a quick inspector) uses PinnablePopoverSurface with wirePinnablePopover: it opens transient below its button and light-dismisses; pinned (its header Pin toggle or pinPopover()) it stays open, drags by its title, moves with the arrow keys, resizes, and stays inside the viewport gutter, and onChange reports the pinned state and placement for the app to store and restore. A persistent floating panel whose visibility an app control owns (a feature detached from a sidebar) sets pinnable={false} (always pinned, no Pin toggle, no light dismiss) and closable={false} (no Close X; Escape closes it only with wirePinnablePopover's closeOnEscape), keeping the app's Reattach control in headerActions.
 - A chat-style dialog floats its composer over the transcript with footerPresentation="floating" and keeps a heading or notice above one scrolling transcript with bodyLayout="fill-last".
 - A phone-first task (compose, quick edit, a picker) should rise from the bottom edge as a sheet the person can resize: presentation="bottom-sheet" with height, and resizable with minHeight / maxHeight bounds.
 - A dialog's title bar should float over the body on the translucent chrome material so a transcript scrolls visibly beneath both the title bar and a floating composer (headerPresentation="floating" with bodyLayout="fill" and a List or Pane that opts into scrollClearance="both").
@@ -25,7 +25,7 @@ Configure recurring dialog and popup geometry without consumer ::part() override
 - Do not use it as a generic layout wrapper, and do not toggle the dialog's open attribute (that opens it non-modally); open and close it with openDialog() and closeDialog().
 - Do not stack a dialog body inset around children that already own List or content-item geometry; use bodyInset none.
 - Do not put quiet secondary text of your own in a floating dialog header; it can fall below AA over the content passing beneath. A ToolbarText as the dialog's heading (or in headerActions) is fine: its title takes the normal text color and its description lifts halfway toward it, keeping AA.
-- Do not hand-roll a draggable floating panel with app CSS and pointer handlers; render PinnablePopoverSurface and wire it. Do not toggle its popover attribute or data-pinned yourself: pin with pinPopover() and restore with wirePinnablePopover's pinned and placement options.
+- Do not hand-roll a draggable floating panel with app CSS and pointer handlers; render PinnablePopoverSurface and wire it. Do not toggle its popover attribute or data-pinned yourself: pin with pinPopover() and restore with wirePinnablePopover's pinned and placement options. Do not hide its Pin toggle or Close button with CSS; use pinnable={false} and closable={false}.
 
 ## Imports
 
@@ -57,6 +57,7 @@ Exact prop names and types: [`@kerfjs/ui/surface-scaffold`](../public-api-signat
 - floating header divider as scroll state: a hairline under the title bar only while the body or a filling child beneath it is scrolled away from its top
 - non-modal light-dismiss PopoverDialogSurface, overlay or embedded in flow, named by label or labelledBy and described by describedBy
 - pinnable non-modal PinnablePopoverSurface: transient below its anchor with light dismiss, or pinned (no light dismiss, Escape still closes) and moved by a header drag or the arrow keys (Shift for larger steps), resizable from its corner, clamped to the viewport gutter after a window resize, overlay or embedded in flow
+- persistent floating PinnablePopoverSurface: pinnable={false} always pinned with no Pin toggle and no light dismiss, closable={false} with no Close button and visibility owned by an app control
 - none, compact, or comfortable body and footer inset
 - standard, compact, or zero-inset popup menu
 - core kerfjs/overlay confirm/prompt/form/choice as a bottom sheet styled by @kerfjs/ui/overlay-sheet.css

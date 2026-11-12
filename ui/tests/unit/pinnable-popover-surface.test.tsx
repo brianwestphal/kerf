@@ -210,6 +210,44 @@ describe('PinnablePopoverSurface', () => {
     expect(html.indexOf('Filter')).toBeLessThan(html.indexOf('Keep Open'));
   });
 
+  it('omits the Pin toggle and Close button in persistent, non-closable mode (KF-850ZRF)', () => {
+    document.body.innerHTML = render({
+      pinnable: false,
+      closable: false,
+      headerActions: <button type="button">Reattach</button>,
+      rootAttributes: {
+        'data-persistent': 'nope',
+        'data-closable': 'true',
+      } as never,
+    });
+    const surface = document.getElementById('library')!;
+    expect(surface.querySelector('[data-pinnable-popover-pin]')).toBeNull();
+    expect(surface.querySelector('[aria-label="Close"]')).toBeNull();
+    // The app's own header control and the title move handle stay.
+    const actions = surface.querySelector(
+      '.kui-pinnable-popover-surface__header-actions',
+    )!;
+    expect(actions.textContent).toBe('Reattach');
+    expect(
+      surface.querySelector('.kui-pinnable-popover-surface__handle'),
+    ).not.toBeNull();
+    expect(surface.getAttribute('data-persistent')).toBe('');
+    expect(surface.getAttribute('data-closable')).toBe('false');
+    expect(surface.hasAttribute('data-pinned')).toBe(true);
+    // Each option on its own.
+    document.body.innerHTML = render({ closable: false });
+    expect(
+      document.querySelector('[data-pinnable-popover-pin]'),
+    ).not.toBeNull();
+    expect(document.querySelector('[aria-label="Close"]')).toBeNull();
+    expect(
+      document.getElementById('library')!.hasAttribute('data-pinned'),
+    ).toBe(false);
+    document.body.innerHTML = render({ pinnable: false });
+    expect(document.querySelector('[data-pinnable-popover-pin]')).toBeNull();
+    expect(document.querySelector('[aria-label="Close"]')).not.toBeNull();
+  });
+
   it('leaves viewport heights to the CSS caps', () => {
     const html = render({ height: 'viewport', maxHeight: 'viewport' });
     expect(html).toContain('data-height="" data-max-height=""');
@@ -545,6 +583,54 @@ describe('wirePinnablePopover', () => {
     // Opened pinned with nothing to restore: centered.
     surface.showPopover();
     expect(surface.hasAttribute('data-placed')).toBe(false);
+  });
+
+  it('keeps a persistent surface pinned: no unpin, no light dismiss (KF-850ZRF)', () => {
+    const { surface } = mount({ pinnable: false, closable: false });
+    const { changes } = wire(surface, { pinned: false });
+    expect(isPopoverPinned(surface)).toBe(true);
+    expect(surface.hasAttribute('data-pinned')).toBe(true);
+    surface.showPopover();
+    // Opened with nothing stored: centered, not below its anchor.
+    expect(surface.hasAttribute('data-placed')).toBe(false);
+    pinPopover(surface, false);
+    expect(isPopoverPinned(surface)).toBe(true);
+    expect(changes).toEqual([]);
+    pointer(document.getElementById('outside')!, 'pointerdown', 0, 0);
+    expect(open.has(surface)).toBe(true);
+    // Not closable: Escape inside is the app's to handle.
+    handle(surface).focus();
+    expect(key(handle(surface), { key: 'Escape' }).defaultPrevented).toBe(
+      false,
+    );
+    expect(open.has(surface)).toBe(true);
+    // Moving and resizing still report, pinned.
+    key(handle(surface), { key: 'ArrowRight' });
+    expect(changes.at(-1)).toMatchObject({ pinned: true, reason: 'move' });
+    surface.style.width = '420px';
+    surface.setAttribute('data-touched', '');
+    return flush().then(() => {
+      expect(changes.at(-1)).toMatchObject({ pinned: true, reason: 'resize' });
+      // The app owns its visibility.
+      surface.hidePopover();
+      expect(open.has(surface)).toBe(false);
+    });
+  });
+
+  it('closes a non-closable surface on Escape only when the app opts in', () => {
+    const { surface } = mount({ pinnable: false, closable: false });
+    wire(surface, { closeOnEscape: true });
+    surface.showPopover();
+    handle(surface).focus();
+    key(handle(surface), { key: 'Escape' });
+    expect(open.has(surface)).toBe(false);
+    // And a closable surface can opt out.
+    const second = mount({ pinnable: false });
+    wire(second.surface, { closeOnEscape: false });
+    second.surface.showPopover();
+    handle(second.surface).focus();
+    key(handle(second.surface), { key: 'Escape' });
+    expect(open.has(second.surface)).toBe(true);
   });
 
   it('reads its pinned state from the markup when it is not wired', () => {
