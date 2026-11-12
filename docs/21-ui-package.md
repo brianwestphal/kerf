@@ -733,7 +733,11 @@ for each visible prop, with task subgroups where a family holds more than one
 task (NavStack's Layout › Top toolbar and Bottom toolbar, ToolbarControlGroup's
 Appearance › Focus and selection, Checkbox's Behavior › Form and Validation);
 none uses the older names, and a family of more than ten fields always has
-titled tasks. Web Awesome entries still take families from their names. Run `npm run props:sync` after the build. `check:props` (in the ui
+titled tasks. The 73 Web Awesome (`wa-*`) entries are curated the same way
+(KF-AHW2TM): form fields split Behavior into TextField's Input, Validation,
+Typing assistance, and State tasks, `wa-popup` splits Layout into Position,
+Flip, Shift, and Size, `dir` and `lang` sit in Accessibility, and `did-ssr` in
+Integration. Run `npm run props:sync` after the build. `check:props` (in the ui
 `check` chain, after the build) fails on drift, on a schema violation, on an
 overlay key naming no component, prop, or declared group, on a `choicesFrom`
 naming no sibling prop, and on a catalog

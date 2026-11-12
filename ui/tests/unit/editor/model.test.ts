@@ -291,11 +291,13 @@ describe('inspector', () => {
     }
   });
 
+  // KF-AHW2TM: the Web Awesome (wa-*) entries are curated too.
   describe('curated families across the Kerf catalog (KF-DXTRPR)', () => {
-    const kerf = [...propsByKey.values()].filter(
-      (component) =>
-        component.key.startsWith('@kerfjs/ui:') &&
-        !component.key.startsWith('@kerfjs/ui:wa-'),
+    const kerf = [...propsByKey.values()].filter((component) =>
+      component.key.startsWith('@kerfjs/ui:'),
+    );
+    const webAwesome = kerf.filter((component) =>
+      component.key.startsWith('@kerfjs/ui:wa-'),
     );
     const visible = (component: InspectorComponent) =>
       component.props.filter(
@@ -311,7 +313,8 @@ describe('inspector', () => {
     };
 
     it('gives every visible Kerf prop an explicit family, never the name fallback', () => {
-      expect(kerf.length).toBeGreaterThan(80);
+      expect(kerf.length - webAwesome.length).toBeGreaterThan(80);
+      expect(webAwesome.length).toBeGreaterThan(70);
       const unplaced = kerf.flatMap((component) =>
         visible(component)
           // The class list is always Integration (KF-X8X8VX).
@@ -367,6 +370,36 @@ describe('inspector', () => {
           .map((family) => `${component.key} ${family.title}`),
       );
       expect(crowded).toEqual([]);
+    });
+
+    it('splits Web Awesome form fields into the TextField tasks (KF-AHW2TM)', () => {
+      const tasks = (key: string, title: string) =>
+        groupedProps(propsByKey.get(key)!)
+          .find((family) => family.title === title)!
+          .subgroups.map((subgroup) => subgroup.title);
+      expect(tasks('@kerfjs/ui:wa-input', 'Behavior')).toEqual([
+        'Input',
+        'Validation',
+        'Typing assistance',
+        'State',
+      ]);
+      expect(tasks('@kerfjs/ui:wa-button', 'Behavior')).toEqual([
+        'Form',
+        'Validation',
+        'State',
+        'Link',
+      ]);
+      expect(tasks('@kerfjs/ui:wa-popup', 'Layout')).toEqual([
+        'Position',
+        'Flip',
+        'Shift',
+        'Size',
+      ]);
+      const input = '@kerfjs/ui:wa-input';
+      expect(place(input, 'with-clear')).toBe('Appearance');
+      expect(place(input, 'with-label')).toBe('Content');
+      expect(place(input, 'lang')).toBe('Accessibility');
+      expect(place(input, 'did-ssr')).toBe('Integration');
     });
   });
 

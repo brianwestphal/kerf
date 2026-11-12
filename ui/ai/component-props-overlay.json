@@ -4503,6 +4503,4191 @@
         }
       }
     },
+    "@kerfjs/ui:wa-accordion": {
+      "groups": [
+        "Appearance",
+        "Behavior",
+        "Layout",
+        "Accessibility",
+        "Integration"
+      ],
+      "props": {
+        "mode": {
+          "group": "Behavior",
+          "order": 1
+        },
+        "icon-placement": {
+          "group": "Layout",
+          "order": 1
+        },
+        "heading-level": {
+          "group": "Accessibility",
+          "order": 1
+        },
+        "appearance": {
+          "group": "Appearance",
+          "order": 1
+        },
+        "dir": {
+          "group": "Accessibility",
+          "order": 2
+        },
+        "lang": {
+          "group": "Accessibility",
+          "order": 3
+        },
+        "did-ssr": {
+          "group": "Integration",
+          "order": 1
+        }
+      }
+    },
+    "@kerfjs/ui:wa-accordion-item": {
+      "groups": ["Content", "Behavior", "Accessibility", "Integration"],
+      "props": {
+        "label": {
+          "group": "Content",
+          "order": 1
+        },
+        "expanded": {
+          "group": "Behavior",
+          "order": 1
+        },
+        "disabled": {
+          "group": "Behavior",
+          "order": 2
+        },
+        "dir": {
+          "group": "Accessibility",
+          "order": 1
+        },
+        "lang": {
+          "group": "Accessibility",
+          "order": 2
+        },
+        "did-ssr": {
+          "group": "Integration",
+          "order": 1
+        }
+      }
+    },
+    "@kerfjs/ui:wa-animated-image": {
+      "groups": ["Content", "Behavior", "Accessibility", "Integration"],
+      "props": {
+        "src": {
+          "group": "Content",
+          "order": 1
+        },
+        "alt": {
+          "group": "Accessibility",
+          "order": 1
+        },
+        "play": {
+          "group": "Behavior",
+          "order": 1
+        },
+        "dir": {
+          "group": "Accessibility",
+          "order": 2
+        },
+        "lang": {
+          "group": "Accessibility",
+          "order": 3
+        },
+        "did-ssr": {
+          "group": "Integration",
+          "order": 1
+        }
+      }
+    },
+    "@kerfjs/ui:wa-animation": {
+      "groups": ["Appearance", "Behavior", "Accessibility", "Integration"],
+      "props": {
+        "name": {
+          "group": "Appearance",
+          "order": 1
+        },
+        "play": {
+          "group": "Behavior",
+          "subgroup": "Playback",
+          "order": 11
+        },
+        "delay": {
+          "group": "Behavior",
+          "subgroup": "Timing",
+          "order": 21
+        },
+        "direction": {
+          "group": "Behavior",
+          "subgroup": "Playback",
+          "order": 12
+        },
+        "duration": {
+          "group": "Behavior",
+          "subgroup": "Timing",
+          "order": 22
+        },
+        "easing": {
+          "group": "Appearance",
+          "order": 2
+        },
+        "end-delay": {
+          "group": "Behavior",
+          "subgroup": "Timing",
+          "order": 23
+        },
+        "fill": {
+          "group": "Behavior",
+          "subgroup": "Playback",
+          "order": 13
+        },
+        "iterations": {
+          "group": "Behavior",
+          "subgroup": "Playback",
+          "order": 14
+        },
+        "iteration-start": {
+          "group": "Behavior",
+          "subgroup": "Playback",
+          "order": 15
+        },
+        "playback-rate": {
+          "group": "Behavior",
+          "subgroup": "Playback",
+          "order": 16
+        },
+        "dir": {
+          "group": "Accessibility",
+          "order": 1
+        },
+        "lang": {
+          "group": "Accessibility",
+          "order": 2
+        },
+        "did-ssr": {
+          "group": "Integration",
+          "order": 1
+        }
+      }
+    },
+    "@kerfjs/ui:wa-avatar": {
+      "groups": [
+        "Content",
+        "Appearance",
+        "Behavior",
+        "Accessibility",
+        "Integration"
+      ],
+      "props": {
+        "image": {
+          "group": "Content",
+          "order": 1
+        },
+        "label": {
+          "group": "Accessibility",
+          "order": 1
+        },
+        "initials": {
+          "group": "Content",
+          "order": 2
+        },
+        "loading": {
+          "group": "Behavior",
+          "order": 1
+        },
+        "shape": {
+          "group": "Appearance",
+          "order": 1
+        },
+        "dir": {
+          "group": "Accessibility",
+          "order": 2
+        },
+        "lang": {
+          "group": "Accessibility",
+          "order": 3
+        },
+        "did-ssr": {
+          "group": "Integration",
+          "order": 1
+        }
+      }
+    },
+    "@kerfjs/ui:wa-badge": {
+      "groups": ["Appearance", "Accessibility", "Integration"],
+      "props": {
+        "variant": {
+          "group": "Appearance",
+          "order": 1
+        },
+        "appearance": {
+          "group": "Appearance",
+          "order": 2
+        },
+        "pill": {
+          "group": "Appearance",
+          "order": 3
+        },
+        "attention": {
+          "group": "Appearance",
+          "order": 4
+        },
+        "dir": {
+          "group": "Accessibility",
+          "order": 1
+        },
+        "lang": {
+          "group": "Accessibility",
+          "order": 2
+        },
+        "did-ssr": {
+          "group": "Integration",
+          "order": 1
+        }
+      }
+    },
+    "@kerfjs/ui:wa-breadcrumb": {
+      "groups": ["Accessibility", "Integration"],
+      "props": {
+        "label": {
+          "group": "Accessibility",
+          "order": 1
+        },
+        "dir": {
+          "group": "Accessibility",
+          "order": 2
+        },
+        "lang": {
+          "group": "Accessibility",
+          "order": 3
+        },
+        "did-ssr": {
+          "group": "Integration",
+          "order": 1
+        }
+      }
+    },
+    "@kerfjs/ui:wa-breadcrumb-item": {
+      "groups": ["Behavior", "Accessibility", "Integration"],
+      "props": {
+        "href": {
+          "group": "Behavior",
+          "order": 1
+        },
+        "target": {
+          "group": "Behavior",
+          "order": 2
+        },
+        "rel": {
+          "group": "Behavior",
+          "order": 3
+        },
+        "dir": {
+          "group": "Accessibility",
+          "order": 1
+        },
+        "lang": {
+          "group": "Accessibility",
+          "order": 2
+        },
+        "did-ssr": {
+          "group": "Integration",
+          "order": 1
+        }
+      }
+    },
+    "@kerfjs/ui:wa-button": {
+      "groups": [
+        "Content",
+        "Appearance",
+        "Behavior",
+        "Accessibility",
+        "Integration"
+      ],
+      "props": {
+        "title": {
+          "group": "Accessibility",
+          "order": 1
+        },
+        "variant": {
+          "group": "Appearance",
+          "order": 1
+        },
+        "appearance": {
+          "group": "Appearance",
+          "order": 2
+        },
+        "size": {
+          "group": "Appearance",
+          "order": 3
+        },
+        "with-caret": {
+          "group": "Appearance",
+          "order": 4
+        },
+        "with-start": {
+          "group": "Content",
+          "order": 1
+        },
+        "with-end": {
+          "group": "Content",
+          "order": 2
+        },
+        "disabled": {
+          "group": "Behavior",
+          "subgroup": "State",
+          "order": 31
+        },
+        "loading": {
+          "group": "Behavior",
+          "subgroup": "State",
+          "order": 32
+        },
+        "pill": {
+          "group": "Appearance",
+          "order": 5
+        },
+        "type": {
+          "group": "Behavior",
+          "subgroup": "Form",
+          "order": 11
+        },
+        "name": {
+          "group": "Behavior",
+          "subgroup": "Form",
+          "order": 12
+        },
+        "value": {
+          "group": "Behavior",
+          "subgroup": "Form",
+          "order": 13
+        },
+        "href": {
+          "group": "Behavior",
+          "subgroup": "Link",
+          "order": 41
+        },
+        "target": {
+          "group": "Behavior",
+          "subgroup": "Link",
+          "order": 42
+        },
+        "rel": {
+          "group": "Behavior",
+          "subgroup": "Link",
+          "order": 43
+        },
+        "download": {
+          "group": "Behavior",
+          "subgroup": "Link",
+          "order": 44
+        },
+        "formaction": {
+          "group": "Behavior",
+          "subgroup": "Form",
+          "order": 14
+        },
+        "formenctype": {
+          "group": "Behavior",
+          "subgroup": "Form",
+          "order": 15
+        },
+        "formmethod": {
+          "group": "Behavior",
+          "subgroup": "Form",
+          "order": 16
+        },
+        "formnovalidate": {
+          "group": "Behavior",
+          "subgroup": "Form",
+          "order": 17
+        },
+        "formtarget": {
+          "group": "Behavior",
+          "subgroup": "Form",
+          "order": 18
+        },
+        "custom-error": {
+          "group": "Behavior",
+          "subgroup": "Validation",
+          "order": 21
+        },
+        "dir": {
+          "group": "Accessibility",
+          "order": 2
+        },
+        "lang": {
+          "group": "Accessibility",
+          "order": 3
+        },
+        "did-ssr": {
+          "group": "Integration",
+          "order": 1
+        }
+      }
+    },
+    "@kerfjs/ui:wa-button-group": {
+      "groups": ["Layout", "Accessibility", "Integration"],
+      "props": {
+        "label": {
+          "group": "Accessibility",
+          "order": 1
+        },
+        "orientation": {
+          "group": "Layout",
+          "order": 1
+        },
+        "dir": {
+          "group": "Accessibility",
+          "order": 2
+        },
+        "lang": {
+          "group": "Accessibility",
+          "order": 3
+        },
+        "did-ssr": {
+          "group": "Integration",
+          "order": 1
+        }
+      }
+    },
+    "@kerfjs/ui:wa-callout": {
+      "groups": ["Appearance", "Accessibility", "Integration"],
+      "props": {
+        "variant": {
+          "group": "Appearance",
+          "order": 1
+        },
+        "appearance": {
+          "group": "Appearance",
+          "order": 2
+        },
+        "size": {
+          "group": "Appearance",
+          "order": 3
+        },
+        "dir": {
+          "group": "Accessibility",
+          "order": 1
+        },
+        "lang": {
+          "group": "Accessibility",
+          "order": 2
+        },
+        "did-ssr": {
+          "group": "Integration",
+          "order": 1
+        }
+      }
+    },
+    "@kerfjs/ui:wa-card": {
+      "groups": [
+        "Content",
+        "Appearance",
+        "Layout",
+        "Accessibility",
+        "Integration"
+      ],
+      "props": {
+        "appearance": {
+          "group": "Appearance",
+          "order": 1
+        },
+        "with-header": {
+          "group": "Content",
+          "order": 1
+        },
+        "with-media": {
+          "group": "Content",
+          "order": 2
+        },
+        "with-footer": {
+          "group": "Content",
+          "order": 3
+        },
+        "with-header-actions": {
+          "group": "Content",
+          "order": 4
+        },
+        "with-footer-actions": {
+          "group": "Content",
+          "order": 5
+        },
+        "orientation": {
+          "group": "Layout",
+          "order": 1
+        },
+        "dir": {
+          "group": "Accessibility",
+          "order": 1
+        },
+        "lang": {
+          "group": "Accessibility",
+          "order": 2
+        },
+        "did-ssr": {
+          "group": "Integration",
+          "order": 1
+        }
+      }
+    },
+    "@kerfjs/ui:wa-carousel": {
+      "groups": [
+        "Appearance",
+        "Behavior",
+        "Layout",
+        "Accessibility",
+        "Integration"
+      ],
+      "props": {
+        "loop": {
+          "group": "Behavior",
+          "order": 1
+        },
+        "slides": {
+          "group": "Behavior",
+          "order": 2
+        },
+        "currentSlide": {
+          "group": "Behavior",
+          "order": 3
+        },
+        "navigation": {
+          "group": "Appearance",
+          "order": 1
+        },
+        "pagination": {
+          "group": "Appearance",
+          "order": 2
+        },
+        "autoplay": {
+          "group": "Behavior",
+          "subgroup": "Autoplay",
+          "order": 11
+        },
+        "autoplay-interval": {
+          "group": "Behavior",
+          "subgroup": "Autoplay",
+          "order": 12
+        },
+        "slides-per-page": {
+          "group": "Layout",
+          "order": 1
+        },
+        "slides-per-move": {
+          "group": "Behavior",
+          "order": 4
+        },
+        "orientation": {
+          "group": "Layout",
+          "order": 2
+        },
+        "mouse-dragging": {
+          "group": "Behavior",
+          "order": 5
+        },
+        "dir": {
+          "group": "Accessibility",
+          "order": 1
+        },
+        "lang": {
+          "group": "Accessibility",
+          "order": 2
+        },
+        "did-ssr": {
+          "group": "Integration",
+          "order": 1
+        }
+      }
+    },
+    "@kerfjs/ui:wa-carousel-item": {
+      "groups": ["Accessibility", "Integration"],
+      "props": {
+        "dir": {
+          "group": "Accessibility",
+          "order": 1
+        },
+        "lang": {
+          "group": "Accessibility",
+          "order": 2
+        },
+        "did-ssr": {
+          "group": "Integration",
+          "order": 1
+        }
+      }
+    },
+    "@kerfjs/ui:wa-checkbox": {
+      "groups": [
+        "Content",
+        "Appearance",
+        "Behavior",
+        "Accessibility",
+        "Integration"
+      ],
+      "props": {
+        "title": {
+          "group": "Accessibility",
+          "order": 1
+        },
+        "value": {
+          "group": "Behavior",
+          "subgroup": "Form",
+          "order": 11
+        },
+        "size": {
+          "group": "Appearance",
+          "order": 1
+        },
+        "disabled": {
+          "group": "Behavior",
+          "subgroup": "State",
+          "order": 31
+        },
+        "indeterminate": {
+          "group": "Behavior",
+          "subgroup": "State",
+          "order": 32
+        },
+        "checked": {
+          "group": "Behavior",
+          "subgroup": "State",
+          "order": 33
+        },
+        "required": {
+          "group": "Behavior",
+          "subgroup": "Validation",
+          "order": 21
+        },
+        "hint": {
+          "group": "Content",
+          "order": 1
+        },
+        "name": {
+          "group": "Behavior",
+          "subgroup": "Form",
+          "order": 12
+        },
+        "custom-error": {
+          "group": "Behavior",
+          "subgroup": "Validation",
+          "order": 22
+        },
+        "dir": {
+          "group": "Accessibility",
+          "order": 2
+        },
+        "lang": {
+          "group": "Accessibility",
+          "order": 3
+        },
+        "did-ssr": {
+          "group": "Integration",
+          "order": 1
+        }
+      }
+    },
+    "@kerfjs/ui:wa-checkbox-group": {
+      "groups": [
+        "Content",
+        "Appearance",
+        "Behavior",
+        "Layout",
+        "Accessibility",
+        "Integration"
+      ],
+      "props": {
+        "label": {
+          "group": "Content",
+          "order": 1
+        },
+        "hint": {
+          "group": "Content",
+          "order": 2
+        },
+        "orientation": {
+          "group": "Layout",
+          "order": 1
+        },
+        "size": {
+          "group": "Appearance",
+          "order": 1
+        },
+        "required": {
+          "group": "Behavior",
+          "order": 1
+        },
+        "with-label": {
+          "group": "Content",
+          "order": 3
+        },
+        "with-hint": {
+          "group": "Content",
+          "order": 4
+        },
+        "dir": {
+          "group": "Accessibility",
+          "order": 1
+        },
+        "lang": {
+          "group": "Accessibility",
+          "order": 2
+        },
+        "did-ssr": {
+          "group": "Integration",
+          "order": 1
+        }
+      }
+    },
+    "@kerfjs/ui:wa-color-picker": {
+      "groups": [
+        "Content",
+        "Appearance",
+        "Behavior",
+        "Layout",
+        "Accessibility",
+        "Integration"
+      ],
+      "props": {
+        "value": {
+          "group": "Behavior",
+          "subgroup": "Input",
+          "order": 11
+        },
+        "with-label": {
+          "group": "Content",
+          "order": 1
+        },
+        "with-hint": {
+          "group": "Content",
+          "order": 2
+        },
+        "label": {
+          "group": "Content",
+          "order": 3
+        },
+        "hint": {
+          "group": "Content",
+          "order": 4
+        },
+        "format": {
+          "group": "Behavior",
+          "subgroup": "Input",
+          "order": 12
+        },
+        "size": {
+          "group": "Appearance",
+          "order": 1
+        },
+        "placement": {
+          "group": "Layout",
+          "order": 1
+        },
+        "without-format-toggle": {
+          "group": "Appearance",
+          "subgroup": "Optional controls",
+          "order": 11
+        },
+        "name": {
+          "group": "Behavior",
+          "subgroup": "Input",
+          "order": 13
+        },
+        "disabled": {
+          "group": "Behavior",
+          "subgroup": "State",
+          "order": 31
+        },
+        "open": {
+          "group": "Behavior",
+          "subgroup": "State",
+          "order": 32
+        },
+        "opacity": {
+          "group": "Behavior",
+          "subgroup": "Input",
+          "order": 14
+        },
+        "uppercase": {
+          "group": "Appearance",
+          "order": 2
+        },
+        "swatches": {
+          "group": "Content",
+          "order": 5
+        },
+        "required": {
+          "group": "Behavior",
+          "subgroup": "Validation",
+          "order": 21
+        },
+        "custom-error": {
+          "group": "Behavior",
+          "subgroup": "Validation",
+          "order": 22
+        },
+        "dir": {
+          "group": "Accessibility",
+          "order": 1
+        },
+        "lang": {
+          "group": "Accessibility",
+          "order": 2
+        },
+        "did-ssr": {
+          "group": "Integration",
+          "order": 1
+        }
+      }
+    },
+    "@kerfjs/ui:wa-comparison": {
+      "groups": ["Layout", "Accessibility", "Integration"],
+      "props": {
+        "position": {
+          "group": "Layout",
+          "order": 1
+        },
+        "dir": {
+          "group": "Accessibility",
+          "order": 1
+        },
+        "lang": {
+          "group": "Accessibility",
+          "order": 2
+        },
+        "did-ssr": {
+          "group": "Integration",
+          "order": 1
+        }
+      }
+    },
+    "@kerfjs/ui:wa-copy-button": {
+      "groups": [
+        "Content",
+        "Appearance",
+        "Behavior",
+        "Layout",
+        "Accessibility",
+        "Integration"
+      ],
+      "props": {
+        "value": {
+          "group": "Behavior",
+          "order": 1
+        },
+        "from": {
+          "group": "Behavior",
+          "order": 2
+        },
+        "disabled": {
+          "group": "Behavior",
+          "subgroup": "State",
+          "order": 11
+        },
+        "copy-label": {
+          "group": "Content",
+          "order": 1
+        },
+        "success-label": {
+          "group": "Content",
+          "order": 2
+        },
+        "error-label": {
+          "group": "Content",
+          "order": 3
+        },
+        "feedback-duration": {
+          "group": "Behavior",
+          "order": 3
+        },
+        "tooltip-placement": {
+          "group": "Layout",
+          "order": 1
+        },
+        "tooltip": {
+          "group": "Appearance",
+          "order": 1
+        },
+        "dir": {
+          "group": "Accessibility",
+          "order": 1
+        },
+        "lang": {
+          "group": "Accessibility",
+          "order": 2
+        },
+        "did-ssr": {
+          "group": "Integration",
+          "order": 1
+        }
+      }
+    },
+    "@kerfjs/ui:wa-details": {
+      "groups": [
+        "Content",
+        "Appearance",
+        "Behavior",
+        "Layout",
+        "Accessibility",
+        "Integration"
+      ],
+      "props": {
+        "open": {
+          "group": "Behavior",
+          "order": 1
+        },
+        "summary": {
+          "group": "Content",
+          "order": 1
+        },
+        "name": {
+          "group": "Behavior",
+          "order": 2
+        },
+        "disabled": {
+          "group": "Behavior",
+          "order": 3
+        },
+        "appearance": {
+          "group": "Appearance",
+          "order": 1
+        },
+        "icon-placement": {
+          "group": "Layout",
+          "order": 1
+        },
+        "dir": {
+          "group": "Accessibility",
+          "order": 1
+        },
+        "lang": {
+          "group": "Accessibility",
+          "order": 2
+        },
+        "did-ssr": {
+          "group": "Integration",
+          "order": 1
+        }
+      }
+    },
+    "@kerfjs/ui:wa-dialog": {
+      "groups": [
+        "Content",
+        "Appearance",
+        "Behavior",
+        "Accessibility",
+        "Integration"
+      ],
+      "props": {
+        "open": {
+          "group": "Behavior",
+          "order": 1
+        },
+        "label": {
+          "group": "Content",
+          "order": 1
+        },
+        "without-header": {
+          "group": "Appearance",
+          "order": 1
+        },
+        "light-dismiss": {
+          "group": "Behavior",
+          "order": 2
+        },
+        "with-footer": {
+          "group": "Content",
+          "order": 2
+        },
+        "with-label": {
+          "group": "Content",
+          "order": 3
+        },
+        "dir": {
+          "group": "Accessibility",
+          "order": 1
+        },
+        "lang": {
+          "group": "Accessibility",
+          "order": 2
+        },
+        "did-ssr": {
+          "group": "Integration",
+          "order": 1
+        }
+      }
+    },
+    "@kerfjs/ui:wa-divider": {
+      "groups": ["Content", "Layout", "Accessibility", "Integration"],
+      "props": {
+        "orientation": {
+          "group": "Layout",
+          "order": 1
+        },
+        "with-label": {
+          "group": "Content",
+          "order": 1
+        },
+        "label-placement": {
+          "group": "Layout",
+          "order": 2
+        },
+        "dir": {
+          "group": "Accessibility",
+          "order": 1
+        },
+        "lang": {
+          "group": "Accessibility",
+          "order": 2
+        },
+        "did-ssr": {
+          "group": "Integration",
+          "order": 1
+        }
+      }
+    },
+    "@kerfjs/ui:wa-drawer": {
+      "groups": [
+        "Content",
+        "Appearance",
+        "Behavior",
+        "Layout",
+        "Accessibility",
+        "Integration"
+      ],
+      "props": {
+        "open": {
+          "group": "Behavior",
+          "order": 1
+        },
+        "label": {
+          "group": "Content",
+          "order": 1
+        },
+        "placement": {
+          "group": "Layout",
+          "order": 1
+        },
+        "without-header": {
+          "group": "Appearance",
+          "order": 1
+        },
+        "light-dismiss": {
+          "group": "Behavior",
+          "order": 2
+        },
+        "with-footer": {
+          "group": "Content",
+          "order": 2
+        },
+        "with-label": {
+          "group": "Content",
+          "order": 3
+        },
+        "dir": {
+          "group": "Accessibility",
+          "order": 1
+        },
+        "lang": {
+          "group": "Accessibility",
+          "order": 2
+        },
+        "did-ssr": {
+          "group": "Integration",
+          "order": 1
+        }
+      }
+    },
+    "@kerfjs/ui:wa-dropdown": {
+      "groups": [
+        "Appearance",
+        "Behavior",
+        "Layout",
+        "Accessibility",
+        "Integration"
+      ],
+      "props": {
+        "open": {
+          "group": "Behavior",
+          "order": 1
+        },
+        "size": {
+          "group": "Appearance",
+          "order": 1
+        },
+        "placement": {
+          "group": "Layout",
+          "order": 1
+        },
+        "distance": {
+          "group": "Layout",
+          "order": 2
+        },
+        "skidding": {
+          "group": "Layout",
+          "order": 3
+        },
+        "dir": {
+          "group": "Accessibility",
+          "order": 1
+        },
+        "lang": {
+          "group": "Accessibility",
+          "order": 2
+        },
+        "did-ssr": {
+          "group": "Integration",
+          "order": 1
+        }
+      }
+    },
+    "@kerfjs/ui:wa-dropdown-item": {
+      "groups": ["Appearance", "Behavior", "Accessibility", "Integration"],
+      "props": {
+        "variant": {
+          "group": "Appearance",
+          "order": 1
+        },
+        "value": {
+          "group": "Behavior",
+          "order": 1
+        },
+        "type": {
+          "group": "Behavior",
+          "order": 2
+        },
+        "checked": {
+          "group": "Behavior",
+          "subgroup": "State",
+          "order": 11
+        },
+        "disabled": {
+          "group": "Behavior",
+          "subgroup": "State",
+          "order": 12
+        },
+        "submenuOpen": {
+          "group": "Behavior",
+          "subgroup": "State",
+          "order": 13
+        },
+        "href": {
+          "group": "Behavior",
+          "subgroup": "Link",
+          "order": 21
+        },
+        "target": {
+          "group": "Behavior",
+          "subgroup": "Link",
+          "order": 22
+        },
+        "rel": {
+          "group": "Behavior",
+          "subgroup": "Link",
+          "order": 23
+        },
+        "download": {
+          "group": "Behavior",
+          "subgroup": "Link",
+          "order": 24
+        },
+        "dir": {
+          "group": "Accessibility",
+          "order": 1
+        },
+        "lang": {
+          "group": "Accessibility",
+          "order": 2
+        },
+        "did-ssr": {
+          "group": "Integration",
+          "order": 1
+        }
+      }
+    },
+    "@kerfjs/ui:wa-format-bytes": {
+      "groups": ["Content", "Accessibility", "Integration"],
+      "props": {
+        "value": {
+          "group": "Content",
+          "order": 1
+        },
+        "unit": {
+          "group": "Content",
+          "order": 2
+        },
+        "display": {
+          "group": "Content",
+          "order": 3
+        },
+        "dir": {
+          "group": "Accessibility",
+          "order": 1
+        },
+        "lang": {
+          "group": "Accessibility",
+          "order": 2
+        },
+        "did-ssr": {
+          "group": "Integration",
+          "order": 1
+        }
+      }
+    },
+    "@kerfjs/ui:wa-format-date": {
+      "groups": ["Content", "Accessibility", "Integration"],
+      "props": {
+        "date": {
+          "group": "Content",
+          "order": 1
+        },
+        "weekday": {
+          "group": "Content",
+          "subgroup": "Date",
+          "order": 11
+        },
+        "era": {
+          "group": "Content",
+          "subgroup": "Date",
+          "order": 12
+        },
+        "year": {
+          "group": "Content",
+          "subgroup": "Date",
+          "order": 13
+        },
+        "month": {
+          "group": "Content",
+          "subgroup": "Date",
+          "order": 14
+        },
+        "day": {
+          "group": "Content",
+          "subgroup": "Date",
+          "order": 15
+        },
+        "hour": {
+          "group": "Content",
+          "subgroup": "Time",
+          "order": 21
+        },
+        "minute": {
+          "group": "Content",
+          "subgroup": "Time",
+          "order": 22
+        },
+        "second": {
+          "group": "Content",
+          "subgroup": "Time",
+          "order": 23
+        },
+        "time-zone-name": {
+          "group": "Content",
+          "subgroup": "Time",
+          "order": 24
+        },
+        "time-zone": {
+          "group": "Content",
+          "subgroup": "Time",
+          "order": 25
+        },
+        "hour-format": {
+          "group": "Content",
+          "subgroup": "Time",
+          "order": 26
+        },
+        "dir": {
+          "group": "Accessibility",
+          "order": 1
+        },
+        "lang": {
+          "group": "Accessibility",
+          "order": 2
+        },
+        "did-ssr": {
+          "group": "Integration",
+          "order": 1
+        }
+      }
+    },
+    "@kerfjs/ui:wa-format-number": {
+      "groups": ["Content", "Accessibility", "Integration"],
+      "props": {
+        "value": {
+          "group": "Content",
+          "order": 1
+        },
+        "type": {
+          "group": "Content",
+          "subgroup": "Format",
+          "order": 11
+        },
+        "without-grouping": {
+          "group": "Content",
+          "subgroup": "Format",
+          "order": 12
+        },
+        "currency": {
+          "group": "Content",
+          "subgroup": "Format",
+          "order": 13
+        },
+        "currency-display": {
+          "group": "Content",
+          "subgroup": "Format",
+          "order": 14
+        },
+        "minimum-integer-digits": {
+          "group": "Content",
+          "subgroup": "Digits",
+          "order": 21
+        },
+        "minimum-fraction-digits": {
+          "group": "Content",
+          "subgroup": "Digits",
+          "order": 22
+        },
+        "maximum-fraction-digits": {
+          "group": "Content",
+          "subgroup": "Digits",
+          "order": 23
+        },
+        "minimum-significant-digits": {
+          "group": "Content",
+          "subgroup": "Digits",
+          "order": 24
+        },
+        "maximum-significant-digits": {
+          "group": "Content",
+          "subgroup": "Digits",
+          "order": 25
+        },
+        "dir": {
+          "group": "Accessibility",
+          "order": 1
+        },
+        "lang": {
+          "group": "Accessibility",
+          "order": 2
+        },
+        "did-ssr": {
+          "group": "Integration",
+          "order": 1
+        }
+      }
+    },
+    "@kerfjs/ui:wa-icon": {
+      "groups": ["Content", "Appearance", "Accessibility", "Integration"],
+      "props": {
+        "name": {
+          "group": "Content",
+          "order": 1
+        },
+        "family": {
+          "group": "Content",
+          "order": 2
+        },
+        "variant": {
+          "group": "Content",
+          "order": 3
+        },
+        "canvas": {
+          "group": "Appearance",
+          "order": 1
+        },
+        "auto-width": {
+          "group": "Appearance",
+          "order": 2
+        },
+        "swap-opacity": {
+          "group": "Appearance",
+          "order": 3
+        },
+        "src": {
+          "group": "Content",
+          "order": 4
+        },
+        "label": {
+          "group": "Accessibility",
+          "order": 1
+        },
+        "library": {
+          "group": "Content",
+          "order": 5
+        },
+        "rotate": {
+          "group": "Appearance",
+          "order": 4
+        },
+        "flip": {
+          "group": "Appearance",
+          "order": 5
+        },
+        "animation": {
+          "group": "Appearance",
+          "order": 6
+        },
+        "dir": {
+          "group": "Accessibility",
+          "order": 2
+        },
+        "lang": {
+          "group": "Accessibility",
+          "order": 3
+        },
+        "did-ssr": {
+          "group": "Integration",
+          "order": 1
+        }
+      }
+    },
+    "@kerfjs/ui:wa-include": {
+      "groups": ["Content", "Behavior", "Accessibility", "Integration"],
+      "props": {
+        "src": {
+          "group": "Content",
+          "order": 1
+        },
+        "mode": {
+          "group": "Behavior",
+          "order": 1
+        },
+        "allow-scripts": {
+          "group": "Behavior",
+          "order": 2
+        },
+        "dir": {
+          "group": "Accessibility",
+          "order": 1
+        },
+        "lang": {
+          "group": "Accessibility",
+          "order": 2
+        },
+        "did-ssr": {
+          "group": "Integration",
+          "order": 1
+        }
+      }
+    },
+    "@kerfjs/ui:wa-input": {
+      "groups": [
+        "Content",
+        "Appearance",
+        "Behavior",
+        "Accessibility",
+        "Integration"
+      ],
+      "props": {
+        "title": {
+          "group": "Accessibility",
+          "order": 1
+        },
+        "type": {
+          "group": "Behavior",
+          "subgroup": "Input",
+          "order": 11
+        },
+        "value": {
+          "group": "Behavior",
+          "subgroup": "Input",
+          "order": 12
+        },
+        "size": {
+          "group": "Appearance",
+          "order": 1
+        },
+        "appearance": {
+          "group": "Appearance",
+          "order": 2
+        },
+        "pill": {
+          "group": "Appearance",
+          "order": 3
+        },
+        "label": {
+          "group": "Content",
+          "order": 1
+        },
+        "hint": {
+          "group": "Content",
+          "order": 2
+        },
+        "with-clear": {
+          "group": "Appearance",
+          "subgroup": "Optional controls",
+          "order": 11
+        },
+        "placeholder": {
+          "group": "Content",
+          "order": 3
+        },
+        "readonly": {
+          "group": "Behavior",
+          "subgroup": "State",
+          "order": 41
+        },
+        "password-toggle": {
+          "group": "Appearance",
+          "subgroup": "Optional controls",
+          "order": 12
+        },
+        "password-visible": {
+          "group": "Appearance",
+          "subgroup": "Optional controls",
+          "order": 13
+        },
+        "without-spin-buttons": {
+          "group": "Appearance",
+          "subgroup": "Optional controls",
+          "order": 14
+        },
+        "required": {
+          "group": "Behavior",
+          "subgroup": "Validation",
+          "order": 21
+        },
+        "pattern": {
+          "group": "Behavior",
+          "subgroup": "Validation",
+          "order": 22
+        },
+        "minlength": {
+          "group": "Behavior",
+          "subgroup": "Validation",
+          "order": 23
+        },
+        "maxlength": {
+          "group": "Behavior",
+          "subgroup": "Validation",
+          "order": 24
+        },
+        "min": {
+          "group": "Behavior",
+          "subgroup": "Input",
+          "order": 13
+        },
+        "max": {
+          "group": "Behavior",
+          "subgroup": "Input",
+          "order": 14
+        },
+        "step": {
+          "group": "Behavior",
+          "subgroup": "Input",
+          "order": 15
+        },
+        "autocapitalize": {
+          "group": "Behavior",
+          "subgroup": "Typing assistance",
+          "order": 31
+        },
+        "autocorrect": {
+          "group": "Behavior",
+          "subgroup": "Typing assistance",
+          "order": 32
+        },
+        "autocomplete": {
+          "group": "Behavior",
+          "subgroup": "Typing assistance",
+          "order": 33
+        },
+        "autofocus": {
+          "group": "Behavior",
+          "subgroup": "State",
+          "order": 42
+        },
+        "enterkeyhint": {
+          "group": "Behavior",
+          "subgroup": "Typing assistance",
+          "order": 34
+        },
+        "spellcheck": {
+          "group": "Behavior",
+          "subgroup": "Typing assistance",
+          "order": 35
+        },
+        "inputmode": {
+          "group": "Behavior",
+          "subgroup": "Typing assistance",
+          "order": 36
+        },
+        "with-label": {
+          "group": "Content",
+          "order": 4
+        },
+        "with-hint": {
+          "group": "Content",
+          "order": 5
+        },
+        "name": {
+          "group": "Behavior",
+          "subgroup": "Input",
+          "order": 16
+        },
+        "disabled": {
+          "group": "Behavior",
+          "subgroup": "State",
+          "order": 43
+        },
+        "custom-error": {
+          "group": "Behavior",
+          "subgroup": "Validation",
+          "order": 25
+        },
+        "dir": {
+          "group": "Accessibility",
+          "order": 2
+        },
+        "lang": {
+          "group": "Accessibility",
+          "order": 3
+        },
+        "did-ssr": {
+          "group": "Integration",
+          "order": 1
+        }
+      }
+    },
+    "@kerfjs/ui:wa-intersection-observer": {
+      "groups": ["Behavior", "Accessibility", "Integration"],
+      "props": {
+        "root": {
+          "group": "Behavior",
+          "order": 1
+        },
+        "root-margin": {
+          "group": "Behavior",
+          "order": 2
+        },
+        "threshold": {
+          "group": "Behavior",
+          "order": 3
+        },
+        "intersect-class": {
+          "group": "Behavior",
+          "order": 4
+        },
+        "once": {
+          "group": "Behavior",
+          "order": 5
+        },
+        "disabled": {
+          "group": "Behavior",
+          "order": 6
+        },
+        "dir": {
+          "group": "Accessibility",
+          "order": 1
+        },
+        "lang": {
+          "group": "Accessibility",
+          "order": 2
+        },
+        "did-ssr": {
+          "group": "Integration",
+          "order": 1
+        }
+      }
+    },
+    "@kerfjs/ui:wa-known-date": {
+      "groups": [
+        "Content",
+        "Appearance",
+        "Behavior",
+        "Accessibility",
+        "Integration"
+      ],
+      "props": {
+        "name": {
+          "group": "Behavior",
+          "subgroup": "Input",
+          "order": 11
+        },
+        "value": {
+          "group": "Behavior",
+          "subgroup": "Input",
+          "order": 12
+        },
+        "disabled": {
+          "group": "Behavior",
+          "subgroup": "State",
+          "order": 41
+        },
+        "required": {
+          "group": "Behavior",
+          "subgroup": "Validation",
+          "order": 21
+        },
+        "readonly": {
+          "group": "Behavior",
+          "subgroup": "State",
+          "order": 42
+        },
+        "size": {
+          "group": "Appearance",
+          "order": 1
+        },
+        "appearance": {
+          "group": "Appearance",
+          "order": 2
+        },
+        "pill": {
+          "group": "Appearance",
+          "order": 3
+        },
+        "label": {
+          "group": "Content",
+          "order": 1
+        },
+        "hint": {
+          "group": "Content",
+          "order": 2
+        },
+        "autocomplete": {
+          "group": "Behavior",
+          "subgroup": "Typing assistance",
+          "order": 31
+        },
+        "min": {
+          "group": "Behavior",
+          "subgroup": "Input",
+          "order": 13
+        },
+        "max": {
+          "group": "Behavior",
+          "subgroup": "Input",
+          "order": 14
+        },
+        "locale": {
+          "group": "Behavior",
+          "subgroup": "Input",
+          "order": 15
+        },
+        "with-label": {
+          "group": "Content",
+          "order": 3
+        },
+        "with-hint": {
+          "group": "Content",
+          "order": 4
+        },
+        "custom-error": {
+          "group": "Behavior",
+          "subgroup": "Validation",
+          "order": 22
+        },
+        "dir": {
+          "group": "Accessibility",
+          "order": 1
+        },
+        "lang": {
+          "group": "Accessibility",
+          "order": 2
+        },
+        "did-ssr": {
+          "group": "Integration",
+          "order": 1
+        }
+      }
+    },
+    "@kerfjs/ui:wa-markdown": {
+      "groups": ["Content", "Accessibility", "Integration"],
+      "props": {
+        "tab-size": {
+          "group": "Content",
+          "order": 1
+        },
+        "dir": {
+          "group": "Accessibility",
+          "order": 1
+        },
+        "lang": {
+          "group": "Accessibility",
+          "order": 2
+        },
+        "did-ssr": {
+          "group": "Integration",
+          "order": 1
+        }
+      }
+    },
+    "@kerfjs/ui:wa-mutation-observer": {
+      "groups": ["Behavior", "Accessibility", "Integration"],
+      "props": {
+        "attr": {
+          "group": "Behavior",
+          "order": 1
+        },
+        "attr-old-value": {
+          "group": "Behavior",
+          "order": 2
+        },
+        "char-data": {
+          "group": "Behavior",
+          "order": 3
+        },
+        "char-data-old-value": {
+          "group": "Behavior",
+          "order": 4
+        },
+        "child-list": {
+          "group": "Behavior",
+          "order": 5
+        },
+        "disabled": {
+          "group": "Behavior",
+          "order": 6
+        },
+        "dir": {
+          "group": "Accessibility",
+          "order": 1
+        },
+        "lang": {
+          "group": "Accessibility",
+          "order": 2
+        },
+        "did-ssr": {
+          "group": "Integration",
+          "order": 1
+        }
+      }
+    },
+    "@kerfjs/ui:wa-number-input": {
+      "groups": [
+        "Content",
+        "Appearance",
+        "Behavior",
+        "Accessibility",
+        "Integration"
+      ],
+      "props": {
+        "title": {
+          "group": "Accessibility",
+          "order": 1
+        },
+        "value": {
+          "group": "Behavior",
+          "subgroup": "Input",
+          "order": 11
+        },
+        "size": {
+          "group": "Appearance",
+          "order": 1
+        },
+        "appearance": {
+          "group": "Appearance",
+          "order": 2
+        },
+        "pill": {
+          "group": "Appearance",
+          "order": 3
+        },
+        "label": {
+          "group": "Content",
+          "order": 1
+        },
+        "hint": {
+          "group": "Content",
+          "order": 2
+        },
+        "placeholder": {
+          "group": "Content",
+          "order": 3
+        },
+        "readonly": {
+          "group": "Behavior",
+          "subgroup": "State",
+          "order": 41
+        },
+        "required": {
+          "group": "Behavior",
+          "subgroup": "Validation",
+          "order": 21
+        },
+        "min": {
+          "group": "Behavior",
+          "subgroup": "Input",
+          "order": 12
+        },
+        "max": {
+          "group": "Behavior",
+          "subgroup": "Input",
+          "order": 13
+        },
+        "step": {
+          "group": "Behavior",
+          "subgroup": "Input",
+          "order": 14
+        },
+        "without-steppers": {
+          "group": "Appearance",
+          "subgroup": "Optional controls",
+          "order": 11
+        },
+        "autocomplete": {
+          "group": "Behavior",
+          "subgroup": "Typing assistance",
+          "order": 31
+        },
+        "autofocus": {
+          "group": "Behavior",
+          "subgroup": "State",
+          "order": 42
+        },
+        "enterkeyhint": {
+          "group": "Behavior",
+          "subgroup": "Typing assistance",
+          "order": 32
+        },
+        "inputmode": {
+          "group": "Behavior",
+          "subgroup": "Typing assistance",
+          "order": 33
+        },
+        "with-label": {
+          "group": "Content",
+          "order": 4
+        },
+        "with-hint": {
+          "group": "Content",
+          "order": 5
+        },
+        "name": {
+          "group": "Behavior",
+          "subgroup": "Input",
+          "order": 15
+        },
+        "disabled": {
+          "group": "Behavior",
+          "subgroup": "State",
+          "order": 43
+        },
+        "custom-error": {
+          "group": "Behavior",
+          "subgroup": "Validation",
+          "order": 22
+        },
+        "dir": {
+          "group": "Accessibility",
+          "order": 2
+        },
+        "lang": {
+          "group": "Accessibility",
+          "order": 3
+        },
+        "did-ssr": {
+          "group": "Integration",
+          "order": 1
+        }
+      }
+    },
+    "@kerfjs/ui:wa-option": {
+      "groups": ["Content", "Behavior", "Accessibility", "Integration"],
+      "props": {
+        "value": {
+          "group": "Behavior",
+          "order": 1
+        },
+        "disabled": {
+          "group": "Behavior",
+          "subgroup": "State",
+          "order": 11
+        },
+        "selected": {
+          "group": "Behavior",
+          "subgroup": "State",
+          "order": 12
+        },
+        "label": {
+          "group": "Content",
+          "order": 1
+        },
+        "dir": {
+          "group": "Accessibility",
+          "order": 1
+        },
+        "lang": {
+          "group": "Accessibility",
+          "order": 2
+        },
+        "did-ssr": {
+          "group": "Integration",
+          "order": 1
+        }
+      }
+    },
+    "@kerfjs/ui:wa-otp-input": {
+      "groups": [
+        "Content",
+        "Appearance",
+        "Behavior",
+        "Accessibility",
+        "Integration"
+      ],
+      "props": {
+        "value": {
+          "group": "Behavior",
+          "subgroup": "Input",
+          "order": 11
+        },
+        "length": {
+          "group": "Behavior",
+          "subgroup": "Input",
+          "order": 12
+        },
+        "appearance": {
+          "group": "Appearance",
+          "order": 1
+        },
+        "type": {
+          "group": "Behavior",
+          "subgroup": "Input",
+          "order": 13
+        },
+        "mask": {
+          "group": "Behavior",
+          "subgroup": "Input",
+          "order": 14
+        },
+        "case": {
+          "group": "Behavior",
+          "subgroup": "Input",
+          "order": 15
+        },
+        "size": {
+          "group": "Appearance",
+          "order": 2
+        },
+        "label": {
+          "group": "Content",
+          "order": 1
+        },
+        "hint": {
+          "group": "Content",
+          "order": 2
+        },
+        "format": {
+          "group": "Behavior",
+          "subgroup": "Input",
+          "order": 16
+        },
+        "autocomplete": {
+          "group": "Behavior",
+          "subgroup": "Typing assistance",
+          "order": 31
+        },
+        "required": {
+          "group": "Behavior",
+          "subgroup": "Validation",
+          "order": 21
+        },
+        "readonly": {
+          "group": "Behavior",
+          "subgroup": "State",
+          "order": 41
+        },
+        "autosubmit": {
+          "group": "Behavior",
+          "subgroup": "Input",
+          "order": 17
+        },
+        "autofocus": {
+          "group": "Behavior",
+          "subgroup": "State",
+          "order": 42
+        },
+        "with-mask": {
+          "group": "Behavior",
+          "subgroup": "Input",
+          "order": 18
+        },
+        "name": {
+          "group": "Behavior",
+          "subgroup": "Input",
+          "order": 19
+        },
+        "disabled": {
+          "group": "Behavior",
+          "subgroup": "State",
+          "order": 43
+        },
+        "custom-error": {
+          "group": "Behavior",
+          "subgroup": "Validation",
+          "order": 22
+        },
+        "dir": {
+          "group": "Accessibility",
+          "order": 1
+        },
+        "lang": {
+          "group": "Accessibility",
+          "order": 2
+        },
+        "did-ssr": {
+          "group": "Integration",
+          "order": 1
+        }
+      }
+    },
+    "@kerfjs/ui:wa-page": {
+      "groups": ["Behavior", "Layout", "Accessibility", "Integration"],
+      "props": {
+        "view": {
+          "group": "Layout",
+          "order": 1
+        },
+        "nonce": {
+          "group": "Integration",
+          "order": 1
+        },
+        "nav-open": {
+          "group": "Behavior",
+          "order": 1
+        },
+        "mobile-breakpoint": {
+          "group": "Layout",
+          "order": 2
+        },
+        "navigation-placement": {
+          "group": "Layout",
+          "order": 3
+        },
+        "disable-navigation-toggle": {
+          "group": "Behavior",
+          "order": 2
+        },
+        "dir": {
+          "group": "Accessibility",
+          "order": 1
+        },
+        "lang": {
+          "group": "Accessibility",
+          "order": 2
+        },
+        "did-ssr": {
+          "group": "Integration",
+          "order": 2
+        }
+      }
+    },
+    "@kerfjs/ui:wa-pagination": {
+      "groups": ["Appearance", "Behavior", "Accessibility", "Integration"],
+      "props": {
+        "total": {
+          "group": "Behavior",
+          "order": 1
+        },
+        "page-size": {
+          "group": "Behavior",
+          "order": 2
+        },
+        "page": {
+          "group": "Behavior",
+          "order": 3
+        },
+        "sibling-count": {
+          "group": "Appearance",
+          "order": 1
+        },
+        "boundary-count": {
+          "group": "Appearance",
+          "order": 2
+        },
+        "without-nav": {
+          "group": "Appearance",
+          "order": 3
+        },
+        "with-edges": {
+          "group": "Appearance",
+          "order": 4
+        },
+        "with-summary": {
+          "group": "Appearance",
+          "order": 5
+        },
+        "format": {
+          "group": "Appearance",
+          "order": 6
+        },
+        "href-template": {
+          "group": "Behavior",
+          "order": 4
+        },
+        "hide-single-page": {
+          "group": "Appearance",
+          "order": 7
+        },
+        "label": {
+          "group": "Accessibility",
+          "order": 1
+        },
+        "appearance": {
+          "group": "Appearance",
+          "order": 8
+        },
+        "disabled": {
+          "group": "Behavior",
+          "order": 5
+        },
+        "dir": {
+          "group": "Accessibility",
+          "order": 2
+        },
+        "lang": {
+          "group": "Accessibility",
+          "order": 3
+        },
+        "did-ssr": {
+          "group": "Integration",
+          "order": 1
+        }
+      }
+    },
+    "@kerfjs/ui:wa-popover": {
+      "groups": [
+        "Appearance",
+        "Behavior",
+        "Layout",
+        "Accessibility",
+        "Integration"
+      ],
+      "props": {
+        "placement": {
+          "group": "Layout",
+          "order": 1
+        },
+        "open": {
+          "group": "Behavior",
+          "order": 1
+        },
+        "distance": {
+          "group": "Layout",
+          "order": 2
+        },
+        "skidding": {
+          "group": "Layout",
+          "order": 3
+        },
+        "for": {
+          "group": "Behavior",
+          "order": 2
+        },
+        "without-arrow": {
+          "group": "Appearance",
+          "order": 1
+        },
+        "dir": {
+          "group": "Accessibility",
+          "order": 1
+        },
+        "lang": {
+          "group": "Accessibility",
+          "order": 2
+        },
+        "did-ssr": {
+          "group": "Integration",
+          "order": 1
+        }
+      }
+    },
+    "@kerfjs/ui:wa-popup": {
+      "groups": [
+        "Appearance",
+        "Behavior",
+        "Layout",
+        "Accessibility",
+        "Integration"
+      ],
+      "props": {
+        "anchor": {
+          "group": "Layout",
+          "subgroup": "Position",
+          "order": 11
+        },
+        "active": {
+          "group": "Behavior",
+          "order": 1
+        },
+        "placement": {
+          "group": "Layout",
+          "subgroup": "Position",
+          "order": 12
+        },
+        "boundary": {
+          "group": "Layout",
+          "subgroup": "Position",
+          "order": 13
+        },
+        "distance": {
+          "group": "Layout",
+          "subgroup": "Position",
+          "order": 14
+        },
+        "skidding": {
+          "group": "Layout",
+          "subgroup": "Position",
+          "order": 15
+        },
+        "arrow": {
+          "group": "Appearance",
+          "order": 1
+        },
+        "arrow-placement": {
+          "group": "Appearance",
+          "order": 2
+        },
+        "arrow-padding": {
+          "group": "Appearance",
+          "order": 3
+        },
+        "flip": {
+          "group": "Layout",
+          "subgroup": "Flip",
+          "order": 21
+        },
+        "flip-fallback-placements": {
+          "group": "Layout",
+          "subgroup": "Flip",
+          "order": 22
+        },
+        "flip-fallback-strategy": {
+          "group": "Layout",
+          "subgroup": "Flip",
+          "order": 23
+        },
+        "flipBoundary": {
+          "group": "Layout",
+          "subgroup": "Flip",
+          "order": 24
+        },
+        "flip-padding": {
+          "group": "Layout",
+          "subgroup": "Flip",
+          "order": 25
+        },
+        "shift": {
+          "group": "Layout",
+          "subgroup": "Shift",
+          "order": 31
+        },
+        "shiftBoundary": {
+          "group": "Layout",
+          "subgroup": "Shift",
+          "order": 32
+        },
+        "shift-padding": {
+          "group": "Layout",
+          "subgroup": "Shift",
+          "order": 33
+        },
+        "auto-size": {
+          "group": "Layout",
+          "subgroup": "Size",
+          "order": 41
+        },
+        "sync": {
+          "group": "Layout",
+          "subgroup": "Size",
+          "order": 42
+        },
+        "autoSizeBoundary": {
+          "group": "Layout",
+          "subgroup": "Size",
+          "order": 43
+        },
+        "auto-size-padding": {
+          "group": "Layout",
+          "subgroup": "Size",
+          "order": 44
+        },
+        "hover-bridge": {
+          "group": "Behavior",
+          "order": 2
+        },
+        "dir": {
+          "group": "Accessibility",
+          "order": 1
+        },
+        "lang": {
+          "group": "Accessibility",
+          "order": 2
+        },
+        "did-ssr": {
+          "group": "Integration",
+          "order": 1
+        }
+      }
+    },
+    "@kerfjs/ui:wa-progress-bar": {
+      "groups": ["Behavior", "Accessibility", "Integration"],
+      "props": {
+        "value": {
+          "group": "Behavior",
+          "order": 1
+        },
+        "indeterminate": {
+          "group": "Behavior",
+          "order": 2
+        },
+        "label": {
+          "group": "Accessibility",
+          "order": 1
+        },
+        "dir": {
+          "group": "Accessibility",
+          "order": 2
+        },
+        "lang": {
+          "group": "Accessibility",
+          "order": 3
+        },
+        "did-ssr": {
+          "group": "Integration",
+          "order": 1
+        }
+      }
+    },
+    "@kerfjs/ui:wa-progress-ring": {
+      "groups": ["Behavior", "Accessibility", "Integration"],
+      "props": {
+        "value": {
+          "group": "Behavior",
+          "order": 1
+        },
+        "label": {
+          "group": "Accessibility",
+          "order": 1
+        },
+        "dir": {
+          "group": "Accessibility",
+          "order": 2
+        },
+        "lang": {
+          "group": "Accessibility",
+          "order": 3
+        },
+        "did-ssr": {
+          "group": "Integration",
+          "order": 1
+        }
+      }
+    },
+    "@kerfjs/ui:wa-qr-code": {
+      "groups": [
+        "Content",
+        "Appearance",
+        "Behavior",
+        "Accessibility",
+        "Integration"
+      ],
+      "props": {
+        "value": {
+          "group": "Content",
+          "order": 1
+        },
+        "label": {
+          "group": "Accessibility",
+          "order": 1
+        },
+        "size": {
+          "group": "Appearance",
+          "order": 1
+        },
+        "fill": {
+          "group": "Appearance",
+          "order": 2
+        },
+        "background": {
+          "group": "Appearance",
+          "order": 3
+        },
+        "radius": {
+          "group": "Appearance",
+          "order": 4
+        },
+        "error-correction": {
+          "group": "Behavior",
+          "order": 1
+        },
+        "image": {
+          "group": "Content",
+          "subgroup": "Image",
+          "order": 11
+        },
+        "image-background": {
+          "group": "Content",
+          "subgroup": "Image",
+          "order": 12
+        },
+        "image-coverage": {
+          "group": "Content",
+          "subgroup": "Image",
+          "order": 13
+        },
+        "image-padding": {
+          "group": "Content",
+          "subgroup": "Image",
+          "order": 14
+        },
+        "dir": {
+          "group": "Accessibility",
+          "order": 2
+        },
+        "lang": {
+          "group": "Accessibility",
+          "order": 3
+        },
+        "did-ssr": {
+          "group": "Integration",
+          "order": 1
+        }
+      }
+    },
+    "@kerfjs/ui:wa-radio": {
+      "groups": ["Appearance", "Behavior", "Accessibility", "Integration"],
+      "props": {
+        "value": {
+          "group": "Behavior",
+          "subgroup": "Form",
+          "order": 11
+        },
+        "appearance": {
+          "group": "Appearance",
+          "order": 1
+        },
+        "size": {
+          "group": "Appearance",
+          "order": 2
+        },
+        "disabled": {
+          "group": "Behavior",
+          "subgroup": "State",
+          "order": 31
+        },
+        "name": {
+          "group": "Behavior",
+          "subgroup": "Form",
+          "order": 12
+        },
+        "custom-error": {
+          "group": "Behavior",
+          "subgroup": "Validation",
+          "order": 21
+        },
+        "dir": {
+          "group": "Accessibility",
+          "order": 1
+        },
+        "lang": {
+          "group": "Accessibility",
+          "order": 2
+        },
+        "did-ssr": {
+          "group": "Integration",
+          "order": 1
+        }
+      }
+    },
+    "@kerfjs/ui:wa-radio-group": {
+      "groups": [
+        "Content",
+        "Appearance",
+        "Behavior",
+        "Layout",
+        "Accessibility",
+        "Integration"
+      ],
+      "props": {
+        "label": {
+          "group": "Content",
+          "order": 1
+        },
+        "hint": {
+          "group": "Content",
+          "order": 2
+        },
+        "name": {
+          "group": "Behavior",
+          "subgroup": "Form",
+          "order": 11
+        },
+        "disabled": {
+          "group": "Behavior",
+          "subgroup": "State",
+          "order": 31
+        },
+        "orientation": {
+          "group": "Layout",
+          "order": 1
+        },
+        "value": {
+          "group": "Behavior",
+          "subgroup": "Form",
+          "order": 12
+        },
+        "size": {
+          "group": "Appearance",
+          "order": 1
+        },
+        "required": {
+          "group": "Behavior",
+          "subgroup": "Validation",
+          "order": 21
+        },
+        "with-label": {
+          "group": "Content",
+          "order": 3
+        },
+        "with-hint": {
+          "group": "Content",
+          "order": 4
+        },
+        "custom-error": {
+          "group": "Behavior",
+          "subgroup": "Validation",
+          "order": 22
+        },
+        "dir": {
+          "group": "Accessibility",
+          "order": 1
+        },
+        "lang": {
+          "group": "Accessibility",
+          "order": 2
+        },
+        "did-ssr": {
+          "group": "Integration",
+          "order": 1
+        }
+      }
+    },
+    "@kerfjs/ui:wa-random-content": {
+      "groups": ["Appearance", "Behavior", "Accessibility", "Integration"],
+      "props": {
+        "items": {
+          "group": "Behavior",
+          "order": 1
+        },
+        "mode": {
+          "group": "Behavior",
+          "order": 2
+        },
+        "autoplay": {
+          "group": "Behavior",
+          "order": 3
+        },
+        "autoplay-interval": {
+          "group": "Behavior",
+          "order": 4
+        },
+        "animation": {
+          "group": "Appearance",
+          "order": 1
+        },
+        "dir": {
+          "group": "Accessibility",
+          "order": 1
+        },
+        "lang": {
+          "group": "Accessibility",
+          "order": 2
+        },
+        "did-ssr": {
+          "group": "Integration",
+          "order": 1
+        }
+      }
+    },
+    "@kerfjs/ui:wa-rating": {
+      "groups": [
+        "Content",
+        "Appearance",
+        "Behavior",
+        "Accessibility",
+        "Integration"
+      ],
+      "props": {
+        "role": {
+          "group": "Accessibility",
+          "order": 1
+        },
+        "name": {
+          "group": "Behavior",
+          "subgroup": "Input",
+          "order": 11
+        },
+        "label": {
+          "group": "Accessibility",
+          "order": 2
+        },
+        "value": {
+          "group": "Behavior",
+          "subgroup": "Input",
+          "order": 12
+        },
+        "default-value": {
+          "group": "Behavior",
+          "subgroup": "Input",
+          "order": 13
+        },
+        "max": {
+          "group": "Behavior",
+          "subgroup": "Input",
+          "order": 14
+        },
+        "precision": {
+          "group": "Behavior",
+          "subgroup": "Input",
+          "order": 15
+        },
+        "readonly": {
+          "group": "Behavior",
+          "subgroup": "State",
+          "order": 31
+        },
+        "disabled": {
+          "group": "Behavior",
+          "subgroup": "State",
+          "order": 32
+        },
+        "required": {
+          "group": "Behavior",
+          "subgroup": "Validation",
+          "order": 21
+        },
+        "getSymbol": {
+          "group": "Content",
+          "order": 1
+        },
+        "size": {
+          "group": "Appearance",
+          "order": 1
+        },
+        "custom-error": {
+          "group": "Behavior",
+          "subgroup": "Validation",
+          "order": 22
+        },
+        "dir": {
+          "group": "Accessibility",
+          "order": 3
+        },
+        "lang": {
+          "group": "Accessibility",
+          "order": 4
+        },
+        "did-ssr": {
+          "group": "Integration",
+          "order": 1
+        }
+      }
+    },
+    "@kerfjs/ui:wa-relative-time": {
+      "groups": ["Content", "Behavior", "Accessibility", "Integration"],
+      "props": {
+        "date": {
+          "group": "Content",
+          "order": 1
+        },
+        "format": {
+          "group": "Content",
+          "order": 2
+        },
+        "numeric": {
+          "group": "Content",
+          "order": 3
+        },
+        "sync": {
+          "group": "Behavior",
+          "order": 1
+        },
+        "dir": {
+          "group": "Accessibility",
+          "order": 1
+        },
+        "lang": {
+          "group": "Accessibility",
+          "order": 2
+        },
+        "did-ssr": {
+          "group": "Integration",
+          "order": 1
+        }
+      }
+    },
+    "@kerfjs/ui:wa-resize-observer": {
+      "groups": ["Behavior", "Accessibility", "Integration"],
+      "props": {
+        "disabled": {
+          "group": "Behavior",
+          "order": 1
+        },
+        "dir": {
+          "group": "Accessibility",
+          "order": 1
+        },
+        "lang": {
+          "group": "Accessibility",
+          "order": 2
+        },
+        "did-ssr": {
+          "group": "Integration",
+          "order": 1
+        }
+      }
+    },
+    "@kerfjs/ui:wa-scroller": {
+      "groups": ["Appearance", "Layout", "Accessibility", "Integration"],
+      "props": {
+        "orientation": {
+          "group": "Layout",
+          "order": 1
+        },
+        "without-scrollbar": {
+          "group": "Appearance",
+          "order": 1
+        },
+        "without-shadow": {
+          "group": "Appearance",
+          "order": 2
+        },
+        "dir": {
+          "group": "Accessibility",
+          "order": 1
+        },
+        "lang": {
+          "group": "Accessibility",
+          "order": 2
+        },
+        "did-ssr": {
+          "group": "Integration",
+          "order": 1
+        }
+      }
+    },
+    "@kerfjs/ui:wa-select": {
+      "groups": [
+        "Content",
+        "Appearance",
+        "Behavior",
+        "Layout",
+        "Accessibility",
+        "Integration"
+      ],
+      "props": {
+        "name": {
+          "group": "Behavior",
+          "subgroup": "Input",
+          "order": 11
+        },
+        "value": {
+          "group": "Behavior",
+          "subgroup": "Input",
+          "order": 12
+        },
+        "size": {
+          "group": "Appearance",
+          "order": 1
+        },
+        "placeholder": {
+          "group": "Content",
+          "order": 1
+        },
+        "multiple": {
+          "group": "Behavior",
+          "subgroup": "Input",
+          "order": 13
+        },
+        "max-options-visible": {
+          "group": "Appearance",
+          "order": 2
+        },
+        "disabled": {
+          "group": "Behavior",
+          "subgroup": "State",
+          "order": 31
+        },
+        "with-clear": {
+          "group": "Appearance",
+          "subgroup": "Optional controls",
+          "order": 11
+        },
+        "open": {
+          "group": "Behavior",
+          "subgroup": "State",
+          "order": 32
+        },
+        "appearance": {
+          "group": "Appearance",
+          "order": 3
+        },
+        "pill": {
+          "group": "Appearance",
+          "order": 4
+        },
+        "label": {
+          "group": "Content",
+          "order": 2
+        },
+        "placement": {
+          "group": "Layout",
+          "order": 1
+        },
+        "hint": {
+          "group": "Content",
+          "order": 3
+        },
+        "with-label": {
+          "group": "Content",
+          "order": 4
+        },
+        "with-hint": {
+          "group": "Content",
+          "order": 5
+        },
+        "required": {
+          "group": "Behavior",
+          "subgroup": "Validation",
+          "order": 21
+        },
+        "custom-error": {
+          "group": "Behavior",
+          "subgroup": "Validation",
+          "order": 22
+        },
+        "dir": {
+          "group": "Accessibility",
+          "order": 1
+        },
+        "lang": {
+          "group": "Accessibility",
+          "order": 2
+        },
+        "did-ssr": {
+          "group": "Integration",
+          "order": 1
+        }
+      }
+    },
+    "@kerfjs/ui:wa-skeleton": {
+      "groups": ["Appearance", "Accessibility", "Integration"],
+      "props": {
+        "effect": {
+          "group": "Appearance",
+          "order": 1
+        },
+        "dir": {
+          "group": "Accessibility",
+          "order": 1
+        },
+        "lang": {
+          "group": "Accessibility",
+          "order": 2
+        },
+        "did-ssr": {
+          "group": "Integration",
+          "order": 1
+        }
+      }
+    },
+    "@kerfjs/ui:wa-slider": {
+      "groups": [
+        "Content",
+        "Appearance",
+        "Behavior",
+        "Layout",
+        "Accessibility",
+        "Integration"
+      ],
+      "props": {
+        "label": {
+          "group": "Content",
+          "order": 1
+        },
+        "hint": {
+          "group": "Content",
+          "order": 2
+        },
+        "name": {
+          "group": "Behavior",
+          "subgroup": "Input",
+          "order": 11
+        },
+        "min-value": {
+          "group": "Behavior",
+          "subgroup": "Input",
+          "order": 12
+        },
+        "max-value": {
+          "group": "Behavior",
+          "subgroup": "Input",
+          "order": 13
+        },
+        "value": {
+          "group": "Behavior",
+          "subgroup": "Input",
+          "order": 14
+        },
+        "range": {
+          "group": "Behavior",
+          "subgroup": "Input",
+          "order": 15
+        },
+        "disabled": {
+          "group": "Behavior",
+          "subgroup": "State",
+          "order": 31
+        },
+        "readonly": {
+          "group": "Behavior",
+          "subgroup": "State",
+          "order": 32
+        },
+        "orientation": {
+          "group": "Layout",
+          "order": 1
+        },
+        "size": {
+          "group": "Appearance",
+          "order": 1
+        },
+        "indicator-offset": {
+          "group": "Appearance",
+          "order": 2
+        },
+        "min": {
+          "group": "Behavior",
+          "subgroup": "Input",
+          "order": 16
+        },
+        "max": {
+          "group": "Behavior",
+          "subgroup": "Input",
+          "order": 17
+        },
+        "step": {
+          "group": "Behavior",
+          "subgroup": "Input",
+          "order": 18
+        },
+        "autofocus": {
+          "group": "Behavior",
+          "subgroup": "State",
+          "order": 33
+        },
+        "tooltip-distance": {
+          "group": "Appearance",
+          "subgroup": "Tooltip",
+          "order": 11
+        },
+        "tooltip-placement": {
+          "group": "Appearance",
+          "subgroup": "Tooltip",
+          "order": 12
+        },
+        "with-markers": {
+          "group": "Appearance",
+          "order": 3
+        },
+        "with-tooltip": {
+          "group": "Appearance",
+          "subgroup": "Tooltip",
+          "order": 13
+        },
+        "with-label": {
+          "group": "Content",
+          "order": 3
+        },
+        "with-hint": {
+          "group": "Content",
+          "order": 4
+        },
+        "custom-error": {
+          "group": "Behavior",
+          "subgroup": "Validation",
+          "order": 21
+        },
+        "dir": {
+          "group": "Accessibility",
+          "order": 1
+        },
+        "lang": {
+          "group": "Accessibility",
+          "order": 2
+        },
+        "did-ssr": {
+          "group": "Integration",
+          "order": 1
+        }
+      }
+    },
+    "@kerfjs/ui:wa-spinner": {
+      "groups": ["Accessibility", "Integration"],
+      "props": {
+        "dir": {
+          "group": "Accessibility",
+          "order": 1
+        },
+        "lang": {
+          "group": "Accessibility",
+          "order": 2
+        },
+        "did-ssr": {
+          "group": "Integration",
+          "order": 1
+        }
+      }
+    },
+    "@kerfjs/ui:wa-split-panel": {
+      "groups": ["Behavior", "Layout", "Accessibility", "Integration"],
+      "props": {
+        "position": {
+          "group": "Layout",
+          "order": 1
+        },
+        "position-in-pixels": {
+          "group": "Layout",
+          "order": 2
+        },
+        "orientation": {
+          "group": "Layout",
+          "order": 3
+        },
+        "disabled": {
+          "group": "Behavior",
+          "order": 1
+        },
+        "primary": {
+          "group": "Layout",
+          "order": 4
+        },
+        "snap": {
+          "group": "Layout",
+          "order": 5
+        },
+        "snap-threshold": {
+          "group": "Layout",
+          "order": 6
+        },
+        "dir": {
+          "group": "Accessibility",
+          "order": 1
+        },
+        "lang": {
+          "group": "Accessibility",
+          "order": 2
+        },
+        "did-ssr": {
+          "group": "Integration",
+          "order": 1
+        }
+      }
+    },
+    "@kerfjs/ui:wa-step": {
+      "groups": [
+        "Content",
+        "Appearance",
+        "Behavior",
+        "Accessibility",
+        "Integration"
+      ],
+      "props": {
+        "name": {
+          "group": "Behavior",
+          "order": 1
+        },
+        "completed": {
+          "group": "Behavior",
+          "subgroup": "State",
+          "order": 11
+        },
+        "loading": {
+          "group": "Behavior",
+          "subgroup": "State",
+          "order": 12
+        },
+        "disabled": {
+          "group": "Behavior",
+          "subgroup": "State",
+          "order": 13
+        },
+        "variant": {
+          "group": "Appearance",
+          "order": 1
+        },
+        "attention": {
+          "group": "Appearance",
+          "order": 2
+        },
+        "with-description": {
+          "group": "Content",
+          "order": 1
+        },
+        "active": {
+          "group": "Behavior",
+          "subgroup": "State",
+          "order": 14
+        },
+        "role": {
+          "group": "Accessibility",
+          "order": 1
+        },
+        "dir": {
+          "group": "Accessibility",
+          "order": 2
+        },
+        "lang": {
+          "group": "Accessibility",
+          "order": 3
+        },
+        "did-ssr": {
+          "group": "Integration",
+          "order": 1
+        }
+      }
+    },
+    "@kerfjs/ui:wa-stepper": {
+      "groups": ["Behavior", "Layout", "Accessibility", "Integration"],
+      "props": {
+        "active": {
+          "group": "Behavior",
+          "order": 1
+        },
+        "orientation": {
+          "group": "Layout",
+          "order": 1
+        },
+        "linear": {
+          "group": "Behavior",
+          "order": 2
+        },
+        "clickable": {
+          "group": "Behavior",
+          "order": 3
+        },
+        "label": {
+          "group": "Accessibility",
+          "order": 1
+        },
+        "dir": {
+          "group": "Accessibility",
+          "order": 2
+        },
+        "lang": {
+          "group": "Accessibility",
+          "order": 3
+        },
+        "did-ssr": {
+          "group": "Integration",
+          "order": 1
+        }
+      }
+    },
+    "@kerfjs/ui:wa-switch": {
+      "groups": [
+        "Content",
+        "Appearance",
+        "Behavior",
+        "Accessibility",
+        "Integration"
+      ],
+      "props": {
+        "title": {
+          "group": "Accessibility",
+          "order": 1
+        },
+        "name": {
+          "group": "Behavior",
+          "subgroup": "Form",
+          "order": 11
+        },
+        "value": {
+          "group": "Behavior",
+          "subgroup": "Form",
+          "order": 12
+        },
+        "size": {
+          "group": "Appearance",
+          "order": 1
+        },
+        "disabled": {
+          "group": "Behavior",
+          "subgroup": "State",
+          "order": 31
+        },
+        "checked": {
+          "group": "Behavior",
+          "subgroup": "State",
+          "order": 32
+        },
+        "required": {
+          "group": "Behavior",
+          "subgroup": "Validation",
+          "order": 21
+        },
+        "hint": {
+          "group": "Content",
+          "order": 1
+        },
+        "with-hint": {
+          "group": "Content",
+          "order": 2
+        },
+        "custom-error": {
+          "group": "Behavior",
+          "subgroup": "Validation",
+          "order": 22
+        },
+        "dir": {
+          "group": "Accessibility",
+          "order": 2
+        },
+        "lang": {
+          "group": "Accessibility",
+          "order": 3
+        },
+        "did-ssr": {
+          "group": "Integration",
+          "order": 1
+        }
+      }
+    },
+    "@kerfjs/ui:wa-tab": {
+      "groups": ["Behavior", "Accessibility", "Integration"],
+      "props": {
+        "panel": {
+          "group": "Behavior",
+          "order": 1
+        },
+        "disabled": {
+          "group": "Behavior",
+          "order": 2
+        },
+        "role": {
+          "group": "Accessibility",
+          "order": 1
+        },
+        "dir": {
+          "group": "Accessibility",
+          "order": 2
+        },
+        "lang": {
+          "group": "Accessibility",
+          "order": 3
+        },
+        "did-ssr": {
+          "group": "Integration",
+          "order": 1
+        }
+      }
+    },
+    "@kerfjs/ui:wa-tab-group": {
+      "groups": [
+        "Appearance",
+        "Behavior",
+        "Layout",
+        "Accessibility",
+        "Integration"
+      ],
+      "props": {
+        "active": {
+          "group": "Behavior",
+          "order": 1
+        },
+        "placement": {
+          "group": "Layout",
+          "order": 1
+        },
+        "activation": {
+          "group": "Behavior",
+          "order": 2
+        },
+        "without-scroll-controls": {
+          "group": "Appearance",
+          "order": 1
+        },
+        "dir": {
+          "group": "Accessibility",
+          "order": 1
+        },
+        "lang": {
+          "group": "Accessibility",
+          "order": 2
+        },
+        "did-ssr": {
+          "group": "Integration",
+          "order": 1
+        }
+      }
+    },
+    "@kerfjs/ui:wa-tab-panel": {
+      "groups": ["Behavior", "Accessibility", "Integration"],
+      "props": {
+        "name": {
+          "group": "Behavior",
+          "order": 1
+        },
+        "active": {
+          "group": "Behavior",
+          "order": 2
+        },
+        "role": {
+          "group": "Accessibility",
+          "order": 1
+        },
+        "dir": {
+          "group": "Accessibility",
+          "order": 2
+        },
+        "lang": {
+          "group": "Accessibility",
+          "order": 3
+        },
+        "did-ssr": {
+          "group": "Integration",
+          "order": 1
+        }
+      }
+    },
+    "@kerfjs/ui:wa-tag": {
+      "groups": ["Appearance", "Accessibility", "Integration"],
+      "props": {
+        "variant": {
+          "group": "Appearance",
+          "order": 1
+        },
+        "appearance": {
+          "group": "Appearance",
+          "order": 2
+        },
+        "size": {
+          "group": "Appearance",
+          "order": 3
+        },
+        "pill": {
+          "group": "Appearance",
+          "order": 4
+        },
+        "with-remove": {
+          "group": "Appearance",
+          "subgroup": "Optional controls",
+          "order": 11
+        },
+        "dir": {
+          "group": "Accessibility",
+          "order": 1
+        },
+        "lang": {
+          "group": "Accessibility",
+          "order": 2
+        },
+        "did-ssr": {
+          "group": "Integration",
+          "order": 1
+        }
+      }
+    },
+    "@kerfjs/ui:wa-tag-input": {
+      "groups": [
+        "Content",
+        "Appearance",
+        "Behavior",
+        "Accessibility",
+        "Integration"
+      ],
+      "props": {
+        "value": {
+          "group": "Behavior",
+          "subgroup": "Input",
+          "order": 11
+        },
+        "delimiter": {
+          "group": "Behavior",
+          "subgroup": "Input",
+          "order": 12
+        },
+        "max-tags": {
+          "group": "Behavior",
+          "subgroup": "Input",
+          "order": 13
+        },
+        "min-tags": {
+          "group": "Behavior",
+          "subgroup": "Input",
+          "order": 14
+        },
+        "allow-duplicates": {
+          "group": "Behavior",
+          "subgroup": "Input",
+          "order": 15
+        },
+        "with-clear": {
+          "group": "Appearance",
+          "subgroup": "Optional controls",
+          "order": 11
+        },
+        "placeholder": {
+          "group": "Content",
+          "order": 1
+        },
+        "label": {
+          "group": "Content",
+          "order": 2
+        },
+        "hint": {
+          "group": "Content",
+          "order": 3
+        },
+        "with-label": {
+          "group": "Content",
+          "order": 4
+        },
+        "with-hint": {
+          "group": "Content",
+          "order": 5
+        },
+        "size": {
+          "group": "Appearance",
+          "order": 1
+        },
+        "appearance": {
+          "group": "Appearance",
+          "order": 2
+        },
+        "pill": {
+          "group": "Appearance",
+          "order": 3
+        },
+        "readonly": {
+          "group": "Behavior",
+          "subgroup": "State",
+          "order": 41
+        },
+        "required": {
+          "group": "Behavior",
+          "subgroup": "Validation",
+          "order": 21
+        },
+        "autocapitalize": {
+          "group": "Behavior",
+          "subgroup": "Typing assistance",
+          "order": 31
+        },
+        "autocorrect": {
+          "group": "Behavior",
+          "subgroup": "Typing assistance",
+          "order": 32
+        },
+        "autocomplete": {
+          "group": "Behavior",
+          "subgroup": "Typing assistance",
+          "order": 33
+        },
+        "enterkeyhint": {
+          "group": "Behavior",
+          "subgroup": "Typing assistance",
+          "order": 34
+        },
+        "spellcheck": {
+          "group": "Behavior",
+          "subgroup": "Typing assistance",
+          "order": 35
+        },
+        "inputmode": {
+          "group": "Behavior",
+          "subgroup": "Typing assistance",
+          "order": 36
+        },
+        "name": {
+          "group": "Behavior",
+          "subgroup": "Input",
+          "order": 16
+        },
+        "disabled": {
+          "group": "Behavior",
+          "subgroup": "State",
+          "order": 42
+        },
+        "custom-error": {
+          "group": "Behavior",
+          "subgroup": "Validation",
+          "order": 22
+        },
+        "dir": {
+          "group": "Accessibility",
+          "order": 1
+        },
+        "lang": {
+          "group": "Accessibility",
+          "order": 2
+        },
+        "did-ssr": {
+          "group": "Integration",
+          "order": 1
+        }
+      }
+    },
+    "@kerfjs/ui:wa-textarea": {
+      "groups": [
+        "Content",
+        "Appearance",
+        "Behavior",
+        "Accessibility",
+        "Integration"
+      ],
+      "props": {
+        "title": {
+          "group": "Accessibility",
+          "order": 1
+        },
+        "name": {
+          "group": "Behavior",
+          "subgroup": "Input",
+          "order": 11
+        },
+        "value": {
+          "group": "Behavior",
+          "subgroup": "Input",
+          "order": 12
+        },
+        "size": {
+          "group": "Appearance",
+          "order": 1
+        },
+        "appearance": {
+          "group": "Appearance",
+          "order": 2
+        },
+        "label": {
+          "group": "Content",
+          "order": 1
+        },
+        "hint": {
+          "group": "Content",
+          "order": 2
+        },
+        "placeholder": {
+          "group": "Content",
+          "order": 3
+        },
+        "rows": {
+          "group": "Behavior",
+          "subgroup": "Input",
+          "order": 13
+        },
+        "resize": {
+          "group": "Appearance",
+          "order": 3
+        },
+        "disabled": {
+          "group": "Behavior",
+          "subgroup": "State",
+          "order": 41
+        },
+        "readonly": {
+          "group": "Behavior",
+          "subgroup": "State",
+          "order": 42
+        },
+        "required": {
+          "group": "Behavior",
+          "subgroup": "Validation",
+          "order": 21
+        },
+        "minlength": {
+          "group": "Behavior",
+          "subgroup": "Validation",
+          "order": 22
+        },
+        "maxlength": {
+          "group": "Behavior",
+          "subgroup": "Validation",
+          "order": 23
+        },
+        "autocapitalize": {
+          "group": "Behavior",
+          "subgroup": "Typing assistance",
+          "order": 31
+        },
+        "autocorrect": {
+          "group": "Behavior",
+          "subgroup": "Typing assistance",
+          "order": 32
+        },
+        "autocomplete": {
+          "group": "Behavior",
+          "subgroup": "Typing assistance",
+          "order": 33
+        },
+        "autofocus": {
+          "group": "Behavior",
+          "subgroup": "State",
+          "order": 43
+        },
+        "enterkeyhint": {
+          "group": "Behavior",
+          "subgroup": "Typing assistance",
+          "order": 34
+        },
+        "spellcheck": {
+          "group": "Behavior",
+          "subgroup": "Typing assistance",
+          "order": 35
+        },
+        "inputmode": {
+          "group": "Behavior",
+          "subgroup": "Typing assistance",
+          "order": 36
+        },
+        "with-label": {
+          "group": "Content",
+          "order": 4
+        },
+        "with-hint": {
+          "group": "Content",
+          "order": 5
+        },
+        "with-count": {
+          "group": "Behavior",
+          "subgroup": "Validation",
+          "order": 24
+        },
+        "custom-error": {
+          "group": "Behavior",
+          "subgroup": "Validation",
+          "order": 25
+        },
+        "dir": {
+          "group": "Accessibility",
+          "order": 2
+        },
+        "lang": {
+          "group": "Accessibility",
+          "order": 3
+        },
+        "did-ssr": {
+          "group": "Integration",
+          "order": 1
+        }
+      }
+    },
+    "@kerfjs/ui:wa-time-input": {
+      "groups": [
+        "Content",
+        "Appearance",
+        "Behavior",
+        "Layout",
+        "Accessibility",
+        "Integration"
+      ],
+      "props": {
+        "name": {
+          "group": "Behavior",
+          "subgroup": "Input",
+          "order": 11
+        },
+        "value": {
+          "group": "Behavior",
+          "subgroup": "Input",
+          "order": 12
+        },
+        "disabled": {
+          "group": "Behavior",
+          "subgroup": "State",
+          "order": 41
+        },
+        "required": {
+          "group": "Behavior",
+          "subgroup": "Validation",
+          "order": 21
+        },
+        "readonly": {
+          "group": "Behavior",
+          "subgroup": "State",
+          "order": 42
+        },
+        "size": {
+          "group": "Appearance",
+          "order": 1
+        },
+        "appearance": {
+          "group": "Appearance",
+          "order": 2
+        },
+        "pill": {
+          "group": "Appearance",
+          "order": 3
+        },
+        "label": {
+          "group": "Content",
+          "order": 1
+        },
+        "hint": {
+          "group": "Content",
+          "order": 2
+        },
+        "autocomplete": {
+          "group": "Behavior",
+          "subgroup": "Typing assistance",
+          "order": 31
+        },
+        "with-clear": {
+          "group": "Appearance",
+          "subgroup": "Optional controls",
+          "order": 11
+        },
+        "with-now": {
+          "group": "Appearance",
+          "subgroup": "Optional controls",
+          "order": 12
+        },
+        "with-label": {
+          "group": "Content",
+          "order": 3
+        },
+        "with-hint": {
+          "group": "Content",
+          "order": 4
+        },
+        "min": {
+          "group": "Behavior",
+          "subgroup": "Input",
+          "order": 13
+        },
+        "max": {
+          "group": "Behavior",
+          "subgroup": "Input",
+          "order": 14
+        },
+        "step": {
+          "group": "Behavior",
+          "subgroup": "Input",
+          "order": 15
+        },
+        "hour-format": {
+          "group": "Behavior",
+          "subgroup": "Input",
+          "order": 16
+        },
+        "open": {
+          "group": "Behavior",
+          "subgroup": "State",
+          "order": 43
+        },
+        "placement": {
+          "group": "Layout",
+          "order": 1
+        },
+        "distance": {
+          "group": "Layout",
+          "order": 2
+        },
+        "custom-error": {
+          "group": "Behavior",
+          "subgroup": "Validation",
+          "order": 22
+        },
+        "dir": {
+          "group": "Accessibility",
+          "order": 1
+        },
+        "lang": {
+          "group": "Accessibility",
+          "order": 2
+        },
+        "did-ssr": {
+          "group": "Integration",
+          "order": 1
+        }
+      }
+    },
+    "@kerfjs/ui:wa-toast": {
+      "groups": ["Layout", "Accessibility", "Integration"],
+      "props": {
+        "placement": {
+          "group": "Layout",
+          "order": 1
+        },
+        "dir": {
+          "group": "Accessibility",
+          "order": 1
+        },
+        "lang": {
+          "group": "Accessibility",
+          "order": 2
+        },
+        "did-ssr": {
+          "group": "Integration",
+          "order": 1
+        }
+      }
+    },
+    "@kerfjs/ui:wa-toast-item": {
+      "groups": [
+        "Content",
+        "Appearance",
+        "Behavior",
+        "Accessibility",
+        "Integration"
+      ],
+      "props": {
+        "variant": {
+          "group": "Appearance",
+          "order": 1
+        },
+        "size": {
+          "group": "Appearance",
+          "order": 2
+        },
+        "duration": {
+          "group": "Behavior",
+          "order": 1
+        },
+        "with-icon": {
+          "group": "Content",
+          "order": 1
+        },
+        "dir": {
+          "group": "Accessibility",
+          "order": 1
+        },
+        "lang": {
+          "group": "Accessibility",
+          "order": 2
+        },
+        "did-ssr": {
+          "group": "Integration",
+          "order": 1
+        }
+      }
+    },
+    "@kerfjs/ui:wa-tooltip": {
+      "groups": [
+        "Appearance",
+        "Behavior",
+        "Layout",
+        "Accessibility",
+        "Integration"
+      ],
+      "props": {
+        "placement": {
+          "group": "Layout",
+          "order": 1
+        },
+        "disabled": {
+          "group": "Behavior",
+          "order": 1
+        },
+        "distance": {
+          "group": "Layout",
+          "order": 2
+        },
+        "open": {
+          "group": "Behavior",
+          "order": 2
+        },
+        "skidding": {
+          "group": "Layout",
+          "order": 3
+        },
+        "show-delay": {
+          "group": "Behavior",
+          "order": 3
+        },
+        "hide-delay": {
+          "group": "Behavior",
+          "order": 4
+        },
+        "trigger": {
+          "group": "Behavior",
+          "order": 5
+        },
+        "without-arrow": {
+          "group": "Appearance",
+          "order": 1
+        },
+        "for": {
+          "group": "Behavior",
+          "order": 6
+        },
+        "dir": {
+          "group": "Accessibility",
+          "order": 1
+        },
+        "lang": {
+          "group": "Accessibility",
+          "order": 2
+        },
+        "did-ssr": {
+          "group": "Integration",
+          "order": 1
+        }
+      }
+    },
+    "@kerfjs/ui:wa-tree": {
+      "groups": ["Behavior", "Accessibility", "Integration"],
+      "props": {
+        "selection": {
+          "group": "Behavior",
+          "order": 1
+        },
+        "tabindex": {
+          "group": "Accessibility",
+          "order": 1
+        },
+        "role": {
+          "group": "Accessibility",
+          "order": 2
+        },
+        "dir": {
+          "group": "Accessibility",
+          "order": 3
+        },
+        "lang": {
+          "group": "Accessibility",
+          "order": 4
+        },
+        "did-ssr": {
+          "group": "Integration",
+          "order": 1
+        }
+      }
+    },
+    "@kerfjs/ui:wa-tree-item": {
+      "groups": ["Behavior", "Accessibility", "Integration"],
+      "props": {
+        "expanded": {
+          "group": "Behavior",
+          "subgroup": "State",
+          "order": 11
+        },
+        "selected": {
+          "group": "Behavior",
+          "subgroup": "State",
+          "order": 12
+        },
+        "disabled": {
+          "group": "Behavior",
+          "subgroup": "State",
+          "order": 13
+        },
+        "lazy": {
+          "group": "Behavior",
+          "order": 1
+        },
+        "tabindex": {
+          "group": "Accessibility",
+          "order": 1
+        },
+        "role": {
+          "group": "Accessibility",
+          "order": 2
+        },
+        "dir": {
+          "group": "Accessibility",
+          "order": 3
+        },
+        "lang": {
+          "group": "Accessibility",
+          "order": 4
+        },
+        "did-ssr": {
+          "group": "Integration",
+          "order": 1
+        }
+      }
+    },
+    "@kerfjs/ui:wa-zoomable-frame": {
+      "groups": [
+        "Content",
+        "Appearance",
+        "Behavior",
+        "Accessibility",
+        "Integration"
+      ],
+      "props": {
+        "src": {
+          "group": "Content",
+          "order": 1
+        },
+        "srcdoc": {
+          "group": "Content",
+          "order": 2
+        },
+        "allow": {
+          "group": "Behavior",
+          "subgroup": "Frame",
+          "order": 11
+        },
+        "allowfullscreen": {
+          "group": "Behavior",
+          "subgroup": "Frame",
+          "order": 12
+        },
+        "loading": {
+          "group": "Behavior",
+          "subgroup": "Frame",
+          "order": 13
+        },
+        "name": {
+          "group": "Behavior",
+          "subgroup": "Frame",
+          "order": 14
+        },
+        "referrerpolicy": {
+          "group": "Behavior",
+          "subgroup": "Frame",
+          "order": 15
+        },
+        "sandbox": {
+          "group": "Behavior",
+          "subgroup": "Frame",
+          "order": 16
+        },
+        "label": {
+          "group": "Accessibility",
+          "order": 1
+        },
+        "zoom": {
+          "group": "Behavior",
+          "subgroup": "Zoom",
+          "order": 21
+        },
+        "zoom-levels": {
+          "group": "Behavior",
+          "subgroup": "Zoom",
+          "order": 22
+        },
+        "without-controls": {
+          "group": "Appearance",
+          "subgroup": "Optional controls",
+          "order": 11
+        },
+        "without-interaction": {
+          "group": "Behavior",
+          "subgroup": "Zoom",
+          "order": 23
+        },
+        "with-theme-sync": {
+          "group": "Appearance",
+          "order": 1
+        },
+        "dir": {
+          "group": "Accessibility",
+          "order": 2
+        },
+        "lang": {
+          "group": "Accessibility",
+          "order": 3
+        },
+        "did-ssr": {
+          "group": "Integration",
+          "order": 1
+        }
+      }
+    },
     "@kerfjs/ui:workbench": {
       "groups": ["Behavior", "Layout", "Accessibility", "Integration"],
       "props": {
