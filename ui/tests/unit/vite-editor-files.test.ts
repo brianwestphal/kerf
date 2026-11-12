@@ -23,18 +23,33 @@ import {
   KERF_UI_EDITOR_FILE_API,
   KERF_UI_EDITOR_LIST_API,
   KERF_UI_EDITOR_TYPES_API,
+  projectTypeWorker,
 } from '../../vite-editor.mjs';
 
 let root: string;
 beforeEach(() => {
   root = mkdtempSync(join(tmpdir(), 'kerf-editor-files-'));
 });
-afterEach(() => rmSync(root, { recursive: true, force: true }));
+const middlewares: Array<ReturnType<typeof editorFileMiddleware>> = [];
+const middleware = () => {
+  const created = editorFileMiddleware(root);
+  middlewares.push(created);
+  return created;
+};
+afterEach(async () => {
+  await Promise.all(middlewares.splice(0).map((created) => created.dispose()));
+  rmSync(root, { recursive: true, force: true });
+});
 
 async function call(
   method: string,
   path: string | null,
-  options: { body?: string; header?: boolean; url?: string } = {},
+  options: {
+    body?: string;
+    header?: boolean;
+    url?: string;
+    via?: ReturnType<typeof editorFileMiddleware>;
+  } = {},
 ) {
   const query = path === null ? '' : `?path=${encodeURIComponent(path)}`;
   const request = {
@@ -57,7 +72,11 @@ async function call(
     },
   };
   const next = vi.fn();
-  await editorFileMiddleware(root)(request as never, response as never, next);
+  await (options.via ?? middleware())(
+    request as never,
+    response as never,
+    next,
+  );
   return { response, next };
 }
 
@@ -247,5 +266,96 @@ describe('project type endpoint', () => {
     expect(JSON.parse(invalid.response.body).diagnostics[0].message).toContain(
       'Cannot find name',
     );
+  });
+});
+
+describe('project type worker', () => {
+  // KF-EQFF9K: TypeScript runs in a worker thread, so the server answers
+  // other requests while an analysis is in flight.
+  it('answers an unrelated request while a cold analysis is in flight', async () => {
+    writeFileSync(join(root, 'card.kui.json'), '{}');
+    const via = middleware();
+    let analyzed = false;
+    const analysis = call('POST', null, {
+      url: KERF_UI_EDITOR_TYPES_API,
+      via,
+      body: JSON.stringify({
+        action: 'analyze',
+        source: 'card.kui.json',
+        text: '{ id: string; count: number }',
+      }),
+    }).then((result) => {
+      analyzed = true;
+      return result;
+    });
+    const started = performance.now();
+    const list = await call('GET', null, { url: KERF_UI_EDITOR_LIST_API, via });
+    expect(list.response.statusCode).toBe(200);
+    expect(JSON.parse(list.response.body)).toEqual(['card.kui.json']);
+    expect(analyzed).toBe(false);
+    expect(performance.now() - started).toBeLessThan(200);
+    const result = await analysis;
+    expect(result.response.statusCode).toBe(200);
+    expect(JSON.parse(result.response.body).type.typescript.text).toContain(
+      'count',
+    );
+  });
+
+  it('fails the requests in flight when the worker crashes, then starts a new one', async () => {
+    // A stand-in worker: it crashes on `crash`, else echoes the request.
+    const entry = join(root, 'stand-in-worker.mjs');
+    writeFileSync(
+      entry,
+      `import { parentPort } from 'node:worker_threads';
+parentPort.on('message', ({ id, body }) => {
+  if (body.action === 'crash') process.exit(3);
+  if (body.action === 'reject') parentPort.postMessage({ id, error: 'Bad type.' });
+  else parentPort.postMessage({ id, result: body });
+});`,
+    );
+    const types = projectTypeWorker(root, new URL(`file://${entry}`));
+    try {
+      expect(await types.request({ action: 'echo' })).toEqual({
+        result: { action: 'echo' },
+      });
+      expect(await types.request({ action: 'reject' })).toEqual({
+        status: 400,
+        error: 'Bad type.',
+      });
+      expect(await types.request({ action: 'crash' })).toEqual({
+        status: 500,
+        error: 'The type service stopped (exit code 3).',
+      });
+      // The next request gets a fresh worker.
+      expect(await types.request({ action: 'echo' })).toEqual({
+        result: { action: 'echo' },
+      });
+      // A worker that fails to load reports its error.
+      const broken = projectTypeWorker(
+        root,
+        new URL(`file://${join(root, 'missing-worker.mjs')}`),
+      );
+      const reply = await broken.request({ action: 'echo' });
+      expect(reply).toMatchObject({ status: 500 });
+      expect('error' in reply && reply.error).toMatch(
+        /^The type service failed: /,
+      );
+    } finally {
+      await types.dispose();
+    }
+  });
+
+  it('fails the requests in flight on disposal', async () => {
+    const entry = join(root, 'silent-worker.mjs');
+    writeFileSync(entry, 'setInterval(() => {}, 1000);');
+    const types = projectTypeWorker(root, new URL(`file://${entry}`));
+    const reply = types.request({ action: 'analyze' });
+    await types.dispose();
+    expect(await reply).toEqual({
+      status: 500,
+      error: 'The type service was disposed.',
+    });
+    // Disposing an idle client is a no-op.
+    expect(types.dispose()).toBeUndefined();
   });
 });

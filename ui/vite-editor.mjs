@@ -26,10 +26,9 @@ import {
 } from 'node:path';
 import process from 'node:process';
 import { URL } from 'node:url';
-import { fileURLToPath } from 'node:url';
+import { Worker } from 'node:worker_threads';
 
 import { profileCatalogPaths } from './view/cli.mjs';
-import { createViewCatalog } from './view/catalog.mjs';
 
 /** Where the editor is served unless `route` says otherwise. */
 export const KERF_UI_EDITOR_ROUTE = '/__kerf-ui-editor/';
@@ -174,32 +173,8 @@ const send = (response, status, body, type = 'text/plain; charset=utf-8') => {
  * itself in git.
  */
 export function editorFileMiddleware(root) {
-  let projectTypes;
-  const typeService = async () => {
-    const { createProjectTypeService } =
-      await import('./view/project-types.mjs');
-    return (projectTypes ??= createProjectTypeService(root));
-  };
-  const typeCatalog = () => {
-    const app = applicationCatalogs(root);
-    return createViewCatalog({
-      props: [
-        readJson(
-          fileURLToPath(new URL('./ai/component-props.json', import.meta.url)),
-        ),
-        ...app.props,
-      ],
-      composition: [
-        readJson(
-          fileURLToPath(
-            new URL('./ai/component-composition.json', import.meta.url),
-          ),
-        ),
-        ...app.composition,
-      ],
-    });
-  };
-  return async (request, response, next) => {
+  const types = projectTypeWorker(root);
+  const middleware = async (request, response, next) => {
     const url = new URL(request.url ?? '/', 'http://localhost');
     if (url.pathname === KERF_UI_EDITOR_TYPES_API) {
       if (request.method !== 'POST') {
@@ -211,6 +186,7 @@ export function editorFileMiddleware(root) {
         return;
       }
       let text = '';
+      let body;
       try {
         for await (const chunk of request) {
           text += chunk;
@@ -219,7 +195,7 @@ export function editorFileMiddleware(root) {
             return;
           }
         }
-        const body = JSON.parse(text);
+        body = JSON.parse(text);
         if (
           !editorFilePath(root, body.source) ||
           !['analyze', 'validate'].includes(body.action) ||
@@ -238,26 +214,20 @@ export function editorFileMiddleware(root) {
           );
           return;
         }
-        const service = await typeService();
-        const result =
-          body.action === 'analyze'
-            ? service.analyze({
-                ...body,
-                ...(body.declared ? { catalog: typeCatalog() } : {}),
-              })
-            : service.validateDocument(
-                body.document,
-                typeCatalog(),
-                body.source,
-              );
-        send(response, 200, JSON.stringify(result), 'application/json');
       } catch (error) {
         send(
           response,
           400,
           error instanceof Error ? error.message : String(error),
         );
+        return;
       }
+      // The analysis runs in the worker, so this server keeps answering
+      // every other request (a Play page, a file save) meanwhile.
+      const reply = await types.request(body);
+      if ('result' in reply)
+        send(response, 200, JSON.stringify(reply.result), 'application/json');
+      else send(response, reply.status, reply.error);
       return;
     }
     if (url.pathname === KERF_UI_EDITOR_LIST_API) {
@@ -334,6 +304,70 @@ export function editorFileMiddleware(root) {
         error instanceof Error ? error.message : String(error),
       );
     }
+  };
+  // Stops the type worker; the server calls it when it closes.
+  middleware.dispose = () => types.dispose();
+  return middleware;
+}
+
+/**
+ * The project-type service in a worker thread for `root`, created on the
+ * first request and again after a crash (KF-EQFF9K: TypeScript's synchronous
+ * work used to run on the server's event loop, so every other response
+ * waited behind it). `request(body)` posts a validated type request and
+ * resolves `{ result }`, or `{ status, error }`: 400 for a request the
+ * service rejects, 500 when the worker fails. A crash fails the requests in
+ * flight. The worker never keeps the process alive. Internal; `entry`
+ * replaces the worker module in tests.
+ */
+export function projectTypeWorker(
+  root,
+  entry = new URL('./view/project-types-worker.mjs', import.meta.url),
+) {
+  let worker;
+  let nextId = 0;
+  const pending = new Map();
+  const fail = (message) => {
+    for (const settle of pending.values())
+      settle({ status: 500, error: message });
+    pending.clear();
+  };
+  const start = () => {
+    const current = new Worker(entry, { workerData: { root } });
+    current.unref();
+    current.on('message', ({ id, result, error }) => {
+      const settle = pending.get(id);
+      pending.delete(id);
+      settle?.(error === undefined ? { result } : { status: 400, error });
+    });
+    const lost = (message) => {
+      if (worker !== current) return;
+      worker = undefined;
+      fail(message);
+    };
+    current.on('error', (error) =>
+      lost(`The type service failed: ${error.message}`),
+    );
+    current.on('exit', (code) =>
+      lost(`The type service stopped (exit code ${code}).`),
+    );
+    return current;
+  };
+  return {
+    request(body) {
+      worker ??= start();
+      const id = nextId++;
+      return new Promise((settle) => {
+        pending.set(id, settle);
+        worker.postMessage({ id, body });
+      });
+    },
+    dispose() {
+      const current = worker;
+      worker = undefined;
+      fail('The type service was disposed.');
+      return current?.terminate();
+    },
   };
 }
 
@@ -485,7 +519,9 @@ export function kerfUiEditor(options = {}) {
       });
     },
     configureServer(server) {
-      server.middlewares.use(editorFileMiddleware(root));
+      const files = editorFileMiddleware(root);
+      server.httpServer?.once('close', files.dispose);
+      server.middlewares.use(files);
       server.middlewares.use(async (request, response, next) => {
         const path = (request.url ?? '').split(/[?#]/)[0];
         if (path !== route && `${path}/` !== route) {

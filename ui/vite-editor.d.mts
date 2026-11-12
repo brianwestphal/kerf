@@ -128,15 +128,33 @@ export declare function editorDocuments(
 ): Promise<string[]>;
 /**
  * Connect middleware reading (GET) and writing (PUT) documents under `root`,
- * and listing them (GET `KERF_UI_EDITOR_LIST_API`).
+ * listing them (GET `KERF_UI_EDITOR_LIST_API`), and answering project-type
+ * requests (POST `KERF_UI_EDITOR_TYPES_API`) from a worker thread, so a type
+ * analysis never delays the server's other responses. Call `dispose()` when
+ * the server closes to stop that worker; it never keeps the process alive.
  */
 export declare function editorFileMiddleware(
   root: string,
-): (
+): ((
   request: import('node:http').IncomingMessage,
   response: import('node:http').ServerResponse,
   next: (error?: unknown) => void,
-) => Promise<void>;
+) => Promise<void>) & { dispose(): Promise<number> | undefined };
+/** A type request's reply from the worker. */
+export type ProjectTypeReply =
+  { result: unknown } | { status: 400 | 500; error: string };
+/**
+ * The project-type service in a worker thread for `root`, created on the
+ * first request and again after a crash. Internal; `entry` replaces the
+ * worker module in tests.
+ */
+export declare function projectTypeWorker(
+  root: string,
+  entry?: URL,
+): {
+  request(body: Record<string, unknown>): Promise<ProjectTypeReply>;
+  dispose(): Promise<number> | undefined;
+};
 /** The editor page the route serves. */
 export declare function editorPage(): string;
 /** The generated entry module that mounts the editor. */

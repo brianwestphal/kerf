@@ -15,10 +15,14 @@ export default defineConfig({
     {
       name: 'kerf-ui-editor-files',
       configureServer(server) {
-        server.middlewares.use(editorFileMiddleware(server.config.root));
+        const files = editorFileMiddleware(server.config.root);
+        server.httpServer?.once('close', files.dispose);
+        server.middlewares.use(files);
       },
       configurePreviewServer(server) {
-        server.middlewares.use(editorFileMiddleware(server.config.root));
+        const files = editorFileMiddleware(server.config.root);
+        server.httpServer.once('close', files.dispose);
+        server.middlewares.use(files);
       },
     },
   ],

@@ -33,7 +33,8 @@ the editor reopens it on your next visit. The plugin's file endpoint
 the project, outside `node_modules` and `.git`, and only for requests the
 editor itself makes. A host that mounts the editor itself passes
 `createEditor({ catalog, storage: devServerStorage() })` and adds
-`editorFileMiddleware(root)` to its server. The same middleware lists the
+`editorFileMiddleware(root)` to its server (and calls the middleware's
+`dispose()` when the server closes). The same middleware lists the
 project's documents (GET `/__kerf-ui-editor/api/files`: every `.kui.json`
 outside `node_modules`, `dist`, `test-results`, and dot-folders), which
 Add a child's **Existing document…** offers in a picker.
@@ -325,6 +326,12 @@ requiring `X-Kerf-UI-Editor: 1`. Requests name a project-relative `.kui.json`
 source. Analysis requests carry `{ action: "analyze", source, text, cursor? }`;
 validation requests carry `{ action: "validate", source, document }`. The server
 uses TypeScript's Node API; compiler code never enters the browser bundle.
+TypeScript runs in a worker thread that `editorFileMiddleware` starts on the
+first type request, one per project root, so an analysis never delays the
+server's other responses (a Play page, a save). A worker crash fails the
+requests in flight with a 500 and the next request starts a new worker. The
+worker never keeps the process alive; a host that adds the middleware itself
+calls its `dispose()` when its server closes, as the plugin does.
 
 A custom host can pass `createEditor({ typeService })`, a `ProjectTypeService`
 function that answers the same typed requests. Export of compiler-backed

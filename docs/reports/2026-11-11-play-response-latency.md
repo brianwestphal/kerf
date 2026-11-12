@@ -64,5 +64,23 @@ queue rather than overlap, so each extra one adds its full duration.
 
 Run the project-type service off the server's event loop, in a worker thread
 owned by `editorFileMiddleware`, so analysis never stalls unrelated responses
-in the dev server, the preview server or an application's host. This is
-tracked as a follow-up. Do not raise test timeouts to absorb the stall.
+in the dev server, the preview server or an application's host. Do not raise
+test timeouts to absorb the stall.
+
+## After the fix (KF-EQFF9K)
+
+`editorFileMiddleware` now hosts the service in a worker thread
+(`ui/view/project-types-worker.mjs`). The same harness, on the same machine,
+gave these results:
+
+| Condition                                   | Analysis duration |    Play HTML latency while it ran |
+| ------------------------------------------- | ----------------: | --------------------------------: |
+| Baseline (no analysis)                      |                 — |  0.3 ms median, 1.4 ms max (n=40) |
+| Cold analysis (worker and service creation) |          1,030 ms |         0.8 ms median, 2.4 ms max |
+| Warm analysis, five runs                    |        220–359 ms | 0.8–0.9 ms median, 1.0–7.3 ms max |
+| Two concurrent analyses                     | 202 ms and 413 ms |         0.6 ms median, 1.5 ms max |
+
+The Play HTML now answers at baseline speed whatever the type service is doing.
+Analyses still serialize within the one worker. Each warm analysis takes about
+30–160 ms longer than on the main thread. That cost is messaging plus reading
+the catalog afresh, and no request waits behind it.

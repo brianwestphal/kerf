@@ -1481,7 +1481,9 @@ composing document belongs beside its rows before they render.
     that answers the project's documents as project-relative POSIX paths of
     `.kui.json` files. `devServerStorage(api?, listApi?)` implements it with
     a GET on `EDITOR_LIST_API` (`/__kerf-ui-editor/api/files`), which
-    `@kerfjs/ui/vite-editor`'s `editorFileMiddleware` answers
+    `@kerfjs/ui/vite-editor`'s `editorFileMiddleware` answers (its
+    project-type requests run in a worker thread, KF-EQFF9K, so they never
+    block this or any other route)
     (`KERF_UI_EDITOR_LIST_API`, through `editorDocuments(root)`): every
     `.kui.json` under the project root, sorted, at most 5000, never inside
     `node_modules`, `dist`, `test-results`, or a dot-folder (`.git`, the
