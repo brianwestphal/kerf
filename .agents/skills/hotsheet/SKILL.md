@@ -3,10 +3,27 @@ name: hotsheet
 description: Plan and work through the complete Hot Sheet Up Next queue using priority, overlap, dependencies, and safe parallelism. Works headless, with or without a server.
 ---
 
-<!-- hotsheet-skill-version: 66 -->
+<!-- hotsheet-skill-version: 72 -->
 
 Work the project's complete Hot Sheet Up Next queue. An invocation normally drains every
 actionable Up Next ticket; completing one ticket is not a stopping condition.
+
+Before planning the queue, read the project's policy version with
+`hotsheet-cli -C <shared-store> coordination --project <main>
+development-strategies`, then resolve its effective selection with
+`hotsheet-cli -C <shared-store> coordination --project <main>
+development-strategy-resolve`, passing applicable `--session <strategy-name>` and
+`--ticket <strategy-name>` overrides at their respective boundaries (HS2-F9062F).
+An explicit user instruction takes precedence over ticket, session, then project
+strategy, but cannot waive mandatory gates or green-main promotion. Supply a
+user-selected strategy as the highest-priority `--ticket` override and record
+its user provenance separately. Report and refuse gate conflicts. Use the
+resolved integration mode, local verification,
+custom minimum tier, T0/T1 budget, browser/platform/performance selection,
+test-plan timing, cadence, and red-CI recovery. `unconfigured-project` retains
+the existing integration default and risk-selected gate. If the selected CLI
+lacks this resolver, report the missing capability rather than guessing. Re-read
+policy changes at a safe ticket/integration boundary, never during active work.
 
 1. **Read and plan the whole queue.** List Up Next, read every queued ticket in full, and
    inspect relevant code before choosing execution order. Build a short working plan that
@@ -59,6 +76,13 @@ actionable Up Next ticket; completing one ticket is not a stopping condition.
    behavior, create its ticket. Do not ask permission, wait, promise to file it later, or
    leave it only in a comment/TODO/note. Reference every follow-up slug in the current
    ticket's completing note, then continue.
+   When creating a follow-up to the ticket in hand, pass its source context so Hot Sheet
+   records a typed relation: `hotsheet-cli new --follow-up-to <source-slug> --project
+   <checkout-id> ...`, or MCP `hotsheet_create` with `checkout` and qualified
+   `follow_up_to: "@project/connection:native"`. Verify the source's `follow_ups`
+   field after creation; prose references alone do not create the relation (HS2-2Z11A5).
+   If creation reports a target but the source link failed, retry only that link with
+   `hotsheet-cli link-follow-up` or MCP `hotsheet_link_follow_up`; do not create another target.
 5. **Commit at ticket boundaries; push by this repository's rules.** Before closing a
    ticket, run the required gates and review the diff. Give every ticket at least one
    commit, ideally commits unique to that ticket, and include its ticket slug in each
@@ -80,6 +104,13 @@ actionable Up Next ticket; completing one ticket is not a stopping condition.
    the exact ticket when CI resolves and finish it. Repair a failure caused by the ticket's
    own change before completion; for an independent failure, create a prioritized follow-up
    bug and cite it in the completing note. Do not defer local gates or integration to CI.
+   After green covering main CI, complete the ticket and release its claim. For a
+   direct ticket worktree, invoke `node scripts/verified-worktree-cleanup.mjs
+   --project <main-checkout> --store <store> --ticket <slug> --worktree <path>
+   --shipping <full-main-sha>`. The command rechecks ownership, clean and idle
+   state, exact-tree gate, remote ancestry, and green CI before removing the
+   worktree and its merged branch. A refusal leaves the checkout intact; record
+   its reason and retry after resolving it (HS2-HR3ZX4).
 6. **Re-read the queue after every completion.** Concurrent work and new findings can
    change the plan. Continue until no actionable Up Next ticket remains.
 
@@ -195,7 +226,20 @@ Notes:
   `FEEDBACK NEEDED` note may include one or more uppercase `CHOICE` or `CHOICE:` lines, each
   followed by a Markdown list (blank lines allowed). Write each group's question after the
   colon on the same line (`CHOICE: Which approach should we take?`) or as the last line before
-  a bare `CHOICE:`. Options may include attachment references. Use choices
+  a bare `CHOICE:`. Keep each option's first line a short label; put its costs and
+  consequences on continuation lines indented under the item (blank lines and nested lists
+  allowed), which render as the option's details (HS2-EWF0FT):
+
+  ```
+  CHOICE: Which approach should we take?
+  - **Rebuild on launch.** Simple.
+    Adds about two seconds to startup.
+  - **Rebuild on change.**
+  ```
+
+  Lettered paragraphs (`**CHOICE A: Label.** details`, `**Option B —** label`, `C) label`,
+  run A, B, C) also parse as a group, but prefer the list. Options may include attachment
+  references. Use choices
   to make a decision easier, not to offload ordinary implementation judgment or replace
   an open-ended question. Users may select zero or multiple options and may always add a
   freeform response, so do not describe the list as exhaustive or require a selection.
@@ -221,3 +265,18 @@ Notes:
   JSON-escaped `\\n` sequences in `--note`. The CLI rejects likely escaped line breaks
   outside inline/fenced backtick code; use `--allow-literal-backslash-n` only when prose
   containing literal `\\n` text is intentional.
+
+## Local verification (HS2-RS0FFT)
+
+Use the project's declared affected local gate and inspect its selected checks
+and fallback reasons. Client-only changes do not routinely run unrelated server
+suites. Keep affected unit/API tests, a bounded relevant browser set, shared
+policy/contracts/generated-artifact checks, and one real-app visual review of
+an authorized overlapping UI batch. Full browser/platform regression stays in
+CI. Broaden local checks for shared infrastructure, auth, data formats,
+migrations, gate changes, ambiguous dependencies, or a concrete failure, and
+record the reason. Run the full local browser suite only for an identified
+unresolved risk. Reuse only valid exact-input evidence. Preserve dirty local
+edits and verify the committed tree in a clean worktree; never use a bypass.
+After push, release the claim while CI runs and continue independent work.
+Complete only after successful covering CI on the shipping branch.
