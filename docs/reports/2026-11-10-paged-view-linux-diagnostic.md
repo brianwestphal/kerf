@@ -151,3 +151,24 @@ scheduling cannot be replayed exactly. The original incident remains valid.
 analysis in Backlog, with no assertion softening, additional test retries or
 unproven implementation fix. KF-SAYTM1 was not demoted from its human-promoted
 queue position by this worker.
+
+## Recurrence and decision (KF-5WTPEP, 2026-11-12)
+
+The overshoot recurred naturally in main run 43129541417, in job
+`ui-webawesome-latest` (Chromium, Linux) rather than the original `ui-browser`
+job. The source revision did not change PagedView, its demo or its test. Its
+trace shows one gesture with no input-no-op retry. The command span was about
+150–172 ms, comparable to the passing run's 174 ms, so command pacing still does
+not separate failing runs from passing ones.
+
+The screencast shows the native momentum scroll passing Token Rate and settling
+on Triage while the page dots still show Today. Chromium's own scroll ignored
+`scroll-snap-stop: always` before PagedView reported anything, matching the
+original. The maintainer accepted this as native Chromium behavior under Linux CI
+load.
+
+On Linux, the hard-fling test now asserts what PagedView owns: the first fling
+lands whole on a later page, and PagedView reports that page exactly once. If it
+landed on Token Rate, the second fling is still checked exactly. On macOS, the
+exact `scroll-snap-stop: always` check is unchanged, and iOS Safari and Android
+Chrome remain in the manual plan.
