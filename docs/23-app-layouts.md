@@ -457,7 +457,10 @@ showLabel?, hideLabel? }`, where `name` is the title-style panel name,
   area's corner (a rail without a `mainToolbar` floats its groups the same
   way). The move is decided at render time from `collapsed` — moving DOM
   nodes at wire time would fight the morph — and each toggle carries a
-  stable `data-key` so the morph never reuses a focused toggle's button for
+  stable `data-key` (as does each labeled relocatable group, keyed by its
+  `label` unless the app supplies one; KF-KHTDC2: a focused relocated
+  control keeps its node when groups join or leave the relocated set) so the
+  morph never reuses a focused toggle's button for
   another control. `wireWorkbench` keeps focus with the toggle across the
   move: closing from the panel's toggle focuses the relocated one, and
   opening from the work area focuses the panel's own (a focused toggle the

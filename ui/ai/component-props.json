@@ -17775,7 +17775,7 @@
             "nullable": true
           },
           "required": false,
-          "description": "Move this group into the work-area toolbar when its panel collapses.",
+          "description": "Move this group into the work-area toolbar when its panel collapses.\nA labeled relocatable group is keyed by its `label` (a `data-key`\n`rootAttributes` overrides it), so it keeps its DOM node, and a focused\ncontrol keeps focus, when the relocated set changes around it. Give\nrelocatable groups in one panel distinct labels.",
           "group": "Layout"
         },
         {

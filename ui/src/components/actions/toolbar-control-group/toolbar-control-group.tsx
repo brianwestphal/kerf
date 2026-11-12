@@ -333,7 +333,13 @@ export interface ToolbarControlGroupProps {
   placement?: ToolbarControlGroupPlacement;
   /** CSS length used as the minimum width and flex basis for `sizing="grow"`; defaults to 19rem. */
   growBasis?: string;
-  /** Move this group into the work-area toolbar when its panel collapses. */
+  /**
+   * Move this group into the work-area toolbar when its panel collapses.
+   * A labeled relocatable group is keyed by its `label` (a `data-key`
+   * `rootAttributes` overrides it), so it keeps its DOM node, and a focused
+   * control keeps focus, when the relocated set changes around it. Give
+   * relocatable groups in one panel distinct labels.
+   */
   relocateOnCollapse?: boolean;
   /** Add contrast behind photo-backed avatar content. */
   scrim?: boolean;
@@ -424,8 +430,15 @@ export function ToolbarControlGroup({
       : '',
     growBasis ? `--kui-toolbar-group-grow-basis:${growBasis}` : '',
   ].filter(Boolean);
+  // KF-KHTDC2: a stable key lets the morph keep a relocated group's node,
+  // and its focus, when groups before it join or leave the relocated set.
+  const relocationKey =
+    relocateOnCollapse && label && rootAttributes['data-key'] === undefined
+      ? { 'data-key': `kui-relocated:${label}` }
+      : {};
   const group = (
     <div
+      {...relocationKey}
       {...filterDataAttributes(rootAttributes, TOOLBAR_CONTROL_GROUP_PROTECTED)}
       class={`kui-toolbar-control-group ${className}`.trim()}
       data-component="toolbar-control-group"

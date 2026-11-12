@@ -241,6 +241,33 @@ describe('CollapsiblePanel toolbar', () => {
     );
     expect(bare.querySelector('[data-component="pane"]')).toBeNull();
   });
+  it('keys labeled relocatable groups so a relocated control keeps its node (KF-KHTDC2)', () => {
+    const root = (props: Parameters<typeof ToolbarControlGroup>[0]) =>
+      html(ToolbarControlGroup(props)).querySelector<HTMLElement>(
+        '[data-component="toolbar-control-group"]',
+      )!;
+    const children = raw('<button type="button">Go</button>');
+    expect(
+      root({ label: 'Announcer', relocateOnCollapse: true, children }).dataset
+        .key,
+    ).toBe('kui-relocated:Announcer');
+    // An application key wins; unlabeled or fixed groups get no key.
+    expect(
+      root({
+        label: 'Announcer',
+        relocateOnCollapse: true,
+        rootAttributes: { 'data-key': 'mine' },
+        children,
+      }).dataset.key,
+    ).toBe('mine');
+    expect(
+      root({ relocateOnCollapse: true, children }).hasAttribute('data-key'),
+    ).toBe(false);
+    expect(
+      root({ label: 'Announcer', children }).hasAttribute('data-key'),
+    ).toBe(false);
+  });
+
   it('relocates busy groups and their status together across every zone and state', () => {
     for (const busy of [false, true, false, true]) {
       const named = (name: string, relocateOnCollapse = true) => (

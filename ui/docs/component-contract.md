@@ -701,8 +701,10 @@ It applies in any zone, so a group a collapsed Workbench or CollapsiblePanel
 relocates into the work area's leading zone (`relocateOnCollapse`) gives way
 to the work area's expanded trailing search. Groups that do not opt in stay
 visible, and the yielding groups return when it collapses or the toolbar
-widens. Leave `relocateOnCollapse` constant rather than switching it with the
-search state: changing the relocated set rebuilds the toolbar. In a `responsive="trailing-priority"` Toolbar, use
+widens. A labeled relocatable group is keyed by its `label` (a `data-key` in
+`rootAttributes` overrides it), so when the relocated set changes around a
+focused control, that control keeps its node and its focus; give relocatable
+groups in one panel distinct labels. In a `responsive="trailing-priority"` Toolbar, use
 `visibility="yield-to-priority-row"` instead: the group leaves exactly while
 the expanded trailing control has its own row, from the same container query
 as the row at the Toolbar's `responsiveAt` (832px for `narrow`, 704px for
