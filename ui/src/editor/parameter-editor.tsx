@@ -138,6 +138,8 @@ export function createParameterEditor(options: ParameterEditorOptions) {
         source,
         text: current.text,
         cursor,
+        // A formatting pass never shows suggestions (KF-SNM61J).
+        ...(format ? { suggest: false } : {}),
         declared: current.type?.typescript ? undefined : current.type,
       });
       if (

@@ -323,7 +323,10 @@ union members. Define new named types in application source.
 `devServerStorage()` includes the project compiler transport. The plugin serves
 `KERF_UI_EDITOR_TYPES_API` (`/__kerf-ui-editor/api/types`), a JSON POST endpoint
 requiring `X-Kerf-UI-Editor: 1`. Requests name a project-relative `.kui.json`
-source. Analysis requests carry `{ action: "analyze", source, text, cursor? }`;
+source. Analysis requests carry
+`{ action: "analyze", source, text, cursor?, suggest? }`; `suggest: false`
+skips completion suggestions, the costliest part of an analysis, and the
+editor sends it whenever it only formats a draft.
 validation requests carry `{ action: "validate", source, document }`. The server
 uses TypeScript's Node API; compiler code never enters the browser bundle.
 TypeScript runs in a worker thread that `editorFileMiddleware` starts on the

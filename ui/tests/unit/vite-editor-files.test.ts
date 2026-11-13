@@ -256,6 +256,18 @@ describe('project type endpoint', () => {
         )
       ).response.statusCode,
     ).toBe(400);
+    expect(
+      (
+        await request(
+          JSON.stringify({
+            action: 'analyze',
+            source: 'card.kui.json',
+            text: 'string',
+            suggest: 'no',
+          }),
+        )
+      ).response.statusCode,
+    ).toBe(400);
     const invalid = await request(
       JSON.stringify({
         action: 'analyze',

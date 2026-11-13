@@ -25,6 +25,8 @@ export type ProjectTypeRequest =
       readonly source: string;
       readonly text: string;
       readonly cursor?: number;
+      /** False skips completion suggestions, the costliest analysis step. */
+      readonly suggest?: boolean;
       readonly declared?: ViewType;
     }
   | {

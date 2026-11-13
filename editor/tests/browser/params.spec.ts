@@ -132,9 +132,10 @@ test('validates defaults with the compiler and persists undoable parameter edits
   await dialog
     .getByRole('textbox', { name: 'Name', exact: true })
     .fill('itemCount');
+  // Reopening formats the stored type through the compiler first.
   await expect(
     dialog.getByRole('button', { name: 'Save', exact: true }),
-  ).toBeEnabled();
+  ).toBeEnabled({ timeout: 15000 });
   await dialog.getByRole('button', { name: 'Save', exact: true }).click();
   await expect(dialog).not.toBeVisible({ timeout: 15000 });
   await expect(

@@ -201,7 +201,9 @@ export function editorFileMiddleware(root) {
           !['analyze', 'validate'].includes(body.action) ||
           (body.action === 'analyze' &&
             (typeof body.text !== 'string' ||
-              (body.cursor !== undefined && !Number.isInteger(body.cursor)))) ||
+              (body.cursor !== undefined && !Number.isInteger(body.cursor)) ||
+              (body.suggest !== undefined &&
+                typeof body.suggest !== 'boolean'))) ||
           (body.action === 'validate' &&
             (!body.document ||
               typeof body.document !== 'object' ||

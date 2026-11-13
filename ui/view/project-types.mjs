@@ -1,7 +1,14 @@
 // Node-only TypeScript language service for parameter expressions. This module
 // is loaded by the dev-server/CLI, never by the browser view runtime.
 import { readFileSync, realpathSync, statSync } from 'node:fs';
-import { dirname, isAbsolute, relative, resolve, sep } from 'node:path';
+import {
+  basename,
+  dirname,
+  isAbsolute,
+  relative,
+  resolve,
+  sep,
+} from 'node:path';
 
 import ts from 'typescript';
 
@@ -138,6 +145,11 @@ export function createProjectTypeService(root) {
   let file = resolve(root, '.__kerf_parameter__.ts');
   let content = '';
   let version = 0;
+  // Auto-import completions compute a module specifier per project export,
+  // and each reads the nearest package.json (KF-SNM61J: about 1,300 reads of
+  // one file per request). Package manifests are read once per request.
+  let manifests = new Map();
+  const snapshots = new Map();
   const host = {
     ...ts.sys,
     useCaseSensitiveFileNames: () => ts.sys.useCaseSensitiveFileNames,
@@ -154,16 +166,32 @@ export function createProjectTypeService(root) {
         return 'missing';
       }
     },
+    // The language service asks for every program file's snapshot on each
+    // new project version, even when its script version is unchanged; reading
+    // all of them again cost about half a second per request (KF-SNM61J).
     getScriptSnapshot: (name) => {
       if (name === file) return ts.ScriptSnapshot.fromString(content);
       try {
-        return ts.ScriptSnapshot.fromString(readFileSync(name, 'utf8'));
+        const mtime = statSync(name).mtimeMs;
+        const cached = snapshots.get(name);
+        if (cached?.mtime === mtime) return cached.snapshot;
+        const snapshot = ts.ScriptSnapshot.fromString(
+          readFileSync(name, 'utf8'),
+        );
+        snapshots.set(name, { mtime, snapshot });
+        return snapshot;
       } catch {
+        snapshots.delete(name);
         return undefined;
       }
     },
     fileExists: (name) => name === file || ts.sys.fileExists(name),
-    readFile: (name) => (name === file ? content : ts.sys.readFile(name)),
+    readFile: (name) => {
+      if (name === file) return content;
+      if (basename(name) !== 'package.json') return ts.sys.readFile(name);
+      if (!manifests.has(name)) manifests.set(name, ts.sys.readFile(name));
+      return manifests.get(name);
+    },
   };
   const service = ts.createLanguageService(host);
   const set = (source, text) => {
@@ -173,6 +201,7 @@ export function createProjectTypeService(root) {
     config = readConfig();
     options = compilerOptions();
     content = text;
+    manifests = new Map();
     version += 1;
   };
   const diagnostics = () => [
@@ -303,6 +332,7 @@ export function createProjectTypeService(root) {
     text,
     cursor = text.length,
     autoImport = true,
+    suggest = true,
     declared,
     catalog,
   }) {
@@ -312,6 +342,7 @@ export function createProjectTypeService(root) {
       return analyze({
         source,
         text: declaredExpression(declared, catalog, source),
+        suggest,
       });
     cursor = Number.isInteger(cursor)
       ? Math.max(0, Math.min(cursor, text.length))
@@ -326,14 +357,18 @@ export function createProjectTypeService(root) {
     if (ts.isTypeAliasDeclaration(syntax.statements[0]))
       referenceTokens(syntax.statements[0].type, syntax, PREFIX.length);
     const parsed = expression();
-    const completions = service.getCompletionsAtPosition(
-      file,
-      PREFIX.length + Math.max(0, Math.min(cursor, text.length)),
-      {
-        includeCompletionsForModuleExports: true,
-        includeCompletionsWithInsertText: true,
-      },
-    );
+    // Auto-import completions are most of an analysis's cost, so a caller
+    // that will not show suggestions (formatting a finished draft) skips them.
+    const completions = suggest
+      ? service.getCompletionsAtPosition(
+          file,
+          PREFIX.length + Math.max(0, Math.min(cursor, text.length)),
+          {
+            includeCompletionsForModuleExports: true,
+            includeCompletionsWithInsertText: true,
+          },
+        )
+      : undefined;
     const fragment = /[A-Za-z_$][\w$]*$/.exec(text.slice(0, cursor));
     const start = fragment ? cursor - fragment[0].length : cursor;
     const names = exportsByName();
@@ -435,6 +470,7 @@ export function createProjectTypeService(root) {
           text: canonical,
           cursor: canonical.length,
           autoImport: false,
+          suggest: false,
         });
         return { ...analyzed, suggestions };
       }
@@ -517,7 +553,11 @@ export function createProjectTypeService(root) {
             ),
           },
         };
-        result = analyze({ source, text: typeExpressionText(carrier, source) });
+        result = analyze({
+          source,
+          text: typeExpressionText(carrier, source),
+          suggest: false,
+        });
       } catch (error) {
         result = { diagnostics: [{ message: error.message }] };
       }

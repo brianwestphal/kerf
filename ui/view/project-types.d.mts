@@ -24,6 +24,8 @@ export interface NodeProjectTypeService {
     text: string;
     cursor?: number;
     autoImport?: boolean;
+    /** Compute completion suggestions (default true); false skips the costliest step. */
+    suggest?: boolean;
     declared?: ViewType;
     catalog?: ViewCatalog;
   }): ProjectTypeAnalysis;

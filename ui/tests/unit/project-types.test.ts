@@ -144,6 +144,22 @@ describe('owning-project TypeScript parameters', () => {
     });
     expect(formatted.type!.typescript.text).toContain('id: string;');
     expect(formatted.type!.typescript.text).toContain('Array<number | string>');
+    // KF-SNM61J: a caller that will not show suggestions skips completions,
+    // and the analysis is otherwise the same.
+    const quiet = service.analyze({
+      source,
+      text: 'MyCus',
+      cursor: 5,
+      suggest: false,
+    });
+    expect(quiet.suggestions).toEqual([]);
+    expect(quiet.diagnostics).toEqual(
+      service.analyze({ source, text: 'MyCus', cursor: 5 }).diagnostics,
+    );
+    expect(
+      service.analyze({ source, text: 'MyCustomType', suggest: false }).type!
+        .typescript.text,
+    ).toMatch(/import\(".*"\)\.MyCustomType/);
   });
 
   it('discovers new project files and preserves legacy content semantics', () => {

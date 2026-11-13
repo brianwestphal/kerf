@@ -422,6 +422,21 @@ describe('live TypeScript drafts', () => {
     expect(f.field('type').value).toBe('Array<string | number>');
     expect(f.button('save').disabled).toBe(false);
   });
+  it('asks for suggestions only while typing, not when formatting (KF-SNM61J)', async () => {
+    const f = setup();
+    await f.open();
+    const analyses = () =>
+      f.api.mock.calls
+        .map(([request]) => request)
+        .filter((request) => request.action === 'analyze');
+    // Opening formats the stored type and never shows suggestions.
+    expect(analyses()).toHaveLength(1);
+    expect(analyses()[0]).toMatchObject({ suggest: false });
+    f.input('type', 'Array<str');
+    await f.ready();
+    expect(analyses()).toHaveLength(2);
+    expect(analyses()[1]).not.toHaveProperty('suggest');
+  });
   it('finishes a pending type draft with compiler formatting when focus leaves', async () => {
     const f = setup();
     await f.open();
