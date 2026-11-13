@@ -59,6 +59,9 @@ interface OpenState {
 }
 
 const states = new WeakMap<HTMLDialogElement, OpenState>();
+// Dialogs reopened after their exit closed them but before the browser
+// delivered that close event (a later task). The one stale event is stopped.
+const staleCloses = new WeakSet<HTMLDialogElement>();
 const installed = new WeakSet<Document>();
 const stackOrders = new WeakMap<ParentNode, HTMLDialogElement[]>();
 
@@ -274,13 +277,20 @@ export function openDialog(dialog: HTMLDialogElement): void {
   if (embedded(dialog)) return;
   installDialogSurfaces(dialog.ownerDocument);
   const closing = states.get(dialog);
-  if (closing?.closing) {
+  if (closing?.closing && dialog.open) {
     // The latest request wins: reopening during the exit motion keeps it open.
     closing.closing = false;
     runMotion(dialog, 'enter');
     return;
   }
   if (dialog.open) return;
+  if (closing?.closing) {
+    // KF-C0RV1G: the exit motion already closed it, but the browser has not
+    // yet delivered its close event. Drop that state and open afresh; the
+    // close listener stops the stale event.
+    settle(dialog);
+    staleCloses.add(dialog);
+  }
   dialog.showModal();
   const state: OpenState = {
     owned: new Map(),
@@ -484,11 +494,18 @@ export function installDialogSurfaces(doc: Document = document): void {
     true,
   );
   // However it closed (including an engine closing it past a refused
-  // Escape), stop following it.
+  // Escape), stop following it. The close event of an exit that a reopen
+  // overtook is stale (KF-C0RV1G): stop it so the application does not tear
+  // the reopened dialog down.
   doc.addEventListener(
     'close',
     (event) => {
-      if (isSurface(event.target)) settle(event.target);
+      if (!isSurface(event.target)) return;
+      if (staleCloses.delete(event.target)) {
+        event.stopImmediatePropagation();
+        return;
+      }
+      settle(event.target);
     },
     true,
   );

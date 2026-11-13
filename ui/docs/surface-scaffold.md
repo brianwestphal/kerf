@@ -59,8 +59,11 @@ openDialog(document.getElementById('edit-workspace') as HTMLDialogElement);
   `openDialog(dialog)`: it opens modally in the top layer, the rest of the
   page is inert, and focus moves to an `autofocus` element or else the panel.
   `closeDialog(dialog)` closes it after its exit motion; the browser returns
-  focus to the element that opened it. Do not toggle its `open` attribute,
-  which opens a dialog without modality.
+  focus to the element that opened it. The latest request wins: calling
+  `openDialog` while it closes, even after the exit motion but before the
+  browser delivers `close`, keeps it open, and that superseded close never
+  fires. Do not toggle its `open` attribute, which opens a dialog without
+  modality.
 - **Close requests.** The close button, any element inside with
   `data-dialog-close` (a Cancel button), Escape, and, with `lightDismiss`, a
   press on the backdrop ask to close: the dialog dispatches a cancelable

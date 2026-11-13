@@ -285,6 +285,46 @@ describe('openDialog and closeDialog', () => {
     expect(dialog.open).toBe(true);
   });
 
+  it('reopens a dialog its exit closed before the close event settled it (KF-C0RV1G)', () => {
+    vi.useFakeTimers();
+    animate('150ms');
+    const { dialog } = setup();
+    // Browsers dispatch the native close event as a later task; happy-dom
+    // fires it synchronously. Hold the synchronous one and send it later.
+    const closeNatively = dialog.close.bind(dialog);
+    dialog.close = () => {
+      const hold = (event: Event) => {
+        if (event.target === dialog) event.stopImmediatePropagation();
+      };
+      window.addEventListener('close', hold, true);
+      closeNatively();
+      window.removeEventListener('close', hold, true);
+      globalThis.setTimeout(() => dialog.dispatchEvent(new Event('close')), 0);
+    };
+    const appClosed = vi.fn();
+    document.body.addEventListener('close', appClosed, true);
+    openDialog(dialog);
+    vi.advanceTimersByTime(150);
+    closeDialog(dialog);
+    vi.advanceTimersByTime(150);
+    // The exit closed it; its close event is still queued.
+    expect(dialog.open).toBe(false);
+    openDialog(dialog);
+    expect(dialog.open).toBe(true);
+    expect(dialog.getAttribute(DIALOG_MOTION_ATTRIBUTE)).toBe('enter');
+    vi.advanceTimersByTime(500);
+    // The stale close event neither closed nor settled the reopened dialog,
+    // and never reached the application.
+    expect(dialog.open).toBe(true);
+    expect(appClosed).not.toHaveBeenCalled();
+    closeDialog(dialog);
+    expect(dialog.getAttribute(DIALOG_MOTION_ATTRIBUTE)).toBe('exit');
+    vi.advanceTimersByTime(500);
+    expect(dialog.open).toBe(false);
+    expect(appClosed).toHaveBeenCalledTimes(1);
+    document.body.removeEventListener('close', appClosed, true);
+  });
+
   it('still closes when a re-render drops the motion marker', () => {
     vi.useFakeTimers();
     animate('150ms');
