@@ -471,4 +471,30 @@ tester.run('ui-composition rendersAs wrappers', composition, {
   ],
 });
 
+// KF-8TF7Y8: StateBanner's action is a wrapping list of controls, so the
+// shipped catalog accepts several; EmptyState's action still takes one.
+const feedback = (code) => ({
+  code: `import { Button, EmptyState, StateBanner } from '@kerfjs/ui'; ${code}`,
+  settings: shippedUiSettings,
+});
+tester.run('ui-composition feedback action zones', composition, {
+  valid: [
+    feedback(
+      "<StateBanner tone='warning' action={<><Button size='compact' shape='pill'>Monitor</Button><Button size='compact' shape='pill'>Ignore</Button></>} />;",
+    ),
+    feedback(
+      "<StateBanner tone='warning' action={[<Button key='m'>Monitor</Button>, <Button key='i'>Ignore</Button>]} />;",
+    ),
+    feedback('<EmptyState action={<Button>Retry</Button>} />;'),
+  ],
+  invalid: [
+    {
+      ...feedback(
+        '<EmptyState action={<><Button>Retry</Button><Button>Reset</Button></>} />;',
+      ),
+      errors: [{ messageId: 'cardinality' }],
+    },
+  ],
+});
+
 console.log('ui-composition: OK');

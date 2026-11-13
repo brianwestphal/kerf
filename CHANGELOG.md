@@ -12,6 +12,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Fixed
 
+- **StateBanner accepts several action controls in the composition catalog (KF-8TF7Y8).** Its `action` already lays out one or more Buttons as a wrapping list, as the guidance says, but the catalog limited the zone to one child, so `kerf-ui-doctor` and the `kerfjs/ui-composition` lint rule reported `KUI-L203` for two Buttons in a fragment and pushed apps toward the Row wrapper the guidance forbids. The zone now accepts any number of controls; EmptyState's single action is unchanged.
 - **The Kerf UI editor's parameter dialog reopens when a row is chosen while it closes (KF-8SPEG7).** The new choice was lost when the exit motion ended.
 - **Kerf UI relocated toolbar groups keep keyboard focus when the relocated set changes (KF-KHTDC2).** A labeled `ToolbarControlGroup` with `relocateOnCollapse` now renders a stable `data-key` from its `label`; a `data-key` in `rootAttributes` overrides it. When groups join or leave the set a collapsed panel relocates, a focused control in an unchanged group keeps its DOM node and focus instead of dropping to `<body>`.
 

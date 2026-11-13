@@ -62,7 +62,7 @@ Exact prop names and types: [`@kerfjs/ui/state-banner`](../public-api-signatures
 Zones (a zone is bound to JSX only through its listed prop; never assume the zone id is a prop):
 
 - `icon` — JSX prop `icon`; accepts `dormant-decoration`; 0–1.
-- `action` — JSX prop `action`; accepts `control`; 0–1.
+- `action` — JSX prop `action`; accepts `control`; any number.
 
 ## State and wiring
 

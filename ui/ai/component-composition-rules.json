@@ -369,7 +369,7 @@
         "id": "action",
         "jsx": { "prop": "action" },
         "accepts": ["control"],
-        "cardinality": { "min": 0, "max": 1 },
+        "cardinality": { "min": 0, "max": "unbounded" },
         "exclusiveWith": []
       }
     ]
