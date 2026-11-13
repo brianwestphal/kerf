@@ -54,6 +54,7 @@ export const targets = {
   'radio-group': {
     vertical: ['layout-density'],
     horizontal: ['release-channel'],
+    tiles: ['theme'],
   },
   switch: {
     states: ['live-updates', 'compact-navigation', 'managed-setting'],
@@ -94,8 +95,8 @@ export function verifyTargets() {
       individuals += keys.length;
     }
   }
-  assert.equal(variants, 20);
-  assert.equal(individuals, 33);
+  assert.equal(variants, 21);
+  assert.equal(individuals, 34);
 }
 
 const title = (value) =>

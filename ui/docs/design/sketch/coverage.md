@@ -5,8 +5,8 @@ Generated from `scripts/build-design-templates.mjs` by
 the template manifest or a family assignment. The offline
 `check:design-templates` gate compares this file with the current tree.
 
-The source inventory has **35 components**, **114 variants**,
-and **228 light/dark SVG captures**. Supported means that an editable
+The source inventory has **35 components**, **115 variants**,
+and **230 light/dark SVG captures**. Supported means that an editable
 native Symbol batch passed its own browser, override, resize, imported consumer,
 and save/reopen checks. Pending means the SVG exists but its reusable Sketch
 component boundary and semantic layout have not passed those checks. A source
@@ -14,10 +14,10 @@ variant may be a multi-control showcase; a family ticket must export its actual
 individual component states and retain the sheet only as a catalog page.
 
 Every supported Symbol ships in one Library, [Kerf-UI.sketch](unified/README.md),
-with 326 light/dark Symbols assembled from the family build inputs. The Button
+with 328 light/dark Symbols assembled from the family build inputs. The Button
 pilot covers seven source showcase variants with 40 appearance Symbols
-([Button](button/README.md)). The Form controls batch covers 20 showcase
-variants with 66 individual Symbols ([Forms](forms/README.md)). The Advanced
+([Button](button/README.md)). The Form controls batch covers 21 showcase
+variants with 68 individual Symbols ([Forms](forms/README.md)). The Advanced
 inputs batch covers 17 variants with 34 Symbols
 ([Advanced inputs](advanced/README.md)). The Lists and data batch covers 23
 variants with 46 Symbols ([Lists and data](lists/README.md)). The Toolbars and
@@ -35,7 +35,7 @@ supported Sketch version.
 | Family                  | Components | Source variants | Status    | Ticket    |
 | ----------------------- | ---------: | --------------: | --------- | --------- |
 | Button pilot            |          1 |               7 | supported | KF-MKW7QZ |
-| Form controls           |          6 |              20 | supported | KF-8VXPDP |
+| Form controls           |          6 |              21 | supported | KF-8VXPDP |
 | Advanced inputs         |          7 |              17 | supported | KF-6CC071 |
 | Toolbars and navigation |          7 |              25 | supported | KF-6Q8S95 |
 | Lists and data          |          6 |              23 | supported | KF-83M2MW |
@@ -70,6 +70,7 @@ supported Sketch version.
 | checkbox-group        | horizontal           | Horizontal, Compact, with an Error              | supported     | KF-8VXPDP |
 | radio-group           | vertical             | Stacked Choices with Hints                      | supported     | KF-8VXPDP |
 | radio-group           | horizontal           | Horizontal, Compact, with an Error              | supported     | KF-8VXPDP |
+| radio-group           | tiles                | Preview Tiles                                   | supported     | KF-8VXPDP |
 | switch                | states               | On, Off, and Disabled                           | supported     | KF-8VXPDP |
 | switch                | compact              | Compact                                         | supported     | KF-8VXPDP |
 | select                | form                 | Labeled Form Field                              | supported     | KF-6CC071 |

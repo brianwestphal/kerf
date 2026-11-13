@@ -2094,6 +2094,54 @@
         }
       ]
     },
+    "forms/radio-group-tiles-theme-light": {
+      "family": "forms",
+      "name": "Radio Group / Tiles / Theme / Light",
+      "symbolId": "EE196F3A-4D37-4516-AC37-253262A0D547",
+      "layerId": "C6E59ACA-18AE-42C5-A5C1-43AB9E7E2C45",
+      "text": [
+        {
+          "id": "097705BA-CCB7-4568-9DBE-A549C263A14C",
+          "value": "THEME"
+        },
+        {
+          "id": "61566FAD-0D2D-4B69-865B-03A1CE06AAD8",
+          "value": "Light"
+        },
+        {
+          "id": "C5B869C1-5D13-477B-B9A5-7B9DE45D5741",
+          "value": "Dark"
+        },
+        {
+          "id": "92336A21-43DC-4F15-AA4D-F29C68A603B9",
+          "value": "Low glare."
+        }
+      ]
+    },
+    "forms/radio-group-tiles-theme-dark": {
+      "family": "forms",
+      "name": "Radio Group / Tiles / Theme / Dark",
+      "symbolId": "34061E4A-5286-432B-B1A6-3150424EE89C",
+      "layerId": "C2FE139E-E045-48EA-A569-D3EA471F2C86",
+      "text": [
+        {
+          "id": "8DEE35D7-CDA9-44DC-ABFE-968DF70A4565",
+          "value": "THEME"
+        },
+        {
+          "id": "7924DFDD-7773-4EC7-82DD-E06DD0F1E72B",
+          "value": "Light"
+        },
+        {
+          "id": "5057BD7F-33BF-4D42-96AA-290FD9B0767E",
+          "value": "Dark"
+        },
+        {
+          "id": "143EAD77-E6E6-4E28-9346-B9A426A28664",
+          "value": "Low glare."
+        }
+      ]
+    },
     "advanced/color-field-compact-control-dark": {
       "family": "advanced",
       "name": "Color Field / Compact / Control / Dark",

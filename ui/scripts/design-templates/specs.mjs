@@ -79,6 +79,26 @@ const pushButton = (label) =>
   `<button type="button" class="dt-button">${label}</button>`;
 const brandButton = (label) =>
   `<button type="button" class="dt-button" data-variant="brand">${label}</button>`;
+// A miniature app window in one color scheme: the RadioGroup tiles artwork,
+// matching the catalog's Preview Tiles example (ux-demo/demos/radio-group.tsx).
+const SCHEME_COLORS = {
+  light: {
+    canvas: '#ffffff',
+    rail: '#eef1f5',
+    bar: '#cfd6e0',
+    accent: '#3b6fd8',
+  },
+  dark: {
+    canvas: '#1c1f26',
+    rail: '#272b34',
+    bar: '#454c59',
+    accent: '#6f9bff',
+  },
+};
+const schemePreview = (scheme) => {
+  const { canvas, rail, bar, accent } = SCHEME_COLORS[scheme];
+  return `<svg viewBox="0 0 120 90" preserveAspectRatio="xMidYMid slice"><rect width="120" height="90" fill="${canvas}"/><rect width="34" height="90" fill="${rail}"/><rect x="6" y="10" width="22" height="5" rx="2.5" fill="${accent}"/><rect x="6" y="21" width="18" height="4" rx="2" fill="${bar}"/><rect x="6" y="30" width="20" height="4" rx="2" fill="${bar}"/><rect x="44" y="10" width="44" height="7" rx="3.5" fill="${bar}"/><rect x="44" y="26" width="66" height="4" rx="2" fill="${bar}"/><rect x="44" y="35" width="58" height="4" rx="2" fill="${bar}"/><rect x="44" y="44" width="62" height="4" rx="2" fill="${bar}"/></svg>`;
+};
 // Representative sample data — realistic placeholders, never lorem ipsum.
 export const COMPONENTS = {
   list: {
@@ -2220,6 +2240,33 @@ export const COMPONENTS = {
               { value: 'stable', label: 'Stable' },
               { value: 'beta', label: 'Beta' },
               { value: 'nightly', label: 'Nightly' },
+            ],
+          }),
+      },
+      {
+        // KF-1M9SJA: presentation="tiles" (selected and unselected preview
+        // tiles, one with a hint), using the catalog's scheme artwork.
+        id: 'tiles',
+        label: 'Preview Tiles',
+        height: 152,
+        render: () =>
+          RadioGroup({
+            label: 'Theme',
+            name: 'theme',
+            presentation: 'tiles',
+            value: 'light',
+            choices: [
+              {
+                value: 'light',
+                label: 'Light',
+                preview: raw(schemePreview('light')),
+              },
+              {
+                value: 'dark',
+                label: 'Dark',
+                hint: 'Low glare.',
+                preview: raw(schemePreview('dark')),
+              },
             ],
           }),
       },

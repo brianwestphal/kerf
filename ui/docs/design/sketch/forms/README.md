@@ -1,9 +1,9 @@
 # Form controls Sketch library
 
-[Kerf-Forms.sketch](Kerf-Forms.sketch) contains 66 editable Symbols for the 20
+[Kerf-Forms.sketch](Kerf-Forms.sketch) contains 68 editable Symbols for the 21
 source variants of SplitButton, TextField, Checkbox, CheckboxGroup, RadioGroup,
 and Switch. Each individual control has a light and dark master. The source
-showcase sheets contain 33 controls per theme; the library exports those
+showcase sheets contain 34 controls per theme; the library exports those
 controls separately so a designer can place and override one state at a time.
 
 The Symbols contain native Text and vector paths, with no bitmap layers.
@@ -68,8 +68,9 @@ leave preexisting documents and Library settings untouched. The capture step
 renders the actual component templates in Chromium, clips each individual
 control, and converts it to SVG. The generator imports those SVGs as native
 layers. The asset step binds shared Color Variables. Verification saves and
-reopens the library, imports 12 representative linked instances across all
-six families and both themes, changes text, grows width by 80px, and saves
+reopens the library, imports 14 representative linked instances across all
+six families and both themes (RadioGroup twice: its circle list and its
+preview tiles), changes text, grows width by 80px, and saves
 and reopens a consumer document. The two `comparison-*.png` files juxtapose
 production capture, native Symbol, and linked wide instance for visual review.
 

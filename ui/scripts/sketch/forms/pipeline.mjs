@@ -58,7 +58,7 @@ async function generate() {
   verifyTargets();
   const before = requireExistingSketchProcess(await processIds());
   const fixtures = JSON.parse(await readFile(paths.fixturesPath, 'utf8'));
-  assert.equal(fixtures.length, 66, 'Capture all 33 form states in two themes');
+  assert.equal(fixtures.length, 68, 'Capture all 34 form states in two themes');
   const enriched = fixtures.map((fixture) => ({
     ...fixture,
     sourceHash: createHash('sha256').update(fixture.svg).digest('hex'),
@@ -107,9 +107,9 @@ async function generate() {
   );
   assert.deepEqual(await processIds(), before, 'Sketch process list changed');
   const report = status.result;
-  assert.equal(report.length, 66);
+  assert.equal(report.length, 68);
   const symbols = Object.fromEntries(report.map((entry) => [entry.id, entry]));
-  assert.equal(Object.keys(symbols).length, 66);
+  assert.equal(Object.keys(symbols).length, 68);
   for (const [id, old] of Object.entries(previous)) {
     assert.ok(
       symbols[id],
@@ -220,9 +220,9 @@ async function verify() {
     [...status.librariesBefore].sort(),
   );
   assert.deepEqual(await processIds(), before, 'Sketch process list changed');
-  assert.equal(status.result.symbols, 66);
-  assert.equal(status.result.instances.length, 12);
-  assert.equal(status.result.reopened.length, 12);
+  assert.equal(status.result.symbols, 68);
+  assert.equal(status.result.instances.length, 14);
+  assert.equal(status.result.reopened.length, 14);
   await writeFile(
     paths.verificationPath,
     await prettier.format(`${JSON.stringify(status.result, null, 2)}\n`, {
@@ -230,7 +230,7 @@ async function verify() {
     }),
   );
   console.log(
-    `Verified 12 linked form consumers after save/reopen in Sketch PID ${status.processId}.`,
+    `Verified 14 linked form consumers after save/reopen in Sketch PID ${status.processId}.`,
   );
 }
 

@@ -126,7 +126,7 @@ async function build() {
   assert.equal(status.cleanupComplete, true);
   assert.deepEqual(await processIds(), before, 'Sketch process list changed');
   const report = status.result;
-  assert.equal(report.symbols.length, 326, 'Merge every family master');
+  assert.equal(report.symbols.length, 328, 'Merge every family master');
   for (const family of report.families)
     assert.equal(
       family.boundPaints.unified,
@@ -201,7 +201,7 @@ async function verify() {
   assert.equal(status.cleanupComplete, true);
   assert.deepEqual(await processIds(), before, 'Sketch process list changed');
   const result = status.result;
-  assert.equal(result.symbols, 326);
+  assert.equal(result.symbols, 328);
   assert.equal(result.instances.length, families.length * 2);
   assert.ok(result.instances.every((instance) => instance.linked));
   assert.deepEqual(

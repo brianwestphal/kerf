@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+### Added
+
+- **RadioGroup preview tiles in the design templates and Sketch Library (KF-1M9SJA).** The `radio-group` SVG design templates gain a Preview Tiles variant, a selected and an unselected tile with a hint, and `Kerf-UI.sketch` gains its editable light and dark Symbols (328 Symbols for 115 variants). Existing Symbol, Text and Color Variable IDs are unchanged, so linked instances sync with their overrides.
+
 ### Fixed
 
 - **The Kerf UI editor's parameter dialog reopens when a row is chosen while it closes (KF-8SPEG7).** The new choice was lost when the exit motion ended.

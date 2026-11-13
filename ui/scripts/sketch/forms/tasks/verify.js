@@ -13,24 +13,24 @@ module.exports.run = function (session, parameters, done) {
   var fixtures = readJSON(parameters.fixturesPath);
   var manifestFile = readJSON(parameters.manifestPath);
   var manifest = manifestFile.symbols;
+  // RadioGroup also verifies its tiles presentation (KF-1M9SJA: preview
+  // tiles are a separate Symbol shape from the circle list).
   var representatives = {
-    'split-button': 'tones-deploy',
-    'text-field': 'labeled-project-name',
-    checkbox: 'states-include-release',
-    'checkbox-group': 'vertical-notification-channels',
-    'radio-group': 'vertical-layout-density',
-    switch: 'states-live-updates',
+    'split-button': ['tones-deploy'],
+    'text-field': ['labeled-project-name'],
+    checkbox: ['states-include-release'],
+    'checkbox-group': ['vertical-notification-channels'],
+    'radio-group': ['vertical-layout-density', 'tiles-theme'],
+    switch: ['states-live-updates'],
   };
   var selected = fixtures.filter(function (fixture) {
-    return (
-      fixture.id.indexOf(
-        fixture.component + '-' + representatives[fixture.component] + '-',
-      ) === 0
-    );
+    return representatives[fixture.component].some(function (key) {
+      return fixture.id.indexOf(fixture.component + '-' + key + '-') === 0;
+    });
   });
-  if (selected.length !== 12)
+  if (selected.length !== 14)
     throw new Error(
-      'Expected six representative form components in two themes.',
+      'Expected seven representative form Symbols in two themes.',
     );
   session.openDocument(
     parameters.libraryPath,
