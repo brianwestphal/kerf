@@ -2486,6 +2486,14 @@ test('keeps the Inspector still across the autosave after an edit inserts a row'
   await page.setViewportSize({ width: 1440, height: 420 });
   await select(page, /^ListActionRow/);
   await showProp(page, 'iconTile');
+  // KF-HN2KYR: let the Properties page's push slide settle first. Under
+  // load the trigger click started while the page was still sliding in, and
+  // Playwright's protocol scroll-into-view moved the pane to 0 before the
+  // pointer went down (a coordinate click never did).
+  await expect(page.locator('#editor-inspector-stack')).not.toHaveAttribute(
+    'data-nav-chrome-transition',
+    'true',
+  );
   // The open Properties page's own scroller (the overview's lies under it).
   const scroller = inspectorTop(page).locator('.kui-pane__content');
   await expect(scroller).toHaveCSS('overflow-anchor', 'none');
