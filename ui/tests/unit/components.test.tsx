@@ -4481,3 +4481,114 @@ describe('ToolbarControlGroup icon tile tones', () => {
     expect(html).not.toContain('tabindex');
   });
 });
+
+// KF-SDNA0Z: a tab name can keep its tail when it ellipsizes, so tabs whose
+// names differ only at the end stay distinguishable.
+describe('TabBarItem nameTruncate', () => {
+  it('renders start and middle ellipses with the full name as the accessible name', () => {
+    const start = asHtml(
+      TabBarItem({
+        id: 's',
+        name: 'Release train: run Q69G5FB0',
+        nameTruncate: 'start',
+      }),
+    );
+    expect(start).toContain('data-name-truncate="start"');
+    expect(start).toContain('aria-label="Release train: run Q69G5FB0"');
+    expect(start).toContain(
+      '<span class="kui-tab-bar-item__name">\u200ERelease train: run Q69G5FB0\u200E</span>',
+    );
+    // The shrinking copy is still the whole name.
+    expect(start).toContain('data-kui-tab-name="Release train: run Q69G5FB0"');
+
+    const path = asHtml(
+      TabBarItem({
+        id: 'p',
+        name: 'src/lib/tab-bar.tsx',
+        nameTruncate: 'middle',
+      }),
+    );
+    expect(path).toContain('data-name-truncate="middle"');
+    expect(path).toContain(
+      '<span class="kui-tab-bar-item__name-head">src/lib</span><span class="kui-tab-bar-item__name-tail">/tab-bar.tsx</span>',
+    );
+    const run = asHtml(
+      TabBarItem({
+        id: 'r',
+        name: 'Release train: run Q69G5FB0',
+        nameTruncate: 'middle',
+        nameTruncateKeep: 8,
+      }),
+    );
+    expect(run).toContain(
+      'name-head">Release train: run </span><span class="kui-tab-bar-item__name-tail">Q69G5FB0</span>',
+    );
+    // A name no longer than the kept suffix has no tail.
+    expect(
+      asHtml(
+        TabBarItem({
+          id: 'short',
+          name: 'Run',
+          nameTruncate: 'middle',
+          nameTruncateKeep: 8,
+        }),
+      ),
+    ).toContain('name-head">Run</span></span>');
+  });
+
+  it('keeps the end ellipsis where the name cannot truncate', () => {
+    for (const props of [
+      { nameOverflow: 'visible' as const },
+      { presentation: 'icon-only' as const },
+      { placeholder: true },
+    ]) {
+      const html = asHtml(
+        TabBarItem({ id: 'x', name: 'a/b', nameTruncate: 'middle', ...props }),
+      );
+      expect(html).not.toContain('data-name-truncate');
+      expect(html).not.toContain('name-head');
+    }
+    const plain = asHtml(
+      TabBarItem({ id: 'e', name: 'Plain', nameTruncate: 'end' }),
+    );
+    expect(plain).not.toContain('data-name-truncate');
+    expect(plain).not.toContain('aria-label="Plain"');
+    expect(
+      asHtml(
+        TabBarItem({
+          id: 'e',
+          name: 'Plain',
+          // @ts-expect-error The truncation position is component-owned.
+          rootAttributes: { 'data-name-truncate': 'start' },
+        }),
+      ),
+    ).not.toContain('data-name-truncate');
+  });
+
+  it('rejects an unknown position and a keep without a middle ellipsis', () => {
+    expect(() =>
+      TabBarItem({
+        id: 'x',
+        name: 'x',
+        nameTruncate: 'center' as never,
+      }),
+    ).toThrow(RangeError);
+    for (const props of [
+      { nameTruncateKeep: 3 },
+      { nameTruncate: 'start' as const, nameTruncateKeep: 'segment' as const },
+      { nameTruncate: 'middle' as const, nameTruncateKeep: 0 },
+      { nameTruncate: 'middle' as const, nameTruncateKeep: 1.5 },
+    ])
+      expect(() => TabBarItem({ id: 'x', name: 'x', ...props })).toThrow(
+        'nameTruncateKeep requires nameTruncate="middle"',
+      );
+    expect(() =>
+      TabBarItem({
+        id: 'x',
+        name: 'x',
+        nameTruncate: 'middle',
+        nameTruncateKeep: 'segment',
+      }),
+    ).not.toThrow();
+  });
+});

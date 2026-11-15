@@ -43,6 +43,7 @@ Exact prop names and types: [`@kerfjs/ui/tab-bar-item`](../public-api-signatures
 - segmented presentation
 - icon-only accessible presentation
 - label maximum width and ellipsis or visible name overflow
+- nameTruncate start or middle ellipsis that keeps a name's tail visible
 - drop-target highlight
 - attention name color
 - named disabled tab and explicit tab/panel association

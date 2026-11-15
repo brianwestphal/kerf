@@ -3,6 +3,10 @@ import type { SafeHtml } from 'kerfjs';
 import type { KerfUiContent } from '../../../shared/content/semantic-content.js';
 import { filterDataAttributes } from '../../../shared/dom/extension-attributes.js';
 import { em } from '../../../shared/styles/css-values.js';
+import {
+  type MiddleTruncateKeep,
+  splitMiddle,
+} from '../../../shared/text/split-middle.js';
 import { Skeleton } from '../../feedback/skeleton/skeleton.js';
 
 const PROTECTED_ROOT_DATA_ATTRIBUTES = new Set([
@@ -15,6 +19,7 @@ const PROTECTED_ROOT_DATA_ATTRIBUTES = new Set([
   'data-attention',
   'data-drop-target',
   'data-name-overflow',
+  'data-name-truncate',
   'data-disabled',
 ]);
 
@@ -29,6 +34,7 @@ type TabBarItemRootAttributes = Readonly<
     'data-attention'?: never;
     'data-drop-target'?: never;
     'data-name-overflow'?: never;
+    'data-name-truncate'?: never;
     'data-disabled'?: never;
   }
 >;
@@ -36,6 +42,18 @@ type TabBarItemRootAttributes = Readonly<
 export type TabBarItemPresentation = 'pill' | 'segmented' | 'icon-only';
 export type TabBarItemSize = 'default' | 'compact';
 export type TabBarItemNameOverflow = 'ellipsis' | 'visible';
+/**
+ * Where an ellipsizing name places its ellipsis: `end` (default) keeps the
+ * start, `start` keeps the tail (a run id at the end of a session name), and
+ * `middle` keeps the start and a suffix (a file path's last segment).
+ */
+export type TabBarItemNameTruncate = 'end' | 'middle' | 'start';
+/**
+ * The suffix `nameTruncate="middle"` always keeps: a number of trailing
+ * characters, or `segment` (default) for the last path segment, or the last
+ * 10 characters when the name has no separator.
+ */
+export type TabBarItemNameTruncateKeep = MiddleTruncateKeep;
 
 export interface TabBarItemProps {
   id: string;
@@ -70,6 +88,16 @@ export interface TabBarItemProps {
    * width) for an inline loading treatment.
    */
   nameOverflow?: TabBarItemNameOverflow;
+  /**
+   * Where an ellipsizing name (`nameOverflow="ellipsis"`) places its
+   * ellipsis: `end` (default), `start` to keep its tail, or `middle` to keep
+   * its start and a suffix (`nameTruncateKeep`). Two tabs whose names differ
+   * only at the end stay distinguishable. For left-to-right names. The full
+   * name stays the tab's accessible name and, when truncated, its `title`.
+   */
+  nameTruncate?: TabBarItemNameTruncate;
+  /** The suffix `nameTruncate="middle"` keeps (default `segment`). */
+  nameTruncateKeep?: TabBarItemNameTruncateKeep;
   /** Decorative dormant content for the close button. Must not contain interactive descendants. */
   closeIcon?: SafeHtml;
   selectAction?: string;
@@ -126,6 +154,8 @@ export function TabBarItem({
   size = 'default',
   labelMaxWidth,
   nameOverflow = 'ellipsis',
+  nameTruncate = 'end',
+  nameTruncateKeep,
   closeIcon,
   selectAction = 'select-tab',
   closeAction = 'close-tab',
@@ -147,6 +177,19 @@ export function TabBarItem({
   // content) so its minimum is a few characters, not the whole name.
   const shrinkable =
     !placeholder && nameOverflow === 'ellipsis' && presentation !== 'icon-only';
+  if (
+    !['end', 'middle', 'start'].includes(nameTruncate) ||
+    (nameTruncateKeep !== undefined &&
+      (nameTruncate !== 'middle' ||
+        (nameTruncateKeep !== 'segment' &&
+          (!Number.isSafeInteger(nameTruncateKeep) || nameTruncateKeep < 1))))
+  )
+    throw new RangeError(
+      'TabBarItem nameTruncate must be end, middle, or start; nameTruncateKeep requires nameTruncate="middle" and a positive integer or "segment"',
+    );
+  // Start and middle truncation apply only to a visible, ellipsizing name;
+  // the button's aria-label then carries the plain full name.
+  const truncate = shrinkable ? nameTruncate : 'end';
   const keyshortcuts = [
     closable && !closeUnavailable ? 'Delete Backspace' : '',
     draggable && !closeUnavailable
@@ -169,6 +212,7 @@ export function TabBarItem({
       data-attention={attention ? 'true' : undefined}
       data-drop-target={dropTarget ? 'true' : undefined}
       data-name-overflow={nameOverflow}
+      data-name-truncate={truncate === 'end' ? undefined : truncate}
       data-presentation={presentation}
       data-size={size}
       data-placeholder={placeholder ? 'true' : undefined}
@@ -206,7 +250,11 @@ export function TabBarItem({
         id={tabId}
         aria-controls={panelId}
         aria-selected={String(selected)}
-        aria-label={presentation === 'icon-only' || named ? name : undefined}
+        aria-label={
+          presentation === 'icon-only' || named || truncate !== 'end'
+            ? name
+            : undefined
+        }
         aria-keyshortcuts={keyshortcuts || undefined}
         data-action={unavailable ? undefined : selectAction}
         data-tab-id={id}
@@ -222,7 +270,11 @@ export function TabBarItem({
             class="kui-tab-bar-item__name"
             aria-hidden={presentation === 'icon-only' ? 'true' : undefined}
           >
-            {placeholder ? <Skeleton width={em(7)} /> : name}
+            {placeholder ? (
+              <Skeleton width={em(7)} />
+            ) : (
+              truncatedName(name, truncate, nameTruncateKeep)
+            )}
           </span>
         </span>
         {closable || trailing ? (
@@ -231,4 +283,33 @@ export function TabBarItem({
       </button>
     </div>
   );
+}
+
+/** U+200E LEFT-TO-RIGHT MARK. */
+const LRM = '\u200E';
+
+/** The visible name for its truncation position. */
+function truncatedName(
+  name: string,
+  truncate: TabBarItemNameTruncate,
+  keep: TabBarItemNameTruncateKeep | undefined,
+): KerfUiContent | string {
+  switch (truncate) {
+    case 'start':
+      // Left-to-right marks keep the name's own order and edge punctuation
+      // in the right-to-left clip box. An isolating `dir="ltr"` span would
+      // too, but WebKit then draws no leading ellipsis.
+      return `${LRM}${name}${LRM}`;
+    case 'middle': {
+      const [head, tail] = splitMiddle(name, keep ?? 'segment');
+      return (
+        <>
+          <span class="kui-tab-bar-item__name-head">{head}</span>
+          {tail ? <span class="kui-tab-bar-item__name-tail">{tail}</span> : ''}
+        </>
+      );
+    }
+    case 'end':
+      return name;
+  }
 }

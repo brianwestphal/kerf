@@ -16043,6 +16043,34 @@
           "group": "Layout"
         },
         {
+          "name": "nameTruncate",
+          "type": {
+            "kind": "enum",
+            "values": ["end", "middle", "start"],
+            "text": "TabBarItemNameTruncate | undefined",
+            "nullable": true
+          },
+          "required": false,
+          "default": "end",
+          "description": "Where an ellipsizing name (`nameOverflow=\"ellipsis\"`) places its\nellipsis: `end` (default), `start` to keep its tail, or `middle` to keep\nits start and a suffix (`nameTruncateKeep`). Two tabs whose names differ\nonly at the end stay distinguishable. For left-to-right names. The full\nname stays the tab's accessible name and, when truncated, its `title`.",
+          "group": "Layout"
+        },
+        {
+          "name": "nameTruncateKeep",
+          "type": {
+            "kind": "union",
+            "members": [
+              { "kind": "number", "text": "number" },
+              { "kind": "literal", "value": "segment", "text": "\"segment\"" }
+            ],
+            "text": "MiddleTruncateKeep | undefined",
+            "nullable": true
+          },
+          "required": false,
+          "description": "The suffix `nameTruncate=\"middle\"` keeps (default `segment`).",
+          "group": "Layout"
+        },
+        {
           "name": "closeIcon",
           "type": {
             "kind": "content",
@@ -16182,6 +16210,15 @@
                 "required": false
               },
               {
+                "name": "data-name-truncate",
+                "type": {
+                  "kind": "never",
+                  "text": "undefined",
+                  "nullable": true
+                },
+                "required": false
+              },
+              {
                 "name": "data-disabled",
                 "type": {
                   "kind": "never",
@@ -16195,7 +16232,7 @@
               "keyPrefix": "data-",
               "value": { "kind": "string", "text": "string", "nullable": true }
             },
-            "text": "Readonly<Record<`data-${string}`, string | undefined> & { 'data-component'?: undefined; 'data-action'?: undefined; 'data-tab-id'?: undefined; 'data-selected'?: undefined; 'data-tab-dragging'?: undefined; 'data-tab-drop-position'?: undefined; 'data-attention'?: undefined; 'data-drop-target'?: undefined; 'data-name-overflow'?: undefined; 'data-disabled'?: undefined; }>",
+            "text": "Readonly<Record<`data-${string}`, string | undefined> & { 'data-component'?: undefined; 'data-action'?: undefined; 'data-tab-id'?: undefined; 'data-selected'?: undefined; 'data-tab-dragging'?: undefined; 'data-tab-drop-position'?: undefined; 'data-attention'?: undefined; 'data-drop-target'?: undefined; 'data-name-overflow'?: undefined; 'data-name-truncate'?: undefined; 'data-disabled'?: undefined; }>",
             "nullable": true
           },
           "required": false,
@@ -16679,7 +16716,7 @@
               { "kind": "number", "text": "number" },
               { "kind": "literal", "value": "segment", "text": "\"segment\"" }
             ],
-            "text": "TextTruncateKeep | undefined",
+            "text": "MiddleTruncateKeep | undefined",
             "nullable": true
           },
           "required": false,

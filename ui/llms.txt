@@ -1017,7 +1017,9 @@ created, input }`. Never use a hand-styled `<input list>` + `<datalist>`.
   no inset or chrome.
 - **Configure application tabs at their owners.** TabBarItem's `icon-only`
   presentation keeps `name` accessible, `labelMaxWidth` ellipsizes a long name,
-  `nameOverflow="visible"` shows the full name during inline loading, and
+  `nameOverflow="visible"` shows the full name during inline loading,
+  `nameTruncate="start"` / `"middle"` keeps a name's distinguishing tail
+  visible, and
   `dropTarget` highlights a drag-over without changing selection. `attention`
   uses `--kui-tab-bar-item-attention-color`. TabBar's public
   `--kui-tab-bar-strip-*` tokens set compact strip geometry. In intrinsic

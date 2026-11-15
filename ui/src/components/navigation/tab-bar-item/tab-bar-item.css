@@ -166,6 +166,30 @@
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+/* Tail-preserving names (KF-SDNA0Z), as Text's truncate="start" and
+   "middle": a start ellipsis runs the clip box right to left around a name
+   bracketed by left-to-right marks, and a middle ellipsis shrinks the head
+   while the kept suffix stays whole. */
+.kui-tab-bar-item[data-name-truncate="start"] .kui-tab-bar-item__name {
+  direction: rtl;
+  text-align: left;
+}
+.kui-tab-bar-item[data-name-truncate="middle"] .kui-tab-bar-item__name {
+  display: flex;
+}
+.kui-tab-bar-item__name-head,
+.kui-tab-bar-item__name-tail {
+  white-space: pre;
+}
+.kui-tab-bar-item__name-head {
+  flex: 0 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.kui-tab-bar-item__name-tail {
+  flex: 0 0 auto;
+}
 .kui-tab-bar-item[data-name-overflow="visible"] .kui-tab-bar-item__label,
 .kui-tab-bar-item[data-name-overflow="visible"] .kui-tab-bar-item__name {
   max-width: none;

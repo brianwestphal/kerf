@@ -770,6 +770,31 @@ describe('TabBar wiring', () => {
     expect(button.hasAttribute('title')).toBe(false);
   });
 
+  // KF-SDNA0Z: a middle-truncated name ellipsizes its head, not its box.
+  it('titles a tab whose middle-truncated head is ellipsized', () => {
+    const root = bar();
+    const dispose = wireTabBars(root, { onReorder: () => {} });
+    const tab = root.querySelector<HTMLElement>('[data-tab-id="two"]')!;
+    const button = tab.querySelector<HTMLElement>('[role="tab"]')!;
+    const name = tab.querySelector<HTMLElement>('.kui-tab-bar-item__name')!;
+    name.innerHTML =
+      '<span class="kui-tab-bar-item__name-head">src/lib</span><span class="kui-tab-bar-item__name-tail">/two.ts</span>';
+    const head = name.firstElementChild as HTMLElement;
+    let headClient = 60;
+    Object.defineProperty(name, 'scrollWidth', { get: () => 40 });
+    Object.defineProperty(name, 'clientWidth', { get: () => 40 });
+    Object.defineProperty(head, 'scrollWidth', { get: () => 60 });
+    Object.defineProperty(head, 'clientWidth', { get: () => headClient });
+    const hover = () =>
+      head.dispatchEvent(new Event('pointerover', { bubbles: true }));
+    hover();
+    expect(button.hasAttribute('title')).toBe(false);
+    headClient = 20;
+    hover();
+    expect(button.getAttribute('title')).toBe('src/lib/two.ts');
+    dispose();
+  });
+
   it('ignores malformed and non-draggable tabs and removes listeners on disposal', () => {
     const root = bar();
     const onReorder = vi.fn();

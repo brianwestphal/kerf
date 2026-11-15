@@ -198,3 +198,57 @@ test('many tabs ellipsize before the strip scrolls; short names never widen', as
   await setBarWidth(bar, barWidth);
   expect(await geometry(bar)).toEqual(wide);
 });
+
+// KF-SDNA0Z: start and middle ellipses keep a name's distinguishing tail
+// visible at a capped width; the full name stays the accessible name and
+// becomes the title on hover.
+test('tail-preserving tab names show their ends and title their full names', async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1100, height: 900 });
+  await page.goto('/?component=tab-bar');
+  const bar = page.locator('[data-tab-bar-id="tail-name-tab-bar"]');
+  await expect(bar).toBeVisible();
+  const visibleTail = (id: string) =>
+    bar
+      .locator(`[data-tab-id="${id}"]`)
+      .first()
+      .evaluate((tab) => {
+        const name = tab.querySelector<HTMLElement>('.kui-tab-bar-item__name')!;
+        const box = name.getBoundingClientRect();
+        // The name's last visible glyph (before a trailing direction mark).
+        const walker = document.createTreeWalker(name, NodeFilter.SHOW_TEXT);
+        let text: Text | undefined;
+        while (walker.nextNode()) text = walker.currentNode as Text;
+        const end = text!.data.replace(/\u200E+$/, '').length;
+        const range = document.createRange();
+        range.setStart(text!, end - 1);
+        range.setEnd(text!, end);
+        const glyph = range.getBoundingClientRect();
+        return {
+          inside:
+            glyph.left >= box.left - 0.5 && glyph.right <= box.right + 0.5,
+          clipped:
+            name.scrollWidth > name.clientWidth ||
+            [...name.children].some(
+              (part) =>
+                (part as HTMLElement).scrollWidth >
+                (part as HTMLElement).clientWidth,
+            ),
+        };
+      });
+  for (const id of ['tail-run-q69', 'tail-run-q6a', 'tail-path'])
+    expect(await visibleTail(id)).toEqual({ inside: true, clipped: true });
+  await expect(
+    bar.getByRole('tab', { name: 'Release train: run Q6A1C2D3', exact: true }),
+  ).toBeVisible();
+  const path = bar.getByRole('tab', {
+    name: 'ui/src/components/navigation/tab-bar.tsx',
+    exact: true,
+  });
+  await path.hover();
+  await expect(path).toHaveAttribute(
+    'title',
+    'ui/src/components/navigation/tab-bar.tsx',
+  );
+});

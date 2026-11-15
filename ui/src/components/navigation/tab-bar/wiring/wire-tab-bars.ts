@@ -166,10 +166,19 @@ function syncTruncatedTitle(
   button: HTMLElement,
   name: HTMLElement,
 ) {
-  const full = name.textContent?.trim() ?? '';
+  // A start- or middle-truncated tab names itself with aria-label, since its
+  // visible name carries direction marks or split parts.
+  const full =
+    button.getAttribute('aria-label') ?? name.textContent?.trim() ?? '';
+  // A middle-truncated name ellipsizes its head, not the name box itself.
+  const clipped = (box: HTMLElement | null) =>
+    box !== null && box.scrollWidth > box.clientWidth;
   const truncated =
     full !== '' &&
-    name.scrollWidth > name.clientWidth &&
+    (clipped(name) ||
+      clipped(
+        name.querySelector<HTMLElement>('.kui-tab-bar-item__name-head'),
+      )) &&
     view.getComputedStyle(name).position !== 'absolute';
   if (truncated) {
     if (button.getAttribute('title') !== full)

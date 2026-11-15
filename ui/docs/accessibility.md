@@ -441,8 +441,11 @@ or flex margins to position the action.
 `TabBarItem` provides compact 32px, segmented, truncating-label, and icon-only
 presentations. Icon-only tabs keep the required `name` as the tab button's
 accessible name while visually hiding the duplicate label. The default name
-overflow is an ellipsis; `nameOverflow="visible"` lets an inline loading
-treatment show the whole name, without changing the accessible name. The app
+overflow is an ellipsis at the end; `nameTruncate="start"` or `"middle"` moves it
+so a name's distinguishing tail stays visible, and the tab button then carries
+the full name as its `aria-label` (and, while truncated, its `title`).
+`nameOverflow="visible"` lets an inline loading treatment show the whole name,
+without changing the accessible name. The app
 sets `dropTarget` during a content drag-over to paint a brand highlight;
 selection and tab focus stay independent of that visual state. A `pending` tab (known,
 still opening) keeps its visible name as the tab button's accessible name, so a

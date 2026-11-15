@@ -307,6 +307,33 @@ export function TabBarDemo() {
         </TabBar>
       </CatalogExample>
       <CatalogExample
+        label="Tail-Preserving Names"
+        note='nameTruncate="start" keeps the end of a name, and "middle" keeps its start and last path segment, so tabs that differ only at the end stay distinguishable at a capped width.'
+        align="none"
+      >
+        <TabBar id="tail-name-tab-bar" label="Session Tabs">
+          <TabBarItem
+            id="tail-run-q69"
+            name="Release train: run Q69G5FB0"
+            selected
+            labelMaxWidth={112}
+            nameTruncate="start"
+          />
+          <TabBarItem
+            id="tail-run-q6a"
+            name="Release train: run Q6A1C2D3"
+            labelMaxWidth={112}
+            nameTruncate="start"
+          />
+          <TabBarItem
+            id="tail-path"
+            name="ui/src/components/navigation/tab-bar.tsx"
+            labelMaxWidth={144}
+            nameTruncate="middle"
+          />
+        </TabBar>
+      </CatalogExample>
+      <CatalogExample
         label="Overflow · Scroll Dividers"
         note="When the tabs overflow, a divider marks each side of the strip with tabs scrolled out of view. wireScrollDividers reports the strip's scroll state; the tab bar draws the lines."
         align="none"

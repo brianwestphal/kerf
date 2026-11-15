@@ -3755,6 +3755,12 @@
         "nameOverflow": {
           "group": "Layout"
         },
+        "nameTruncate": {
+          "group": "Layout"
+        },
+        "nameTruncateKeep": {
+          "group": "Layout"
+        },
         "selectAction": {
           "group": "Behavior"
         },

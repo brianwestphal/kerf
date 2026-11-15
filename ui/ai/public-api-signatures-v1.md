@@ -1783,6 +1783,7 @@ export { ValueTable, type ValueTablePresentation, type ValueTableProps, ValueTab
 ```ts
 import { SafeHtml } from 'kerfjs';
 import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
+import { M as MiddleTruncateKeep } from './split-middle-De745N2j.js';
 
 type TabBarItemRootAttributes = Readonly<Record<`data-${string}`, string | undefined> & {
     'data-component'?: never;
@@ -1794,11 +1795,24 @@ type TabBarItemRootAttributes = Readonly<Record<`data-${string}`, string | undef
     'data-attention'?: never;
     'data-drop-target'?: never;
     'data-name-overflow'?: never;
+    'data-name-truncate'?: never;
     'data-disabled'?: never;
 }>;
 type TabBarItemPresentation = 'pill' | 'segmented' | 'icon-only';
 type TabBarItemSize = 'default' | 'compact';
 type TabBarItemNameOverflow = 'ellipsis' | 'visible';
+/**
+ * Where an ellipsizing name places its ellipsis: `end` (default) keeps the
+ * start, `start` keeps the tail (a run id at the end of a session name), and
+ * `middle` keeps the start and a suffix (a file path's last segment).
+ */
+type TabBarItemNameTruncate = 'end' | 'middle' | 'start';
+/**
+ * The suffix `nameTruncate="middle"` always keeps: a number of trailing
+ * characters, or `segment` (default) for the last path segment, or the last
+ * 10 characters when the name has no separator.
+ */
+type TabBarItemNameTruncateKeep = MiddleTruncateKeep;
 interface TabBarItemProps {
     id: string;
     name: string;
@@ -1832,6 +1846,16 @@ interface TabBarItemProps {
      * width) for an inline loading treatment.
      */
     nameOverflow?: TabBarItemNameOverflow;
+    /**
+     * Where an ellipsizing name (`nameOverflow="ellipsis"`) places its
+     * ellipsis: `end` (default), `start` to keep its tail, or `middle` to keep
+     * its start and a suffix (`nameTruncateKeep`). Two tabs whose names differ
+     * only at the end stay distinguishable. For left-to-right names. The full
+     * name stays the tab's accessible name and, when truncated, its `title`.
+     */
+    nameTruncate?: TabBarItemNameTruncate;
+    /** The suffix `nameTruncate="middle"` keeps (default `segment`). */
+    nameTruncateKeep?: TabBarItemNameTruncateKeep;
     /** Decorative dormant content for the close button. Must not contain interactive descendants. */
     closeIcon?: SafeHtml;
     selectAction?: string;
@@ -1854,9 +1878,9 @@ interface TabBarItemProps {
     /** Native named-slot assignment when composed inside a web component. */
     slot?: string;
 }
-declare function TabBarItem({ id, name, selected, disabled, tabId, panelId, attention, dropTarget, closable, draggable, leading, trailing, presentation, size, labelMaxWidth, nameOverflow, closeIcon, selectAction, closeAction, className, placeholder, pending, rootAttributes, slot, }: TabBarItemProps): SafeHtml;
+declare function TabBarItem({ id, name, selected, disabled, tabId, panelId, attention, dropTarget, closable, draggable, leading, trailing, presentation, size, labelMaxWidth, nameOverflow, nameTruncate, nameTruncateKeep, closeIcon, selectAction, closeAction, className, placeholder, pending, rootAttributes, slot, }: TabBarItemProps): SafeHtml;
 
-export { TabBarItem, type TabBarItemNameOverflow, type TabBarItemPresentation, type TabBarItemProps, type TabBarItemSize };
+export { TabBarItem, type TabBarItemNameOverflow, type TabBarItemNameTruncate, type TabBarItemNameTruncateKeep, type TabBarItemPresentation, type TabBarItemProps, type TabBarItemSize };
 ```
 
 ## `@kerfjs/ui/tab-bar`
@@ -6003,6 +6027,7 @@ import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
 import { R as RootDataAttributes } from './extension-attributes-IJ4decoa.js';
 import { S as Sides } from './sides-BPSWde0A.js';
 import { CssForegroundColor } from './css-values.js';
+import { M as MiddleTruncateKeep } from './split-middle-De745N2j.js';
 
 type FieldLabelProps = Omit<KerfBaseAttrs, 'children' | 'class' | 'className' | 'id'> & {
     children: string;
@@ -6043,7 +6068,7 @@ type TextTruncate = 'end' | 'middle' | 'start';
  * The suffix `truncate="middle"` always keeps: a number of trailing
  * characters, or `segment` for the last path segment with its separator.
  */
-type TextTruncateKeep = number | 'segment';
+type TextTruncateKeep = MiddleTruncateKeep;
 type TextContent = KerfUiContent | string | number | readonly TextContent[];
 type TextCommonProps = Omit<KerfBaseAttrs, 'children' | 'class' | 'className' | 'id' | 'lang'> & {
     /**
