@@ -24,17 +24,21 @@
 
 /* Each row owns the content inset and the 1px divider above it, inset to the
    row's padding like ValueTable's separators. Its margin is reset because a
-   document or Web Awesome native stylesheet indents list items. */
+   document or Web Awesome native stylesheet indents list items.
+   KF-D8VK4Y: a column flexbox, not a grid. WebKit kept a grid row's height
+   from before a resize when a wrapping Grid or Row inside it gained a line,
+   so the content spilled under the next row; a flex column follows it. */
 .kui-framed-list__row {
   --_kui-framed-list-row-padding: var(--kui-layout-item-padding, remify(8px));
   position: relative;
-  display: grid;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
   min-width: 0;
   margin: 0;
   min-height: remify(44px);
   padding: var(--_kui-framed-list-row-padding);
   box-sizing: border-box;
-  align-items: center;
 }
 
 .kui-framed-list__row + .kui-framed-list__row::before {
