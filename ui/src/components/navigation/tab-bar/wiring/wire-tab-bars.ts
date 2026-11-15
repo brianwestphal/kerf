@@ -221,6 +221,8 @@ function touchedBars(records: readonly MutationRecord[]) {
   return bars;
 }
 
+const SNAP_END_EXTRA = '--kui-tab-bar-snap-end-extra';
+
 /** Wire reordering and keyboard navigation while leaving controlled state in the application. */
 export function wireTabBars(
   root: HTMLElement | Document,
@@ -233,6 +235,28 @@ export function wireTabBars(
   const snapExtras = new WeakMap<HTMLElement, number>();
   const snapStrips = new Set<HTMLElement>();
   const snapObserved = new Set<HTMLElement>();
+  // KF-NNSAT8: the end room lives in the strip's inline style, which TabBar
+  // never renders, so an application re-render's morph removes it. Watch the
+  // style of each snap strip, put the room back, and return a scroll position
+  // the shorter content clamped to the last position the strip reported.
+  const snapScroll = new WeakMap<HTMLElement, number>();
+  const styleObserver = new view.MutationObserver((records) => {
+    for (const { target } of records) {
+      const strip = target as HTMLElement;
+      const extra = snapExtras.get(strip);
+      if (!snapStrips.has(strip) || extra === undefined) continue;
+      const value = `${extra}px`;
+      if (strip.style.getPropertyValue(SNAP_END_EXTRA) === value) continue;
+      strip.style.setProperty(SNAP_END_EXTRA, value);
+      const scroll = snapScroll.get(strip);
+      if (scroll !== undefined && Math.abs(strip.scrollLeft - scroll) >= 1)
+        strip.scrollLeft = scroll;
+    }
+  });
+  const onStripScroll = (event: Event) => {
+    const strip = event.target as HTMLElement;
+    if (snapStrips.has(strip)) snapScroll.set(strip, strip.scrollLeft);
+  };
   let snapFrame: number | undefined;
   const scheduleSnapSync = () => {
     if (disposed || snapFrame !== undefined) return;
@@ -259,12 +283,18 @@ export function wireTabBars(
   const syncSnap = (strip: HTMLElement) => {
     const previousExtra = snapExtras.get(strip) ?? 0;
     if (strip.dataset.snapTabs !== 'true') {
-      strip.style.removeProperty('--kui-tab-bar-snap-end-extra');
+      strip.style.removeProperty(SNAP_END_EXTRA);
       snapExtras.delete(strip);
       snapStrips.delete(strip);
       return;
     }
-    snapStrips.add(strip);
+    if (!snapStrips.has(strip)) {
+      snapStrips.add(strip);
+      styleObserver.observe(strip, {
+        attributes: true,
+        attributeFilter: ['style'],
+      });
+    }
     observeSnap(strip);
     const tabs = [
       ...strip.querySelectorAll<HTMLElement>(':scope > .kui-tab-bar-item'),
@@ -286,7 +316,7 @@ export function wireTabBars(
       extra = Math.max(0, desired - baseMaximum);
     }
     if (Math.abs(extra - previousExtra) >= 0.5) {
-      strip.style.setProperty('--kui-tab-bar-snap-end-extra', `${extra}px`);
+      strip.style.setProperty(SNAP_END_EXTRA, `${extra}px`);
       snapExtras.set(strip, extra);
       // The room is scroll content after the last tab, so writing it never
       // resizes the strip and no ResizeObserver notification follows. A room
@@ -303,7 +333,7 @@ export function wireTabBars(
       }
     for (const strip of snapStrips)
       if (!root.contains(strip)) {
-        strip.style.removeProperty('--kui-tab-bar-snap-end-extra');
+        strip.style.removeProperty(SNAP_END_EXTRA);
         snapStrips.delete(strip);
       }
   };
@@ -660,6 +690,7 @@ export function wireTabBars(
   root.addEventListener('keydown', onKeyDown);
   root.addEventListener('focusin', onFocusIn);
   root.addEventListener('scrollend', onStripScrollEnd, true);
+  root.addEventListener('scroll', onStripScroll, true);
   syncSnapInRoot();
   const fit = onFitChange && trackTabBarFit(view, root, onFitChange);
   fit?.update(root.querySelectorAll<HTMLElement>(TAB_BAR));
@@ -725,10 +756,11 @@ export function wireTabBars(
     disposed = true;
     if (snapFrame !== undefined) view.cancelAnimationFrame(snapFrame);
     selectionObserver.disconnect();
+    styleObserver.disconnect();
     resizeObserver?.disconnect();
     fit?.dispose();
     for (const strip of snapStrips) {
-      strip.style.removeProperty('--kui-tab-bar-snap-end-extra');
+      strip.style.removeProperty(SNAP_END_EXTRA);
     }
     snapStrips.clear();
     snapObserved.clear();
@@ -741,5 +773,6 @@ export function wireTabBars(
     root.removeEventListener('keydown', onKeyDown);
     root.removeEventListener('focusin', onFocusIn);
     root.removeEventListener('scrollend', onStripScrollEnd, true);
+    root.removeEventListener('scroll', onStripScroll, true);
   };
 }

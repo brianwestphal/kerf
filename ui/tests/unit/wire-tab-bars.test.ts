@@ -967,6 +967,72 @@ describe('TabBar wiring', () => {
       expect(disconnected).toHaveBeenCalledOnce();
     });
 
+    // KF-NNSAT8: an application morph drops the strip's inline style, end
+    // room included; the wiring restores the room and the scroll position.
+    it('restores snap end room and scroll a morph removes', async () => {
+      const root = bar('morphed-snap', true);
+      const strip = root.querySelector<HTMLElement>('[data-kui-tab-list]')!;
+      const tabs = [
+        ...strip.querySelectorAll<HTMLElement>('.kui-tab-bar-item'),
+      ];
+      Object.defineProperty(strip, 'scrollWidth', { value: 260 });
+      Object.defineProperty(strip, 'clientWidth', { value: 180 });
+      const rect = (left: number, right: number) =>
+        ({ left, right }) as DOMRect;
+      vi.spyOn(strip, 'getBoundingClientRect').mockReturnValue(rect(0, 180));
+      vi.spyOn(tabs[2]!, 'getBoundingClientRect').mockReturnValue(
+        rect(180, 260),
+      );
+      const stop = wireTabBars(root, { onReorder: vi.fn() });
+      const extra = () =>
+        strip.style.getPropertyValue('--kui-tab-bar-snap-end-extra');
+      expect(extra()).toBe('100px');
+
+      // A morph before the strip ever reported a scroll restores the room.
+      strip.removeAttribute('style');
+      await Promise.resolve();
+      expect(extra()).toBe('100px');
+
+      strip.scrollLeft = 180;
+      strip.dispatchEvent(new Event('scroll'));
+      // A scroll elsewhere in the root is not a strip position.
+      root.dispatchEvent(new Event('scroll'));
+      // The morph removes the style and layout clamps the scroll.
+      strip.removeAttribute('style');
+      strip.scrollLeft = 80;
+      await Promise.resolve();
+      expect(extra()).toBe('100px');
+      expect(strip.scrollLeft).toBe(180);
+
+      // A style change that keeps the room, and a clamp-free morph, move
+      // nothing.
+      strip.style.color = 'red';
+      strip.scrollLeft = 120;
+      await Promise.resolve();
+      expect(strip.scrollLeft).toBe(120);
+      strip.dispatchEvent(new Event('scroll'));
+      strip.removeAttribute('style');
+      await Promise.resolve();
+      expect(extra()).toBe('100px');
+      expect(strip.scrollLeft).toBe(120);
+
+      // A strip that leaves snap mode, and a disposed wiring, restore nothing.
+      strip.dataset.snapTabs = 'false';
+      await Promise.resolve();
+      expect(extra()).toBe('');
+      strip.setAttribute('style', 'color: red');
+      await Promise.resolve();
+      expect(extra()).toBe('');
+      strip.dataset.snapTabs = 'true';
+      await Promise.resolve();
+      expect(extra()).not.toBe('');
+      stop();
+      expect(extra()).toBe('');
+      strip.setAttribute('style', 'color: blue');
+      await Promise.resolve();
+      expect(extra()).toBe('');
+    });
+
     it('aligns RTL snap tabs and handles an empty strip', async () => {
       const root = bar('rtl-snap', true);
       const strip = root.querySelector<HTMLElement>('[data-kui-tab-list]')!;

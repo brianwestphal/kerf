@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 164600,
-  "totalJavaScriptGzip": 472800,
-  "measuredLargestJavaScriptGzip": 164548,
-  "measuredTotalJavaScriptGzip": 472763,
+  "totalJavaScriptGzip": 472900,
+  "measuredLargestJavaScriptGzip": 164544,
+  "measuredTotalJavaScriptGzip": 472896,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -7395,6 +7395,22 @@
         "measuredTotalJavaScriptGzip": 472763,
         "largestJavaScriptGzip": 164600,
         "totalJavaScriptGzip": 472800
+      }
+    },
+    {
+      "at": "2026-11-15T22:37:59.028Z",
+      "reason": "KF-NNSAT8: wireTabBars restores snap end room and scroll after an application morph",
+      "old": {
+        "measuredLargestJavaScriptGzip": 164548,
+        "measuredTotalJavaScriptGzip": 472763,
+        "largestJavaScriptGzip": 164600,
+        "totalJavaScriptGzip": 472800
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 164544,
+        "measuredTotalJavaScriptGzip": 472896,
+        "largestJavaScriptGzip": 164600,
+        "totalJavaScriptGzip": 472900
       }
     }
   ]

@@ -178,3 +178,40 @@ test('snap mode reserves no end room when a few tabs fit', async ({ page }) => {
   expect(measured.extra).toBe(0);
   expect(measured.scrollWidth).toBeLessThanOrEqual(measured.clientWidth);
 });
+
+// KF-NNSAT8: an application re-render morphs the strip and removes its inline
+// style, end room included. When layout runs before the wiring notices, the
+// shorter content clamps a strip scrolled into the room. The wiring puts the
+// room back and returns the strip to where it was, so the tabs never jump.
+test('snap end room and scroll position survive a morph that drops the strip style', async ({
+  page,
+}) => {
+  const { bar, strip } = await setUp(page, 12);
+  await narrow(page, bar, 816);
+  // Settle the last tab at the strip's start: the scroll that needs the room.
+  await strip.evaluate((element) => {
+    element.scrollLeft = element.scrollWidth - element.clientWidth;
+  });
+  await settle(page);
+  const before = await strip.evaluate((element) => ({
+    extra: element.style.getPropertyValue('--kui-tab-bar-snap-end-extra'),
+    scrollLeft: element.scrollLeft,
+  }));
+  expect(Number.parseFloat(before.extra)).toBeGreaterThan(0);
+
+  const clamped = await strip.evaluate((element) => {
+    // What kerf's morph does to an attribute the template does not render,
+    // followed by a synchronous layout read in the same task.
+    element.removeAttribute('style');
+    return element.scrollLeft;
+  });
+  expect(clamped).toBeLessThan(before.scrollLeft - 1);
+  await settle(page);
+  const after = await strip.evaluate((element) => ({
+    extra: element.style.getPropertyValue('--kui-tab-bar-snap-end-extra'),
+    scrollLeft: element.scrollLeft,
+  }));
+  expect(after.extra).toBe(before.extra);
+  expect(Math.abs(after.scrollLeft - before.scrollLeft)).toBeLessThan(1);
+  await expectAllocated(bar);
+});
