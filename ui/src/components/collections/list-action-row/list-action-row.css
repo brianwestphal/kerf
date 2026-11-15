@@ -253,8 +253,12 @@
   );
 }
 
+/* KF-SE5BAR: a multiline label stays the stacking grid, so the primary
+   label, description, and status keep their own lines and each wraps; a
+   block label ran the three inline spans together. The stack starts at the
+   top, where the icon measures its first-line offset. */
 .kui-list-action-row[data-multiline="true"] .kui-list-action-row__label {
-  display: block;
+  align-content: start;
   overflow: visible;
   overflow-wrap: anywhere;
   white-space: normal;
