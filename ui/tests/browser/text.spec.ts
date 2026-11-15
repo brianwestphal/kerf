@@ -363,7 +363,9 @@ test('Text truncates a path in the middle and a branch name at the start', async
       const clip = document.querySelector<HTMLElement>(
         '[data-demo-copy="truncate-start"] .kui-text__truncate-start',
       )!;
-      const run = clip.firstElementChild!.getBoundingClientRect();
+      const range = document.createRange();
+      range.selectNodeContents(clip);
+      const run = range.getBoundingClientRect();
       const clipBox = clip.getBoundingClientRect();
       return {
         headClipped: head.scrollWidth > head.clientWidth,
@@ -538,4 +540,42 @@ test('a medium heading is 16px with heading weight and wraps', async ({
     expect(metrics.weight).toBeGreaterThanOrEqual(600);
     if (width < 500) expect(metrics.lines).toBeGreaterThan(1);
   }
+});
+
+// KF-FM2NWN: WebKit drew no leading ellipsis for start truncation of text
+// with spaces when the run was an isolating dir="ltr" span.
+test('Text start truncation draws its leading ellipsis for spaced text', async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 390, height: 850 });
+  await page.goto('/?component=text');
+  const text = page.locator('[data-demo-copy="truncate-start-spaced"]');
+  await text.scrollIntoViewIfNeeded();
+  await expect(text).toHaveAttribute(
+    'title',
+    'Nightly release train for the procurement service: run Q69G5FB0',
+  );
+  const clip = text.locator('.kui-text__truncate-start');
+  expect(
+    await clip.evaluate((element) => element.scrollWidth > element.clientWidth),
+  ).toBe(true);
+  // The tail stays visible: the run's end is flush with the box end.
+  const tailDelta = await clip.evaluate((element) => {
+    const range = document.createRange();
+    range.selectNodeContents(element);
+    return (
+      range.getBoundingClientRect().right -
+      element.getBoundingClientRect().right
+    );
+  });
+  expect(Math.abs(tailDelta)).toBeLessThanOrEqual(1);
+  // The text runs between left-to-right marks, not in an isolating span,
+  // which is what keeps WebKit's leading ellipsis (verified visually; a
+  // pixel comparison could not tell WebKit's broken ellipsis from a real one).
+  expect(
+    await clip.evaluate((element) => element.querySelector('[dir]') === null),
+  ).toBe(true);
+  expect(await clip.textContent()).toBe(
+    '\u200ENightly release train for the procurement service: run Q69G5FB0\u200E',
+  );
 });

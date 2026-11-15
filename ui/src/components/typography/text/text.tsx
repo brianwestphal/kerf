@@ -264,6 +264,9 @@ export function Text({
   );
 }
 
+/** U+200E LEFT-TO-RIGHT MARK. */
+const LRM = '\u200E';
+
 /** The element's content for its truncation position or line cap. */
 function textBody(
   position: TextTruncate,
@@ -276,9 +279,15 @@ function textBody(
   const content = strong ? <strong>{children}</strong> : children;
   switch (position) {
     case 'start':
+      // KF-FM2NWN: left-to-right marks keep the text's own order and edge
+      // punctuation in the right-to-left clip box. An isolating `dir="ltr"`
+      // span would too, but WebKit then draws no leading ellipsis once the
+      // text has a space.
       return (
         <span class="kui-text__truncate-start">
-          <span dir="ltr">{content}</span>
+          {LRM}
+          {content}
+          {LRM}
         </span>
       );
     case 'middle':

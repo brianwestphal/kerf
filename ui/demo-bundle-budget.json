@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 164600,
-  "totalJavaScriptGzip": 472700,
-  "measuredLargestJavaScriptGzip": 164546,
-  "measuredTotalJavaScriptGzip": 472683,
+  "totalJavaScriptGzip": 472800,
+  "measuredLargestJavaScriptGzip": 164548,
+  "measuredTotalJavaScriptGzip": 472763,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -7379,6 +7379,22 @@
         "measuredTotalJavaScriptGzip": 472683,
         "largestJavaScriptGzip": 164600,
         "totalJavaScriptGzip": 472700
+      }
+    },
+    {
+      "at": "2026-11-15T02:50:01.459Z",
+      "reason": "KF-FM2NWN adds a spaced Text start-truncation example to the catalog demo",
+      "old": {
+        "measuredLargestJavaScriptGzip": 164546,
+        "measuredTotalJavaScriptGzip": 472683,
+        "largestJavaScriptGzip": 164600,
+        "totalJavaScriptGzip": 472700
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 164548,
+        "measuredTotalJavaScriptGzip": 472763,
+        "largestJavaScriptGzip": 164600,
+        "totalJavaScriptGzip": 472800
       }
     }
   ]

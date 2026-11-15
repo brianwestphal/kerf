@@ -82,8 +82,8 @@ span.kui-text[data-wrap="truncate"] {
 }
 
 /* Tail-preserving truncation: the clip box runs right to left so its ellipsis
-   lands at the start, while the isolated left-to-right run keeps the text's
-   own order and punctuation. Short text that fits stays left-aligned. */
+   lands at the start, while left-to-right marks around the text keep its own
+   order and punctuation. Short text that fits stays left-aligned. */
 .kui-text__truncate-start {
   display: block;
   overflow: hidden;

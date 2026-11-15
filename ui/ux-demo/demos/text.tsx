@@ -197,6 +197,13 @@ export function TextDemo() {
         >
           feature/kf-482-procurement-approval-routing-refactor
         </Text>
+        <Text
+          wrap="truncate"
+          truncate="start"
+          data-demo-copy="truncate-start-spaced"
+        >
+          Nightly release train for the procurement service: run Q69G5FB0
+        </Text>
       </CatalogExample>
     </CatalogExampleStack>
   );

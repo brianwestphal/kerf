@@ -93,7 +93,7 @@ describe('Text truncation position', () => {
     }
   });
 
-  it('keeps the tail in an isolated left-to-right run for start truncation', () => {
+  it('keeps the tail in a left-to-right-marked run for start truncation (KF-FM2NWN)', () => {
     const html = String(
       Text({
         children: 'feature/kf-123-long-branch',
@@ -105,7 +105,7 @@ describe('Text truncation position', () => {
     expect(html).toContain('data-truncate="start"');
     expect(html).toContain('title="feature/kf-123-long-branch"');
     expect(html).toContain(
-      '<span class="kui-text__truncate-start"><span dir="ltr">feature/kf-123-long-branch</span></span>',
+      '<span class="kui-text__truncate-start">\u200Efeature/kf-123-long-branch\u200E</span>',
     );
   });
 
@@ -244,7 +244,9 @@ describe('Text weight (KF-6A9GJ2)', () => {
     );
     expect(
       html({ wrap: 'truncate', truncate: 'start', weight: 'strong' }),
-    ).toContain('<span dir="ltr"><strong>Release Notes</strong></span>');
+    ).toContain(
+      '<span class="kui-text__truncate-start">\u200E<strong>Release Notes</strong>\u200E</span>',
+    );
     const middle = html({
       children: 'src/lib/release-notes.md',
       wrap: 'truncate',
