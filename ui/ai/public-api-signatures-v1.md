@@ -6605,9 +6605,18 @@ import { CssLength } from './css-values.js';
 
 /** `scroll` keeps equal min-width columns; `paged` shows one near-full-width column per page. */
 type ColumnTrackLayout = 'scroll' | 'paged';
+/**
+ * Where the track opens: its first column (default), its far `end`, or the
+ * column whose `data-column-id` is `column`.
+ */
+type ColumnTrackStart = 'start' | 'end' | Readonly<{
+    column: string;
+}>;
 type ColumnTrackRootAttributes = StructuralRootAttributes & Readonly<{
     'data-component'?: never;
     'data-layout'?: never;
+    'data-start'?: never;
+    'data-start-column'?: never;
 }>;
 interface ColumnTrackProps {
     /** The columns, in order; each owns its own inset and scrolling. */
@@ -6621,6 +6630,15 @@ interface ColumnTrackProps {
     layout?: ColumnTrackLayout;
     /** Inline edge clearance: default uses the layout margin; none clips columns at the track edges. */
     inset?: 'default' | 'none';
+    /**
+     * Where the track opens: `start` (default, the first column), `end` (a
+     * board whose newest column is last), or `{ column }`, the column whose
+     * `data-column-id` matches (a paged phone board opening on its current
+     * column). It applies when the track first renders and whenever its
+     * column ids change, and holds across width changes until the person
+     * scrolls the track. Requires `wireColumnTracks`.
+     */
+    start?: ColumnTrackStart;
     /** Narrowest a `scroll` column gets before the track scrolls; default 250px. */
     minColumnWidth?: CssLength;
     /** How much of the next column a `paged` track shows; default 24px. */
@@ -6647,9 +6665,9 @@ interface ColumnTrackProps {
  * insets and vertical scrolling. Kerf owns the overflow, the paged snapping,
  * and reduced motion.
  */
-declare function ColumnTrack({ children, layout, inset, minColumnWidth, peek, ariaLabel, id, className, rootAttributes, slot, }: ColumnTrackProps): kerfjs.SafeHtml;
+declare function ColumnTrack({ children, layout, inset, start, minColumnWidth, peek, ariaLabel, id, className, rootAttributes, slot, }: ColumnTrackProps): kerfjs.SafeHtml;
 
-export { ColumnTrack, type ColumnTrackLayout, type ColumnTrackProps };
+export { ColumnTrack, type ColumnTrackLayout, type ColumnTrackProps, type ColumnTrackStart };
 ```
 
 ## `@kerfjs/ui/content-swap`

@@ -1166,6 +1166,7 @@ Every key in `ui/package.json` `exports` is listed here. The source column names
 | `@kerfjs/ui/backdrop-image`               | `ui/src/backdrop-image.tsx`           | Renders or composes Backdrop Image UI.                |
 | `@kerfjs/ui/content-swap`                 | `ui/src/content-swap.tsx`             | Renders or composes Content Swap UI.                  |
 | `@kerfjs/ui/column-track`                 | `ui/src/column-track.tsx`             | Renders or composes Column Track UI.                  |
+| `@kerfjs/ui/wire-column-tracks`           | `ui/src/wire-column-tracks.ts`        | Wires Column Track `start` (opening column) behavior. |
 | `@kerfjs/ui/corner-status`                | `ui/src/corner-status.tsx`            | Renders or composes Corner Status UI.                 |
 | `@kerfjs/ui/wire-corner-status`           | `ui/src/wire-corner-status.ts`        | Wires Corner Status behavior.                         |
 | `@kerfjs/ui/state-banner`                 | `ui/src/state-banner.tsx`             | Renders or composes State Banner UI.                  |

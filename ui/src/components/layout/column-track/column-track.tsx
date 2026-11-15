@@ -8,16 +8,29 @@ import type { CssLength } from '../../../shared/styles/css-values.js';
 /** `scroll` keeps equal min-width columns; `paged` shows one near-full-width column per page. */
 export type ColumnTrackLayout = 'scroll' | 'paged';
 
+/**
+ * Where the track opens: its first column (default), its far `end`, or the
+ * column whose `data-column-id` is `column`.
+ */
+export type ColumnTrackStart = 'start' | 'end' | Readonly<{ column: string }>;
+
 const columnTrackProtected = new Set([
   'data-component',
   'data-layout',
   'data-inset',
+  'data-start',
+  'data-start-column',
 ]);
 /** Attributes a named track owns as a region. */
 const columnTrackRegionAttributes = ['role', 'aria-label'];
 
 type ColumnTrackRootAttributes = StructuralRootAttributes &
-  Readonly<{ 'data-component'?: never; 'data-layout'?: never }>;
+  Readonly<{
+    'data-component'?: never;
+    'data-layout'?: never;
+    'data-start'?: never;
+    'data-start-column'?: never;
+  }>;
 
 export interface ColumnTrackProps {
   /** The columns, in order; each owns its own inset and scrolling. */
@@ -31,6 +44,15 @@ export interface ColumnTrackProps {
   layout?: ColumnTrackLayout;
   /** Inline edge clearance: default uses the layout margin; none clips columns at the track edges. */
   inset?: 'default' | 'none';
+  /**
+   * Where the track opens: `start` (default, the first column), `end` (a
+   * board whose newest column is last), or `{ column }`, the column whose
+   * `data-column-id` matches (a paged phone board opening on its current
+   * column). It applies when the track first renders and whenever its
+   * column ids change, and holds across width changes until the person
+   * scrolls the track. Requires `wireColumnTracks`.
+   */
+  start?: ColumnTrackStart;
   /** Narrowest a `scroll` column gets before the track scrolls; default 250px. */
   minColumnWidth?: CssLength;
   /** How much of the next column a `paged` track shows; default 24px. */
@@ -62,6 +84,7 @@ export function ColumnTrack({
   children,
   layout = 'scroll',
   inset = 'default',
+  start = 'start',
   minColumnWidth,
   peek,
   ariaLabel,
@@ -92,6 +115,8 @@ export function ColumnTrack({
       data-component="column-track"
       data-layout={layout}
       data-inset={inset === 'none' ? 'none' : undefined}
+      data-start={start === 'end' ? 'end' : undefined}
+      data-start-column={typeof start === 'object' ? start.column : undefined}
       style={style || undefined}
       slot={slot}
     >

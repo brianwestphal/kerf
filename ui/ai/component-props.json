@@ -3079,6 +3079,32 @@
           "group": "Layout"
         },
         {
+          "name": "start",
+          "type": {
+            "kind": "union",
+            "members": [
+              { "kind": "literal", "value": "start", "text": "\"start\"" },
+              { "kind": "literal", "value": "end", "text": "\"end\"" },
+              {
+                "kind": "object",
+                "props": [
+                  {
+                    "name": "column",
+                    "type": { "kind": "string", "text": "string" },
+                    "required": true
+                  }
+                ],
+                "text": "Readonly<{ column: string; }>"
+              }
+            ],
+            "text": "ColumnTrackStart | undefined",
+            "nullable": true
+          },
+          "required": false,
+          "description": "Where the track opens: `start` (default, the first column), `end` (a\nboard whose newest column is last), or `{ column }`, the column whose\n`data-column-id` matches (a paged phone board opening on its current\ncolumn). It applies when the track first renders and whenever its\ncolumn ids change, and holds across width changes until the person\nscrolls the track. Requires `wireColumnTracks`.",
+          "group": "Behavior"
+        },
+        {
           "name": "minColumnWidth",
           "type": {
             "kind": "css-value",
@@ -3143,7 +3169,13 @@
       ],
       "nativeAttributes": [],
       "dataChannel": "rootAttributes",
-      "groups": ["Content", "Layout", "Accessibility", "Integration"]
+      "groups": [
+        "Content",
+        "Layout",
+        "Behavior",
+        "Accessibility",
+        "Integration"
+      ]
     },
     {
       "key": "@kerfjs/ui:combobox",
@@ -29456,6 +29488,16 @@
         },
         {
           "name": "data-layout",
+          "type": { "kind": "never", "text": "undefined", "nullable": true },
+          "required": false
+        },
+        {
+          "name": "data-start",
+          "type": { "kind": "never", "text": "undefined", "nullable": true },
+          "required": false
+        },
+        {
+          "name": "data-start-column",
           "type": { "kind": "never", "text": "undefined", "nullable": true },
           "required": false
         }

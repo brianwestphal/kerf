@@ -617,6 +617,10 @@
       "browser": "./dist/browser/column-track.js",
       "import": "./dist/column-track.js"
     },
+    "./wire-column-tracks": {
+      "types": "./dist/wire-column-tracks.d.ts",
+      "import": "./dist/wire-column-tracks.js"
+    },
     "./corner-status": {
       "types": "./dist/corner-status.d.ts",
       "browser": "./dist/browser/corner-status.js",

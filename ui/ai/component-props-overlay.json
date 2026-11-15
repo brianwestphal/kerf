@@ -841,7 +841,13 @@
       }
     },
     "@kerfjs/ui:column-track": {
-      "groups": ["Content", "Layout", "Accessibility", "Integration"],
+      "groups": [
+        "Content",
+        "Layout",
+        "Behavior",
+        "Accessibility",
+        "Integration"
+      ],
       "props": {
         "children": {
           "group": "Content"
@@ -851,6 +857,9 @@
         },
         "inset": {
           "group": "Layout"
+        },
+        "start": {
+          "group": "Behavior"
         },
         "minColumnWidth": {
           "group": "Layout"

@@ -911,6 +911,17 @@ name. Name each column the same way: a column `List` takes
 `landmark="region"` and its own `ariaLabel`. Both are props, so a view
 document carries them; `rootAttributes` holds only `data-*` there.
 
+A board opens on its first column. Set `start="end"` for a board whose current
+work is its last column (a timeline running from later to done), or
+`start={{ column: 'working' }}` to open on the column whose `data-column-id` is
+`working` (put it on the column `List`'s `rootAttributes`), typically on a
+paged phone board. Call `wireColumnTracks(root)` once
+(`@kerfjs/ui/wire-column-tracks`; it returns a disposer). The track opens there
+without animating, opens there again whenever `start` or its set of column ids
+changes, and returns there when its width changes (a window resize, a side rail
+opening) until the person scrolls it sideways. Never set `scrollLeft` from
+application wiring for this.
+
 ## Row and List alignment
 
 Use `Row` for a horizontal flex layout and `List` for a vertical one. `Row`

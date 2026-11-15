@@ -310,6 +310,7 @@ interchangeable. `ListItem` and `ListActionRow` deliberately expose no raw
 | `SummaryRow`                                                 | `@kerfjs/ui/summary-row`                | `@kerfjs/ui/summary-row.css`             |
 | `wireSummaryRows`                                            | `@kerfjs/ui/wire-summary-rows`          | —                                        |
 | `ColumnTrack`                                                | `@kerfjs/ui/column-track`               | `@kerfjs/ui/column-track.css`            |
+| `wireColumnTracks`                                           | `@kerfjs/ui/wire-column-tracks`         | —                                        |
 | `ContentSwap`                                                | `@kerfjs/ui/content-swap`               | `@kerfjs/ui/content-swap.css`            |
 | `FilePickerTrigger`, `FileDropZone`                          | `@kerfjs/ui/file-picker`                | `@kerfjs/ui/file-picker.css`             |
 | `wireFilePickers`, `fileMatchesAccept`                       | `@kerfjs/ui/wire-file-pickers`          | —                                        |

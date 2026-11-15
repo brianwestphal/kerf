@@ -3557,11 +3557,16 @@
           "id": "the board's and each column's accessible name",
           "owner": "application",
           "required": false
+        },
+        {
+          "id": "which column the board opens on (start), and each column's data-column-id when start names one",
+          "owner": "application",
+          "required": false
         }
       ],
       "wiring": {
         "required": false,
-        "helpers": [],
+        "helpers": ["wireColumnTracks"],
         "obligations": [],
         "stateAttributes": []
       },

@@ -24,8 +24,9 @@ Lay out a board of columns (kanban) as one horizontal scroll owner: equal column
 
 ## Imports
 
-- JavaScript: `@kerfjs/ui/column-track` — exports `ColumnTrack`.
+- JavaScript: `@kerfjs/ui/column-track` — exports `ColumnTrack`, `wireColumnTracks`.
 - CSS: the browser build of `@kerfjs/ui/column-track` pulls its CSS automatically; import `@kerfjs/ui/column-track.css` manually only without the `browser` export condition.
+- Wiring: `wireColumnTracks` from `@kerfjs/ui/wire-column-tracks` (optional).
 - Declared side effects: browser-condition-css.
 
 ## Props
@@ -37,6 +38,7 @@ Exact prop names and types: [`@kerfjs/ui/column-track`](../public-api-signatures
 - scroll with a minimum column width
 - paged with peek and mandatory snapping
 - ariaLabel: the track is a named role=region
+- start: open at the end, or on a column named by its data-column-id, held across width changes until the person scrolls (wireColumnTracks)
 
 ## Composition
 
@@ -46,9 +48,9 @@ Exact prop names and types: [`@kerfjs/ui/column-track`](../public-api-signatures
 
 ## State and wiring
 
-**The app owns:** the columns and their content; choosing scroll or paged layout (for example by device class); drag and drop between columns; the board's and each column's accessible name.
+**The app owns:** the columns and their content; choosing scroll or paged layout (for example by device class); drag and drop between columns; the board's and each column's accessible name; which column the board opens on (start), and each column's data-column-id when start names one.
 
-No wiring helper.
+**Wiring:** `wireColumnTracks` is optional.
 
 ## Geometry
 

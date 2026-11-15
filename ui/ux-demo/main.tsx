@@ -135,6 +135,7 @@ import {
   resetColumnExplorerDemo,
   wireColumnExplorerDemo,
 } from './demos/column-explorer.js';
+import { wireColumnTrackDemo } from './demos/column-track.js';
 import {
   resetGaugeDemo,
   STEP_GAUGE_DEMO_ACTION,
@@ -1863,6 +1864,11 @@ const routeWires: Partial<Record<string, RouteWire>> = {
     reset: resetScrollEffectDemo,
     target: 'canvas',
     wire: () => () => {},
+  },
+  'column-track': {
+    reset: () => {},
+    target: 'canvas',
+    wire: (canvas) => wireColumnTrackDemo(canvas),
   },
   'paged-view': {
     reset: resetPagedViewDemo,

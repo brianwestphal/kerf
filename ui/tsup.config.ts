@@ -89,6 +89,7 @@ const entries = [
   'state-banner',
   'corner-status',
   'column-track',
+  'wire-column-tracks',
   'content-swap',
   'scroll-effect',
   'backdrop-image',

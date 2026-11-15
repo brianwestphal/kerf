@@ -332,7 +332,9 @@ export {
   ColumnTrack,
   type ColumnTrackLayout,
   type ColumnTrackProps,
+  type ColumnTrackStart,
 } from './components/layout/column-track/column-track.js';
+export { wireColumnTracks } from './components/layout/column-track/wiring/wire-column-tracks.js';
 export {
   ContentSwap,
   type ContentSwapDirection,

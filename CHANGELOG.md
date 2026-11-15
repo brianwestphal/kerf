@@ -8,6 +8,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Added
 
+- **ColumnTrack opens at its end or on a named column (KF-QHJKA4).** `ColumnTrack` takes `start: 'start' | 'end' | { column }`, and the new `wireColumnTracks(root)` (`@kerfjs/ui/wire-column-tracks`) applies it. A timeline board whose current work is last opens at its far end, and a paged phone board opens on the column whose `data-column-id` matches. The track opens there without animating, opens there again whenever `start` or its column ids change, and returns there when its width changes (a resize, a side rail opening) until the person scrolls it sideways. Apps no longer set `scrollLeft` from their own `ResizeObserver` for this.
 - **RadioGroup preview tiles in the design templates and Sketch Library (KF-1M9SJA).** The `radio-group` SVG design templates gain a Preview Tiles variant, a selected and an unselected tile with a hint, and `Kerf-UI.sketch` gains its editable light and dark Symbols (328 Symbols for 115 variants). Existing Symbol, Text and Color Variable IDs are unchanged, so linked instances sync with their overrides.
 
 ### Fixed
