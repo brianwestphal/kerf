@@ -235,7 +235,11 @@
   --_kui-toolbar-group-search-width-duration: 0s;
   --_kui-toolbar-group-search-reveal-duration: 0.25s;
   width: min(var(--kui-search-field-expanded-width, remify(480px)), 100%);
-  max-width: 100%;
+  /* KF-X9A8X9: the width's percentage is cyclic in a shrink-to-fit parent (a
+     TabBar's `end`), so it is ignored for the group's intrinsic contribution
+     and the whole query on one line sized the zone. A definite cap bounds the
+     contribution; the width above still keeps the group within its line. */
+  max-width: var(--kui-search-field-expanded-width, remify(480px));
   height: auto;
   min-width: 0;
   overflow: hidden;
@@ -253,6 +257,7 @@
     > .kui-search-field[data-expanded="true"][data-fill="true"]
   ) {
   width: 100%;
+  max-width: 100%;
   flex: 1 1 auto;
 }
 
@@ -299,6 +304,8 @@
   /* The group's flex size owns this motion; its basis-wide minimum (above)
      already keeps the query on one line. */
   --_kui-toolbar-group-search-reveal-duration: 0s;
+  /* A grow group sizes by its basis and line, not the expanded-width cap. */
+  max-width: 100%;
   transition-property:
     width, flex-basis, flex-grow, min-width, background-color, border-color;
   transition-duration: 0.25s, 0.25s, 0.25s, 0.25s, 0.2s, 0.2s;
@@ -310,6 +317,7 @@
 }
 .kui-toolbar-control-group[data-sizing="fill"] {
   width: 100%;
+  max-width: 100%;
   min-width: 0;
   flex: 1 1 100%;
 }

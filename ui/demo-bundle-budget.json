@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 164600,
-  "totalJavaScriptGzip": 472900,
-  "measuredLargestJavaScriptGzip": 164544,
-  "measuredTotalJavaScriptGzip": 472896,
+  "totalJavaScriptGzip": 473000,
+  "measuredLargestJavaScriptGzip": 164546,
+  "measuredTotalJavaScriptGzip": 472924,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -7411,6 +7411,22 @@
         "measuredTotalJavaScriptGzip": 472896,
         "largestJavaScriptGzip": 164600,
         "totalJavaScriptGzip": 472900
+      }
+    },
+    {
+      "at": "2026-11-15T22:46:58.036Z",
+      "reason": "KF-X9A8X9: search group caps its intrinsic contribution at the expanded-width token",
+      "old": {
+        "measuredLargestJavaScriptGzip": 164544,
+        "measuredTotalJavaScriptGzip": 472896,
+        "largestJavaScriptGzip": 164600,
+        "totalJavaScriptGzip": 472900
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 164546,
+        "measuredTotalJavaScriptGzip": 472924,
+        "largestJavaScriptGzip": 164600,
+        "totalJavaScriptGzip": 473000
       }
     }
   ]

@@ -714,7 +714,9 @@ other controls; plan for it instead:
 
 - Size the expanded search to what fits: `--kui-search-field-expanded-width`
   for a plain search group, or `sizing="grow"` with a `growBasis` that fits
-  beside the siblings.
+  beside the siblings. The token also bounds the group's size in a
+  content-sized zone such as a TabBar's `end`, so a long query never widens
+  that zone past the capped field.
 - If a useful search cannot fit beside the other controls, set those controls
   aside while it is open. Mark them `visibility="yield-to-expanded-sibling"`
   (they leave a 480px-or-narrower toolbar while a group in any of its zones
