@@ -190,13 +190,19 @@
 .kui-tab-bar-item__name-tail {
   flex: 0 0 auto;
 }
+/* A visible name keeps the tab at its full width with no label cap. A tab
+   wider than its whole strip (KF-0M3ZPT) is the exception: it takes the
+   strip's width and ellipsizes, and wireTabBars titles it with the full
+   name, so the strip never clips the name silently. */
+.kui-tab-bar-item[data-name-overflow="visible"] {
+  max-width: 100%;
+}
 .kui-tab-bar-item[data-name-overflow="visible"] .kui-tab-bar-item__label,
 .kui-tab-bar-item[data-name-overflow="visible"] .kui-tab-bar-item__name {
   max-width: none;
 }
-.kui-tab-bar-item[data-name-overflow="visible"] .kui-tab-bar-item__name {
-  overflow: visible;
-  text-overflow: clip;
+.kui-tab-bar-item[data-name-overflow="visible"] .kui-tab-bar-item__label {
+  min-width: 0;
 }
 .kui-tab-bar-item[data-attention="true"] .kui-tab-bar-item__name {
   color: var(

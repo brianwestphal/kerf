@@ -33,19 +33,17 @@ test('app tab drop target and visible name keep selection independent', async ({
     const appearance = await target.evaluate((element) => {
       const rootStyle = window.getComputedStyle(element);
       const name = element.querySelector('.kui-tab-bar-item__name')!;
-      const nameStyle = window.getComputedStyle(name);
       return {
         background: rootStyle.backgroundColor,
         shadow: rootStyle.boxShadow,
-        overflow: nameStyle.overflow,
-        textOverflow: nameStyle.textOverflow,
+        truncated: name.scrollWidth > name.clientWidth,
         width: name.getBoundingClientRect().width,
       };
     });
     expect(appearance.background).not.toBe('rgba(0, 0, 0, 0)');
     expect(appearance.shadow).toContain('inset');
-    expect(appearance.overflow).toBe('visible');
-    expect(appearance.textOverflow).toBe('clip');
+    // The full name shows past labelMaxWidth while the strip has room.
+    expect(appearance.truncated).toBe(false);
     expect(appearance.width).toBeGreaterThan(80);
     await expect(truncatedName).toHaveCSS('text-overflow', 'ellipsis');
 
@@ -70,4 +68,53 @@ test('app tab drop target and visible name keep selection independent', async ({
       'false',
     );
   }
+});
+
+// KF-0M3ZPT: a visible-name tab wider than its whole strip takes the strip's
+// width and ellipsizes with its full name as the title, instead of the strip
+// clipping the name where scrolling cannot reveal it.
+test('a visible-name tab wider than its strip ellipsizes with a title', async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1100, height: 900 });
+  await page.goto('/?component=tabs');
+  const bar = page.locator('[data-tab-bar-id="tab-bar-item-drop-target"]');
+  const target = bar.locator('.kui-tab-bar-item[data-tab-id="accounting"]');
+  const measure = () =>
+    target.evaluate((tab) => {
+      const strip = tab.parentElement!;
+      const name = tab.querySelector<HTMLElement>('.kui-tab-bar-item__name')!;
+      const style = window.getComputedStyle(strip);
+      const content =
+        strip.clientWidth -
+        parseFloat(style.paddingLeft) -
+        parseFloat(style.paddingRight);
+      return {
+        fitsStrip: tab.getBoundingClientRect().width <= content + 0.5,
+        truncated: name.scrollWidth > name.clientWidth,
+        textOverflow: window.getComputedStyle(name).textOverflow,
+      };
+    });
+  const setWidth = (width: string) =>
+    bar.evaluate((element, value) => {
+      element.style.width = value;
+    }, width);
+
+  await setWidth('110px');
+  await expect.poll(measure).toEqual({
+    fitsStrip: true,
+    truncated: true,
+    textOverflow: 'ellipsis',
+  });
+  const button = target.getByRole('tab');
+  await expect(button).toHaveAccessibleName('Accounting Project');
+  await target.hover();
+  await expect(button).toHaveAttribute('title', 'Accounting Project');
+
+  // Room again: the whole name shows, and the title goes on the next hover.
+  await setWidth('');
+  await expect.poll(measure).toMatchObject({ truncated: false });
+  await page.mouse.move(0, 0);
+  await target.hover();
+  await expect(button).not.toHaveAttribute('title');
 });

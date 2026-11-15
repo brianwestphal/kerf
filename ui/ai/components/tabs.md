@@ -71,7 +71,7 @@ No wiring helper.
 
 Margin: none · border: self · padding: self (layout role: navigation). `self` means the component already owns it — do not add wrapper padding, margin, or borders around it.
 
-- TabBarItem owns its own shrinking: in an intrinsic TabBar a named tab starts at its full width and gives up width by ellipsizing its name down to a minimum of its chrome plus a few characters, so its strip scrolls only once every tab is at that minimum; a name shorter than the minimum never widens, nameOverflow="visible" and placeholder tabs keep their full width, and the full name stays the accessible name (wireTabBars adds it as a title while truncated).
+- TabBarItem owns its own shrinking: in an intrinsic TabBar a named tab starts at its full width and gives up width by ellipsizing its name down to a minimum of its chrome plus a few characters, so its strip scrolls only once every tab is at that minimum; a name shorter than the minimum never widens, nameOverflow="visible" and placeholder tabs keep their full width, and the full name stays the accessible name (wireTabBars adds it as a title while truncated). A nameOverflow="visible" tab whose full width exceeds its strip falls back to the strip's width with an ellipsis and its full name as the title; its name is never clipped by the strip.
 
 ## Accessibility
 

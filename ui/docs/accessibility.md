@@ -445,7 +445,9 @@ overflow is an ellipsis at the end; `nameTruncate="start"` or `"middle"` moves i
 so a name's distinguishing tail stays visible, and the tab button then carries
 the full name as its `aria-label` (and, while truncated, its `title`).
 `nameOverflow="visible"` lets an inline loading treatment show the whole name,
-without changing the accessible name. The app
+without changing the accessible name. A visible-name tab wider than its whole
+strip falls back to the strip's width with an ellipsis and the full name as its
+`title`, so the strip never clips the name where scrolling cannot reveal it. The app
 sets `dropTarget` during a content drag-over to paint a brand highlight;
 selection and tab focus stay independent of that visual state. A `pending` tab (known,
 still opening) keeps its visible name as the tab button's accessible name, so a

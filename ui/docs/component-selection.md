@@ -463,7 +463,8 @@ to color a tab's name with `--kui-tab-bar-item-attention-color`. Set `dropTarget
 while an app drag is over a tab's content; the tab keeps its selection semantics
 and uses the `--kui-tab-bar-item-drop-target-*` tokens for its highlight. Set
 `nameOverflow="visible"` when an inline loading treatment needs the full name
-instead of the default ellipsis. When tabs differ only at the end of their names
+instead of the default ellipsis; a visible-name tab wider than its whole strip
+falls back to an ellipsis with the full name as its title. When tabs differ only at the end of their names
 (a run id, a file path), set `nameTruncate="start"` to keep the tail, or
 `nameTruncate="middle"` to keep the start and the last path segment
 (`nameTruncateKeep` sets another suffix length). A `TabBar` owns its

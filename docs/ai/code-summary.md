@@ -1279,7 +1279,9 @@ disposer-returning wiring. `TabBar.end` provides a separately pinned far-edge
 action while an adjacent `trailing` action follows its shrinkable, horizontally
 scrolling tabs; the component owns that split geometry. `TabBarItem.dropTarget`
 paints its highlight through public tokens independently of `aria-selected`,
-while `nameOverflow="visible"` removes the label width cap and ellipsis and
+while `nameOverflow="visible"` removes the label width cap and ellipsis (a
+visible tab wider than its whole strip caps at the strip and ellipsizes with a
+title, KF-0M3ZPT) and
 `nameTruncate="start" | "middle"` (KF-SDNA0Z: tail-preserving names) moves the
 ellipsis so a name's tail stays visible, naming the tab with `aria-label`. The
 middle split is `ui/src/shared/text/split-middle.ts`, shared with Text.

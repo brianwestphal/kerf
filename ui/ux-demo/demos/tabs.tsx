@@ -69,7 +69,7 @@ export function TabsDemo() {
       </CatalogExample>
       <CatalogExample
         label="Drop Target and Visible Name"
-        note="The drop-target state paints a brand ring. A visible name expands instead of clipping an inline loading treatment."
+        note="The drop-target state paints a brand ring. A visible name expands instead of clipping an inline loading treatment, up to the width of its strip."
         align="none"
       >
         <TabBar
