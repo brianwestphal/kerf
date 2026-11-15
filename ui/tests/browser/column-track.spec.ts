@@ -93,11 +93,21 @@ test('ColumnTrack opens at its end or on a named column', async ({ page }) => {
   await timeline.hover();
   await page.mouse.wheel(-300, 0);
   await expect.poll(atEnd).toBe(false);
-  const held = await timeline.evaluate((track) => track.scrollLeft);
-  await page.setViewportSize({ width: 900, height: 1000 });
+  // Let the wheel scroll settle (WebKit animates it) before reading it.
+  const scrollLeft = () => timeline.evaluate((track) => track.scrollLeft);
+  let held = await scrollLeft();
   await expect
-    .poll(() => timeline.evaluate((track) => track.scrollLeft))
-    .toBeCloseTo(held, 0);
+    .poll(async () => {
+      const previous = held;
+      held = await scrollLeft();
+      return held === previous;
+    })
+    .toBe(true);
+  // Narrower, so the scroll range only grows and nothing clamps the
+  // person's position: the track stays where they left it.
+  await page.setViewportSize({ width: 600, height: 1000 });
+  await expect.poll(scrollLeft).toBeCloseTo(held, 0);
+  await expect.poll(atEnd).toBe(false);
 
   const paged = page.getByRole('region', {
     name: 'Paged Timeline',
