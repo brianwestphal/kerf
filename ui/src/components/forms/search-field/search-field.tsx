@@ -88,6 +88,15 @@ interface SearchFieldBaseProps {
   autofocus?: boolean;
   /** Let an expanded collapsible field consume the available inline width. */
   fill?: boolean;
+  /**
+   * Quiet find-in-content readout ("3 of 12", "No matches") inside the field,
+   * between the editor and Clear. It describes the editor and is announced
+   * politely once it settles. Pass `''` while there is nothing to report so
+   * its description and live region stay mounted; it hides while the field is
+   * collapsed or empty, and ellipsizes, then hides, before the editor gives up
+   * its width.
+   */
+  resultText?: string;
   leading?: KerfUiContent;
   editAction?: string;
   removeAction?: string;
@@ -215,6 +224,7 @@ export function SearchField({
   disabled = false,
   autofocus = false,
   fill = false,
+  resultText,
   collapsible = false,
   expanded = false,
   expandAction = 'expand-search-field',
@@ -301,7 +311,14 @@ export function SearchField({
               presentation === 'form-field' ? `${id}-label` : undefined
             }
             aria-describedby={
-              presentation === 'form-field' && hint ? `${id}-hint` : undefined
+              [
+                presentation === 'form-field' && hint
+                  ? `${id}-hint`
+                  : undefined,
+                resultText === undefined ? undefined : `${id}-result`,
+              ]
+                .filter(Boolean)
+                .join(' ') || undefined
             }
             aria-required={required ? 'true' : undefined}
             aria-disabled={disabled ? 'true' : undefined}
@@ -348,6 +365,24 @@ export function SearchField({
               ),
             )}
           </div>
+          {resultText !== undefined && (
+            <>
+              <span
+                class="kui-search-field__result"
+                id={`${id}-result`}
+                data-empty={String(resultText === '')}
+              >
+                <span class="kui-search-field__result-text">{resultText}</span>
+              </span>
+              {/* Written by wireSearchFields once the readout settles. */}
+              <span
+                class="kui-search-field__result-live"
+                aria-live="polite"
+                aria-atomic="true"
+                data-morph-skip
+              />
+            </>
+          )}
           {(query || tokens.length > 0) && (
             <button
               type="button"

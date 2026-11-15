@@ -11,6 +11,7 @@ import { delegate, delegateCapture, type Signal, signal } from 'kerfjs';
 import { realmOf } from '../../../../shared/dom/realm.js';
 import type { SearchFieldModel } from '../model/search-field-model.js';
 import { placeSearchFieldCaret, readSearchField } from '../search-field.js';
+import { watchSearchFieldResults } from './announce-search-results.js';
 
 export interface SearchFieldSubmit {
   id: string;
@@ -989,6 +990,7 @@ export function wireSearchFields(
   const created = new Map<string, Signal<boolean>>();
   let disposed = false;
   const stopPresentation = watchSearchFieldPresentation(root, () => disposed);
+  const stopResults = watchSearchFieldResults(root);
 
   const signalFor = (id: string): Signal<boolean> => {
     const own = adopted[id];
@@ -1356,6 +1358,7 @@ export function wireSearchFields(
     disposed = true;
     collapse.dispose();
     stopPresentation();
+    stopResults();
     focus.dispose();
     for (const stop of disposers.splice(0)) stop();
   };

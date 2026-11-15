@@ -229,6 +229,11 @@ import {
   edgeActivityBusy,
   edgeActivityMessage,
   filePickerFiles,
+  findReadoutGroupIndex,
+  findReadoutGroupOpen,
+  findReadoutGroupQuery,
+  findReadoutIndex,
+  findReadoutQuery,
   floatingToolbarOpen,
   grammarSearchModel,
   gridTileSelections,
@@ -1287,6 +1292,27 @@ const stopActions = delegateActions(app, 'click', {
     });
     actionLog.value = 'Search cleared';
   },
+  'clear-find-readout': (_event, element) => {
+    const field = element.closest<HTMLElement>(
+      '[data-component="search-field"]',
+    );
+    const editor = field?.querySelector<HTMLElement>(
+      '[data-search-field-editor]',
+    );
+    if (editor) editor.textContent = '';
+    batch(() => {
+      if (field?.dataset.searchFieldId === 'find-readout-group-search') {
+        findReadoutGroupOpen.value = true;
+        findReadoutGroupQuery.value = '';
+        findReadoutGroupIndex.value = 0;
+      } else {
+        findReadoutQuery.value = '';
+        findReadoutIndex.value = 0;
+      }
+    });
+    editor?.focus();
+    actionLog.value = 'Find cleared';
+  },
   'clear-toolbar-find': (_event, element) => {
     const editor = element
       .closest('[data-component="search-field"]')
@@ -2114,6 +2140,23 @@ const stopSearchField = delegate(
     searchFieldTokens.value = value.tokens;
   },
 );
+const stopFindReadout = delegate(
+  app,
+  'input',
+  '[data-demo-find-readout]',
+  (_event, element) => {
+    const query = readSearchField(element as HTMLElement).query;
+    batch(() => {
+      if ((element as HTMLElement).dataset.demoFindReadout === 'group') {
+        findReadoutGroupQuery.value = query;
+        findReadoutGroupIndex.value = 0;
+      } else {
+        findReadoutQuery.value = query;
+        findReadoutIndex.value = 0;
+      }
+    });
+  },
+);
 const stopToolbarFind = delegate(
   app,
   'input',
@@ -2128,6 +2171,9 @@ const stopToolbarFind = delegate(
 const stopSearchFieldSubmits = wireSearchFields(app, {
   models: { 'grammar-search': grammarSearchModel },
   onSubmit: ({ id }) => {
+    // Enter steps a find readout to its next match.
+    if (id === 'find-readout-search') findReadoutIndex.value += 1;
+    if (id === 'find-readout-group-search') findReadoutGroupIndex.value += 1;
     actionLog.value =
       id === 'toolbar-find' ? 'Find submitted' : 'Search submitted';
   },
@@ -2138,6 +2184,7 @@ const stopSearchFieldSubmits = wireSearchFields(app, {
       'toolbar-group-search': toolbarGroupSearchOpen,
       'toolbar-stack-search': toolbarStackSearchOpen,
       'adoption-search': adoptionOpen,
+      'find-readout-group-search': findReadoutGroupOpen,
     },
   },
 });
@@ -2655,6 +2702,7 @@ window.addEventListener(
     stopRecipeDialogs();
     stopSearchField();
     stopToolbarFind();
+    stopFindReadout();
     stopSearchFieldSubmits();
     stopToolbarWidthVisibility();
     stopAdoptionKeyboard?.();

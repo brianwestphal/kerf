@@ -746,8 +746,13 @@ named button whose `label` is also its tooltip; a help toggle sets `expanded`
 (`aria-expanded`, with `haspopup` and `controls` for the surface it opens) and
 an on/off toggle sets `pressed` (`aria-pressed`). Disabled fields publish
 `aria-disabled` and stop editing without hiding the current expression. The
-application owns query parsing and must announce result-count or loading
-changes separately when that feedback is useful. Use `readSearchField()`
+application owns query parsing. For a find-in-content count ("3 of 12", "No
+matches"), pass `resultText`: the readout describes the editor
+(`aria-describedby`), and `wireSearchFields()` copies it into a polite,
+atomic live region once it has been unchanged for half a second, so typing
+announces only the settled count. Pass `''` while there is nothing to report
+so the description and live region stay mounted. Announce loading or other
+result changes separately when that feedback is useful. Use `readSearchField()`
 to ignore the chip buttons' visible text when reading browser-edited content,
 and `placeSearchFieldCaret()` to restore a text caret without landing inside a
 chip. Call `wireSearchFields()` once at a stable root so Enter submits

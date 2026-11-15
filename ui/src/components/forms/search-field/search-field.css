@@ -221,6 +221,104 @@
   border-radius: var(--kui-radius-pill);
 }
 
+/* KF-8CDT8B: the find readout takes its own content-sized column between the
+   editor and Clear, only while it has text and the field has a query. The
+   editor keeps a floor (4rem, or a larger editor-min-width token), so the
+   readout gives way first: it ellipsizes down to about three characters, and
+   below that its text wraps onto a clipped second line, so the column shows
+   nothing rather than a sliver of a glyph. */
+.kui-search-field__result {
+  display: flex;
+  grid-column: 3;
+  grid-row: 1;
+  min-width: 0;
+  height: var(--kui-search-field-line-size);
+  overflow: hidden;
+  flex-wrap: wrap;
+  color: var(--kui-color-text-quiet);
+  font-size: var(--kui-font-xs);
+  font-variant-numeric: tabular-nums;
+  line-height: var(--kui-search-field-line-size);
+}
+
+/* A zero-width first item: a lone flex item never wraps, so the text needs
+   one ahead of it to fall onto the clipped line when its 3em minimum does not
+   fit. */
+.kui-search-field__result::before {
+  height: var(--kui-search-field-line-size);
+  content: "";
+}
+
+.kui-search-field__result-text {
+  min-width: 0;
+  max-width: max-content;
+  overflow: hidden;
+  flex: 1 1 3em;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.kui-search-field__result[data-empty="true"],
+.kui-search-field[data-placeholder-visible="true"] > .kui-search-field__result {
+  display: none;
+}
+
+.kui-search-field:not([data-placeholder-visible="true"]):has(
+    > .kui-search-field__result[data-empty="false"]
+  ) {
+  grid-template-columns:
+    auto
+    minmax(
+      min(
+        max(var(--kui-search-field-editor-min-width, 0px), remify(64px)),
+        100%
+      ),
+      1fr
+    )
+    minmax(0, max-content) auto auto;
+}
+
+.kui-search-field:not([data-placeholder-visible="true"]):has(
+    > .kui-search-field__result[data-empty="false"]
+  )
+  > .kui-search-field__clear {
+  grid-column: 4;
+}
+
+.kui-search-field:not([data-placeholder-visible="true"]):has(
+    > .kui-search-field__result[data-empty="false"]
+  )
+  > :is(.kui-search-field__trailing, .kui-search-field__trailing-action) {
+  grid-column: 5;
+}
+
+/* Without a trailing slot, Clear ends the row right after the readout. */
+.kui-search-field[data-has-trailing="false"]:not(
+    [data-placeholder-visible="true"]
+  ):has(> .kui-search-field__result[data-empty="false"]) {
+  grid-template-columns:
+    auto
+    minmax(
+      min(
+        max(var(--kui-search-field-editor-min-width, 0px), remify(64px)),
+        100%
+      ),
+      1fr
+    )
+    minmax(0, max-content) auto;
+}
+
+.kui-search-field__result-live {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
 .kui-search-field__suggestions {
   display: grid;
   position: absolute;

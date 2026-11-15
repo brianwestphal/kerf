@@ -7,6 +7,8 @@ import { Row } from '@kerfjs/ui/row';
 import { SearchField } from '@kerfjs/ui/search-field';
 import { Text } from '@kerfjs/ui/text';
 import { TextField } from '@kerfjs/ui/text-field';
+import { Toolbar } from '@kerfjs/ui/toolbar';
+import { ToolbarControlGroup } from '@kerfjs/ui/toolbar-control-group';
 import { CircleQuestionMark, CircleX } from 'lucide';
 
 import {
@@ -16,11 +18,35 @@ import {
   adoptionReadout,
   adoptionTokens,
   collapsibleSearchOpen,
+  findReadoutGroupIndex,
+  findReadoutGroupOpen,
+  findReadoutGroupQuery,
+  findReadoutIndex,
+  findReadoutQuery,
   grammarSearchModel,
   searchFieldHelpOpen,
   searchFieldQuery,
   searchFieldTokens,
 } from './state.js';
+
+/** The passage the Find Readout example searches. */
+export const FIND_READOUT_PASSAGE =
+  'Release notes list each release candidate. Every release links its notes, and the notes name the release owner.';
+
+/** "2 of 5" for the active match, "No matches", or nothing for no query. */
+export function findReadout(query: string, index: number): string {
+  const needle = query.trim().toLowerCase();
+  if (!needle) return '';
+  const haystack = FIND_READOUT_PASSAGE.toLowerCase();
+  let count = 0;
+  for (
+    let at = haystack.indexOf(needle);
+    at !== -1;
+    at = haystack.indexOf(needle, at + needle.length)
+  )
+    count += 1;
+  return count ? `${(index % count) + 1} of ${count}` : 'No matches';
+}
 
 export const TOKEN_SEARCH_HELP_SURFACE_ID = 'catalog-search-field-help-surface';
 
@@ -203,6 +229,72 @@ export function SearchFieldDemo() {
           placeholder="Find records"
           expandLabel="Open find"
         />
+      </CatalogExample>
+      <CatalogExample
+        label="Find Readout"
+        note={
+          <>
+            <code>resultText</code> shows a find-in-content count inside the
+            field, before Clear, in standalone and toolbar-group fields. Type to
+            count matches in the passage below and press Enter for the next one.
+            The readout describes the editor and is announced politely once it
+            settles; at a narrow width it ellipsizes, then hides, before the
+            editor gives up its room.
+          </>
+        }
+        align="inline-control"
+        rootAttributes={{ 'data-demo-find-readout': '' }}
+      >
+        <List gap="xs">
+          <SearchField
+            id="find-readout-search"
+            label="Find in Notes"
+            query={findReadoutQuery.value}
+            placeholder="Find in notes"
+            clearAction="clear-find-readout"
+            resultText={findReadout(
+              findReadoutQuery.value,
+              findReadoutIndex.value,
+            )}
+            editorAttributes={{ 'data-demo-find-readout': 'standalone' }}
+          />
+          <Toolbar
+            label="Notes Controls"
+            leading={
+              <ToolbarControlGroup
+                content="search"
+                expanded={
+                  findReadoutGroupOpen.value ||
+                  findReadoutGroupQuery.value.length > 0
+                }
+                single={
+                  !findReadoutGroupOpen.value &&
+                  findReadoutGroupQuery.value.length === 0
+                }
+              >
+                <SearchField
+                  id="find-readout-group-search"
+                  label="Find in Notes"
+                  query={findReadoutGroupQuery.value}
+                  collapsible
+                  expanded={findReadoutGroupOpen.value}
+                  presentation="toolbar-group"
+                  placeholder="Find in notes"
+                  expandLabel="Open find"
+                  clearAction="clear-find-readout"
+                  resultText={findReadout(
+                    findReadoutGroupQuery.value,
+                    findReadoutGroupIndex.value,
+                  )}
+                  editorAttributes={{ 'data-demo-find-readout': 'group' }}
+                />
+              </ToolbarControlGroup>
+            }
+          />
+          <Text variant="p" tone="quiet">
+            {FIND_READOUT_PASSAGE}
+          </Text>
+        </List>
       </CatalogExample>
       <CatalogExample
         label="Disabled"

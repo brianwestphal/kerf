@@ -1370,6 +1370,7 @@ scroll for scrollable Lists). Unit coverage in
 `ui/tests/unit/wire-list-focus-scroll.test.ts`; three-engine keyboard and
 pointer coverage in `ui/tests/browser/result-picker.spec.ts`.
 `SearchField.trailingAction` renders the compact clear-button-matched trailing icon button with optional `expanded`/`pressed` (exclusive) ARIA state, `controls`, `haspopup`, and domain `data-*` `attributes`; `ui/tests/browser/search-field-trailing-presentations.spec.ts` (fixture `fixtures/search-field-trailing-presentations.tsx`) pins its geometry and state across the standalone, form-field, and toolbar-group presentations.
+`SearchField.resultText` (KF-8CDT8B: in-field find readout such as "3 of 12") renders a quiet `.kui-search-field__result` column between the editor and Clear that ellipsizes, then wraps out of view, before the editor's 4rem floor gives way, plus a component-owned `data-morph-skip` polite live region; `ui/src/components/forms/search-field/wiring/announce-search-results.ts` (`watchSearchFieldResults`, installed by `wireSearchFields`) copies the readout into it once it has been unchanged for `SEARCH_RESULT_ANNOUNCE_DELAY` (500ms). Tests: `ui/tests/unit/search-field-result.test.tsx`, `ui/tests/browser/search-field-result.spec.ts`; demo: the SearchField page's Find Readout example.
 `wireSearchFields` captures managed clear before app handlers, suppresses the
 transient replacement blur, and restores the current editor at its mutation checkpoint
 before the next input task, without app reopen code or frame-delayed focus.

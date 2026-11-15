@@ -4749,7 +4749,7 @@ export { SunkenPanel, type SunkenPanelProps, type SunkenPanelShape, ensureSunken
 ## `@kerfjs/ui/search-field`
 
 ```ts
-export { S as SearchField, a as SearchFieldEditorAttributes, d as SearchFieldProps, j as SearchFieldToken, k as SearchFieldTrailingAction, l as SearchFieldTrailingActionAttributes, m as SearchFieldValue, p as placeSearchFieldCaret, r as readSearchField } from './search-field-5lNIszda.js';
+export { S as SearchField, a as SearchFieldEditorAttributes, d as SearchFieldProps, j as SearchFieldToken, k as SearchFieldTrailingAction, l as SearchFieldTrailingActionAttributes, m as SearchFieldValue, p as placeSearchFieldCaret, r as readSearchField } from './search-field-7wLt3Bd5.js';
 import 'kerfjs';
 import './semantic-content-BbzjvSu9.js';
 import './extension-attributes-IJ4decoa.js';
@@ -4759,7 +4759,7 @@ import './extension-attributes-IJ4decoa.js';
 
 ```ts
 import { Signal } from 'kerfjs';
-import { b as SearchFieldModel } from './search-field-5lNIszda.js';
+import { b as SearchFieldModel } from './search-field-7wLt3Bd5.js';
 import './semantic-content-BbzjvSu9.js';
 import './extension-attributes-IJ4decoa.js';
 
@@ -7367,7 +7367,7 @@ export { ColorField, type ColorFieldProps, type ColorFieldRootAttributes, type C
 ## `@kerfjs/ui/search-field-model`
 
 ```ts
-export { b as SearchFieldModel, c as SearchFieldModelOptions, e as SearchFieldResolvedToken, f as SearchFieldRule, g as SearchFieldState, h as SearchFieldStructure, i as SearchFieldSuggestion, n as createSearchFieldModel } from './search-field-5lNIszda.js';
+export { b as SearchFieldModel, c as SearchFieldModelOptions, e as SearchFieldResolvedToken, f as SearchFieldRule, g as SearchFieldState, h as SearchFieldStructure, i as SearchFieldSuggestion, n as createSearchFieldModel } from './search-field-7wLt3Bd5.js';
 import 'kerfjs';
 import './semantic-content-BbzjvSu9.js';
 import './extension-attributes-IJ4decoa.js';

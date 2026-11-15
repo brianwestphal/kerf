@@ -2699,6 +2699,9 @@
         "fill": {
           "group": "Layout"
         },
+        "resultText": {
+          "group": "Content"
+        },
         "editAction": {
           "group": "Behavior",
           "subgroup": "Actions"

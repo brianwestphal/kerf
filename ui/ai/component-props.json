@@ -11666,6 +11666,13 @@
           "group": "Layout"
         },
         {
+          "name": "resultText",
+          "type": { "kind": "string", "text": "string", "nullable": true },
+          "required": false,
+          "description": "Quiet find-in-content readout (\"3 of 12\", \"No matches\") inside the field,\nbetween the editor and Clear. It describes the editor and is announced\npolitely once it settles. Pass `''` while there is nothing to report so\nits description and live region stay mounted; it hides while the field is\ncollapsed or empty, and ellipsizes, then hides, before the editor gives up\nits width.",
+          "group": "Content"
+        },
+        {
           "name": "leading",
           "type": {
             "kind": "content",

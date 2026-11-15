@@ -123,6 +123,12 @@ export const adoptionOpen = signal(true);
 export const adoptionQuery = signal('');
 export const adoptionTokens = signal<SearchFieldToken[]>([]);
 export const adoptionReadout = signal('No edits yet');
+/** Find Readout example: each field's query and its active match. */
+export const findReadoutQuery = signal('');
+export const findReadoutIndex = signal(0);
+export const findReadoutGroupQuery = signal('');
+export const findReadoutGroupIndex = signal(0);
+export const findReadoutGroupOpen = signal(false);
 export const ADOPTION_SUGGESTIONS: readonly SearchFieldToken[] = [
   { value: 'status:open', label: 'status:open' },
   { value: 'owner:me', label: 'owner:me' },
