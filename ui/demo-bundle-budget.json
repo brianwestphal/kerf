@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 164600,
-  "totalJavaScriptGzip": 474100,
-  "measuredLargestJavaScriptGzip": 164545,
-  "measuredTotalJavaScriptGzip": 474010,
+  "totalJavaScriptGzip": 474300,
+  "measuredLargestJavaScriptGzip": 164546,
+  "measuredTotalJavaScriptGzip": 474217,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -7443,6 +7443,22 @@
         "measuredTotalJavaScriptGzip": 474010,
         "largestJavaScriptGzip": 164600,
         "totalJavaScriptGzip": 474100
+      }
+    },
+    {
+      "at": "2026-11-16T22:53:17.934Z",
+      "reason": "KF-H3PNKB: SearchField result watcher keeps the editor description in step with a late readout",
+      "old": {
+        "measuredLargestJavaScriptGzip": 164545,
+        "measuredTotalJavaScriptGzip": 474010,
+        "largestJavaScriptGzip": 164600,
+        "totalJavaScriptGzip": 474100
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 164546,
+        "measuredTotalJavaScriptGzip": 474217,
+        "largestJavaScriptGzip": 164600,
+        "totalJavaScriptGzip": 474300
       }
     }
   ]

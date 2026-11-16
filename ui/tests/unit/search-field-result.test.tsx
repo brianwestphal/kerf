@@ -186,4 +186,82 @@ describe('SearchField resultText', () => {
     expect(bare.querySelector('.kui-search-field__result-live')).toBeNull();
     stop();
   });
+
+  // KF-H3PNKB: the editor is morph-skipped, so the watcher keeps its
+  // description in step with a readout added or removed after first render.
+  it('describes the editor with a readout added later and drops it when removed', async () => {
+    const root = document.createElement('div');
+    document.body.append(root);
+    const result = signal<string | undefined>(undefined);
+    const stopMount = mount(root, () => (
+      <SearchField
+        id="late"
+        label="Find"
+        presentation="form-field"
+        hint="Matches whole words"
+        query="release"
+        resultText={result.value}
+      />
+    ));
+    const stop = wireSearchFields(root, { collapsible: false });
+    const editor = root.querySelector<HTMLElement>(
+      '.kui-search-field__editor',
+    )!;
+    const describedBy = () => editor.getAttribute('aria-describedby');
+    expect(describedBy()).toBe('late-hint');
+
+    result.value = '1 of 3';
+    await Promise.resolve();
+    await Promise.resolve();
+    expect(root.querySelector('.kui-search-field__result')).not.toBeNull();
+    expect(describedBy()).toBe('late-hint late-result');
+
+    // A later readout change keeps one copy of the id.
+    result.value = '2 of 3';
+    await Promise.resolve();
+    await Promise.resolve();
+    expect(describedBy()).toBe('late-hint late-result');
+
+    result.value = undefined;
+    await Promise.resolve();
+    await Promise.resolve();
+    expect(root.querySelector('.kui-search-field__result')).toBeNull();
+    expect(describedBy()).toBe('late-hint');
+    stop();
+    stopMount();
+  });
+
+  it('removes the description entirely when the readout was its only id', async () => {
+    const root = document.createElement('div');
+    document.body.append(root);
+    const stop = watchSearchFieldResults(root);
+    root.innerHTML = String(
+      <SearchField id="only" label="Find" query="x" resultText="1 of 2" />,
+    );
+    const field = root.querySelector<HTMLElement>('.kui-search-field')!;
+    const editor = field.querySelector<HTMLElement>(
+      '.kui-search-field__editor',
+    )!;
+    await Promise.resolve();
+    expect(editor.getAttribute('aria-describedby')).toBe('only-result');
+    const readout = field.querySelector('.kui-search-field__result')!;
+    readout.remove();
+    await Promise.resolve();
+    expect(editor.hasAttribute('aria-describedby')).toBe(false);
+    // Swapping the readout node in one batch keeps the description.
+    field.insertBefore(
+      readout,
+      field.querySelector('.kui-search-field__clear'),
+    );
+    const twin = readout.cloneNode(true) as HTMLElement;
+    readout.replaceWith(twin);
+    // A readout added and dropped in the same batch is ignored.
+    const ghost = document.createElement('span');
+    ghost.className = 'kui-search-field__result';
+    field.append(ghost);
+    ghost.remove();
+    await Promise.resolve();
+    expect(editor.getAttribute('aria-describedby')).toBe('only-result');
+    stop();
+  });
 });

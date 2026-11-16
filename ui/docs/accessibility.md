@@ -750,8 +750,11 @@ application owns query parsing. For a find-in-content count ("3 of 12", "No
 matches"), pass `resultText`: the readout describes the editor
 (`aria-describedby`), and `wireSearchFields()` copies it into a polite,
 atomic live region once it has been unchanged for half a second, so typing
-announces only the settled count. Pass `''` while there is nothing to report
-so the description and live region stay mounted. Announce loading or other
+announces only the settled count. When a readout is added to or removed from
+a rendered field, `wireSearchFields()` adds or drops its id in the editor's
+description (keeping the form hint). Still pass `''` while there is nothing to
+report, so the live region is already mounted when the first count arrives.
+Announce loading or other
 result changes separately when that feedback is useful. Use `readSearchField()`
 to ignore the chip buttons' visible text when reading browser-edited content,
 and `placeSearchFieldCaret()` to restore a text caret without landing inside a
