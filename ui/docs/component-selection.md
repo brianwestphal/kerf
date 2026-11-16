@@ -835,7 +835,10 @@ the point: the default `bottom-start` opens below it, and `top-start` or
 `top-end` opens above it (for a menu anchored to a footer or composer), still
 flipping when that side has no room. Because the point is part of the
 menu's own template, it survives re-renders and a rebuilt menu, so the app
-never re-applies it. `openPopupMenuAt` still opens a menu rendered without `anchor` at a given
+never re-applies it. The point stays in viewport coordinates even inside a
+transformed or otherwise fixed-containing ancestor (an app-height catalog
+frame), so pass `clientX`/`clientY` as they are; never convert them into an
+ancestor's coordinates. `openPopupMenuAt` still opens a menu rendered without `anchor` at a given
 point, at its `placement` unless the call names one for that opening
 (`openPopupMenuAt(menu, x, y, { placement: 'top-start' })`). Call `closePopupMenu` for programmatic dismissal. A pointer-anchored menu
 keeps the same collision placement, focus management, submenu keyboard

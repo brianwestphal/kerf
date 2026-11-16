@@ -214,6 +214,26 @@ export function installPopupMenus(doc: Document = document): void {
     });
   };
 
+  // KF-7PEMC6: a context menu opens at its recorded viewport point. Its
+  // invisible anchor is `position: fixed` at that point, but a transformed,
+  // filtered, or contained ancestor (an app-height catalog frame) becomes
+  // its containing block and offsets it by the ancestor's own position.
+  // The menu itself sits in the top layer in viewport coordinates, so it is
+  // placed against the point, not against the anchor's rectangle.
+  const contextPoint = (
+    root: HTMLElement,
+    point: { x: number; y: number } | undefined,
+  ): PopupAnchor => {
+    if (point) return pointAnchor(point.x, point.y);
+    const style = win.getComputedStyle(root);
+    const read = (name: string) =>
+      Number.parseFloat(style.getPropertyValue(name)) || 0;
+    return pointAnchor(
+      read('--kui-popup-menu-context-x'),
+      read('--kui-popup-menu-context-y'),
+    );
+  };
+
   const openRoot = (
     root: HTMLElement,
     detail: PopupMenuOpenDetail & { focus: Focus },
@@ -234,7 +254,9 @@ export function installPopupMenus(doc: Document = document): void {
     const pointOpened = point !== undefined && !context;
     const anchor: PopupAnchor = pointOpened
       ? pointAnchor(point.x, point.y)
-      : opener;
+      : context
+        ? contextPoint(root, point)
+        : opener;
     const placement = ((point !== undefined ? pointPlacement : undefined) ??
       (pointOpened
         ? 'bottom-start'

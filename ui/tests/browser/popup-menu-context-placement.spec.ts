@@ -174,3 +174,51 @@ test('a button-triggered PopupMenu opens at an explicit placement at a point', a
   expect(Math.abs(box.top - 300)).toBeLessThan(2);
   await page.keyboard.press('Escape');
 });
+
+// KF-7PEMC6: inside an ancestor that is the containing block for fixed
+// descendants (an app-height catalog frame's identity transform), a context
+// menu still opens at its viewport point, rendered or pointer-given, instead
+// of offset by the ancestor's own position.
+test('a context PopupMenu opens at its point inside a fixed containing block', async ({
+  page,
+}) => {
+  await mountFixture(page);
+  await page.evaluate(() => {
+    const host = document.body.firstElementChild as HTMLElement;
+    Object.assign(host.style, {
+      transform: 'translate(0)',
+      margin: '210px 0 0 305px',
+      height: '400px',
+      overflow: 'hidden',
+    });
+  });
+
+  // The rendered anchor point (400, 400).
+  await page.evaluate(() =>
+    (globalThis as unknown as Fixture).contextPlacementFixture.open(
+      'bottom-start',
+    ),
+  );
+  let box = await placed(page, 'bottom-start');
+  expect(Math.abs(box.top - 400)).toBeLessThan(2);
+  expect(Math.abs(box.left - 400)).toBeLessThan(2);
+  await page.keyboard.press('Escape');
+  await expect(menuOf(page, 'bottom-start')).toBeHidden();
+
+  // A pointer point, as a contextmenu handler passes clientX/clientY.
+  await page.evaluate(() =>
+    (globalThis as unknown as Fixture).contextPlacementFixture.openAt(
+      'top-start',
+      600,
+      500,
+    ),
+  );
+  box = await placed(page, 'top-start');
+  expect(box.placement).toBe('top-start');
+  expect(Math.abs(box.bottom - 500)).toBeLessThan(2);
+  expect(Math.abs(box.left - 600)).toBeLessThan(2);
+  await page.screenshot({
+    path: test.info().outputPath('context-placement-transformed-frame.png'),
+  });
+  await page.keyboard.press('Escape');
+});

@@ -630,9 +630,14 @@ describe('PopupMenu register: keyboard navigation', () => {
     )!;
     expect(isShown(nextMenu)).toBe(true);
     expect(document.activeElement?.textContent).toBe('Open');
-    expect(floating.positions.at(-1)?.anchor).toBe(
-      rebuilt.querySelector('.kui-popup-menu__context-anchor'),
-    );
+    // KF-7PEMC6: placed against the rendered viewport point itself, not the
+    // fixed anchor's rectangle, which a transformed ancestor would offset.
+    const anchor = floating.positions.at(-1)!.anchor as {
+      getBoundingClientRect(): DOMRect;
+    };
+    expect(anchor).not.toBeInstanceOf(Element);
+    const rect = anchor.getBoundingClientRect();
+    expect([rect.x, rect.y]).toEqual([24, 35]);
   });
 
   it('does not reopen a rebuilt menu after focus has left it or its trigger becomes disabled', async () => {
