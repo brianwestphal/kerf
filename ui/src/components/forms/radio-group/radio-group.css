@@ -156,12 +156,16 @@
   gap: var(--kui-space-m, remify(16px));
 }
 /* A definite tile width keeps the group's intrinsic width a row of whole
-   tiles, so it lines them up wherever it is shrink-wrapped and wraps them
-   when its container is narrower (three fit a phone-width column); the cap
-   keeps one tile inside a container narrower than a tile. */
+   104px tiles, so it lines them up wherever it is shrink-wrapped. Lines
+   break on the 88px flex basis instead (KF-0ZTK8A: line breaking uses the
+   basis, so a 104px basis wrapped the third tile in a 336px phone column),
+   so a short set shrinks to share a row down to that legible minimum, grows
+   back to 104px, and only then wraps whole tiles: three fit from 296px. The
+   cap keeps one tile inside a container narrower than a tile. */
 .kui-radio-group[data-presentation="tiles"] .kui-radio-group__choice {
+  flex: 1 1 remify(88px);
   width: remify(104px);
-  max-width: 100%;
+  max-width: min(remify(104px), 100%);
 }
 .kui-radio-group__tile {
   position: relative;

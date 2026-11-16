@@ -83,3 +83,51 @@ for (const width of [1280, 390]) {
     await expect(group.getByRole('radio', { name: 'Auto' })).toBeChecked();
   });
 }
+
+// KF-0ZTK8A: a short set of tiles shrinks to share one row down to a legible
+// minimum before it wraps whole tiles, so three fit a 336px phone column.
+test('tiles shrink to share a row before wrapping whole tiles', async ({
+  page,
+}, testInfo) => {
+  await page.setViewportSize({ width: 1280, height: 900 });
+  await page.goto('/?component=radio-group');
+  const group = theme(page);
+  await group.scrollIntoViewIfNeeded();
+  const layout = () =>
+    group.locator('.kui-radio-group__choice').evaluateAll((choices) =>
+      choices.map((choice) => {
+        const box = choice.getBoundingClientRect();
+        return { top: Math.round(box.top), width: box.width };
+      }),
+    );
+
+  // Unconstrained, the shrink-wrapped group keeps full 104px tiles.
+  for (const tile of await layout()) expect(tile.width).toBeCloseTo(104, 0);
+
+  for (const width of [336, 300]) {
+    await group.evaluate((element, value) => {
+      element.style.width = `${String(value)}px`;
+    }, width);
+    const tiles = await layout();
+    expect(new Set(tiles.map((tile) => tile.top)).size).toBe(1);
+    for (const tile of tiles) {
+      expect(tile.width).toBeGreaterThanOrEqual(87.5);
+      expect(tile.width).toBeLessThanOrEqual(104.5);
+    }
+    await group.screenshot({
+      path: testInfo.outputPath(`radio-tiles-row-${String(width)}.png`),
+    });
+  }
+
+  // Below three minimum tiles, whole tiles wrap at their full width.
+  await group.evaluate((element) => {
+    element.style.width = '250px';
+  });
+  const wrapped = await layout();
+  expect(new Set(wrapped.map((tile) => tile.top)).size).toBe(2);
+  for (const tile of wrapped) expect(tile.width).toBeCloseTo(104, 0);
+  await group.screenshot({
+    path: testInfo.outputPath('radio-tiles-wrap-250.png'),
+  });
+  await group.evaluate((element) => element.style.removeProperty('width'));
+});

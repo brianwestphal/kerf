@@ -104,7 +104,7 @@ export function RadioGroupDemo() {
       </CatalogExample>
       <CatalogExample
         label="Preview Tiles"
-        note='presentation="tiles" draws each choice as a framed preview above its label, for choices best told apart by a picture. A ring and a check mark the selection, the grid wraps whole tiles, and the radios keep one Tab stop with arrow-key selection.'
+        note='presentation="tiles" draws each choice as a framed preview above its label, for choices best told apart by a picture. A ring and a check mark the selection, a short set shrinks to share one row down to a legible minimum before it wraps whole tiles, and the radios keep one Tab stop with arrow-key selection.'
         align="inline-control"
       >
         <RadioGroup
