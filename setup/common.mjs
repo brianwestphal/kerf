@@ -1,6 +1,6 @@
 import { createHash } from 'node:crypto';
 import { access, readFile } from 'node:fs/promises';
-import { isAbsolute, relative } from 'node:path';
+import { dirname, isAbsolute, relative, resolve } from 'node:path';
 import process from 'node:process';
 
 export const exists = async (path) => {
@@ -11,6 +11,20 @@ export const exists = async (path) => {
     return false;
   }
 };
+
+/**
+ * The nearest directory at or above `start` that holds a `.git` entry (a
+ * repository or worktree root), or null outside any repository. KF-G54HNG:
+ * the bound for configuration a nested non-workspace package inherits.
+ */
+export async function repositoryRoot(start) {
+  for (let directory = resolve(start); ;) {
+    if (await exists(resolve(directory, '.git'))) return directory;
+    const parent = dirname(directory);
+    if (parent === directory) return null;
+    directory = parent;
+  }
+}
 
 export const portable = (root, path) =>
   relative(root, path).replaceAll('\\', '/') || '.';

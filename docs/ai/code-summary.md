@@ -53,7 +53,10 @@ existing app, setup wires shipped guidance plus TypeScript/ESLint/catalog/doctor
 feedback into the selected package. For a fresh UI package (`freshUiApp`), it
 also scaffolds a runnable Vite app with a Kerf catalog page and structure test.
 In UI mode, the generated `kerf:check` runs all four feedback checks; focused
-catalog and doctor scripts remain available separately.
+catalog and doctor scripts remain available separately. KF-G54HNG: the
+enclosing git repository (`repositoryRoot` in `setup/common.mjs`) bounds the
+ancestor Prettier-config search and the shared `--guidance-source`, and `json`
+and `state` actions are planned by value so a formatter's layout is stable.
 An optional shared-guidance source produces an import-only Claude skill; the
 ESLint hygiene rule validates the import and source instead of a copied skill.
 Workspace profile composition/selection paths and missing metadata sources

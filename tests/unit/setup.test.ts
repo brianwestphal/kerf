@@ -67,6 +67,117 @@ describe('AI-first setup planner', () => {
     ).toBe(false);
   });
 
+  // KF-G54HNG: a nested package of a repository that is not a workspace
+  // inherits the repository root's Prettier config and shared AGENTS.md, and
+  // a rerun after the project's formatter plans nothing.
+  it('is idempotent in a nested non-workspace package of a repository', async () => {
+    const repo = await fixture(
+      { name: 'monorepo', private: true },
+      {
+        '.git/HEAD': 'ref: refs/heads/main\n',
+        '.prettierrc.json': '{ "singleQuote": true }\n',
+        'AGENTS.md':
+          '# Repository guidance\nUse Kerf UI components and run npm run check.\n',
+        'clients/web/package.json': JSON.stringify({
+          name: '@acme/web',
+          private: true,
+          type: 'module',
+          dependencies: { kerfjs: '4.4.1', '@kerfjs/ui': '4.4.1' },
+        }),
+      },
+    );
+    const root = join(repo, 'clients/web');
+    const plan = await planKerfSetup({
+      root,
+      version: '4.4.1',
+      guidanceSource: '../../AGENTS.md',
+    });
+    expect(plan.conflicts).toEqual([]);
+    const paths = plan.actions.map(({ path }) => path);
+    // The repository root's .prettierrc.json applies; no shadowing config.
+    expect(paths).not.toContain('prettier.config.mjs');
+    expect(plan.proposalIds).not.toContain('prettier.config.mjs');
+    expect(paths).toContain('.kerf-ui-profile.json');
+    await applyKerfSetup(plan, { install: false });
+    expect(
+      await readFile(join(root, '.claude/skills/kerf-app/SKILL.md'), 'utf8'),
+    ).toContain('@../../../../../AGENTS.md\n');
+
+    // The project's formatter rewrites JSON layout without changing values.
+    for (const name of [
+      '.kerf-ui-profile.json',
+      '.kerf-ai-setup.json',
+      '.kerf-ui-doctor.json',
+      'package.json',
+    ]) {
+      const path = join(root, name);
+      await writeFile(
+        path,
+        `${JSON.stringify(JSON.parse(await readFile(path, 'utf8')))}\n`,
+      );
+    }
+    const rerun = await planKerfSetup({ root, version: '4.4.1' });
+    expect(rerun.conflicts).toEqual([]);
+    expect(rerun.actions).toEqual([]);
+    expect(formatSetupPlan(rerun)).toContain('No changes.');
+
+    // A guidance source outside the repository is still refused.
+    await expect(
+      planKerfSetup({
+        root,
+        version: '4.4.1',
+        guidanceSource: '../../../x.md',
+      }),
+    ).rejects.toThrow('inside the workspace root or its repository');
+  });
+
+  it('lets a project decline the package Prettier config and remembers it', async () => {
+    const root = await fixture({
+      name: 'ui-app',
+      private: true,
+      dependencies: { kerfjs: '4.4.1', '@kerfjs/ui': '4.4.1' },
+    });
+    const plan = await planKerfSetup({ root, version: '4.4.1' });
+    expect(plan.actions.map(({ path }) => path)).toContain(
+      'prettier.config.mjs',
+    );
+    expect(formatSetupPlan(plan)).toContain(
+      'PROPOSAL prettier.config.mjs (use --resolve prettier.config.mjs=skip to decline)',
+    );
+    const declined = await planKerfSetup({
+      root,
+      version: '4.4.1',
+      resolutions: { 'prettier.config.mjs': 'skip' },
+    });
+    expect(declined.actions.map(({ path }) => path)).not.toContain(
+      'prettier.config.mjs',
+    );
+    await applyKerfSetup(declined, { install: false });
+    const rerun = await planKerfSetup({ root, version: '4.4.1' });
+    expect(rerun.actions).toEqual([]);
+
+    // A `prettier` key in an ancestor package.json of the repository is a
+    // config too; an unreadable manifest on the way declares nothing.
+    const nested = await fixture(
+      { name: 'outer', private: true, prettier: { semi: false } },
+      {
+        '.git': 'gitdir: ../.git/worktrees/outer\n',
+        'mid/package.json': '{ not json',
+        'mid/app/package.json': JSON.stringify({
+          name: 'inner',
+          dependencies: { kerfjs: '4.4.1', '@kerfjs/ui': '4.4.1' },
+        }),
+      },
+    );
+    const inner = await planKerfSetup({
+      root: join(nested, 'mid/app'),
+      version: '4.4.1',
+    });
+    expect(inner.actions.map(({ path }) => path)).not.toContain(
+      'prettier.config.mjs',
+    );
+  });
+
   it('installs UI guidance in UI mode and prints the retrieval paths', async () => {
     const root = await fixture({
       name: 'ui-app',

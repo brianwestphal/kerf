@@ -14,6 +14,7 @@ import {
   readJson,
   readText,
   redactText,
+  repositoryRoot,
   sha256,
   shellArg,
   stableJson,
@@ -337,17 +338,21 @@ function mergeProfile(current, recommended, context) {
 async function validatedGuidanceSource(root, guidanceSource) {
   if (!guidanceSource) return guidanceSource;
   const sourcePath = resolve(root, guidanceSource);
-  if (!sourcePath.startsWith(`${root}/`))
+  // KF-G54HNG: a nested package of a repository that is not a workspace
+  // shares the repository root's AGENTS.md, above the setup root, so the
+  // enclosing repository bounds the source rather than the setup root.
+  const boundary = (await repositoryRoot(root)) ?? root;
+  if (sourcePath === boundary || !contained(boundary, sourcePath))
     throw new Error(
-      'Shared guidance source must be inside the workspace root.',
+      'Shared guidance source must be inside the workspace root or its repository.',
     );
   const actualSourcePath = await realpath(sourcePath).catch(() => null);
   if (
     actualSourcePath &&
-    !actualSourcePath.startsWith(`${await realpath(root)}/`)
+    !contained(await realpath(boundary), actualSourcePath)
   )
     throw new Error(
-      'Shared guidance source must resolve inside the workspace root.',
+      'Shared guidance source must resolve inside the workspace root or its repository.',
     );
   const source = await readText(sourcePath);
   if (
@@ -359,6 +364,65 @@ async function validatedGuidanceSource(root, guidanceSource) {
       'Shared guidance source must exist and describe Kerf and a project check command.',
     );
   return portable(root, sourcePath);
+}
+
+/** Whether two JSON texts hold the same values in the same key order. */
+function sameJson(left, right) {
+  try {
+    return (
+      JSON.stringify(JSON.parse(left)) === JSON.stringify(JSON.parse(right))
+    );
+  } catch {
+    return false;
+  }
+}
+
+/** Prettier's configuration file names, as its own search resolves them. */
+const PRETTIER_CONFIG_FILES = [
+  '.prettierrc',
+  '.prettierrc.json',
+  '.prettierrc.yaml',
+  '.prettierrc.yml',
+  '.prettierrc.json5',
+  '.prettierrc.js',
+  '.prettierrc.cjs',
+  '.prettierrc.mjs',
+  '.prettierrc.ts',
+  '.prettierrc.cts',
+  '.prettierrc.mts',
+  '.prettierrc.toml',
+  'prettier.config.js',
+  'prettier.config.cjs',
+  'prettier.config.mjs',
+  'prettier.config.ts',
+  'prettier.config.cts',
+  'prettier.config.mts',
+];
+
+/**
+ * KF-G54HNG: whether Prettier already resolves a configuration for
+ * `directory`, searching it and its ancestors up to the enclosing repository
+ * (or the setup root outside one), as Prettier does: a config file or a
+ * `prettier` key in a package.json. A package-local config would shadow an
+ * ancestor's options and overrides.
+ */
+async function prettierConfigApplies(root, directory) {
+  const repository = await repositoryRoot(directory);
+  const stop =
+    repository && contained(repository, root) ? repository : resolve(root);
+  for (let current = directory; ; current = dirname(current)) {
+    for (const name of PRETTIER_CONFIG_FILES)
+      if (await exists(resolve(current, name))) return true;
+    const manifest = await readText(resolve(current, 'package.json'));
+    if (manifest !== null) {
+      try {
+        if (JSON.parse(manifest)?.prettier !== undefined) return true;
+      } catch {
+        // An unreadable ancestor manifest declares nothing here.
+      }
+    }
+    if (current === stop || dirname(current) === current) return false;
+  }
 }
 
 /**
@@ -402,6 +466,15 @@ function createPlanAccumulator({
   };
   plan.addAction = async (path, value, kind = 'write') => {
     const before = await readText(path);
+    // KF-G54HNG: a JSON file whose values already match is left alone, so a
+    // project formatter's layout (short arrays on one line) is not undone
+    // and a rerun plans nothing.
+    if (
+      (kind === 'json' || kind === 'state') &&
+      before !== null &&
+      sameJson(before, value)
+    )
+      return;
     if (before !== value)
       plan.actions.push({
         path: portable(root, path),
@@ -862,25 +935,16 @@ async function planEslint(plan, nextManifest) {
 /** UI mode: Prettier config, doctor config, and the fresh-app scaffold files. */
 async function planUiBaseline(plan, { scaffoldUiApp, packageDoctorConfig }) {
   const { root, selected, resolutions, managedBefore, managedAfter } = plan;
-  const prettierFiles = [
-    'prettier.config.mjs',
-    'prettier.config.js',
-    '.prettierrc',
-    '.prettierrc.json',
-    '.prettierrc.js',
-    '.prettierrc.mjs',
-  ];
-  if (
-    !(
-      await Promise.all(
-        prettierFiles.map((name) => exists(resolve(selected.directory, name))),
-      )
-    ).some(Boolean)
-  ) {
-    await plan.addAction(
-      resolve(selected.directory, 'prettier.config.mjs'),
-      uiPrettierConfig,
-    );
+  // A proposal the project can decline with `prettier.config.mjs=skip`
+  // (package-relative path as its id), remembered with the other
+  // resolutions so a deleted config is not proposed again.
+  if (!(await prettierConfigApplies(root, selected.directory))) {
+    const destination = resolve(selected.directory, 'prettier.config.mjs');
+    const id = portable(root, destination);
+    plan.knownResolutionIds.add(id);
+    plan.activeProposalIds.add(id);
+    if (resolutions[id] !== 'skip')
+      await plan.addAction(destination, uiPrettierConfig);
   }
   if (!(await exists(packageDoctorConfig)))
     await plan.addAction(

@@ -22,7 +22,9 @@ workspace discovery, the lock, and `.kerf-ai-setup.json` are all relative to
 it.
 `--guidance-source <path>` selects an existing shared workspace document such as
 `AGENTS.md`. Setup then writes an import-only Claude skill that points to that
-document. The document must be inside the workspace and mention Kerf and either
+document. The document must be inside the workspace, or inside the enclosing
+git repository for a nested package of a repository that is not a workspace
+(`--guidance-source ../../AGENTS.md` from `clients/web`, KF-G54HNG), and mention Kerf and either
 `kerf:check` or the project's `npm run check` gate. The choice persists across setup runs. The lint rule
 checks the import and its source; the shared document remains project-owned.
 In UI mode, setup also installs `.claude/skills/kerf-ui/SKILL.md`. It directs
@@ -185,9 +187,18 @@ authored difference becomes a conflict):
   and exhaustive switch rules, sorted imports, self-closing JSX, unused-disable
   errors, and a ban on `prettier-ignore` comments.
 - **UI formatter and doctor** — a missing `prettier.config.mjs` sets 120 columns
-  and single quotes unless the package already has a Prettier config. A missing
+  and single quotes unless Prettier already resolves a config for the package:
+  any Prettier config file or `package.json` `prettier` key in the package or an
+  ancestor up to the enclosing git repository root (the setup root outside a
+  repository), so a nested package never shadows the repository's config. The
+  config is a proposal: `--resolve prettier.config.mjs=skip` (the
+  package-relative path is its id) declines it and is remembered. A missing
   `.kerf-ui-doctor.json` sets `failOn: warning` and empty suppressions. Existing
   files are preserved.
+- **Formatter-stable JSON** — a JSON file setup manages (`package.json`,
+  `tsconfig.json` without comments, `.kerf-ui-profile.json`, the doctor config,
+  `.kerf-ai-setup.json`) is planned by value: when its values already match, a
+  project formatter's layout is left alone and a rerun reports no changes.
 - **Fresh UI app** — if no `src/`, root `index.html`, Vite config, or `app/`
   exists, setup adds `src/app`, `src/components`, `src/features`, `src/platform`,
   `src/shared`, `src/ux-demo/demos`, an ownership structure test, Vite entries,
