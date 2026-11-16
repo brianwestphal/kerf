@@ -104,7 +104,9 @@ function setup(
       )!
       .click();
     await vi.waitFor(() =>
-      expect(dialog.textContent).not.toContain('Checking type…'),
+      expect(
+        dialog.querySelector('[data-parameter-draft="type"][data-pending]'),
+      ).toBeNull(),
     );
   };
   const ready = async () => {
@@ -166,6 +168,55 @@ describe('compact parameter dialog', () => {
     await new Promise((resolve) => globalThis.setTimeout(resolve, 400));
     expect(f.dialog.open).toBe(true);
     expect(f.field('name').value).toBe('showEmpty');
+  });
+
+  it('re-checks a reopened parameter without moving its member rows (KF-YKHGPC)', async () => {
+    const pending: ReturnType<typeof deferred<ProjectTypeResult>>[] = [];
+    const f = setup({
+      service: (request) => {
+        if (request.action === 'validate')
+          return Promise.resolve({
+            document: request.document,
+            diagnostics: [],
+          });
+        const next = deferred<ProjectTypeResult>();
+        pending.push(next);
+        return next.promise;
+      },
+    });
+    f.root
+      .querySelector<HTMLElement>('[data-editor-param-row="items"]')!
+      .click();
+    const type = () => f.dialog.querySelector('[data-parameter-draft="type"]')!;
+    const member = () =>
+      f.dialog.querySelector('[data-action="editor-parameter-navigate"]');
+    // The reopened draft already has its type: while the formatting pass
+    // re-checks it, no status line appears above the member rows.
+    expect(pending).toHaveLength(1);
+    expect(type().hasAttribute('data-pending')).toBe(true);
+    expect(f.dialog.textContent).not.toContain('Checking type…');
+    const row = member();
+    expect(row).not.toBeNull();
+    pending[0]!.resolve({
+      type: f.doc.value.params!.items!.type,
+      diagnostics: [],
+    });
+    await vi.waitFor(() =>
+      expect(type().hasAttribute('data-pending')).toBe(false),
+    );
+    expect(member()).toBe(row);
+
+    // A new draft has no checked type yet, so it says it is checking.
+    f.dialog
+      .querySelector<HTMLElement>('[aria-label="Close parameter"]')!
+      .click();
+    f.root.querySelector<HTMLElement>('[data-editor-param-add]')!.click();
+    await vi.waitFor(() => expect(pending).toHaveLength(2));
+    expect(f.dialog.textContent).toContain('Checking type…');
+    pending[1]!.resolve({ type: { kind: 'string' }, diagnostics: [] });
+    await vi.waitFor(() =>
+      expect(f.dialog.textContent).not.toContain('Checking type…'),
+    );
   });
 
   it('creates a typed parameter/default in one document edit', async () => {

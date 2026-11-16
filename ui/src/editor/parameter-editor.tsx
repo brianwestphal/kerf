@@ -378,12 +378,21 @@ export function createParameterEditor(options: ParameterEditorOptions) {
         autocorrect="off"
         autocomplete="off"
         error={!value.type ? value.error || undefined : undefined}
-        rootAttributes={input('type')}
+        rootAttributes={{
+          ...input('type'),
+          'data-pending': value.pending ? '' : undefined,
+        }}
       />
       {value.type && value.error ? (
         <StateBanner tone="warning" title={value.error} />
       ) : undefined}
-      {value.pending ? <Text tone="quiet">Checking type…</Text> : undefined}
+      {/* KF-YKHGPC: re-checking a type the draft already has (reopening a
+          saved parameter formats and re-checks it) keeps the layout still;
+          a status line that came and went moved the member rows under a
+          click. Only a draft without a checked type says it is checking. */}
+      {value.pending && !value.type ? (
+        <Text tone="quiet">Checking type…</Text>
+      ) : undefined}
       {value.suggestions.length ? (
         <List>
           {value.suggestions.map((item, index) => (
