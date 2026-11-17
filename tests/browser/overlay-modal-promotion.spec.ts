@@ -156,15 +156,26 @@ for (const native of [false, true]) {
     await page.locator('#page-anchor').hover();
     await expect(page.locator('.kerf-tooltip')).toHaveText('Still here');
 
-    await page.evaluate(() => {
+    // The lift must not move the tooltip: it keeps its anchored box in the
+    // same task the dialog opens (KF-F7H5FJ: the plain tooltip fell to its
+    // static position until a later reposition, racing the paint check).
+    const boxes = await page.evaluate(() => {
       const { overlay } = (window as any).kerfOverlay;
       const { raw } = (window as any).jsxRuntime;
+      const tip = document.querySelector('.kerf-tooltip')!;
+      const box = () => {
+        const r = tip.getBoundingClientRect();
+        return [r.left, r.top, r.width, r.height];
+      };
+      const before = box();
       overlay(raw('<p>late dialog</p>'), {
         className: 'late-dialog',
         native: true,
         initialFocus: false,
       });
+      return { before, after: box() };
     });
+    expect(boxes.after.slice(0, 2)).toEqual(boxes.before.slice(0, 2));
     expect(
       await page
         .locator('.kerf-tooltip')

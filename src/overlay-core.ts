@@ -603,7 +603,13 @@ export function overlay(
       if (nativeOpened) el.hidePopover();
       else {
         wrapper.setAttribute('popover', 'manual');
-        wrapper.style.inset = 'auto';
+        // Neutralize the UA `[popover] { inset: 0 }` only on the sides the
+        // surface has not been positioned on: a shown tooltip or popover
+        // already carries the anchored `top`/`left` (or `bottom`), and
+        // clearing them dropped it to its static position until a later
+        // reposition moved it back (KF-F7H5FJ: the lifted tooltip jumped).
+        for (const side of ['top', 'right', 'bottom', 'left'] as const)
+          if (wrapper.style[side] === '') wrapper.style[side] = 'auto';
       }
       el.showPopover();
       nativeOpened = true;

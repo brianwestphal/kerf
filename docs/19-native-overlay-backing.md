@@ -226,7 +226,11 @@ data-morph-skip></div>` anywhere inside the dialog (both attributes are
   (a `native: true` modal, or a lifted one), every open non-modal kerf surface
   — tooltips and popovers — moves into the top layer through the Popover API,
   or, if it is already a `[popover]`, is hidden and re-shown so it stacks above
-  the new dialog (the top layer orders by most recent show). Open modal
+  the new dialog (the top layer orders by most recent show). The move keeps
+  the surface's anchored `top`/`left` (or `bottom`) and neutralizes only the
+  UA `[popover] { inset: 0 }` sides it never set, so it does not jump (KF-F7H5FJ:
+  clearing every inset dropped a plain tooltip to its static position until a
+  later reposition moved it back). Open modal
   surfaces are left alone: they belong beneath the new modal. The same two
   `kerfjs/dev` warnings apply (`hidden` without the Popover API, `inert` for a
   re-hosted surface with focusable controls).

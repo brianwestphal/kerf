@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 164600,
-  "totalJavaScriptGzip": 474400,
-  "measuredLargestJavaScriptGzip": 164546,
-  "measuredTotalJavaScriptGzip": 474364,
+  "totalJavaScriptGzip": 474500,
+  "measuredLargestJavaScriptGzip": 164545,
+  "measuredTotalJavaScriptGzip": 474405,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -7475,6 +7475,22 @@
         "measuredTotalJavaScriptGzip": 474364,
         "largestJavaScriptGzip": 164600,
         "totalJavaScriptGzip": 474400
+      }
+    },
+    {
+      "at": "2026-11-17T02:53:43.567Z",
+      "reason": "KF-F7H5FJ: core overlay re-host keeps a lifted surface's anchored insets (a few bytes in the bundled core)",
+      "old": {
+        "measuredLargestJavaScriptGzip": 164546,
+        "measuredTotalJavaScriptGzip": 474364,
+        "largestJavaScriptGzip": 164600,
+        "totalJavaScriptGzip": 474400
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 164545,
+        "measuredTotalJavaScriptGzip": 474405,
+        "largestJavaScriptGzip": 164600,
+        "totalJavaScriptGzip": 474500
       }
     }
   ]

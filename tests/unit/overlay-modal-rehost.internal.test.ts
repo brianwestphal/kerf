@@ -94,11 +94,18 @@ describe('opening a kerf modal <dialog> re-hosts surfaces already showing', () =
     stubPopoverApi();
     const tip = showTooltip(button('anchor'));
     expect(tip.hasAttribute('popover')).toBe(false); // no dialog yet
+    const placed = { top: tip.style.top, left: tip.style.left };
+    expect(placed.top).toMatch(/px$/);
 
     openNativeModal();
     expect(tip.getAttribute('popover')).toBe('manual');
     expect(tip.dataset.shown).toBe('true');
-    expect(tip.style.inset).toBe('auto');
+    // KF-F7H5FJ: the lift keeps the anchored placement and neutralizes only
+    // the UA `[popover] { inset: 0 }` sides it never set; clearing `top` and
+    // `left` dropped the tooltip to its static position until a reposition.
+    expect({ top: tip.style.top, left: tip.style.left }).toEqual(placed);
+    expect(tip.style.right).toBe('auto');
+    expect(tip.style.bottom).toBe('auto');
     expect(calls).toEqual(['show:kerf-tooltip']);
     expect(warn).not.toHaveBeenCalled(); // a tooltip has no controls
   });
