@@ -39,7 +39,7 @@ jobs:
   # ─── Phase 1: validate the initializer ──────────────────────────────
 
   test:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     defaults:
       run:
         working-directory: create-kerf-component
@@ -56,7 +56,7 @@ jobs:
   # ─── Detect: stable or beta? ────────────────────────────────────────
 
   detect:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     outputs:
       version: ${{ steps.extract.outputs.version }}
       is_beta: ${{ steps.extract.outputs.is_beta }}
@@ -81,7 +81,7 @@ jobs:
 
   pack:
     needs: [test, detect]
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     defaults:
       run:
         working-directory: create-kerf-component
@@ -113,7 +113,7 @@ jobs:
 
   wait-for-core:
     needs: detect
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 100
     permissions:
       contents: read
@@ -130,7 +130,7 @@ jobs:
 
   npm-publish:
     needs: [pack, detect, wait-for-core]
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     environment: npm-publish-create-kerf-component
     permissions:
       contents: read
