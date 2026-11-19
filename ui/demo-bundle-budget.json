@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 164600,
-  "totalJavaScriptGzip": 469800,
-  "measuredLargestJavaScriptGzip": 164545,
-  "measuredTotalJavaScriptGzip": 469761,
+  "totalJavaScriptGzip": 469900,
+  "measuredLargestJavaScriptGzip": 164546,
+  "measuredTotalJavaScriptGzip": 469809,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -7539,6 +7539,22 @@
         "measuredTotalJavaScriptGzip": 469761,
         "largestJavaScriptGzip": 164600,
         "totalJavaScriptGzip": 469800
+      }
+    },
+    {
+      "at": "2026-11-19T23:03:57.672Z",
+      "reason": "KF-PY1SN2: ValueTable CSS change renames hashed demo assets; +~60 bytes gzip is hash churn, no new JS",
+      "old": {
+        "measuredLargestJavaScriptGzip": 164545,
+        "measuredTotalJavaScriptGzip": 469761,
+        "largestJavaScriptGzip": 164600,
+        "totalJavaScriptGzip": 469800
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 164546,
+        "measuredTotalJavaScriptGzip": 469809,
+        "largestJavaScriptGzip": 164600,
+        "totalJavaScriptGzip": 469900
       }
     }
   ]

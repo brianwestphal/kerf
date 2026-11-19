@@ -1,7 +1,9 @@
 .kui-value-table {
   --kui-value-table-border: var(--kui-color-neutral-border-normal);
   --_kui-value-table-icon-size: var(--kui-value-table-icon-size, remify(24px));
-  display: grid;
+  /* Block flow, not grid rows: WebKit kept stale row-track heights when the
+     table narrowed, so a newly wrapped value overlapped the next row. */
+  display: block;
   margin-block: 0;
   margin-inline: var(--kui-layout-inline-margin, remify(8px));
   overflow: hidden;
