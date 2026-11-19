@@ -112,6 +112,8 @@ function zoneShape(node, registry, contract) {
   return { min: 0, max: Number.POSITIVE_INFINITY, items: [] };
 }
 
+// The element that directly contains `node`, and the prop it arrives through
+// when it is written inside an attribute (`headerActions={<Group />}`).
 function directParentKey(node, registry, contract) {
   let parent = node.parent?.parent;
   while (
@@ -119,11 +121,22 @@ function directParentKey(node, registry, contract) {
     ['JSXExpressionContainer', 'JSXFragment'].includes(parent.type)
   )
     parent = parent.parent;
-  if (parent?.type === 'JSXAttribute') parent = parent.parent?.parent;
+  let prop;
+  if (parent?.type === 'JSXAttribute') {
+    prop = parent.name.name;
+    parent = parent.parent?.parent;
+  }
   return parent?.type === 'JSXElement'
-    ? { key: jsxKey(parent.openingElement.name, registry, contract) }
+    ? { key: jsxKey(parent.openingElement.name, registry, contract), prop }
     : undefined;
 }
+
+// A listed parent names a catalog key, or a key and one prop
+// (`@kerfjs/ui:surface-scaffold#headerActions`) that accepts the child only
+// through that prop (KF-SMTCPZ).
+const acceptsParent = (entries, root, prop) =>
+  entries.includes(root) ||
+  (prop !== undefined && entries.includes(`${root}#${prop}`));
 
 // A prop's statically written value: `{ known: true, value }`, where a bare
 // boolean prop is `true` and an absent one is `undefined`, or
@@ -331,7 +344,7 @@ export default {
             const violation = constrained.find(
               ({ entry: placedEntry }) =>
                 !rootsOf(parent.key, contract).every((root) =>
-                  placedEntry.parents.entries.includes(root),
+                  acceptsParent(placedEntry.parents.entries, root, parent.prop),
                 ),
             );
             if (violation)

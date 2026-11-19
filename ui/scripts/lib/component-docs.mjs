@@ -59,6 +59,13 @@ function linker(entries) {
   };
 }
 
+// A parent entry may name one prop of its component (`key#headerActions`).
+function parentLink(key, link) {
+  const [component, prop] = key.split('#');
+  const target = link(bareId(component));
+  return prop ? `${target}'s ${code(prop)}` : target;
+}
+
 function cardinality({ min, max }) {
   if (max === 'unbounded') return min === 0 ? 'any number' : `at least ${min}`;
   if (min === max) return `exactly ${min}`;
@@ -214,7 +221,7 @@ function compositionSection(entry, contract, link) {
     );
   else if (parents.mode === 'listed')
     lines.push(
-      `Parents: only inside ${parents.entries.map((key) => link(bareId(key))).join(' or ')}.`,
+      `Parents: only inside ${parents.entries.map((key) => parentLink(key, link)).join(' or ')}.`,
     );
   else lines.push('Parents: any.');
   lines.push(`Contexts: ${contract.contexts.map(code).join(', ')}.`);

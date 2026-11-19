@@ -111,6 +111,11 @@ tester.run('ui-composition', composition, {
       code: "import { TabBar, TabBarItem, ToolbarControlGroup } from '@kerfjs/ui'; <TabBar leading={<ToolbarControlGroup />} trailing={<ToolbarControlGroup />} end={<ToolbarControlGroup />}><TabBarItem /></TabBar>;",
       settings: shippedUiSettings,
     },
+    // KF-SMTCPZ: a surface's headerActions prop takes a control group.
+    {
+      code: "import { DialogSurface, PinnablePopoverSurface, ToolbarControlGroup } from '@kerfjs/ui'; <PinnablePopoverSurface headerActions={<ToolbarControlGroup />} />; <DialogSurface headerActions={<><ToolbarControlGroup /></>} />;",
+      settings: shippedUiSettings,
+    },
     // Zone validation deliberately stops at a local binding.
     {
       code: "import { TabBar, TabBarItem } from '@kerfjs/ui'; const actions = <div><wa-button>New ticket</wa-button></div>; <TabBar trailing={actions}><TabBarItem /></TabBar>;",
@@ -185,6 +190,17 @@ tester.run('ui-composition', composition, {
     {
       code: "import * as UI from '@kerfjs/ui'; <UI.SegmentedControl><UI.ToolbarControlGroup /></UI.SegmentedControl>;",
       settings,
+      errors: [{ messageId: 'parent' }],
+    },
+    // Only through headerActions: not in a surface's body or another prop.
+    {
+      code: "import { DialogSurface, ToolbarControlGroup } from '@kerfjs/ui'; <DialogSurface><ToolbarControlGroup /></DialogSurface>;",
+      settings: shippedUiSettings,
+      errors: [{ messageId: 'parent' }],
+    },
+    {
+      code: "import { DialogSurface, ToolbarControlGroup } from '@kerfjs/ui'; <DialogSurface footer={<ToolbarControlGroup />} />;",
+      settings: shippedUiSettings,
       errors: [{ messageId: 'parent' }],
     },
     {

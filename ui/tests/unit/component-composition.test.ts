@@ -83,6 +83,23 @@ describe('component composition catalog contract', () => {
     );
   });
 
+  it('lets a parent entry name one prop of its component (KF-SMTCPZ)', async () => {
+    const composition = await readJson<ComponentComposition>(
+      '../../ai/component-composition.json',
+    );
+    const group = composition.entries.find(
+      (item) => item.id === 'toolbar-control-group',
+    )!;
+    expect(group.parents.entries).toContain(
+      '@kerfjs/ui:surface-scaffold#headerActions',
+    );
+    expect(validateComposition(composition)).toEqual([]);
+    group.parents.entries = [...group.parents.entries, '@kerfjs/ui:toolbar#'];
+    expect(validateComposition(composition)).toContain(
+      `${group.key} parent @kerfjs/ui:toolbar# must be package:id#prop`,
+    );
+  });
+
   it('declares the embedded Disclosure inset-free children contract and validates its conditions', async () => {
     const composition = await readJson<ComponentComposition>(
       '../../ai/component-composition.json',
@@ -384,6 +401,7 @@ describe('component composition catalog contract', () => {
         '@kerfjs/ui:tab-bar',
         // KF-K1HFS2: a MessageComposer's action row is a Toolbar.
         '@kerfjs/ui:message-composer',
+        '@kerfjs/ui:surface-scaffold#headerActions',
       ],
     });
     expect(

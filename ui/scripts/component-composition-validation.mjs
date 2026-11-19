@@ -145,6 +145,16 @@ export function validateComposition(catalog, options = {}) {
       fail(`${at} parents.entries must be a unique string list`);
     if (entry?.parents?.mode === 'listed' && !entry.parents.entries.length)
       fail(`${at} listed parents require at least one entry`);
+    // KF-SMTCPZ: a parent may be `package:id` or `package:id#prop`.
+    for (const parent of Array.isArray(entry?.parents?.entries)
+      ? entry.parents.entries
+      : [])
+      if (
+        typeof parent === 'string' &&
+        parent.includes('#') &&
+        !/^[^#:]+:[^#:]+#[a-z][A-Za-z0-9]*$/.test(parent)
+      )
+        fail(`${at} parent ${parent} must be package:id#prop`);
     if ('jsxExports' in entry) {
       if (
         !entry.jsxExports ||

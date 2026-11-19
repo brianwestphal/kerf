@@ -74,7 +74,7 @@ Exact prop names and types: [`@kerfjs/ui/toolbar-control-group`](../public-api-s
 
 ## Composition
 
-- Parents: only inside [Toolbar](./toolbar.md) or [FloatingToolbar](./floating-toolbar.md) or [TabBar](./tab-bar.md) or [MessageComposer](./message-composer.md).
+- Parents: only inside [Toolbar](./toolbar.md) or [FloatingToolbar](./floating-toolbar.md) or [TabBar](./tab-bar.md) or [MessageComposer](./message-composer.md) or [Surface Scaffolds](./surface-scaffold.md)'s `headerActions`.
 - Contexts: `toolbar-zone`.
 - Children: only `control` (required: `control`).
 - Built from: [LucideIcon](./lucide-icon.md), [SegmentedControl](./segmented-control.md).
