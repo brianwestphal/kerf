@@ -1,6 +1,16 @@
 import '@kerfjs/ui/layout.css';
 
-import { renderRecipeWorkspaceHeader } from '../views/recipe-workspace-header.view.js';
+import { List } from '@kerfjs/ui/list';
+import { ListInsetText } from '@kerfjs/ui/list-inset-text';
+import { StateBanner } from '@kerfjs/ui/state-banner';
+import { Text } from '@kerfjs/ui/text';
+import { Toolbar } from '@kerfjs/ui/toolbar';
+import {
+  ToolbarButton,
+  ToolbarControlGroup,
+} from '@kerfjs/ui/toolbar-control-group';
+import { ToolbarText } from '@kerfjs/ui/toolbar-text';
+
 import type { RecipeFactory, RecipePresentation } from './types.js';
 
 export const presentation: RecipePresentation = {
@@ -20,7 +30,61 @@ export const createRecipe: RecipeFactory = (announce) => ({
       data-recipe="recipe-workspace-header"
       aria-labelledby="recipe-workspace-title"
     >
-      {renderRecipeWorkspaceHeader()}
+      <List gap="l" controlInsets="tb">
+        <List>
+          <ListInsetText sides="rl">
+            <Text variant="span" tone="quiet" size="compact">
+              Northstar workspace · Product planning
+            </Text>
+          </ListInsetText>
+          <Toolbar
+            label="Workspace Heading"
+            responsive="stack"
+            responsiveAt="compact"
+            leading={
+              <ToolbarText
+                text="Accessibility Readiness and Responsive Navigation Rollout"
+                size="xlarge"
+                id="recipe-workspace-title"
+                headingLevel={1}
+                wrap
+                maxLines={2}
+              />
+            }
+            trailing={
+              <ToolbarControlGroup
+                appearance="borderless"
+                buttonAppearance="push"
+                content="text"
+              >
+                <ToolbarButton
+                  action="recipe-action"
+                  rootAttributes={{ 'data-recipe-command': 'share' }}
+                >
+                  Share
+                </ToolbarButton>
+                <ToolbarButton
+                  action="recipe-action"
+                  rootAttributes={{ 'data-recipe-command': 'more' }}
+                >
+                  More Actions
+                </ToolbarButton>
+                <ToolbarButton
+                  action="recipe-action"
+                  rootAttributes={{ 'data-recipe-command': 'publish' }}
+                >
+                  Publish Update
+                </ToolbarButton>
+              </ToolbarControlGroup>
+            }
+          />
+        </List>
+        <StateBanner
+          title="Ready for Review"
+          detail="All required checks passed 18 minutes ago."
+          tone="success"
+        />
+      </List>
     </section>
   ),
   action(command) {

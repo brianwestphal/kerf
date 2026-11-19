@@ -62,6 +62,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Removed
 
+- **Catalog view documents (KF-F5Y2BR, KF-4HQT01).** The UX catalog's demos and recipes are hand-written TSX again instead of `.kui.json` view documents with generated `.view.ts` modules; the rendered catalog is unchanged apart from fixing a lost `tone="quiet"` on the Foundation body-copy sample. The suite-v3 AI-regression cases edit those recipe `.tsx` files again instead of the documents.
 - **`@kerfjs/ui/view` generator internals (KF-V5DPD1).** `printDoc` and `moduleSpecifier` are no longer exported by the public view subpath; repository tests import them from the generator module. The view subpath has only shipped in the 5.0.0 beta line.
 - **Pinned TabBarItem support.** Removed `pinned` and its sticky/backdrop tokens and RTL compensation. Put fixed controls in TabBar's existing `leading`, `trailing`, or `end` zones outside the scrolling tablist. Ordinary tabs retain keyboard navigation, selection reveal, reordering, scroll dividers, and optional whole-tab snapping (`KF-K6GKN3`).
 

@@ -2,12 +2,17 @@ import '@kerfjs/ui/layout.css';
 import '@kerfjs/ui/nav-stack.css';
 import '@kerfjs/ui/toolbar-text.css';
 
-import { type NavStackView } from '@kerfjs/ui/nav-stack';
+import { ContentItem } from '@kerfjs/ui/content-item';
+import { List } from '@kerfjs/ui/list';
+import { ListHeader } from '@kerfjs/ui/list-header';
+import { ListItem } from '@kerfjs/ui/list-item';
+import { LucideIcon } from '@kerfjs/ui/lucide-icon';
+import { NavStack, type NavStackView } from '@kerfjs/ui/nav-stack';
+import { Row } from '@kerfjs/ui/row';
+import { Text } from '@kerfjs/ui/text';
 import { signal } from 'kerfjs';
+import { ChevronRight, FileText, Folder } from 'lucide';
 
-import { renderRecipeNavigationDetail } from '../views/recipe-navigation-detail.view.js';
-import { renderRecipeNavigationLibrary } from '../views/recipe-navigation-library.view.js';
-import { renderRecipeNavigationShell } from '../views/recipe-navigation-shell.view.js';
 import type { RecipeFactory, RecipePresentation } from './types.js';
 
 export const presentation: RecipePresentation = {
@@ -54,13 +59,44 @@ export const createRecipe: RecipeFactory = (announce) => {
   const listView = (): NavStackView => ({
     key: 'library',
     toolbar: { title: 'Library' },
-    content: renderRecipeNavigationLibrary({ items: ITEMS }),
+    content: (
+      <List>
+        <section>
+          <ListHeader label="Components" />
+          {ITEMS.map((item) => (
+            <ListItem
+              action="recipe-action"
+              itemId={item.id}
+              label={item.label}
+              icon={<LucideIcon icon={Folder} name="folder" />}
+              trailing={<LucideIcon icon={ChevronRight} name="chevron-right" />}
+            />
+          ))}
+        </section>
+      </List>
+    ),
   });
 
   const detailView = (item: LibraryItem): NavStackView => ({
     key: item.id,
     toolbar: { title: item.label },
-    content: renderRecipeNavigationDetail(item),
+    content: (
+      <List controlInsets="t">
+        <ContentItem>
+          <Row gap="xs">
+            <LucideIcon icon={FileText} name="file-text" />
+            <List gap="2xs">
+              <Text variant="span" weight="strong">
+                {item.label}
+              </Text>
+              <Text variant="span" tone="quiet" size="compact">
+                {item.detail}
+              </Text>
+            </List>
+          </Row>
+        </ContentItem>
+      </List>
+    ),
   });
 
   const views = signal<NavStackView[]>([listView()]);
@@ -70,7 +106,7 @@ export const createRecipe: RecipeFactory = (announce) => {
       data-recipe="recipe-navigation-stack"
       aria-label="Component Library"
     >
-      {renderRecipeNavigationShell({ views: views.value })}
+      <NavStack id="recipe-nav" label="Component Library" views={views.value} />
     </section>
   );
 

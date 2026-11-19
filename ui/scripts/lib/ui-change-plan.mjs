@@ -58,10 +58,6 @@ export function uiChangeGateSteps({ updateBundleBudget = false, reason } = {}) {
       command: 'npm run check:catalog',
     },
     {
-      label: 'check catalog view documents against generated modules',
-      command: 'npm run check:catalog-views',
-    },
-    {
       label: 'validate public component surfaces',
       command: 'npm run check:component-integrations',
     },

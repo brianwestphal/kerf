@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 164600,
-  "totalJavaScriptGzip": 474500,
-  "measuredLargestJavaScriptGzip": 164545,
-  "measuredTotalJavaScriptGzip": 474405,
+  "totalJavaScriptGzip": 470200,
+  "measuredLargestJavaScriptGzip": 164546,
+  "measuredTotalJavaScriptGzip": 470168,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -7491,6 +7491,22 @@
         "measuredTotalJavaScriptGzip": 474405,
         "largestJavaScriptGzip": 164600,
         "totalJavaScriptGzip": 474500
+      }
+    },
+    {
+      "at": "2026-11-19T00:08:12.827Z",
+      "reason": "KF-F5Y2BR restores hand-written catalog demos and recipes, removing generated view modules and their node markers",
+      "old": {
+        "measuredLargestJavaScriptGzip": 164545,
+        "measuredTotalJavaScriptGzip": 474405,
+        "largestJavaScriptGzip": 164600,
+        "totalJavaScriptGzip": 474500
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 164546,
+        "measuredTotalJavaScriptGzip": 470168,
+        "largestJavaScriptGzip": 164600,
+        "totalJavaScriptGzip": 470200
       }
     }
   ]
