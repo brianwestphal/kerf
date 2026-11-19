@@ -592,7 +592,8 @@ The surface is `popover="manual"`, so the controller provides its light
 dismiss; changing an `auto` popover into a pinned one is not possible while
 it is open. The title is the move handle: a focusable button named by the
 label, whose accessible description (`moveDescription`) explains the drag
-and the keys. Focus stays where the person puts it, as with any non-modal
+and the keys. The default adds that moving pins the surface only when it is
+`pinnable`; a persistent surface is always pinned. Focus stays where the person puts it, as with any non-modal
 popover; give its first control `autofocus` to move focus in on open.
 
 The application owns storage. `onChange` reports `{ pinned, placement, reason }`

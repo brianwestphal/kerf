@@ -5634,7 +5634,11 @@ interface PinnablePopoverSurfaceProps {
     pinLabel?: string;
     /** The close button's accessible name (default `Close`). */
     closeLabel?: string;
-    /** The move handle's accessible description of the pointer and keyboard move. */
+    /**
+     * The move handle's accessible description of the pointer and keyboard
+     * move. The default adds "Moving it pins it." only when the surface is
+     * `pinnable`; a persistent surface is always pinned.
+     */
     moveDescription?: string;
     rootAttributes?: PopoverDialogSurfaceDataAttributes;
     className?: string;

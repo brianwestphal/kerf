@@ -233,6 +233,13 @@ describe('PinnablePopoverSurface', () => {
     ).not.toBeNull();
     expect(surface.getAttribute('data-persistent')).toBe('');
     expect(surface.getAttribute('data-closable')).toBe('false');
+    // KF-4T907F: a persistent surface is always pinned, so its default move
+    // description does not say that moving pins it.
+    expect(
+      document.getElementById('library-move-description')!.textContent,
+    ).toBe(
+      'Drag the title or press the arrow keys to move it; hold Shift to move farther.',
+    );
     expect(surface.hasAttribute('data-pinned')).toBe(true);
     // Each option on its own.
     document.body.innerHTML = render({ closable: false });

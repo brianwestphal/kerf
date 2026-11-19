@@ -96,7 +96,11 @@ export interface PinnablePopoverSurfaceProps {
   pinLabel?: string;
   /** The close button's accessible name (default `Close`). */
   closeLabel?: string;
-  /** The move handle's accessible description of the pointer and keyboard move. */
+  /**
+   * The move handle's accessible description of the pointer and keyboard
+   * move. The default adds "Moving it pins it." only when the surface is
+   * `pinnable`; a persistent surface is always pinned.
+   */
   moveDescription?: string;
   rootAttributes?: PopoverDialogSurfaceDataAttributes;
   className?: string;
@@ -122,7 +126,8 @@ const PINNABLE_POPOVER_PROTECTED = new Set([
 ]);
 
 const DEFAULT_MOVE_DESCRIPTION =
-  'Drag the title or press the arrow keys to move it; hold Shift to move farther. Moving it pins it.';
+  'Drag the title or press the arrow keys to move it; hold Shift to move farther.';
+const PINS_ON_MOVE = ' Moving it pins it.';
 
 /**
  * A non-modal surface a person can pin and move. Transient by default: it
@@ -158,7 +163,9 @@ export function PinnablePopoverSurface({
   closable = true,
   pinLabel = 'Pin',
   closeLabel = 'Close',
-  moveDescription = DEFAULT_MOVE_DESCRIPTION,
+  moveDescription = pinnable
+    ? `${DEFAULT_MOVE_DESCRIPTION}${PINS_ON_MOVE}`
+    : DEFAULT_MOVE_DESCRIPTION,
   rootAttributes = {},
   className = '',
   slot,
