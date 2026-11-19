@@ -188,3 +188,57 @@ test('An embedded Disclosure sits on its ContentItem inset without a second fram
     }
   }
 });
+
+// KF-ND665K: a compact Disclosure draws a 14px arrow and the extra-small
+// type, and its content starts on the title's text column after that arrow.
+test('A compact Disclosure keeps its content on the narrower title column', async ({
+  page,
+}, testInfo) => {
+  for (const width of [1100, 390, 1100]) {
+    await page.setViewportSize({ width, height: 900 });
+    await page.goto('/?component=disclosure');
+    const item = page.locator('[data-demo-item="compact-disclosure"]');
+    const details = item.locator('details[data-size="compact"]');
+    await details.scrollIntoViewIfNeeded();
+    await expect(details).toHaveJSProperty('open', true);
+    const geometry = await page.evaluate(() => {
+      const compact = document.querySelector(
+        '[data-demo-item="compact-disclosure"] details',
+      )!;
+      const regular = document.querySelector(
+        '[data-demo-item="embedded-disclosure"] details',
+      )!;
+      const textStart = (node: Element) => {
+        const range = document.createRange();
+        range.selectNodeContents(node);
+        return range.getBoundingClientRect().left;
+      };
+      const arrow = compact
+        .querySelector('.kui-disclosure-arrow')!
+        .getBoundingClientRect();
+      const summaryFont = (details: Element) =>
+        Number.parseFloat(
+          window.getComputedStyle(details.querySelector('summary')!).fontSize,
+        );
+      return {
+        arrowWidth: arrow.width,
+        arrowHeight: arrow.height,
+        compactFont: summaryFont(compact),
+        regularFont: summaryFont(regular),
+        titleStart: textStart(compact.querySelector('.kui-disclosure__title')!),
+        contentStart: textStart(
+          compact.querySelector('.kui-disclosure__content .kui-text')!,
+        ),
+      };
+    });
+    expect(geometry.arrowWidth).toBeCloseTo(14, 0);
+    expect(geometry.arrowHeight).toBeCloseTo(14, 0);
+    expect(geometry.compactFont).toBeLessThan(geometry.regularFont);
+    expect(
+      Math.abs(geometry.contentStart - geometry.titleStart),
+    ).toBeLessThanOrEqual(0.5);
+    await item.screenshot({
+      path: testInfo.outputPath(`disclosure-compact-${width}.png`),
+    });
+  }
+});

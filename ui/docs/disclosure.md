@@ -61,6 +61,28 @@ embedded Disclosure as `KUI-L204`.
 Use `embedded` only inside owner chrome. On a pane or a list, the default
 geometry is what puts the Disclosure on the shared content column.
 
+## Compact size
+
+`size="compact"` is for a small, quiet disclosure of secondary detail inside
+content, such as a note's AI feedback: the arrow is 14px instead of 18px, the
+summary takes the extra-small type, and the content starts on the title's text
+column after the narrower arrow. Give it a quiet title for a small gray row.
+It works with every appearance; an embedded compact summary keeps its 24px row.
+
+```tsx
+<Disclosure
+  title={<Text variant="span" flush tone="quiet">AI Feedback</Text>}
+  appearance="embedded"
+  size="compact"
+>
+  <Text flush size="compact" tone="quiet">Group Export and Share.</Text>
+</Disclosure>;
+```
+
+Size the arrow with `size`, not by setting `--kui-disclosure-arrow-size` in
+application CSS: that token is a theme-level default for every disclosure
+arrow, and `kerf-ui-doctor` reports an application override as `KUI-L021`.
+
 ## Open state
 
 The open state belongs to the native `<details>` once it is on the page. A

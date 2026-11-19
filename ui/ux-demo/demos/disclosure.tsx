@@ -93,6 +93,47 @@ export function DisclosureDemo() {
         </Pane>
       </CatalogExample>
       <CatalogExample
+        label="Compact and Quiet"
+        note={
+          <>
+            <code>size="compact"</code> draws a 14px arrow and the extra-small
+            type, and its content follows the narrower arrow. With a quiet title
+            it is a small gray disclosure for secondary detail inside content,
+            such as a note's AI feedback.
+          </>
+        }
+        align="none"
+        viewport={{ width: 'medium' }}
+      >
+        <Pane label="Note">
+          <ContentItem
+            frame="framed"
+            rootAttributes={{ 'data-demo-item': 'compact-disclosure' }}
+          >
+            <List gap="xs">
+              <Text flush>
+                Move the export button into the toolbar so it sits beside Share.
+              </Text>
+              <Disclosure
+                title={
+                  <Text variant="span" flush tone="quiet">
+                    AI Feedback
+                  </Text>
+                }
+                appearance="embedded"
+                size="compact"
+                open
+              >
+                <Text flush size="compact" tone="quiet">
+                  Group Export and Share in one control group, and keep Delete
+                  in the overflow menu.
+                </Text>
+              </Disclosure>
+            </List>
+          </ContentItem>
+        </Pane>
+      </CatalogExample>
+      <CatalogExample
         label="Accordion"
         note="Disclosures that share a name form an exclusive group: opening one closes the others (the native details name attribute)."
       >

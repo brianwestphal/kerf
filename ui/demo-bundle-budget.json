@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 164600,
-  "totalJavaScriptGzip": 470200,
-  "measuredLargestJavaScriptGzip": 164546,
-  "measuredTotalJavaScriptGzip": 470168,
+  "totalJavaScriptGzip": 470300,
+  "measuredLargestJavaScriptGzip": 164545,
+  "measuredTotalJavaScriptGzip": 470283,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -7507,6 +7507,22 @@
         "measuredTotalJavaScriptGzip": 470168,
         "largestJavaScriptGzip": 164600,
         "totalJavaScriptGzip": 470200
+      }
+    },
+    {
+      "at": "2026-11-19T02:14:22.818Z",
+      "reason": "KF-ND665K adds the compact Disclosure catalog example, and KF-89C223 a multiline ListItem description",
+      "old": {
+        "measuredLargestJavaScriptGzip": 164546,
+        "measuredTotalJavaScriptGzip": 470168,
+        "largestJavaScriptGzip": 164600,
+        "totalJavaScriptGzip": 470200
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 164545,
+        "measuredTotalJavaScriptGzip": 470283,
+        "largestJavaScriptGzip": 164600,
+        "totalJavaScriptGzip": 470300
       }
     }
   ]

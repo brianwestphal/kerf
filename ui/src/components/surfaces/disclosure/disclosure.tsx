@@ -1,5 +1,6 @@
 import type { KerfUiContent } from '../../../shared/content/semantic-content.js';
 import { filterDataAttributes } from '../../../shared/dom/extension-attributes.js';
+import { rem } from '../../../shared/styles/css-values.js';
 import { DisclosureArrow } from '../../navigation/disclosure-arrow/disclosure-arrow.js';
 
 /**
@@ -12,6 +13,13 @@ import { DisclosureArrow } from '../../navigation/disclosure-arrow/disclosure-ar
 export type DisclosureAppearance = 'plain' | 'framed' | 'sunken' | 'embedded';
 
 /**
+ * The summary scale: `default`, or `compact` for a small, quiet in-content
+ * disclosure (a 14px arrow and the extra-small type), such as a note card's
+ * secondary detail. The content inset follows the arrow width.
+ */
+export type DisclosureSize = 'default' | 'compact';
+
+/**
  * Application `data-*` identity on the `<details>` root, such as `data-key`;
  * the Disclosure's own configuration attributes stay protected.
  */
@@ -22,6 +30,7 @@ export type DisclosureRootAttributes = Readonly<
 const DISCLOSURE_PROTECTED = new Set([
   'data-component',
   'data-appearance',
+  'data-size',
   'data-action',
 ]);
 
@@ -50,6 +59,12 @@ export interface DisclosureProps {
    * give it content that draws no inset of its own (`Text flush`).
    */
   appearance?: DisclosureAppearance;
+  /**
+   * Summary scale; defaults to `default`. `compact` draws a 14px arrow and the
+   * extra-small type, and its content follows the narrower arrow. Pair it with
+   * a quiet title (`Text tone="quiet"`) for a small gray disclosure.
+   */
+  size?: DisclosureSize;
   /**
    * A `data-action` value on the `<details>` root, for a delegated listener of
    * the native `toggle` event (it does not bubble: listen in the capture phase,
@@ -80,6 +95,7 @@ export function Disclosure({
   open = false,
   name,
   appearance = 'plain',
+  size = 'default',
   toggleAction,
   id,
   rootAttributes = {},
@@ -93,13 +109,17 @@ export function Disclosure({
       class={`kui-disclosure ${className}`.trim()}
       data-component="disclosure"
       data-appearance={appearance}
+      data-size={size === 'compact' ? 'compact' : undefined}
       data-action={toggleAction}
       name={name}
       open={open || undefined}
       slot={slot}
     >
       <summary class="kui-disclosure__summary">
-        <DisclosureArrow open={open} />
+        <DisclosureArrow
+          open={open}
+          size={size === 'compact' ? rem(0.875) : undefined}
+        />
         <span class="kui-disclosure__title">{title}</span>
         {detail === undefined ? null : (
           <span class="kui-disclosure__detail">{detail}</span>

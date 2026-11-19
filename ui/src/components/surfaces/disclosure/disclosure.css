@@ -4,6 +4,9 @@
 .kui-disclosure {
   --_kui-disclosure-border: transparent;
   --_kui-disclosure-background: transparent;
+  /* The arrow's box, which the content inset follows: the arrow's theme
+     size, or the compact 14px that `size="compact"` passes the arrow. */
+  --_kui-disclosure-marker-box: var(--kui-disclosure-arrow-size, remify(18px));
 
   display: block;
   min-width: 0;
@@ -85,10 +88,22 @@
    the content draws. Its own bottom inset closes the item. */
 .kui-disclosure__content {
   padding-inline: calc(
-      var(--kui-disclosure-arrow-size, remify(18px)) + var(--kui-space-xs) -
+      var(--_kui-disclosure-marker-box) + var(--kui-space-xs) -
         var(--kui-layout-item-border-width, 1px)
     )
     0;
+}
+
+/* Compact: a small, quiet in-content disclosure. The summary takes the
+   extra-small type beside the 14px arrow and a 32px row; embedded keeps its
+   24px row (the rule below). */
+.kui-disclosure[data-size="compact"] {
+  --_kui-disclosure-marker-box: remify(14px);
+}
+
+.kui-disclosure[data-size="compact"] > .kui-disclosure__summary {
+  min-height: remify(32px);
+  font-size: var(--kui-font-xs);
 }
 
 /* Embedded: inside owner chrome, such as a ContentItem, that already draws
@@ -122,9 +137,7 @@
 
 .kui-disclosure[data-appearance="embedded"] > .kui-disclosure__content {
   padding-block: var(--kui-layout-item-gap, remify(8px)) 0;
-  padding-inline: calc(
-      var(--kui-disclosure-arrow-size, remify(18px)) + var(--kui-space-xs)
-    )
+  padding-inline: calc(var(--_kui-disclosure-marker-box) + var(--kui-space-xs))
     0;
 }
 

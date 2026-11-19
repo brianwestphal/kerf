@@ -13,6 +13,7 @@ Keep secondary or optional content one press away under a summary, or let a pers
 - Optional or advanced content should stay out of the way until a person asks for it (advanced settings, a build log, release notes).
 - A list of questions or sections should open one at a time: give the Disclosures the same name for a native exclusive accordion.
 - A compact details panel belongs inside a ContentItem (a note card's AI feedback): use appearance embedded so the item's own inset frames it once.
+- Secondary detail should read small and quiet beside content: set size compact (a 14px arrow and extra-small type) with a quiet title instead of overriding the arrow token.
 
 **Not when:**
 
@@ -38,6 +39,7 @@ Exact prop names and types: [`@kerfjs/ui/disclosure`](../public-api-signatures-v
 
 - plain, framed, or sunken appearance
 - embedded appearance inside a ContentItem or other owner chrome: no margin, border, or padding of its own and a 24px minimum summary row
+- compact size: a 14px arrow, extra-small summary type, and content on the narrower title column, for a small quiet in-content disclosure
 - open or closed initially
 - a quiet detail after the title
 - an exclusive accordion group sharing a name

@@ -6877,6 +6877,12 @@ import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
  */
 type DisclosureAppearance = 'plain' | 'framed' | 'sunken' | 'embedded';
 /**
+ * The summary scale: `default`, or `compact` for a small, quiet in-content
+ * disclosure (a 14px arrow and the extra-small type), such as a note card's
+ * secondary detail. The content inset follows the arrow width.
+ */
+type DisclosureSize = 'default' | 'compact';
+/**
  * Application `data-*` identity on the `<details>` root, such as `data-key`;
  * the Disclosure's own configuration attributes stay protected.
  */
@@ -6907,6 +6913,12 @@ interface DisclosureProps {
      */
     appearance?: DisclosureAppearance;
     /**
+     * Summary scale; defaults to `default`. `compact` draws a 14px arrow and the
+     * extra-small type, and its content follows the narrower arrow. Pair it with
+     * a quiet title (`Text tone="quiet"`) for a small gray disclosure.
+     */
+    size?: DisclosureSize;
+    /**
      * A `data-action` value on the `<details>` root, for a delegated listener of
      * the native `toggle` event (it does not bubble: listen in the capture phase,
      * for example with `delegateCapture`). `event.newState` is `open` or `closed`.
@@ -6928,9 +6940,9 @@ interface DisclosureProps {
  * platform's: the summary is a button that Enter and Space toggle, and it
  * reports its expanded state. Disclosures sharing a `name` form an accordion.
  */
-declare function Disclosure({ title, detail, children, open, name, appearance, toggleAction, id, rootAttributes, className, slot, }: DisclosureProps): kerfjs.SafeHtml;
+declare function Disclosure({ title, detail, children, open, name, appearance, size, toggleAction, id, rootAttributes, className, slot, }: DisclosureProps): kerfjs.SafeHtml;
 
-export { Disclosure, type DisclosureAppearance, type DisclosureProps, type DisclosureRootAttributes };
+export { Disclosure, type DisclosureAppearance, type DisclosureProps, type DisclosureRootAttributes, type DisclosureSize };
 ```
 
 ## `@kerfjs/ui/tab-panel`

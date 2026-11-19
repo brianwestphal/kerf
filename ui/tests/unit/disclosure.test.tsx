@@ -118,4 +118,36 @@ describe('Disclosure', () => {
       ),
     ).not.toBeNull();
   });
+
+  // KF-ND665K: a compact disclosure passes the arrow a 14px size and marks
+  // its root; the default writes neither, and app attributes cannot spoof it.
+  it('renders the compact size through the arrow prop and a protected data-size', () => {
+    const compact = render(
+      Disclosure({
+        title: 'AI Feedback',
+        size: 'compact',
+        appearance: 'embedded',
+        rootAttributes: { 'data-size': 'large' },
+        children: 'Group Export and Share.',
+      }),
+    );
+    const details = compact.querySelector('details')!;
+    expect(details.dataset.size).toBe('compact');
+    expect(
+      details.querySelector('.kui-disclosure-arrow')!.getAttribute('style'),
+    ).toContain('--kui-disclosure-arrow-size:0.875rem');
+    const plain = render(
+      Disclosure({
+        title: 'Logs',
+        rootAttributes: { 'data-size': 'compact' },
+        children: 'Output',
+      }),
+    );
+    expect(plain.querySelector('details')!.hasAttribute('data-size')).toBe(
+      false,
+    );
+    expect(
+      plain.querySelector('.kui-disclosure-arrow')!.getAttribute('style'),
+    ).not.toContain('--kui-disclosure-arrow-size');
+  });
 });

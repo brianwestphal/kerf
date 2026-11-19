@@ -922,7 +922,8 @@ created, input }`. Never use a hand-styled `<input list>` + `<datalist>`.
   native details element with a DisclosureArrow on content-item geometry,
   `plain` / `framed` / `sunken`, or `embedded` inside a `ContentItem` (no
   margin, border, or padding of its own, a compact summary, `flush` `Text`
-  content); Disclosures sharing a `name` form an accordion. Never use `wa-details` or `wa-accordion`.
+  content); `size="compact"` (a 14px arrow and extra-small type) for a small
+  quiet in-content disclosure; Disclosures sharing a `name` form an accordion. Never use `wa-details` or `wa-accordion`.
 - **Show progress with `ProgressBar` or `ProgressRing`** (`@kerfjs/ui/progress-bar`,
   `@kerfjs/ui/progress-ring`): `value` of `max` (omit `value` for
   indeterminate), a `label`, `valueText`, tones. Never use `wa-progress-bar` or
