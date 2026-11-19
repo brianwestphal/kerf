@@ -13,6 +13,10 @@ import { setTimeout } from 'node:timers';
 
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
+import {
+  acquireBrowserSlot,
+  type BrowserSlot,
+} from '../../../scripts/browser-slots.mjs';
 import { evaluateUi } from '../../evaluator/index.mjs';
 import { loadScaledTimeout } from '../helpers/load-scaled-timeout.js';
 
@@ -21,6 +25,22 @@ const packageProfile = resolve('ai/application-ui-profile.defaults.json');
 const temporaryRoot = await mkdtemp(join(tmpdir(), 'kerf-ui-evaluator-'));
 let server: Server;
 let origin: string;
+let webkitSlot: BrowserSlot | undefined;
+
+// KF-W7V1N3: these cases launch real WebKit browsers (one at a time), so a
+// local run holds one machine-wide `browser-engines` WebKit slot for the file,
+// as the repository's Playwright configs do (KF-5YWM5X). CI, no
+// hotsheet-cli, or HOTSHEET_BROWSER_SLOTS=off take none. A full pool waits.
+beforeAll(async () => {
+  webkitSlot = await acquireBrowserSlot({
+    engine: 'webkit',
+    purpose: 'kerf-ui-evaluator-tests',
+  });
+}, 30 * 60_000);
+
+afterAll(async () => {
+  await webkitSlot?.release();
+});
 
 beforeAll(async () => {
   const good = await readFile(join(fixtures, 'good/index.html'));

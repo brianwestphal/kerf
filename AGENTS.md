@@ -286,7 +286,9 @@ a local run that includes WebKit holds slots of the machine-wide
 repositories (`scripts/browser-slots.mjs`: `browser-engines/webkit-1` …
 `webkit-N`, N = `HOTSHEET_WEBKIT_SLOTS`, default 2, through
 `hotsheet-cli resource`), one per WebKit worker, and caps the `webkit`
-project's workers at the slots it holds. A full pool makes the run wait.
+project's workers at the slots it holds; the `@kerfjs/ui` evaluator's
+integration tests, which launch real WebKit, hold one slot for their file. A
+full pool makes the run wait.
 `HOTSHEET_BROWSER_SLOTS=off` opts out. Without the pool (no `hotsheet-cli`,
 or opted out) the interim guard applies: a local `--repeat-each` above 1 that
 includes WebKit is refused unless `KERF_ALLOW_WEBKIT_REPEAT=1` is set while no
