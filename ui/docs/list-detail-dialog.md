@@ -97,7 +97,7 @@ functions are re-exported from this subpath. Give sibling dialogs distinct
 `rootAttributes['data-key']` values so a re-render morphs each into itself.
 
 Pass `embedded` to render it in flow and always shown instead, keeping its
-`height`, for a catalog, a design canvas, or a document; `openDialog()` and
+`height`, for a catalog, an inline preview, or a document; `openDialog()` and
 `closeDialog()` leave it alone.
 
 See the [list-detail dialog recipe](recipes.md#list-detail-dialog) for a

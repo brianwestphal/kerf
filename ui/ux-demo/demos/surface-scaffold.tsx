@@ -921,7 +921,7 @@ export function SurfaceScaffoldDemo() {
       </CatalogExample>
       <CatalogExample
         label="Embedded Dialog"
-        note='presentation="embedded" shows a DialogSurface in flow and always open, for a catalog, a design canvas, or a document. openDialog and closeDialog leave it alone, and its close controls do not hide it.'
+        note='presentation="embedded" shows a DialogSurface in flow and always open, for a catalog, an inline preview, or a document. openDialog and closeDialog leave it alone, and its close controls do not hide it.'
         align="inline-control"
       >
         <DialogSurface

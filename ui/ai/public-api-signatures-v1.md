@@ -5555,7 +5555,7 @@ interface PinnablePopoverSurfaceProps {
     /**
      * `overlay` (default) is a native `popover="manual"` in the top layer that
      * `wirePinnablePopover` places, dismisses, and moves; `embedded` renders
-     * the same surface in flow for a catalog or a design canvas.
+     * the same surface in flow for a catalog or an inline preview.
      */
     presentation?: PinnablePopoverSurfacePresentation;
     /**
@@ -5817,7 +5817,7 @@ interface ListDetailDialogProps {
     compact?: boolean;
     /**
      * Render in flow and always shown (DialogSurface `presentation="embedded"`)
-     * instead of as a modal, for a catalog, a design canvas, or a document. It
+     * instead of as a modal, for a catalog, an inline preview, or a document. It
      * keeps its `height`; `openDialog` and `closeDialog` leave it alone.
      */
     embedded?: boolean;
@@ -5938,7 +5938,7 @@ interface WorkbenchDialogProps {
     compact?: boolean;
     /**
      * Render in flow and always shown (DialogSurface `presentation="embedded"`)
-     * instead of as a modal, for a catalog, a design canvas, or a document. It
+     * instead of as a modal, for a catalog, an inline preview, or a document. It
      * keeps its `height`; `openDialog` and `closeDialog` leave it alone.
      */
     embedded?: boolean;

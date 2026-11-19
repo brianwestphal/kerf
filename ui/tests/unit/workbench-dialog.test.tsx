@@ -179,7 +179,7 @@ describe('WorkbenchDialog', () => {
     expect(explicit.querySelector('#slide-summary')).not.toBeNull();
   });
 
-  // KF-RWJ9KD: in flow for a catalog or the editor canvas.
+  // KF-RWJ9KD: in flow for a catalog or an inline preview.
   it('renders embedded in flow, keeping its height, even on compact devices', () => {
     for (const compact of [false, true]) {
       const dialog = render(

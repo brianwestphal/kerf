@@ -655,7 +655,7 @@ The controller keeps its pinned state, placement, and the Pin toggle's
 `aria-pressed` across application re-renders. An application that closes the
 panel after a task (a drop from a library) checks `isPopoverPinned()` first.
 `presentation="embedded"` (with `pinned` for the pinned look) renders it in
-flow for a catalog or a design canvas, with its border and no drop shadow;
+flow for a catalog or an inline preview, with its border and no drop shadow;
 `wirePinnablePopover` leaves an embedded surface alone.
 
 Wrap one `PopupMenu` (or another single `wa-dropdown`) with `PopupSurface`. `inset="none"` removes menu

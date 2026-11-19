@@ -99,7 +99,7 @@ export interface ListDetailDialogProps {
   compact?: boolean;
   /**
    * Render in flow and always shown (DialogSurface `presentation="embedded"`)
-   * instead of as a modal, for a catalog, a design canvas, or a document. It
+   * instead of as a modal, for a catalog, an inline preview, or a document. It
    * keeps its `height`; `openDialog` and `closeDialog` leave it alone.
    */
   embedded?: boolean;

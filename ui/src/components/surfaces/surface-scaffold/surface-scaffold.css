@@ -46,7 +46,7 @@
 .kui-dialog-surface:focus {
   outline: none;
 }
-/* In flow for a catalog, a design canvas, or a document: the same panel
+/* In flow for a catalog, an inline preview, or a document: the same panel
    without the top layer, never wider than its container. */
 .kui-dialog-surface[data-presentation="embedded"] {
   position: relative;

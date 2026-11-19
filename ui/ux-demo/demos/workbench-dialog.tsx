@@ -159,7 +159,7 @@ export function WorkbenchDialogDemo() {
       </CatalogExample>
       <CatalogExample
         label="Embedded"
-        note="embedded renders the dialog in flow and always shown, keeping its height, for a catalog, a design canvas, or a document."
+        note="embedded renders the dialog in flow and always shown, keeping its height, for a catalog, an inline preview, or a document."
         align="inline-control"
       >
         <WorkbenchDialog

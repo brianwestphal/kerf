@@ -81,7 +81,7 @@ Escape closes the dialog.
 - `leftRail`, `rightRail`, `bottomDrawer`: `WorkbenchPanel`s.
 - `compact`, `closeLabel` (default `Close`), `lightDismiss`.
 - `embedded`: render in flow and always shown, keeping `height`, for a
-  catalog, a design canvas, or a document. `openDialog()` and `closeDialog()`
+  catalog, an inline preview, or a document. `openDialog()` and `closeDialog()`
   leave it alone.
 - Roomy sizing: `size` (default `large`), `preferredWidth`, `height` (default
   560px), `maxHeight`, `viewportGutter`, and `mainMinSize`.

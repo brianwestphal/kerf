@@ -45,7 +45,7 @@ export interface PinnablePopoverSurfaceProps {
   /**
    * `overlay` (default) is a native `popover="manual"` in the top layer that
    * `wirePinnablePopover` places, dismisses, and moves; `embedded` renders
-   * the same surface in flow for a catalog or a design canvas.
+   * the same surface in flow for a catalog or an inline preview.
    */
   presentation?: PinnablePopoverSurfacePresentation;
   /**
