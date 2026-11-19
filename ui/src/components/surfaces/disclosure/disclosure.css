@@ -61,6 +61,13 @@
   content: "";
 }
 
+/* KF-Y25K9Z: a page-wide details stylesheet (Web Awesome 3.15's native.css)
+   pads an open details' content box; the Disclosure's content area already
+   owns its inset, so the box adds none. */
+.kui-disclosure::details-content {
+  padding: 0;
+}
+
 .kui-disclosure__summary:hover {
   background: var(--kui-color-neutral-fill-quiet);
 }

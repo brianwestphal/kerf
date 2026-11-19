@@ -654,6 +654,13 @@
     margin-inline: var(--kui-layout-inline-margin, remify(8px));
   }
 
+  /* KF-Y25K9Z: stacked checkboxes keep an 8px gap (0.5em at the 16px
+     default), the 28px pitch shared with a Checkbox List; Web Awesome 3.15
+     widened the group's default gap to 0.75em. Horizontal groups keep theirs. */
+  wa-checkbox-group:not([orientation="horizontal"]) {
+    --gap: 0.5em;
+  }
+
   /* Stacked radios sit 8px apart (0.25em on each side at the 16px default)
      instead of Web Awesome's 12px, the 28px pitch Kerf's RadioGroup and a
      Checkbox List share. The first and last radio keep their flush outer
