@@ -920,19 +920,6 @@ engine removes custom placement code, and treat Tree, Animated Image,
 Comparison, and Zoomable Frame as exceptional rather than default patterns.
 The detailed rationale lives in the theme contract.
 
-## Editor
-
-`@kerfjs/ui/vite-editor` runs the Kerf UI editor in your application's own
-Vite dev server (`plugins: [kerfUiEditor()]`, then open `/__kerf-ui-editor/`),
-so your components preview and edit beside Kerf UI's. `@kerfjs/ui/editor` is
-the editor module for a host that builds its own page. See the
-[editor host guide](./docs/editor-host.md).
-
-The editor writes view documents (`*.kui.json`). `@kerfjs/ui/view` validates
-them (`validateView`) and renders them at runtime (`interpretView`), and the
-`kerf-ui-view` CLI generates each one's read-only, typed `*.view.ts` module
-(`generate`, `check`, `diff`). See the [view documents guide](./docs/view.md).
-
 ## Design and tool guidance
 
 - [Component selection and composition](./docs/component-selection.md)

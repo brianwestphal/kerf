@@ -345,6 +345,12 @@ describe('TabBar wiring', () => {
     sourceButton.disabled = true;
     third.dispatchEvent(new Event('drop', { bubbles: true, cancelable: true }));
     expect(onReorder).not.toHaveBeenCalled();
+    // A drag over bare text in the bar (not an element) offers no drop.
+    const text = document.createTextNode('gap');
+    root.append(text);
+    const overText = new Event('dragover', { bubbles: true, cancelable: true });
+    text.dispatchEvent(overText);
+    expect(overText.defaultPrevented).toBe(false);
     stop();
   });
 

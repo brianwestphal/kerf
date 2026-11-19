@@ -95,9 +95,7 @@ list of `{ kind, whenProps? }` rules in the selection catalog that
 `catalog:sync` copies into composition: `root` when its own root is a native
 control or link, `contains` when it renders one inside, and `whenProps` when
 only some props make it so. `content.exports` gives additional JSX exports
-their own rules; they do not inherit the entry's. `validateView` reports a
-`root` or `contains` element anywhere in a `root` element's zones as
-`KUI-V014`.
+their own rules; they do not inherit the entry's.
 Generated `boundaries.rootClass` prefers the public `kui-<entry-id>` class when
 present, so a sibling export's class cannot become the entry's root class.
 

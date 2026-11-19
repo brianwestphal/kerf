@@ -627,6 +627,24 @@ describe('TreeList drag-and-drop', () => {
     expect(moves).toEqual([]);
   });
 
+  it('drags without a dataTransfer, as a synthetic or scripted drag does', () => {
+    const { row, moves } = setUp();
+    const plain = (type: string, target: HTMLElement, clientY = 0) => {
+      const event = new Event(type, { bubbles: true, cancelable: true });
+      Object.defineProperty(event, 'clientY', { value: clientY });
+      target.dispatchEvent(event);
+      return event;
+    };
+    plain('dragstart', row('b'));
+    expect(row('b').dataset.dragging).toBe('true');
+    expect(plain('dragover', row('a'), 20).defaultPrevented).toBe(true);
+    expect(row('a').dataset.dropPosition).toBe('inside');
+    plain('drop', row('a'), 20);
+    expect(moves).toEqual([
+      { sourceId: 'b', target: { id: 'a', position: 'inside' } },
+    ]);
+  });
+
   it('ignores drags it did not start and rows that are not draggable', () => {
     const { root, row, moves } = setUp();
     drag('dragover', row('a'), 20);

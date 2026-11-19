@@ -2,20 +2,6 @@
 
 Generated from emitted declarations for `@kerfjs/ui@5.0.0` and `kerfjs@5.0.0-beta.105`. This bounded reference covers only APIs used by the seven-task corpus. It is interface evidence, not an implementation or runtime guarantee.
 
-## `@kerfjs/ui/view-runtime`
-
-```ts
-import { SafeHtml } from 'kerfjs';
-
-/**
- * Preserve component prop inference behind a curried call boundary. Rollup's
- * effect analysis stays linear through large generated component trees.
- */
-declare function kuiComponent<P>(component: (props: P) => SafeHtml): (props: P) => SafeHtml;
-
-export { kuiComponent };
-```
-
 ## `@kerfjs/ui/css-values`
 
 ```ts
@@ -775,7 +761,7 @@ type PopupMenuProps = PopupMenuTrigger & {
     popupNote?: string;
     /**
      * Show the menu open at its trigger (at its `placement`), in the document
-     * instead of the top layer, as a static preview (the Kerf UI editor's edit canvas, a
+     * instead of the top layer, as a static preview (a design canvas, a
      * specification sheet). An embedded menu is inert: the register leaves it
      * alone, so its trigger opens nothing and its items choose nothing, and
      * items render as static rows without their `data-action` that take no
@@ -786,9 +772,8 @@ type PopupMenuProps = PopupMenuTrigger & {
      * With `embedded`, the submenu to show open too, as a path of `items`
      * indices, one per level: `[2]` opens the third entry's submenu, `[2, 0]`
      * also the first entry's submenu inside it. Each shows beside its item
-     * (below its parent menu at phone widths), in the document and inert, as
-     * the Kerf UI editor's edit canvas shows the submenu an author edits. An
-     * index that names no submenu stops the path there. Ignored without
+     * (below its parent menu at phone widths), in the document and inert, so a
+     * static preview can show the submenu under discussion. An index that names no submenu stops the path there. Ignored without
      * `embedded`.
      */
     embeddedSubmenu?: readonly number[];

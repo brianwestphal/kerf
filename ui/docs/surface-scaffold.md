@@ -102,8 +102,6 @@ the drop shadow. Use it where
 a dialog is shown rather than opened, such as a catalog specimen, a design
 canvas, or a document. `openDialog` and `closeDialog` leave an embedded dialog
 alone, and its close button and `data-dialog-close` controls do not hide it.
-The Kerf UI editor shows every DialogSurface embedded on its edit canvas so its
-content can be seen and selected; play mode keeps the authored presentation.
 
 ### Sibling dialogs keep their identity
 
@@ -586,8 +584,8 @@ hand-built draggable panel. It takes the same geometry props as
 `minHeight` accepts a branded `CssLength` and protects fixed controls plus a
 useful content region while resizing. CSS resolves the length and caps the
 minimum by `maxHeight` and the available dynamic viewport. Resizable overlays
-default to 160px; the editor Library configures 320px for its header, view tabs,
-search field, and visible result rows. Keyboard resize reports the actual
+default to 160px; raise it when fixed header controls and a few visible rows
+must stay usable. Keyboard resize reports the actual
 constrained box, so stored height agrees with what the person sees.
 
 The surface is `popover="manual"`, so the controller provides its light

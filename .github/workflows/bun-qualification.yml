@@ -4,10 +4,6 @@ name: Bun candidate qualification
 on:
   workflow_dispatch:
     inputs:
-      source-sha:
-        description: Exact 40-character source SHA for the isolated npm performance control
-        type: string
-        required: false
       scope:
         description: Qualification scope (full retains every canonical lane)
         type: choice
@@ -20,7 +16,6 @@ on:
           - local-peer
           - stable-plan
           - bundled-dependency
-          - library-performance
         default: full
 permissions:
   contents: read
@@ -28,7 +23,7 @@ env:
   NODE_VERSION: '22'
   BUN_QUALIFICATION_EVIDENCE: /tmp/kerf-bun-qualification
   BUN_INSTALL_CACHE_DIR: /tmp/kerf-bun-cache
-  BUN_QUALIFICATION_CI_SHA256: 9415a8a5096e0dcbaedd92567c1ee07026846f26b4904e05876c6c89aa3f9267
+  BUN_QUALIFICATION_CI_SHA256: 6a047682a90c5daf0ac2ffac243a1464da2b502156f5ea1ed4a69b2c74c7976a
 jobs:
   test:
     runs-on: ubuntu-24.04
@@ -327,115 +322,6 @@ jobs:
         timeout-minutes: 15
       - run: npm run build
       - run: npm run check
-      - name: Retain exact candidate locks and input manifests
-        if: always()
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
-        with:
-          name: candidate-${{ github.job }}-${{ strategy.job-index }}-${{ github.sha }}
-          path: ${{ env.BUN_QUALIFICATION_EVIDENCE }}
-          if-no-files-found: warn
-    if: ${{ inputs.scope == 'full' }}
-  editor:
-    runs-on: ubuntu-24.04
-    defaults:
-      run:
-        working-directory: editor
-    steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-          cache: npm
-          cache-dependency-path: editor/package-lock.json
-      - name: Install the exact candidate installer (not repository dependencies)
-        working-directory: .
-        run: npm install --global bun@1.4.4
-      - name: Install kerfjs build dependencies
-        working-directory: .
-        run: node "$GITHUB_WORKSPACE/scripts/bun-candidate-install.mjs" .
-      - name: Build the local kerfjs peer
-        working-directory: .
-        run: npm run build
-      - name: Install and build @kerfjs/ui
-        working-directory: ui
-        run: node "$GITHUB_WORKSPACE/scripts/bun-candidate-install.mjs" ui && npm run build
-      - run: node "$GITHUB_WORKSPACE/scripts/bun-candidate-install.mjs" editor
-      - run: npm run check
-      - name: Retain exact candidate locks and input manifests
-        if: always()
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
-        with:
-          name: candidate-${{ github.job }}-${{ strategy.job-index }}-${{ github.sha }}
-          path: ${{ env.BUN_QUALIFICATION_EVIDENCE }}
-          if-no-files-found: warn
-    if: ${{ inputs.scope == 'full' }}
-  editor-browser:
-    runs-on: ubuntu-24.04
-    strategy:
-      fail-fast: false
-      matrix:
-        browser:
-          - chromium
-          - firefox
-          - webkit
-        shard:
-          - 1
-          - 2
-          - 3
-          - 4
-    defaults:
-      run:
-        working-directory: editor
-    steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-          cache: npm
-          cache-dependency-path: editor/package-lock.json
-      - name: Install the exact candidate installer (not repository dependencies)
-        working-directory: .
-        run: npm install --global bun@1.4.4
-      - name: Install kerfjs build dependencies
-        working-directory: .
-        run: node "$GITHUB_WORKSPACE/scripts/bun-candidate-install.mjs" .
-      - name: Build the local kerfjs peer
-        working-directory: .
-        run: npm run build
-      - name: Install and build @kerfjs/ui
-        working-directory: ui
-        run: node "$GITHUB_WORKSPACE/scripts/bun-candidate-install.mjs" ui && npm run build
-      - run: node "$GITHUB_WORKSPACE/scripts/bun-candidate-install.mjs" editor
-      - name: Configure bounded HTTPS browser dependencies
-        timeout-minutes: 2
-        run: |
-          sudo "$(command -v node)" "$GITHUB_WORKSPACE/scripts/configure-browser-apt.mjs"
-          apt-config dump Acquire::Retries Acquire::http::Timeout Acquire::https::Timeout
-      - run: npx --no-install playwright install --with-deps ${{ matrix.browser }}
-        timeout-minutes: 15
-      - name: Run editor browser tests
-        id: editor_browser
-        run: npm run test:e2e -- --project=${{ matrix.browser }} --shard=${{ matrix.shard }}/4 --workers=3 --test-list-invert=tests/library-performance.exclude --output=test-results-functional
-      - name: Measure Library disclosure without competing test workers
-        id: library_performance
-        if: ${{ !cancelled() && matrix.shard == 3 && (steps.editor_browser.outcome == 'success' || steps.editor_browser.outcome == 'failure') }}
-        run: npm run test:e2e -- tests/browser/library-performance.spec.ts --project=${{ matrix.browser }} --workers=1 --retries=0 --output=test-results-performance
-      - name: Retain every Library performance result
-        if: ${{ !cancelled() && matrix.shard == 3 && (steps.library_performance.outcome == 'success' || steps.library_performance.outcome == 'failure') }}
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
-        with:
-          name: editor-library-performance-${{ matrix.browser }}-${{ github.run_id }}-${{ github.run_attempt }}
-          path: editor/test-results-performance
-          if-no-files-found: warn
-      - name: Upload failed editor browser evidence
-        if: ${{ !cancelled() && steps.editor_browser.outcome == 'failure' }}
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
-        with:
-          name: editor-browser-failure-${{ matrix.browser }}-${{ matrix.shard }}-${{ github.run_id }}-${{ github.run_attempt }}
-          path: |
-            editor/test-results-functional/**/trace.zip
-            editor/test-results-functional/**/test-failed-*.png
-            editor/test-results-functional/**/error-context.md
       - name: Retain exact candidate locks and input manifests
         if: always()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
@@ -853,8 +739,3 @@ jobs:
         with:
           name: bundled-dependency-${{ github.sha }}
           path: ${{ env.BUN_QUALIFICATION_EVIDENCE }}
-  library-performance:
-    if: ${{ inputs.scope == 'library-performance' }}
-    uses: ./.github/workflows/library-performance.yml
-    with:
-      source-sha: ${{ inputs.source-sha }}

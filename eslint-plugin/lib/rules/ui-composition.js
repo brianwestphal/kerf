@@ -181,8 +181,8 @@ const rootsOf = (key, contract) =>
   contract.entries.get(key)?.rendersAs ?? [key];
 
 // Whether an element renders a native control or link as its root (`root`)
-// or inside it (`contains`), from its entry's `content` rules (KF-VTFKX8, the
-// JSX side of validateView's KUI-V014). An export with rules of its own uses
+// or inside it (`contains`), from its entry's `content` rules (KF-VTFKX8). An
+// export with rules of its own uses
 // them; a `whenProps` rule needs one of its props written, and a literal
 // `false` or `null` does not count.
 function interactiveOf(openingElement, registry, contract) {

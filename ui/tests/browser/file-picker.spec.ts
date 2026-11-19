@@ -118,12 +118,12 @@ test('a FilePickerTrigger with the Button look chooses files and shows focus', a
     await chooser
   ).setFiles([
     {
-      name: 'plan.kui.json',
+      name: 'plan.json',
       mimeType: 'application/json',
       buffer: Buffer.from('{}'),
     },
   ]);
-  await expect(demo).toContainText('plan.kui.json');
+  await expect(demo).toContainText('plan.json');
 
   const face = open.locator('.kui-button');
   const save = row.getByRole('button', { name: 'Save' });

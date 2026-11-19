@@ -293,8 +293,7 @@ tester.run('ui-composition catalog-declared inset-free children', composition, {
 });
 
 // KF-VTFKX8: the catalog's content rules mark components whose root is a
-// control or link; nothing interactive may render inside them (KUI-L205, the
-// JSX side of validateView's KUI-V014).
+// control or link; nothing interactive may render inside them (KUI-L205).
 const interactive = (code) => ({
   code: `import { Badge, Button, Chip, ListItem, ListItemLink, Row, Select, Toolbar } from '@kerfjs/ui'; const tags = []; const on = true; ${code}`,
   settings: shippedUiSettings,

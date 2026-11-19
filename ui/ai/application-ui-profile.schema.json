@@ -135,10 +135,6 @@
         },
         "composition": {
           "$ref": "#/$defs/catalogLocation"
-        },
-        "props": {
-          "$ref": "#/$defs/catalogLocation",
-          "description": "The package's component-props.json (kerf-ui-component-props/v<schemaVersion>): structured props for Kerf UI view tools."
         }
       },
       "additionalProperties": false,

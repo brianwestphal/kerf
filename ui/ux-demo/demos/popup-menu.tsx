@@ -282,7 +282,7 @@ export function PopupMenuDemo() {
       </CatalogExample>
       <CatalogExample
         label="Embedded Preview"
-        note="embedded shows the menu open at its trigger, in the document instead of the top layer, and inert: its items choose nothing. embeddedSubmenu opens one submenu beside its item too. It is a static preview, as the Kerf UI editor's edit canvas shows a selected PopupMenu and the submenu being edited."
+        note="embedded shows the menu open at its trigger, in the document instead of the top layer, and inert: its items choose nothing. embeddedSubmenu opens one submenu beside its item too. It is a static preview, such as a design canvas or specification sheet."
         align="text-trigger"
       >
         <PopupMenu

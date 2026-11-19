@@ -1,6 +1,6 @@
-// KF-PYR8XZ: every component the Kerf UI editor can name carries application
-// `data-*` metadata (its node marker, a row key) on its root through a
-// `rootAttributes` prop, while its own markers stay protected.
+// KF-PYR8XZ: every catalog component carries application `data-*` metadata
+// (a test hook, a row key) on its root through a `rootAttributes` prop, while
+// its own markers stay protected.
 import { raw, type SafeHtml } from 'kerfjs';
 import { Inbox } from 'lucide';
 import { describe, expect, it } from 'vitest';

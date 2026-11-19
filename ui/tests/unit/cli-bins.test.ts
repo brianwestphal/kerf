@@ -28,8 +28,6 @@ const probes: Record<string, string[]> = {
   'kerf-ui-analyze': ['--format', 'bogus'],
   'kerf-ui-doctor': ['--format', 'bogus'],
   'kerf-ui-evaluate': [],
-  'kerf-ui-view': [],
-  'kerf-ui-props': [],
   'kerf-catalog-demo': [],
 };
 
@@ -96,16 +94,12 @@ describe('@kerfjs/ui bins', () => {
     'kerf-ui-analyze': ['--format'],
     'kerf-ui-doctor': ['--root'],
     'kerf-ui-evaluate': ['--url'],
-    'kerf-ui-view': ['generate', 'a.kui.json', '--target'],
-    'kerf-ui-props': ['--write', '--root'],
     'kerf-catalog-demo': ['--extension'],
   };
   const unknownFlag: Record<string, string[]> = {
     'kerf-ui-analyze': ['--fail-on-reviw'],
     'kerf-ui-doctor': ['--fail-on-reviw'],
     'kerf-ui-evaluate': ['--url', 'http://localhost:1', '--fail-on-reviw'],
-    'kerf-ui-view': ['generate', 'a.kui.json', '--fail-on-reviw'],
-    'kerf-ui-props': ['--write', '--fail-on-reviw'],
     'kerf-catalog-demo': ['--write', '--fail-on-reviw'],
   };
 
@@ -140,27 +134,9 @@ describe('@kerfjs/ui bins', () => {
 
   it('names a missing or malformed input file instead of a stack trace', () => {
     writeFileSync(join(folder, 'bad.json'), '{ "schema": ');
-    const packageFolder = join(folder, 'bad-package');
-    mkdirSync(packageFolder, { recursive: true });
-    writeFileSync(join(packageFolder, 'package.json'), '{');
     const repoBase = ['--repo-base', 'https://example.com/blob/main'];
     const out = ['--out', 'x.ts'];
     const cases: Array<[string, string[], string]> = [
-      [
-        'kerf-ui-view',
-        ['check', 'missing.kui.json', '--no-profile'],
-        'kerf-ui-view: missing.kui.json: file not found',
-      ],
-      [
-        'kerf-ui-view',
-        ['check', 'bad.json', '--no-profile'],
-        'kerf-ui-view: bad.json: invalid JSON:',
-      ],
-      [
-        'kerf-ui-props',
-        ['--check', '--root', packageFolder],
-        `kerf-ui-props: ${join(packageFolder, 'package.json')}: invalid JSON:`,
-      ],
       [
         'kerf-catalog-demo',
         ['--check', '--extension', 'missing.json', ...out, ...repoBase],

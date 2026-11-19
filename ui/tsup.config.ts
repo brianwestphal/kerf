@@ -2,7 +2,6 @@ import { defineConfig } from 'tsup';
 
 const entries = [
   'index',
-  'view-runtime',
   'badge',
   'chip',
   'css-values',
@@ -35,7 +34,6 @@ const entries = [
   'device-class',
   'tab-bar-item',
   'catalog',
-  'editor',
   'catalog-resources',
   'wire-catalog',
   'tab-bar',
@@ -130,7 +128,7 @@ const entries = [
 export default defineConfig({
   entry: entries.map(
     (entry) =>
-      `src/${entry}.${entry === 'index' || entry === 'view-runtime' || entry === 'css-values' || entry.endsWith('-register') || entry === 'webawesome' || entry === 'device-class' || entry === 'catalog-resources' || entry === 'search-field-model' || entry === 'selection' || entry.startsWith('wire-') ? 'ts' : 'tsx'}`,
+      `src/${entry}.${entry === 'index' || entry === 'css-values' || entry.endsWith('-register') || entry === 'webawesome' || entry === 'device-class' || entry === 'catalog-resources' || entry === 'search-field-model' || entry === 'selection' || entry.startsWith('wire-') ? 'ts' : 'tsx'}`,
   ),
   format: ['esm'],
   outDir: 'dist',
@@ -141,12 +139,5 @@ export default defineConfig({
   sourcemap: true,
   dts: { compilerOptions: { ignoreDeprecations: '6.0' } },
   treeshake: true,
-  // The editor host imports the view tools through the package's own public
-  // subpath, so they ship once (KF-6GT5QY).
-  external: [
-    'kerfjs',
-    'kerfjs/jsx-runtime',
-    '@awesome.me/webawesome',
-    '@kerfjs/ui/view',
-  ],
+  external: ['kerfjs', 'kerfjs/jsx-runtime', '@awesome.me/webawesome'],
 });

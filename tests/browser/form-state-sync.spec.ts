@@ -254,7 +254,7 @@ test('fine-grained bound checked={sig} syncs the property too', async ({
  * KF-FMGEJ6: WebKit keeps a clean input's change-event baseline at the value
  * it was parsed with when only its `value` attribute changes. Kerf writes the
  * property first, so a user re-typing the input's earlier value still fires
- * `change` (the Kerf UI editor's Inspector lost such a commit).
+ * `change` (a property inspector once lost such a commit).
  */
 async function retypeFirstValue(page: Page, setup: string) {
   await page.evaluate((setup) => {

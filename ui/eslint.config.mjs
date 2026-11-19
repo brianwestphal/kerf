@@ -37,8 +37,6 @@ export default [
       'analyzer/**/*.mjs',
       'doctor/**/*.mjs',
       'evaluator/**/*.mjs',
-      'view/**/*.mjs',
-      'props/**/*.mjs',
       'scripts/**/*.mjs',
       'ai/**/*.mjs',
       '*.mjs',

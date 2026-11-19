@@ -6,6 +6,7 @@ import ts from 'typescript';
 
 import { validateComposition } from './component-composition-validation.mjs';
 import { validateCatalogExtensionReferences } from './component-catalog-extension-validation.mjs';
+import { readPropLiterals } from './lib/prop-vocabulary.mjs';
 
 const root = fileURLToPath(new URL('..', import.meta.url));
 const [
@@ -224,12 +225,9 @@ function validateSchema(value, rule, path = '$', activeSchema = schema) {
 }
 
 validateSchema(artifact, schema);
-// The generated public prop schema is the catalog's executable vocabulary
-// source. A new size, density, or inset literal must be canonical, a reviewed
-// semantic exception, or a time-bounded deprecated alias.
-const propSchema = JSON.parse(
-  await readFile(resolve(root, 'ai/component-props.json'), 'utf8'),
-);
+// The component sources are the catalog's executable vocabulary source. A
+// new size, density, or inset literal must be canonical, a reviewed semantic
+// exception, or a time-bounded deprecated alias.
 const vocabulary = artifact.propVocabulary;
 const vocabularyProps = new Map([
   ['size', 'size'],
@@ -256,11 +254,13 @@ for (const item of vocabulary.aliases) {
   aliases.set(key, values);
 }
 const checkedVocabulary = new Set();
-for (const component of propSchema.components) {
-  if (component.source !== 'kerf') continue;
+const propLiterals = readPropLiterals(root, artifact, [
+  ...vocabularyProps.keys(),
+]);
+for (const problem of propLiterals.problems) fail(problem);
+for (const component of propLiterals.components) {
   for (const prop of component.props) {
     const concept = vocabularyProps.get(prop.name);
-    if (!concept || prop.type.kind !== 'enum') continue;
     const key = vocabularyKey(component.export, prop.name);
     checkedVocabulary.add(key);
     const exception = exceptions.get(key);
@@ -271,11 +271,11 @@ for (const component of propSchema.components) {
         ? new Set(exception.values)
         : new Set([...canonical, ...(exception?.values ?? [])]);
     const deprecated = aliases.get(key) ?? new Map();
-    for (const value of prop.type.values)
+    for (const value of prop.values)
       if (!allowed.has(value) && !deprecated.has(value))
         fail(`${key} has uncataloged ${concept} literal ${value}`);
     for (const [value, replacement] of deprecated) {
-      if (!prop.type.values.includes(value))
+      if (!prop.values.includes(value))
         fail(`${key} alias ${value} is no longer public`);
       if (!allowed.has(replacement))
         fail(`${key} alias ${value} has invalid replacement ${replacement}`);
@@ -781,13 +781,10 @@ for (const entry of entries.filter(({ delivery }) => delivery.moduleImport)) {
       fail(`${entry.id} names stale module export ${name} from ${specifier}`);
 }
 
-// The `Catalog` shell and the editor host (KF-6GT5QY) are package tooling,
-// not catalog entries, yet each ships a CSS-aware browser wrapper so the
-// internal components it renders bring their styles.
-const nonCatalogBrowserImports = new Set([
-  '@kerfjs/ui/catalog',
-  '@kerfjs/ui/editor',
-]);
+// The `Catalog` shell is package tooling, not a catalog entry, yet it ships a
+// CSS-aware browser wrapper so the internal components it renders bring their
+// styles.
+const nonCatalogBrowserImports = new Set(['@kerfjs/ui/catalog']);
 const browserImports = Object.entries(packageJson.exports)
   .filter(
     ([, target]) => target && typeof target === 'object' && 'browser' in target,

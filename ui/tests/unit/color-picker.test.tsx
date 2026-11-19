@@ -363,6 +363,24 @@ describe('wireColorPickers', () => {
     return { value, host, onInput, onChange, stop, dispose, q };
   }
 
+  it('ignores focus leaving other fields and value attributes on other elements', async () => {
+    const t = setup('#336699');
+    const before = t.q<HTMLElement>('.kui-color-picker').dataset.value;
+    const other = document.createElement('input');
+    other.dataset.value = '#000000';
+    t.host.append(other);
+    other.dispatchEvent(new FocusEvent('focusout', { bubbles: true }));
+    t.q<HTMLSelectElement>('.kui-color-picker__mode').dispatchEvent(
+      new FocusEvent('focusout', { bubbles: true }),
+    );
+    other.dataset.value = '#ffffff';
+    await new Promise((resolve) => globalThis.setTimeout(resolve, 0));
+    expect(t.onChange).not.toHaveBeenCalled();
+    expect(t.q<HTMLElement>('.kui-color-picker').dataset.value).toBe(before);
+    t.stop();
+    t.dispose();
+  });
+
   it('moves the area with the arrow keys and commits on key up', () => {
     const t = setup('#ff0000');
     const area = t.q<HTMLElement>('.kui-color-picker__area');

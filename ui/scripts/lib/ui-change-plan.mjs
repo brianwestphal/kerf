@@ -28,12 +28,6 @@ export const uiChangeSyncSteps = () => [
     command: 'npm run build',
   },
   {
-    // KF-P7SW6B: the props catalog drives the editor Inspector; it reads the
-    // emitted declarations, so it follows the build.
-    label: 'synchronize the component props catalog',
-    command: 'node scripts/sync-component-props.mjs',
-  },
-  {
     label: 'synchronize AI public signatures',
     command: 'node scripts/sync-ai-public-signatures.mjs',
   },

@@ -68,8 +68,7 @@ import { Badge, Button, ListItem } from '@kerfjs/ui';
 A `whenProps` rule counts a prop as written when the attribute is present,
 whatever expression supplies it, unless its value is a literal `false` or
 `null`. A component defined elsewhere, or a prop supplied through a spread, is
-not visible to the rule. `validateView` reports the same placement in a view
-document as `KUI-V014`, from the same rules.
+not visible to the rule.
 
 ## Application and third-party wrappers
 

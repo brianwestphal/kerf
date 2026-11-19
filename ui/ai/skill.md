@@ -1,7 +1,7 @@
 ---
 name: kerf-ui
 description: Build interfaces with kerfjs and the @kerfjs/ui production component package. Use whenever code imports @kerfjs/ui or a task asks for Kerf UI components.
-kerf-ui-skill-version: 1.75.1
+kerf-ui-skill-version: 1.75.2
 ---
 
 # Building with @kerfjs/ui
@@ -24,17 +24,6 @@ accessibility, styling boundary, diagnostics), then
 `../docs/component-contract.md`, and `../docs/accessibility.md` before changing
 a consuming interface. Use the signature snapshot for exact props, callbacks,
 return values, and supported import paths; do not infer them from examples.
-Tools that need props as data (inspector forms, document validators, generated
-contracts) read `./component-props.json` instead of parsing declarations.
-To edit an app type its own way in the Kerf UI editor, register a field editor
-by type name (`createEditor({ fieldEditors })`, or the Vite plugin's
-`src/kerf-ui-field-editors.ts`) and compose `context.form()` with `set` and
-`control` attributes rather than rebuilding the type-driven form
-(`../docs/editor-host.md`).
-A view document (`*.kui.json`) is the source of truth for its generated
-`*.view.ts`: change the document and run `kerf-ui-view generate`, never edit
-the module, and validate documents with `validateView` from
-`@kerfjs/ui/view` (`../docs/view.md`).
 Treat each `KUI-T###` contract as an exact declaration guarantee, including its
 documented dynamic-data widening. Do not extend those diagnostics to child
 markup, live DOM relationships, disposer invocation, or other conditions that
@@ -452,7 +441,7 @@ same metadata when authoring consumer component catalogs so lint, analyzer, and
 doctor feedback covers local components too.
 
 A group's buttons are native `<button type="button">` elements; where a
-component is needed instead of markup (a view document, generated code), use
+component is needed instead of markup (generated code, a render helper), use
 `ToolbarButton` (icon-only with `ariaLabel`, labeled, or `ariaLabel` alone in
 an avatar group, which shows the group's `avatarImage`), which renders the
 same button.
@@ -710,9 +699,3 @@ For a non-modal panel the person may keep open while working (a component librar
 Set `DialogSurface closeEmphasis="quiet"` when its built-in close control should recede. It keeps the native 40px button target, `closeLabel`, focus ring, and `kui-request-close` behavior. See `docs/surface-scaffold.md`.
 
 Toolbar visibility measurement probes and invisible state children are helper-owned and survive Kerf rerenders through `data-morph-preserve`. Actual CSS visibility stays stable while rendering removes transient parent markers, preventing geometry-driven render feedback and repeated probe recreation. Toolbar replacement, explicit internal-node removal and disposal retain their existing behavior.
-
-Parameter authoring (KF-26P9FT, KF-B8YSHV, KF-MB5FFZ, KF-AFW3ZA) uses compact name/type rows and a DialogSurface/NavStack with TypeScript text entry, project completion and formatting. `ui/view/project-types.mjs` runs the owning project’s Node-only TypeScript language service; persisted expression/import metadata accompanies a structural navigation projection. Editor export and CLI generation check actual generated bindings/defaults. `validateView` alone reports KUI-H002 for deferred project checking. Legacy descriptors remain supported.
-
-Generated views share the browser-only `kuiComponent` helper at `@kerfjs/ui/view-runtime` (KF-4DR6XR). Preserve its curried component-call boundary: it retains generic prop inference and the SafeHtml contract while keeping Rollup effect analysis linear for large catalog trees. TS/JS output imports it only for actual component calls; declarations-only and component-free output omit it. The helper has no generator/compiler dependency. Tests: `ui/tests/unit/view-runtime.test.ts`, `ui/tests/unit/view-generate.test.ts`, consumer type contracts and browser bundle boundaries.
-
-Library previews (KF-RQJ15M) expose `defineLibraryPreviews`, component-keyed samples/static renderers/icon fallbacks, and catalog/editor `libraryPreviews` overrides. Composition catalogs carry literal JSON samples plus an optional `libraryPreviewModule`; the Vite host imports package modules and a local override separately. Built-in schematics/icons use the same registrations. `ui/src/editor/library-previews.ts`, `library-preview-defaults.ts` and `library-thumbnail-renderer.ts` own registration/isolated rendering; palette thumbnail wiring owns inert shadow fitting, asset/content resize refits and RAF/observer cleanup. Insertion/defaults/canvas/production rendering remain separate. Requirements: `docs/28-library-previews.md`; downstream example: `editor/fixtures/app/`; tests: Library preview/lifecycle units, typed+packed consumers, Vite host units and `editor/tests/browser/library-previews.spec.ts`.

@@ -19,7 +19,6 @@
     "dist",
     "src/counter.css",
     "component-composition.json",
-    "component-props.json",
     "kerf.components.json",
     "README.md",
     "LICENSE"
@@ -28,16 +27,13 @@
     "build": "tsup",
     "catalog:generate": "node scripts/kerf-component-catalog.mjs --write",
     "catalog:check": "node scripts/kerf-component-catalog.mjs --check",
-    "props:generate": "npm run build && kerf-ui-props --write",
-    "props:check": "kerf-ui-props --check",
     "check:styles": "kerf-ui-analyze --root . src",
     "typecheck": "tsc --noEmit",
-    "prepublishOnly": "npm run catalog:check && npm run check:styles && npm run build && kerf-ui-props --write"
+    "prepublishOnly": "npm run catalog:check && npm run check:styles && npm run build"
   },
   "kerfComponentCatalog": {
     "source": "./kerf.components.json",
-    "output": "./component-composition.json",
-    "propsOutput": "./component-props.json"
+    "output": "./component-composition.json"
   },
   "peerDependencies": {
     "kerfjs": "^5.0.0"

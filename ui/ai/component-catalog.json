@@ -10,6 +10,8 @@
       "inset": ["none", "compact", "default", "comfortable"]
     },
     "exceptions": [
+      { "component": "Badge", "prop": "size", "values": ["default", "compact", "dot"], "reason": "Text badge sizes plus the text-free dot form." },
+      { "component": "List", "prop": "inset", "values": ["document"], "reason": "Document reading-column inset, not a surface inset tier." },
       { "component": "ListDetailDialog", "prop": "size", "values": ["small", "medium", "large"], "reason": "Modal width tiers, not control size." },
       { "component": "ListHeader", "prop": "size", "values": ["xs", "sm", "m", "l", "xl"], "reason": "Heading typography scale." },
       { "component": "ProgressRing", "prop": "size", "values": ["small", "medium", "large"], "reason": "Indicator diameter tiers." },
@@ -2095,7 +2097,7 @@
       "useWhen": [
         "Group related controls inside a toolbar with a supported visual treatment.",
         "Use ToolbarActionLink for navigation or external resources that must retain native anchor semantics inside a group.",
-        "Use ToolbarButton for a group's button when it must be a component rather than markup (a view document, the Kerf UI editor, or generated code): it renders exactly the native <button type=\"button\"> the group styles, icon-only with ariaLabel, labeled, or (in an avatar group) ariaLabel alone, with action, pressed, disabled, title, a native popover invoker (popoverTarget, popoverTargetAction, ariaHasPopup), and a corner badge.",
+        "Use ToolbarButton for a group's button when it must be a component rather than markup (generated code, or a composition that only accepts components): it renders exactly the native <button type=\"button\"> the group styles, icon-only with ariaLabel, labeled, or (in an avatar group) ariaLabel alone, with action, pressed, disabled, title, a native popover invoker (popoverTarget, popoverTargetAction, ariaHasPopup), and a corner badge.",
         "For a count on a group button, such as live workers or unread alerts, pass ToolbarButton badge (a number, short text, or true for a dot) with badgeTone (default danger) and badgeMax (default 99, so 128 shows 99+); a count of 0 shows no badge. The group owns its placement over the icon's top-trailing corner, its 2px ring against the group surface, and its compact sizing; never position a Badge over a group button with application CSS.",
         "Fill it with plain <button> controls (the group styles > button fully). A popup menu is a PopupMenu in a single group with nestedDropdown; it renders its own trigger, so never hand-write wa-dropdown markup. Each control stays whole: an icon sits beside its label on one row and no trigger gets a fixed width. Use overflow=wrap for independent links that should move as whole actions to another row on narrow surfaces.",
         "For an avatar control, set content=avatar and avatarImage instead of inserting an img; one button paints the group and multiple buttons paint only the pressed highlight.",
@@ -6321,8 +6323,7 @@
       ],
       "useWhen": [
         "Render the content region a TabBar's tab selects; pair TabPanel id with the TabBarItem's panelId and TabPanel tabId with the TabBarItem's tabId.",
-        "Show placeholders in the panel of a pending TabBarItem; set busy until its content loads.",
-        "A view built in the Kerf UI editor needs a tab's panel."
+        "Show placeholders in the panel of a pending TabBarItem; set busy until its content loads."
       ],
       "avoidWhen": [
         "Do not write a raw element with role=\"tabpanel\" in Kerf UI markup; render TabPanel.",
@@ -6507,11 +6508,10 @@
       ],
       "useWhen": [
         "Fields whose values are saved or sent together, such as a dialog's settings or a compose form, and an action reads them with new FormData(form).",
-        "A submit Button, or Enter in a field, should submit the fields; handle submit with delegateActions(root, 'submit', table) keyed on the Form's action.",
-        "A view built in the Kerf UI editor needs a form around its fields."
+        "A submit Button, or Enter in a field, should submit the fields; handle submit with delegateActions(root, 'submit', table) keyed on the Form's action."
       ],
       "avoidWhen": [
-        "Do not write a raw form element in Kerf UI markup; render Form so submission never navigates and the editor can place it.",
+        "Do not write a raw form element in Kerf UI markup; render Form so submission never navigates.",
         "Do not use Form for spacing, insets, or a frame; it adds none. Lay the fields out with List, Row, or Grid inside it.",
         "Do not rely on Form to post to a URL; it has no native action or method, and the application owns transport."
       ],

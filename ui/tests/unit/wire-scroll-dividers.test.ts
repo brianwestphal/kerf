@@ -344,6 +344,35 @@ describe('NavStack and TabScaffold chromeDividers', () => {
     ).toBe('t');
     dispose();
   });
+
+  it('keys the chrome on a view with several children, which is itself the scroller', () => {
+    const root = document.createElement('div');
+    document.body.append(root);
+    roots.push(root);
+    root.innerHTML = String(
+      NavStack({
+        id: 'stack',
+        label: 'Stack',
+        views: [
+          {
+            key: 'root',
+            toolbar: { title: 'Root' },
+            content: raw('<p>first</p><p>second</p>'),
+          },
+        ],
+      }),
+    );
+    const view = root.querySelector<HTMLElement>('.kui-nav-stack__view')!;
+    expect(view.children.length).toBeGreaterThan(1);
+    geometry(view, { scrollHeight: 300, clientHeight: 100, scrollTop: 50 });
+    const dispose = wireScrollDividers(root);
+    expect(
+      root
+        .querySelector('.kui-nav-stack__chrome')!
+        .getAttribute('data-scroll-divider'),
+    ).toBe('b');
+    dispose();
+  });
 });
 
 describe('wireScrollDividers — Pane chrome (vertical transition matrix)', () => {

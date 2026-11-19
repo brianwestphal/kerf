@@ -68,11 +68,6 @@ check:styles` runs `kerf-ui-analyze` (from the `@kerfjs/ui` dev dependency)
   string/template/regular-expression literals cannot masquerade as public
   exports. The scaffold already declares TypeScript; run `npm install` before
   invoking its copied local checker in a fresh offline directory.
-- **A structured prop schema**, `component-props.json`. `npm run props:generate`
-  builds the package, then runs `kerf-ui-props` (from `@kerfjs/ui`) over the
-  built declarations, so Kerf UI view tools (the editor, `validateView`,
-  `kerf-ui-view`) can use the package's components. `npm run props:check` fails
-  when the committed file is stale; `prepublishOnly` regenerates it.
   A component whose wiring helper writes runtime `data-*` state onto its DOM
   can declare it under `composition.wiring.stateAttributes` — each item is
   `{ name, on, helper, meaning }`, where `name` is a `data-*` name, `on` is the
@@ -107,8 +102,8 @@ check:styles` runs `kerf-ui-analyze` (from the `@kerfjs/ui` dev dependency)
   `composition.content`: `{ "interactive": [{ "kind": "root" }] }` when the
   control is its root, `"contains"` when it renders one inside, and
   `"whenProps": ["href"]` when only those props make it so; `exports` gives
-  another JSX export its own rules. `@kerfjs/ui`'s view validator then reports
-  a control placed in a `root` component's zones as `KUI-V014`. Omitted, the
+  another JSX export its own rules. `eslint-plugin-kerfjs`'s `ui-composition`
+  rule then reports a control placed inside a `root` component as `KUI-L205`. Omitted, the
   component's placements are unchecked.
   Each `publicExports` item names a `package.json#exports` subpath that maps to
   the `src/` file exporting it. A private, bundled application

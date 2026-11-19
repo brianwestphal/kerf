@@ -63,7 +63,6 @@ import {
   uiColor,
   type UiSpaceName,
 } from '@kerfjs/ui/css-values';
-import { defineLibraryPreviews, type LibraryPreviews } from '@kerfjs/ui/editor';
 import {
   buildEvaluationContexts,
   type UiEvaluationContext,
@@ -1361,47 +1360,4 @@ UI.Pane({
   children: icon,
   // @ts-expect-error Pane protects its chrome-divider attribute.
   rootAttributes: { 'data-chrome-dividers': 'always' },
-});
-
-// KF-4DR6XR: the generated runtime boundary keeps the component's prop contract.
-import { kuiComponent } from '@kerfjs/ui/view-runtime';
-
-kuiComponent(Badge)({ children: 'Ready', tone: 'danger' });
-// @ts-expect-error the wrapper does not widen component props
-kuiComponent(Badge)({ children: 'Ready', tone: 'not-a-tone' });
-// @ts-expect-error components must return SafeHtml
-kuiComponent((props: { count: number }) => props.count);
-
-// KF-RQJ15M: keep literal component keys and each component's actual prop types.
-const PreviewCard = (props: { title: string; total?: number }) =>
-  UI.Badge({ children: props.title });
-const previewComponents = { 'orders-app:card': PreviewCard };
-const libraryPreviews: LibraryPreviews = defineLibraryPreviews(
-  previewComponents,
-  {
-    'orders-app:card': {
-      sampleProps: () => ({ title: 'Sample', total: 4200 }),
-      render: ({ props }) => {
-        props.total?.toFixed();
-        return UI.Badge({ children: props.title });
-      },
-    },
-  },
-);
-void libraryPreviews;
-defineLibraryPreviews(previewComponents, {
-  // @ts-expect-error a literal map rejects unknown catalog keys
-  'orders-app:missing': {},
-});
-defineLibraryPreviews(previewComponents, {
-  // @ts-expect-error sample props retain the component's numeric total type
-  'orders-app:card': { sampleProps: () => ({ total: 'bad' }) },
-});
-defineLibraryPreviews(previewComponents, {
-  // @ts-expect-error sample props cannot invent a component prop
-  'orders-app:card': { sampleProps: () => ({ missing: true }) },
-});
-defineLibraryPreviews(previewComponents, {
-  // @ts-expect-error static thumbnail renderers return SafeHtml, never a promise
-  'orders-app:card': { render: async () => UI.Badge({ children: 'Async' }) },
 });

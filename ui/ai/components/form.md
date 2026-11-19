@@ -12,11 +12,10 @@ Group fields in a native form so the application reads them with FormData, a sub
 
 - Fields whose values are saved or sent together, such as a dialog's settings or a compose form, and an action reads them with new FormData(form).
 - A submit Button, or Enter in a field, should submit the fields; handle submit with delegateActions(root, 'submit', table) keyed on the Form's action.
-- A view built in the Kerf UI editor needs a form around its fields.
 
 **Not when:**
 
-- Do not write a raw form element in Kerf UI markup; render Form so submission never navigates and the editor can place it.
+- Do not write a raw form element in Kerf UI markup; render Form so submission never navigates.
 - Do not use Form for spacing, insets, or a frame; it adds none. Lay the fields out with List, Row, or Grid inside it.
 - Do not rely on Form to post to a URL; it has no native action or method, and the application owns transport.
 

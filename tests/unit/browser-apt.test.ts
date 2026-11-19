@@ -57,7 +57,7 @@ describe('browser dependency APT setup', () => {
         }
       }
     }
-    expect(installs).toBe(6);
+    expect(installs).toBe(5);
   });
 
   it('makes the actual mirror-list primary HTTPS while retaining priorities and fallbacks', () => {

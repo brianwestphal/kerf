@@ -12,7 +12,6 @@ Render the tabpanel a TabBarItem controls, named by its tab through tabId, hidde
 
 - Render the content region a TabBar's tab selects; pair TabPanel id with the TabBarItem's panelId and TabPanel tabId with the TabBarItem's tabId.
 - Show placeholders in the panel of a pending TabBarItem; set busy until its content loads.
-- A view built in the Kerf UI editor needs a tab's panel.
 
 **Not when:**
 

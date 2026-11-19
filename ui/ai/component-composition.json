@@ -1921,16 +1921,7 @@
       "provenance": {
         "selection": "ai/component-catalog.json",
         "composition": "docs/component-selection.md#toolbar-composition"
-      },
-      "configTypes": [
-        "ListDetailDialogDetail.actions",
-        "ListDetailDialogList.toolbar",
-        "NavStackViewToolbar",
-        "PanelBottomToolbar",
-        "PanelToolbar",
-        "WorkbenchMainBottomToolbar",
-        "WorkbenchMainToolbar"
-      ]
+      }
     },
     {
       "key": "@kerfjs/ui:toolbar-control-group",

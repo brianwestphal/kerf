@@ -14,25 +14,6 @@ const upload =
 export function qualificationWorkflow(source) {
   const canonical = YAML.parse(source);
   const jobs = structuredClone(canonical.jobs);
-  // KF-1XBJDT: candidate installation must preserve canonical measurement phases.
-  const editor = canonical.jobs['editor-browser'];
-  const functional = editor.steps.find((step) => step.id === 'editor_browser');
-  const performance = editor.steps.find(
-    (step) => step.id === 'library_performance',
-  );
-  assert.ok(
-    functional?.run.includes(
-      '--test-list-invert=tests/library-performance.exclude',
-    ) && functional.run.includes('--workers=3'),
-    'Editor functional phase must exclude only the performance manifest at three workers',
-  );
-  assert.ok(
-    performance?.run.includes('tests/browser/library-performance.spec.ts') &&
-      performance.run.includes('--workers=1') &&
-      performance.run.includes('--retries=0'),
-    'Editor performance phase must retain the single-worker zero-retry spec',
-  );
-
   for (const [name, job] of Object.entries(jobs)) {
     // KF-1EH00H: `bun pm ls` reads the lock, which a `--no-save` add leaves
     // behind, so it is kept as the lock's view; the physical graph and the
@@ -262,11 +243,6 @@ JS`,
       ],
     };
   }
-  jobs['library-performance'] = {
-    if: "${{ inputs.scope == 'library-performance' }}",
-    uses: './.github/workflows/library-performance.yml',
-    with: { 'source-sha': '${{ inputs.source-sha }}' },
-  };
   for (const [name, job] of Object.entries(jobs)) {
     if (
       [
@@ -275,7 +251,6 @@ JS`,
         'local-peer',
         'stable-plan',
         'bundled-dependency',
-        'library-performance',
       ].includes(name)
     )
       continue;
@@ -302,12 +277,6 @@ JS`,
     on: {
       workflow_dispatch: {
         inputs: {
-          'source-sha': {
-            description:
-              'Exact 40-character source SHA for the isolated npm performance control',
-            type: 'string',
-            required: false,
-          },
           scope: {
             description:
               'Qualification scope (full retains every canonical lane)',
@@ -321,7 +290,6 @@ JS`,
               'local-peer',
               'stable-plan',
               'bundled-dependency',
-              'library-performance',
             ],
             default: 'full',
           },

@@ -4,7 +4,7 @@ import { resolve } from 'node:path';
 import { mount, signal } from 'kerfjs';
 import { Circle } from 'lucide';
 import postcss from 'postcss';
-import { afterEach, describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import {
   ChoiceChips,
@@ -295,6 +295,17 @@ describe('ChoiceChips', () => {
     // A change event asks too; disposing cancels a pending frame.
     group.dispatchEvent(new Event('change', { bubbles: true }));
     stop();
+  });
+
+  it('cancels no frame when disposed after its scan has run', async () => {
+    const host = render('<div></div>');
+    const cancel = vi.spyOn(window, 'cancelAnimationFrame');
+    const stop = wireChoiceChips(host);
+    await new Promise((resolve) => window.requestAnimationFrame(resolve));
+    await new Promise((resolve) => window.requestAnimationFrame(resolve));
+    stop();
+    expect(cancel).not.toHaveBeenCalled();
+    cancel.mockRestore();
   });
 
   it('paints a color dot, the struck transparent dot, and no dot for a text choice', () => {

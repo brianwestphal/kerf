@@ -797,6 +797,27 @@ describe('wirePinnablePopover', () => {
     expect(changes).toEqual([]);
   });
 
+  it('measures the viewport from innerWidth when the root reports no clientWidth', () => {
+    const { surface } = mount();
+    wire(surface, { pinned: true, placement: { x: 700, y: 500 } });
+    surface.showPopover();
+    const innerWidth = Object.getOwnPropertyDescriptor(window, 'innerWidth');
+    Object.defineProperty(document.documentElement, 'clientWidth', {
+      configurable: true,
+      value: 0,
+    });
+    Object.defineProperty(window, 'innerWidth', {
+      configurable: true,
+      value: 800,
+    });
+    try {
+      window.dispatchEvent(new Event('resize'));
+      expect(position(surface)).toEqual({ x: 800 - 16 - SIZE.width, y: 500 });
+    } finally {
+      if (innerWidth) Object.defineProperty(window, 'innerWidth', innerWidth);
+    }
+  });
+
   it('follows its anchor on resize and scroll while transient', () => {
     const { surface, trigger } = mount();
     wire(surface);

@@ -55,7 +55,6 @@ describe(
           'local-peer',
           'stable-plan',
           'bundled-dependency',
-          'library-performance',
         ],
         default: 'full',
       });
@@ -92,7 +91,6 @@ describe(
             'local-peer',
             'stable-plan',
             'bundled-dependency',
-            'library-performance',
             // KF-1EH00H: these also run for `dependency-variations`.
             'eslint-plugin',
             'ui-webawesome-latest',
@@ -190,40 +188,6 @@ describe(
         expect(commands).not.toContain('npm ci');
         expect(job.steps.at(-1).if).toBe('always()');
       }
-      expect(candidate.jobs['library-performance']).toMatchObject({
-        if: "${{ inputs.scope == 'library-performance' }}",
-        uses: './.github/workflows/library-performance.yml',
-        with: { 'source-sha': '${{ inputs.source-sha }}' },
-      });
-    });
-
-    it('keeps the npm performance control isolated, exact-revision and single-worker', () => {
-      const workflow = YAML.parse(
-        readFileSync('.github/workflows/library-performance.yml', 'utf8'),
-      );
-      expect(workflow.permissions).toEqual({ contents: 'read' });
-      expect(workflow.on.workflow_call.inputs['source-sha'].required).toBe(
-        true,
-      );
-      const job = workflow.jobs['library-performance'];
-      expect(job.strategy.matrix.browser).toEqual(['firefox', 'webkit']);
-      expect(job.strategy['fail-fast']).toBe(false);
-      expect(job.steps[0].run).toContain('^[0-9a-f]{40}$');
-      expect(job.steps[1].with.ref).toBe('${{ inputs.source-sha }}');
-      const commands = job.steps
-        .map((step: { run?: string }) => step.run ?? '')
-        .join('\n');
-      expect(commands).toContain('npm ci');
-      expect(commands).toContain('npm --prefix ui ci');
-      expect(commands).toContain('npm --prefix editor ci');
-      expect(commands).toContain('--workers=1 --retries=0');
-      expect(commands).toContain(
-        "'Library expand/collapse remains responsive with 5000 project files'",
-      );
-      expect(commands).toContain("version, '1.64.1'");
-      expect(job.steps.at(-1).if).toBe('always()');
-      expect(job.steps.at(-1).with.path).toContain('editor/test-results');
-      expect(YAML.stringify(workflow)).not.toContain('id-token');
     });
 
     it('records dependency-variation trees before their tests can fail', () => {

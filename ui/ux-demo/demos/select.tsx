@@ -591,7 +591,7 @@ export function SelectDemo() {
       </CatalogExample>
       <CatalogExample
         label="Embedded Preview"
-        note="embedded shows the listbox open below the control (above any hint), in the document instead of the top layer, and inert: a static preview, as the Kerf UI editor's edit canvas shows a selected Select."
+        note="embedded shows the listbox open below the control (above any hint), in the document instead of the top layer, and inert: a static preview, such as a design canvas or specification sheet."
         align="inline-control"
       >
         <Select
