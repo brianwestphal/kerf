@@ -51,9 +51,7 @@ async function expectOpen(root: Locator, open = true) {
 function nestedMenu(page: Page) {
   const root = page
     .locator('[data-demo="popup-menu"]')
-    .locator(
-      '[data-component="popup-menu"]:not([data-embedded])[data-trigger="button"]',
-    )
+    .locator('[data-component="popup-menu"][data-trigger="button"]')
     .filter({ has: page.locator('[data-submenu]') });
   const parent = root.locator(
     '.kui-popup-menu__submenu-host > .kui-popup-menu__item',
@@ -106,9 +104,7 @@ test('PopupMenu opens from its toolbar trigger and dispatches the chosen command
   await page.setViewportSize({ width: 1100, height: 800 });
   await page.goto('/?component=popup-menu');
   const demo = page.locator('[data-demo="popup-menu"]');
-  const sort = demo
-    .locator('[data-component="popup-menu"]:not([data-embedded])')
-    .first();
+  const sort = demo.locator('[data-component="popup-menu"]').first();
   const trigger = sort.getByRole('button', { name: 'Sort Tickets' });
   await expect(trigger).toBeVisible();
   await expect(trigger).toHaveAttribute('aria-haspopup', 'menu');
@@ -150,9 +146,7 @@ test('PopupMenu opens from its toolbar trigger and dispatches the chosen command
   await expect(page.locator('.catalog-log')).toHaveText('Sorted by priority');
 
   // Headings, dividers, item icons, and disabled items.
-  const grouped = demo
-    .locator('[data-component="popup-menu"]:not([data-embedded])')
-    .nth(1);
+  const grouped = demo.locator('[data-component="popup-menu"]').nth(1);
   await grouped.getByRole('button', { name: 'Actions' }).click();
   await expect(
     grouped.locator('.kui-popup-menu__heading', { hasText: 'Ticket' }),
@@ -185,9 +179,7 @@ test('an open PopupMenu keeps its command focus when a content-key rebuild repla
 }) => {
   await page.goto('/?component=popup-menu');
   const root = page
-    .locator(
-      '[data-demo="popup-menu"] [data-component="popup-menu"]:not([data-embedded])',
-    )
+    .locator('[data-demo="popup-menu"] [data-component="popup-menu"]')
     .first();
   await root.getByRole('button', { name: 'Sort Tickets' }).click();
   const priority = root.getByRole('menuitem', { name: 'Priority' });
@@ -1050,7 +1042,7 @@ test('a tall PopupMenu never covers its trigger at a short viewport', async ({
   await page.goto('/?component=popup-menu');
   const root = page
     .locator('[data-demo="popup-menu"]')
-    .locator('[data-component="popup-menu"]:not([data-embedded])')
+    .locator('[data-component="popup-menu"]')
     .first();
   const trigger = root.getByRole('button', { name: 'Sort Tickets' });
   const panel = panelOf(root);

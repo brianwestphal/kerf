@@ -743,36 +743,3 @@ describe('Select register: forms', () => {
       .attachInternals;
   });
 });
-
-// KF-KN9CPE: an embedded Select is a static preview, open in flow; the
-// register leaves it alone.
-describe('Select register: an embedded Select', () => {
-  it('renders its listbox open in flow and never opens, chooses, or navigates', () => {
-    const { root, trigger, popup, option, events } = setup({ embedded: true });
-    expect(root.hasAttribute('data-embedded')).toBe(true);
-    expect(popup.hasAttribute('popover')).toBe(false);
-    expect(trigger.getAttribute('aria-expanded')).toBe('true');
-    // KF-HVJDWF: neither the listbox nor its options take focus, so a click
-    // on an option never paints the current-row fill.
-    expect(popup.hasAttribute('tabindex')).toBe(false);
-    for (const row of root.querySelectorAll('.kui-select__option')) {
-      expect(row.hasAttribute('tabindex')).toBe(false);
-    }
-    click(trigger);
-    expect(root.hasAttribute('open')).toBe(false);
-    click(option('Thorough'));
-    key(trigger, 'ArrowDown');
-    key(option('Fast'), 'Enter');
-    press(document.body);
-    expect(root.value).toBe('balanced');
-    expect(events).toEqual([]);
-    expect(floating.positions).toHaveLength(0);
-  });
-
-  it('protects its embedded marker from root attributes', () => {
-    const { root } = setup({
-      rootAttributes: { 'data-embedded': '' } as never,
-    });
-    expect(root.hasAttribute('data-embedded')).toBe(false);
-  });
-});

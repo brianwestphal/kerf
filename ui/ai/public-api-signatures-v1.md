@@ -759,24 +759,6 @@ type PopupMenuProps = PopupMenuTrigger & {
      * the menu's description. Submenus don't show it.
      */
     popupNote?: string;
-    /**
-     * Show the menu open at its trigger (at its `placement`), in the document
-     * instead of the top layer, as a static preview (a design canvas, a
-     * specification sheet). An embedded menu is inert: the register leaves it
-     * alone, so its trigger opens nothing and its items choose nothing, and
-     * items render as static rows without their `data-action` that take no
-     * focus, so a click on one leaves no current-row fill. Defaults to false.
-     */
-    embedded?: boolean;
-    /**
-     * With `embedded`, the submenu to show open too, as a path of `items`
-     * indices, one per level: `[2]` opens the third entry's submenu, `[2, 0]`
-     * also the first entry's submenu inside it. Each shows beside its item
-     * (below its parent menu at phone widths), in the document and inert, so a
-     * static preview can show the submenu under discussion. An index that names no submenu stops the path there. Ignored without
-     * `embedded`.
-     */
-    embeddedSubmenu?: readonly number[];
     /** Application `data-*` metadata on the menu root. */
     rootAttributes?: PopupMenuDataAttributes;
     /** Native named-slot assignment when composed inside a web component. */
@@ -818,7 +800,7 @@ declare function closePopupMenu(menu: PopupMenuElement): void;
  * submenus appear above or below their parent menu so their rows do not cover
  * the parent list.
  */
-declare function PopupMenu({ text, label, icon, triggerContent, items, placement, caret, disabled, emphasis, size, rootAttributes, slot, context, anchor, popupNote, embedded, embeddedSubmenu, }: PopupMenuProps): SafeHtml;
+declare function PopupMenu({ text, label, icon, triggerContent, items, placement, caret, disabled, emphasis, size, rootAttributes, slot, context, anchor, popupNote, }: PopupMenuProps): SafeHtml;
 
 export { PopupMenu, type PopupMenuAnchor, type PopupMenuDivider, type PopupMenuElement, type PopupMenuEmphasis, type PopupMenuEntry, type PopupMenuHeading, type PopupMenuItem, type PopupMenuPlacement, type PopupMenuProps, type PopupMenuSize, closePopupMenu, openPopupMenu, openPopupMenuAt };
 ```
@@ -4444,16 +4426,6 @@ interface SelectBaseProps<Value extends string = string> {
     focusRingInset?: boolean;
     /** Maximum closed-control label width in CSS pixels before ellipsis. */
     labelMaxWidth?: number;
-    /**
-     * Show the listbox open right below the trigger (over any `hint`), in the
-     * document instead of the top layer, as a static preview (the Kerf UI
-     * editor's edit canvas, a specification sheet). An embedded Select is
-     * inert: the register leaves it alone, so its trigger opens nothing, its
-     * choices choose nothing, and its choices take no focus, so a click on one
-     * leaves no current-row fill.
-     * Defaults to false.
-     */
-    embedded?: boolean;
     /** Native named-slot assignment when composed inside a web component. */
     slot?: string;
     /** Application `data-*` metadata on the root, such as a row key or an

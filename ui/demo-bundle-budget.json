@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 164600,
-  "totalJavaScriptGzip": 470300,
+  "totalJavaScriptGzip": 469800,
   "measuredLargestJavaScriptGzip": 164545,
-  "measuredTotalJavaScriptGzip": 470283,
+  "measuredTotalJavaScriptGzip": 469761,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -7523,6 +7523,22 @@
         "measuredTotalJavaScriptGzip": 470283,
         "largestJavaScriptGzip": 164600,
         "totalJavaScriptGzip": 470300
+      }
+    },
+    {
+      "at": "2026-11-19T03:15:35.156Z",
+      "reason": "KF-Q0S061 removes the PopupMenu and Select embedded preview examples",
+      "old": {
+        "measuredLargestJavaScriptGzip": 164545,
+        "measuredTotalJavaScriptGzip": 470283,
+        "largestJavaScriptGzip": 164600,
+        "totalJavaScriptGzip": 470300
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 164545,
+        "measuredTotalJavaScriptGzip": 469761,
+        "largestJavaScriptGzip": 164600,
+        "totalJavaScriptGzip": 469800
       }
     }
   ]

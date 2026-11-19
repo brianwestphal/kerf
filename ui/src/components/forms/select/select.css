@@ -382,66 +382,6 @@
   outline: none;
 }
 
-/* embedded: the listbox shows open below the control, in the document
-   instead of the top layer, as a static preview (the editor's edit canvas).
-   The surface and rows are the open listbox's; only the layer it sits in
-   differs. Like the real listbox it overlays what lies below rather than
-   pushing it aside, so a toolbar Select keeps its place in the group's
-   control band (a toolbar's leading zone, where a view-title Select sits,
-   stops clipping while it holds one, in toolbar.css). */
-.kui-select[data-embedded] {
-  position: relative;
-}
-.kui-select[data-embedded] > .kui-select__popup {
-  display: block;
-  position: absolute;
-  z-index: 1;
-  inset-block: 100% auto;
-  inset-inline: 0 auto;
-  opacity: 1;
-  transition: none;
-}
-.kui-select--fit-menu[data-embedded] > .kui-select__popup {
-  inset-inline: 0;
-  width: auto;
-}
-/* With a hint, the listbox still hangs from the control, as the real one
-   does, not from the root's bottom edge below the hint: the root lays its
-   parts out on a one-column grid, and the listbox takes the control's grid
-   area as its containing block. (CSS anchor positioning would say this
-   too, but WebKit then paints a scroller holding it at the wrong offset.) */
-.kui-select[data-embedded]:has(> .kui-select__hint) {
-  display: grid;
-  grid-template-areas: "label" "trigger" "hint";
-  grid-template-columns: minmax(0, 1fr);
-}
-.kui-select[data-embedded]:has(> .kui-select__hint) > .kui-select__label {
-  grid-area: label;
-}
-.kui-select[data-embedded]:has(> .kui-select__hint) > .kui-select__trigger,
-.kui-select[data-embedded]:has(> .kui-select__hint) > .kui-select__popup {
-  grid-area: trigger;
-}
-.kui-select[data-embedded]:has(> .kui-select__hint) > .kui-select__hint {
-  grid-area: hint;
-}
-/* KF-A1Y7SY: outside a toolbar's control band the embedded listbox
-   sits in flow right below the control (before the hint), so a scrolling
-   ancestor never clips it; in a toolbar it keeps overlaying. */
-.kui-select[data-embedded]:not(.kui-toolbar *) {
-  display: flex;
-}
-.kui-select[data-embedded]:not(.kui-toolbar *) > .kui-select__popup {
-  position: relative;
-  inset: auto;
-  order: 1;
-}
-.kui-select[data-embedded]:not(.kui-toolbar *) > .kui-select__hint {
-  order: 2;
-}
-.kui-select[data-embedded] .kui-select__caret {
-  rotate: var(--_kui-popup-caret-open-rotation);
-}
 .kui-select--fit-menu > .kui-select__popup {
   max-width: var(--_kui-popup-available-width, none);
 }

@@ -589,24 +589,6 @@ export function SelectDemo() {
           placeholder
         />
       </CatalogExample>
-      <CatalogExample
-        label="Embedded Preview"
-        note="embedded shows the listbox open below the control (above any hint), in the document instead of the top layer, and inert: a static preview, such as a design canvas or specification sheet."
-        align="inline-control"
-      >
-        <Select
-          name="select-embedded"
-          value="comfortable"
-          label="Density"
-          hint="Applies to every list."
-          choices={[
-            { value: 'compact', label: 'Compact' },
-            { value: 'comfortable', label: 'Comfortable' },
-            { value: 'spacious', label: 'Spacious' },
-          ]}
-          embedded
-        />
-      </CatalogExample>
     </CatalogExampleStack>
   );
 }

@@ -280,30 +280,6 @@ export function PopupMenuDemo() {
           />
         </PopupSurface>
       </CatalogExample>
-      <CatalogExample
-        label="Embedded Preview"
-        note="embedded shows the menu open at its trigger, in the document instead of the top layer, and inert: its items choose nothing. embeddedSubmenu opens one submenu beside its item too. It is a static preview, such as a design canvas or specification sheet."
-        align="text-trigger"
-      >
-        <PopupMenu
-          text="Arrange"
-          embedded
-          embeddedSubmenu={[2]}
-          items={[
-            { label: 'By Name', action: 'log-more', checked: true },
-            { label: 'By Size', action: 'log-more', checked: false },
-            {
-              label: 'Group By',
-              submenu: [
-                { label: 'Kind', action: 'log-more' },
-                { label: 'Date Added', action: 'log-more' },
-              ],
-            },
-            { kind: 'divider' },
-            { label: 'Clean Up', action: 'log-more' },
-          ]}
-        />
-      </CatalogExample>
     </CatalogExampleStack>
   );
 }
