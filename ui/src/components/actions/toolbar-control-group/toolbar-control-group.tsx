@@ -202,8 +202,8 @@ const TOOLBAR_BUTTON_PROTECTED = new Set([
   'data-action',
 ]);
 
-// KF-5ZEYKP: the group's native button as a component, so view documents,
-// the editor, and generated code can place it.
+// KF-5ZEYKP: the group's native button as a component, so generated code
+// and render helpers can place it.
 /**
  * A native button in a ToolbarControlGroup: the group owns its geometry,
  * focus ring, pressed chrome, and busy state, exactly as for a hand-written

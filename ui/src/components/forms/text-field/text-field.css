@@ -134,7 +134,7 @@
   outline: var(--kui-focus-ring);
   outline-offset: 1px;
 }
-/* The end toggle (a password's Show, an editor's Not set): the clear
+/* The end toggle (such as a password's Show): the clear
    button's geometry, and a quiet fill while pressed. */
 .kui-text-field__toggle {
   display: inline-flex;

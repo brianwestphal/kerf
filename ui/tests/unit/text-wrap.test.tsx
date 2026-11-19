@@ -291,8 +291,8 @@ describe('Text id', () => {
   });
 });
 
-// KF-AC7AFR: `lang` and `ariaLabel` are declared props, so the editor can
-// set them on a Text.
+// KF-AC7AFR: `lang` and `ariaLabel` are declared, typed props on a Text
+// rather than raw attributes.
 describe('Text lang and ariaLabel', () => {
   it('renders the language and accessible name on the element', () => {
     const html = String(

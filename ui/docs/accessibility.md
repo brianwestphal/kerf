@@ -621,7 +621,7 @@ and `change` events as typing would, and returns focus to the field. A
 disabled or read-only field's clear button is disabled. `toggle` adds an
 icon toggle `<button>` after the input (after the clear button), named by its
 `label`, reporting `aria-pressed`, and running its delegated `action`; the
-application flips `pressed` (a password's Show, an editor's Not set). It is a
+application flips `pressed` (such as a password's Show). It is a
 normal Tab stop and is disabled with a disabled or read-only field. A
 multi-line field keeps it after its textarea, pinned to the top end.
 `showCount` (with

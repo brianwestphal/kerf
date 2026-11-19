@@ -872,7 +872,7 @@ first), Up/Down/Home/End move focus without selecting, and Enter or Space
 selects the focused option by dispatching its click, so the app's ordinary
 delegated `data-action` handler changes the selection. Name that action with
 the option's `action` prop (rendered as `data-action`, as on ContentItem and
-ListItem), so a view document and the editor's play log see it; a
+ListItem), so the app's delegated handler finds it by name; a
 `data-action` in `rootAttributes` still works, and `action` wins when both are
 set. A `semanticRole="group"` row takes no `action`. The app owns the
 selection state.

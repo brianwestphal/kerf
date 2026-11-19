@@ -7483,8 +7483,8 @@ type TextFieldName = {
 };
 type TextFieldProps = TextFieldName & TextFieldOptions;
 /**
- * An icon toggle button inside the end of the field (KF-3Y2GS2): a
- * password's Show, or an editor's Not set. A multi-line field pins it to its
+ * An icon toggle button inside the end of the field (KF-3Y2GS2), such as a
+ * password's Show. A multi-line field pins it to its
  * top end (KF-8FCJ02). The application flips
  * `pressed` in its `action` handler.
  */
