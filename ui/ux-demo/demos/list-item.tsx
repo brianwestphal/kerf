@@ -194,6 +194,7 @@ export function ListItemDemo() {
           action="log-settings"
           itemId="multiline"
           label="A multiline item demonstrates content that wraps without clipping"
+          description="Its description keeps its own line below the label and wraps as well"
           icon={<LucideIcon icon={Wrench} name="wrench" />}
           multiline
         />
