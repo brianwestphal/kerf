@@ -11,8 +11,11 @@ const sourcePaths = [
 const settingsPath = 'etc/apt/apt.conf.d/zzzz-kerf-browser-downloads';
 const settings =
   'Acquire::Retries "1";\nAcquire::http::Timeout "15";\nAcquire::https::Timeout "15";\n';
+// KF-914KN1: some runner images point at a regional EC2 mirror
+// (`<region>.ec2.archive.ubuntu.com`) over plain HTTP, which crawled past the
+// install step's bound; it gets the same HTTPS archive as the Azure mirror.
 const ubuntuUrl =
-  /https?:\/\/(?:(?:azure\.)?archive|security)\.ubuntu\.com\/ubuntu(?=[/\s]|$)/g;
+  /https?:\/\/(?:(?:azure\.|[a-z0-9-]+\.ec2\.)?archive|security)\.ubuntu\.com\/ubuntu(?=[/\s]|$)/g;
 const activeUbuntuUrls = (content) =>
   content
     .split('\n')
@@ -33,7 +36,7 @@ export function configureBrowserApt(root = '/') {
     if (before === undefined) return [];
     const content = before
       .replaceAll(
-        /https?:\/\/(?:azure\.)?archive\.ubuntu\.com\/ubuntu(?=[/\s]|$)/g,
+        /https?:\/\/(?:azure\.|[a-z0-9-]+\.ec2\.)?archive\.ubuntu\.com\/ubuntu(?=[/\s]|$)/g,
         'https://archive.ubuntu.com/ubuntu',
       )
       .replaceAll(

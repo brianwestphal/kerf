@@ -99,6 +99,22 @@ describe('browser dependency APT setup', () => {
     );
   });
 
+  // KF-914KN1: a runner image's regional EC2 mirror over plain HTTP crawled
+  // past the install bound; it moves to the HTTPS archive like Azure's, and
+  // a host that only resembles it stays untouched.
+  it('moves a regional EC2 mirror to the HTTPS archive', () => {
+    const root = fixture({
+      'etc/apt/sources.list.d/ubuntu.sources':
+        'Types: deb\nURIs: http://us-east-2.ec2.archive.ubuntu.com/ubuntu/\nSuites: noble noble-updates\n\nTypes: deb\nURIs: http://us-east-2.ec2.archive.ubuntu.com.example/ubuntu/\nSuites: noble\n',
+    });
+    configureBrowserApt(root);
+    expect(
+      readFileSync(join(root, 'etc/apt/sources.list.d/ubuntu.sources'), 'utf8'),
+    ).toBe(
+      'Types: deb\nURIs: https://archive.ubuntu.com/ubuntu/\nSuites: noble noble-updates\n\nTypes: deb\nURIs: http://us-east-2.ec2.archive.ubuntu.com.example/ubuntu/\nSuites: noble\n',
+    );
+  });
+
   it('preserves mirror+file routing and rejects unknown layouts before writing acquire configuration', () => {
     const root = fixture({
       'etc/apt/apt-mirrors.txt':
