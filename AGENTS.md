@@ -278,12 +278,19 @@ authoritative full Chromium/Firefox/WebKit matrix; ordinary local iteration
 does not need to duplicate it.
 
 Concurrent local WebKit browsers across sessions can exhaust macOS
-IOSurfaces and crash WindowServer (one WebKit page holds about 500-800), and
-nothing limits them across sessions yet. Until a machine-wide browser slot
-pool exists, `scripts/playwright-webkit-guard.mjs` (called by the `ui/`
-Playwright config) refuses a local `--repeat-each` above 1 that
-includes WebKit, unless `KERF_ALLOW_WEBKIT_REPEAT=1` is set while no other
-browser suite runs, and warns on any local WebKit run. CI is unaffected.
+IOSurfaces and crash WindowServer (one WebKit page holds about 500-800). The
+root and `ui/` Playwright configs therefore call `prepareWebkitRun()`
+(`scripts/playwright-webkit-guard.mjs`, KF-5YWM5X): before any worker starts,
+a local run that includes WebKit holds slots of the machine-wide
+`browser-engines` resource-claim pool that Hot Sheet 2 shares across
+repositories (`scripts/browser-slots.mjs`: `browser-engines/webkit-1` …
+`webkit-N`, N = `HOTSHEET_WEBKIT_SLOTS`, default 2, through
+`hotsheet-cli resource`), one per WebKit worker, and caps the `webkit`
+project's workers at the slots it holds. A full pool makes the run wait.
+`HOTSHEET_BROWSER_SLOTS=off` opts out. Without the pool (no `hotsheet-cli`,
+or opted out) the interim guard applies: a local `--repeat-each` above 1 that
+includes WebKit is refused unless `KERF_ALLOW_WEBKIT_REPEAT=1` is set while no
+other browser suite runs, and any local WebKit run warns. CI is unaffected.
 
 Visually validate every site-facing change with Playwright, not just DOM
 assertions. From `site/`, `npm run test:visual` builds three full-page captures

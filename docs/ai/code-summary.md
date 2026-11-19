@@ -106,10 +106,16 @@ install fingerprint's lockfile/installed-tree/absence inputs, and the
 `tests/unit/push-command.test.ts` covers dirty-checkout early failure,
 same-tree publication after a recorded pass, and rejected unverified refs;
 `tests/unit/playwright-webkit-guard.test.ts` covers the interim local WebKit
-guard (`scripts/playwright-webkit-guard.mjs`, called by the `ui/`
-Playwright config; KF-YN8JNT): a refused repeated WebKit run, the
-`KERF_ALLOW_WEBKIT_REPEAT` override, the warning, and CI, worker, and
-non-WebKit runs left alone;
+guard (`scripts/playwright-webkit-guard.mjs`; KF-YN8JNT): a refused repeated
+WebKit run, the `KERF_ALLOW_WEBKIT_REPEAT` override, the warning, and CI,
+worker, and non-WebKit runs left alone;
+`tests/unit/browser-slots.test.ts` covers the machine-wide WebKit slots
+(`scripts/browser-slots.mjs`, the `browser-engines` pool shared with Hot Sheet
+2, and `prepareWebkitRun()`, which the root and `ui/` Playwright configs call;
+KF-5YWM5X) through a fake `hotsheet-cli`: slot policy and names, the first
+grant winning a wait on every slot, a raced grant released, renewal and
+release with the token in the environment, bounded wait rounds that name the
+holders, a missing CLI, per-worker runner slots, and the guard fallback;
 `tests/unit/ticket-timing-steps-ci.test.ts` covers check-chain splitting and
 step naming against the real `check:core`, step-log sanitizing, and CI run
 record mapping, predecessor pairing, and idempotency (by run id and by

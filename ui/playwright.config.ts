@@ -1,7 +1,7 @@
 import { getPriority, setPriority } from 'node:os';
 import { defineConfig } from '@playwright/test';
 
-import { guardWebkitRun } from '../scripts/playwright-webkit-guard.mjs';
+import { prepareWebkitRun } from '../scripts/playwright-webkit-guard.mjs';
 import { createFirefoxAppData } from './evaluator/firefox-app-data.mjs';
 
 // Run local Playwright at a lower CPU priority so several parallel suites can't starve the
@@ -29,9 +29,13 @@ if (process.env.NO_COLOR !== undefined) {
 }
 
 const BROWSERS = ['chromium', 'firefox', 'webkit'] as const;
-// KF-YN8JNT: refuse a local repeated WebKit run, and warn on any local
-// WebKit run, until a machine-wide browser slot pool exists.
-guardWebkitRun([...BROWSERS]);
+const WORKERS = 2;
+// KF-5YWM5X: a local run that includes WebKit holds machine-wide WebKit
+// slots before any worker starts and runs only that many WebKit workers;
+// without the pool, the KF-YN8JNT guard refuses repeated local WebKit runs.
+const { webkitWorkers } = await prepareWebkitRun([...BROWSERS], {
+  workers: WORKERS,
+});
 
 const firefoxAppData = createFirefoxAppData();
 
@@ -40,7 +44,7 @@ export default defineConfig({
   fullyParallel: false,
   // The full three-engine local run can starve visual tests at Playwright's
   // five-worker default. Match the two-worker CI browser jobs.
-  workers: 2,
+  workers: WORKERS,
   reporter: [['list'], ['html', { open: 'never' }]],
   use: {
     baseURL: 'http://127.0.0.1:42817',
@@ -61,5 +65,8 @@ export default defineConfig({
         ? { launchOptions: { env: firefoxAppData.env } }
         : {}),
     },
+    ...(browserName === 'webkit' && webkitWorkers
+      ? { workers: webkitWorkers }
+      : {}),
   })),
 });

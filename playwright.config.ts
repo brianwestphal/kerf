@@ -1,6 +1,7 @@
 import { getPriority, setPriority } from 'node:os';
 import { defineConfig, devices } from '@playwright/test';
 
+import { prepareWebkitRun } from './scripts/playwright-webkit-guard.mjs';
 import { createFirefoxAppData } from './ui/evaluator/firefox-app-data.mjs';
 
 const firefoxAppData = createFirefoxAppData();
@@ -54,6 +55,14 @@ if (!Number.isInteger(port) || port < 1 || port > 65535) {
   );
 }
 
+// KF-5YWM5X: a local run that includes WebKit holds machine-wide WebKit
+// slots before any worker starts and runs only that many WebKit workers.
+const { webkitWorkers } = await prepareWebkitRun([
+  'chromium',
+  'firefox',
+  'webkit',
+]);
+
 export default defineConfig({
   testDir: './tests/browser',
   globalSetup: './tests/browser/global-setup.mjs',
@@ -75,7 +84,11 @@ export default defineConfig({
         launchOptions: { env: firefoxAppData.env },
       },
     },
-    { name: 'webkit', use: { ...devices['Desktop Safari'] } },
+    {
+      name: 'webkit',
+      use: { ...devices['Desktop Safari'] },
+      ...(webkitWorkers ? { workers: webkitWorkers } : {}),
+    },
   ],
   webServer: {
     // Serve from the repo root so the fixture page can pull `dist/` and
