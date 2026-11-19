@@ -27,8 +27,8 @@ export interface ComboboxProps {
   createLabel?: string | false;
   disabled?: boolean;
   className?: string;
-  /** Application `data-*` metadata on the root, such as a row key or an
-   * editor node marker; the component's own markers stay protected. */
+  /** Application `data-*` metadata on the root, such as a row key or a
+   * test hook; the component's own markers stay protected. */
   rootAttributes?: RootDataAttributes;
 }
 

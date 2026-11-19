@@ -55,7 +55,7 @@ const choices = [
 ];
 // Every case passes this; `data-component` must never be overridden.
 const rootAttributes = {
-  'data-kerf-node': '01JB8Z1M6Q8E1X9V4S7K2R3TRA',
+  'data-test-id': 'inbox-row',
   'data-key': 'row-1',
   'data-component': 'forged',
 };
@@ -259,14 +259,12 @@ function rootOf(html: SafeHtml): Element {
   return root;
 }
 
-describe('rootAttributes on every component the editor can name', () => {
+describe('rootAttributes on every catalog component', () => {
   it.each(cases)(
     '%s carries application data-* on its root',
     (_name, render) => {
       const root = rootOf(render());
-      expect(root.getAttribute('data-kerf-node')).toBe(
-        '01JB8Z1M6Q8E1X9V4S7K2R3TRA',
-      );
+      expect(root.getAttribute('data-test-id')).toBe('inbox-row');
       expect(root.getAttribute('data-key')).toBe('row-1');
       expect(root.getAttribute('data-component')).not.toBe('forged');
     },
@@ -274,7 +272,7 @@ describe('rootAttributes on every component the editor can name', () => {
 
   it('keeps every other render unchanged without rootAttributes', () => {
     const plain = EmptyState({ title: 'Empty' });
-    expect(String(plain)).not.toContain('data-kerf-node');
+    expect(String(plain)).not.toContain('data-test-id');
     expect(String(LucideIcon({ icon: Inbox, name: 'inbox' }))).not.toContain(
       'data-key',
     );

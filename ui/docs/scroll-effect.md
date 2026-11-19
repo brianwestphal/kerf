@@ -26,8 +26,8 @@ import { ScrollEffect } from '@kerfjs/ui/scroll-effect';
 
 - `effects` (required): a list of presets. A kind may repeat; repeats stack like any other effects.
 - `children`: the content the effects apply to.
-- `rootAttributes`: application `data-*` metadata on the root, such as an
-  editor node marker. The component's own markers stay protected.
+- `rootAttributes`: application `data-*` metadata on the root, such as a
+  row key or a test hook. The component's own markers stay protected.
 
 ### Presets
 

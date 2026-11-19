@@ -48,8 +48,8 @@ interface ToolbarTextBaseProps {
    * Cap wrapped text to this many lines, truncating past it. Only takes effect with
    * `wrap`; ignored on a single line. `null`/omitted wraps without a line cap. Default null.
    */
-  /** Application `data-*` metadata on the root, such as a row key or an
-   * editor node marker; the component's own markers stay protected. */
+  /** Application `data-*` metadata on the root, such as a row key or a
+   * test hook; the component's own markers stay protected. */
   rootAttributes?: RootDataAttributes;
 }
 

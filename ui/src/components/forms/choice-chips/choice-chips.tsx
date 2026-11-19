@@ -78,8 +78,8 @@ interface ChoiceChipsCommonProps<Value extends string> {
   className?: string;
   /** Native named-slot assignment when composed inside a web component. */
   slot?: string;
-  /** Application `data-*` metadata on the root, such as a row key or an
-   * editor node marker; the component's own markers stay protected. */
+  /** Application `data-*` metadata on the root, such as a row key or a
+   * test hook; the component's own markers stay protected. */
   rootAttributes?: RootDataAttributes;
 }
 

@@ -13,7 +13,7 @@ const ARIA_HASPOPUP_VALUES = new Set([
 
 /**
  * Application `data-*` metadata for a component root (`rootAttributes`): row
- * keys, test hooks, editor node markers. A component filters it with
+ * keys, test hooks, delegated-handler identity. A component filters it with
  * `filterDataAttributes` against its own markers, which stay protected.
  */
 export type RootDataAttributes = Readonly<

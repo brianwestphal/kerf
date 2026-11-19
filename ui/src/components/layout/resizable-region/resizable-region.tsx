@@ -52,8 +52,8 @@ export interface ResizableRegionProps {
   /** Decorative dormant content for the separator handle. Must not contain interactive descendants. */
   handleIcon?: SafeHtml;
   children: KerfUiContent;
-  /** Application `data-*` metadata on the root, such as a row key or an
-   * editor node marker; the component's own markers stay protected. */
+  /** Application `data-*` metadata on the root, such as a row key or a
+   * test hook; the component's own markers stay protected. */
   rootAttributes?: RootDataAttributes;
 }
 

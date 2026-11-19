@@ -62,8 +62,8 @@ export interface ToolbarActionLinkProps {
   className?: string;
   /** Native named-slot assignment when composed inside a web component. */
   slot?: string;
-  /** Application `data-*` metadata on the root, such as a row key or an
-   * editor node marker; the component's own markers stay protected. */
+  /** Application `data-*` metadata on the root, such as a row key or a
+   * test hook; the component's own markers stay protected. */
   rootAttributes?: RootDataAttributes;
 }
 
@@ -192,8 +192,8 @@ export type ToolbarButtonProps = ToolbarButtonContent & {
   className?: string;
   /** Native named-slot assignment when composed inside a web component. */
   slot?: string;
-  /** Application `data-*` metadata on the root, such as a row key or an
-   * editor node marker; the component's own markers stay protected. */
+  /** Application `data-*` metadata on the root, such as a row key or a
+   * test hook; the component's own markers stay protected. */
   rootAttributes?: RootDataAttributes;
 };
 
@@ -354,8 +354,8 @@ export interface ToolbarControlGroupProps {
   avatarImage?: string;
   /** Native named-slot assignment when composed inside a web component. */
   slot?: string;
-  /** Application `data-*` metadata on the root, such as a row key or an
-   * editor node marker; the component's own markers stay protected. */
+  /** Application `data-*` metadata on the root, such as a row key or a
+   * test hook; the component's own markers stay protected. */
   rootAttributes?: RootDataAttributes;
 }
 

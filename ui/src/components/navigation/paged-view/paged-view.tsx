@@ -35,8 +35,8 @@ export interface PagedViewProps<Id extends string = string> {
   className?: string;
   /** Native named-slot assignment when composed inside a web component. */
   slot?: string;
-  /** Application `data-*` metadata on the root, such as a test hook or an
-   * editor node marker; the component's own markers stay protected. */
+  /** Application `data-*` metadata on the root, such as a test hook or a
+   * row key; the component's own markers stay protected. */
   rootAttributes?: RootDataAttributes;
 }
 
