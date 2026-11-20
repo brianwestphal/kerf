@@ -56,7 +56,7 @@ No wiring helper.
 
 Margin: none · border: self · padding: none (layout role: controls). `self` means the component already owns it — do not add wrapper padding, margin, or borders around it.
 
-- A 35×20 track (31.5×18 compact) 8px (7px) before its label; the hint sits directly under the label, on its text column, like a Checkbox hint.
+- By default the 35×20 track (31.5×18 compact) precedes its label by 8px (7px). For a settings row, labelPlacement="start" aligns the label and hint at the inline start and the track at the inline end. Both placements align the hint under the label.
 
 ## Accessibility
 

@@ -3,7 +3,11 @@ import { filterDataAttributes } from '../../../shared/dom/extension-attributes.j
 /** `default` is a 35×20 track beside 16px text; `compact` 31.5×18 and 14px. */
 export type SwitchSize = 'default' | 'compact';
 
-const SWITCH_PROTECTED = new Set(['data-component', 'data-size']);
+const SWITCH_PROTECTED = new Set([
+  'data-component',
+  'data-size',
+  'data-label-placement',
+]);
 
 /** Application `data-*` metadata; the Switch's own markers stay protected. */
 export type SwitchRootAttributes = Readonly<
@@ -20,6 +24,8 @@ export interface SwitchProps {
   value?: string;
   /** Supporting text below the label, also the switch's description. */
   hint?: string;
+  /** Place text after the track (default), or at the row's start with a trailing track. */
+  labelPlacement?: 'end' | 'start';
   size?: SwitchSize;
   disabled?: boolean;
   /** Delegated `data-action` on the input; listen for `change`. */
@@ -46,6 +52,7 @@ export function Switch({
   name,
   value,
   hint,
+  labelPlacement,
   size = 'default',
   disabled = false,
   action,
@@ -61,6 +68,7 @@ export function Switch({
       class={`kui-switch ${className}`.trim()}
       data-component="switch"
       data-size={size}
+      data-label-placement={labelPlacement}
       slot={slot}
     >
       <label class="kui-switch__row">

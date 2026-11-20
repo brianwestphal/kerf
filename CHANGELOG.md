@@ -8,6 +8,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Added
 
+- **Switch supports trailing tracks in settings rows (KF-P1HVK0).** Pass `labelPlacement="start"` to align the label and hint at the leading edge and the track at the trailing edge, including in right-to-left layouts.
+
 - **PopupMenu items can show a second line (KF-HZTE26).** Set `description` to show wrapping secondary text beneath a command label and expose it as the menuitem’s accessible description.
 
 - **Disclosure `size="compact"` (KF-ND665K).** A small, quiet in-content disclosure, such as a note card's AI feedback: a 14px arrow (passed through `DisclosureArrow`'s `size`), extra-small summary type, and content that starts on the title's text column after the narrower arrow. It works with every appearance; an embedded compact summary keeps its 24px row. Use it instead of overriding `--kui-disclosure-arrow-size`, which `kerf-ui-doctor` reports as `KUI-L021`.

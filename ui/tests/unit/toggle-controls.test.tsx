@@ -341,6 +341,23 @@ describe('Switch', () => {
     expect(root.querySelector('.kui-switch__hint')).toBe(null);
   });
 
+  it('takes label placement from the prop and protects it from extension attributes', () => {
+    const props = {
+      label: 'Group new tickets automatically',
+      rootAttributes: { 'data-label-placement': 'start' },
+    };
+    expect(render(Switch(props)).hasAttribute('data-label-placement')).toBe(
+      false,
+    );
+    for (const labelPlacement of ['end', 'start'] as const) {
+      const root = render(Switch({ ...props, labelPlacement }));
+      expect(root.dataset.labelPlacement).toBe(labelPlacement);
+      expect(root.querySelector('input')!.closest('label')!.textContent).toBe(
+        props.label,
+      );
+    }
+  });
+
   it('carries state, form attributes, a hint, and protected metadata', () => {
     const root = render(
       Switch({

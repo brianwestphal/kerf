@@ -7846,6 +7846,8 @@ interface SwitchProps {
     value?: string;
     /** Supporting text below the label, also the switch's description. */
     hint?: string;
+    /** Place text after the track (default), or at the row's start with a trailing track. */
+    labelPlacement?: 'end' | 'start';
     size?: SwitchSize;
     disabled?: boolean;
     /** Delegated `data-action` on the input; listen for `change`. */
@@ -7865,7 +7867,7 @@ interface SwitchProps {
  * `role="switch"`, drawn as a track and thumb beside its label, with an
  * optional hint aligned under the label.
  */
-declare function Switch({ label, checked, name, value, hint, size, disabled, action, form, id, className, rootAttributes, slot, }: SwitchProps): kerfjs.SafeHtml;
+declare function Switch({ label, checked, name, value, hint, labelPlacement, size, disabled, action, form, id, className, rootAttributes, slot, }: SwitchProps): kerfjs.SafeHtml;
 
 export { Switch, type SwitchProps, type SwitchRootAttributes, type SwitchSize };
 ```

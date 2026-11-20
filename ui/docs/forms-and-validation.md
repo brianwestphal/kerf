@@ -10,6 +10,8 @@ Keep an unavailable choice or action visible and disabled when that helps explai
 
 See [accessibility contracts](./accessibility.md#textfield) for field behavior, [interaction conventions](./interaction-conventions.md) for dialog and action order, and [application testing](./testing-applications.md) for form assertions.
 
+For immediately applied settings, see the [Switch layout and accessibility requirements](./switch.md).
+
 ## Form
 
 Group fields that are saved or sent together in a `Form` from `@kerfjs/ui/form`, not a raw `<form>`. It renders a native `form` with no inset, chrome, or layout of its own (`display: contents`), so its children lay out as the parent's own; put a `List`, `Row`, or `Grid` inside it for rhythm. A parent rule that selects its direct children does not reach through it.

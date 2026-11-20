@@ -38,6 +38,22 @@ export function SwitchDemo() {
           <Switch size="compact" label="Show timestamps" action="switch-demo" />
         </List>
       </CatalogExample>
+      <CatalogExample label="General settings" viewport={{ width: 'full' }}>
+        <List gap="m">
+          <Switch
+            label="Group new tickets automatically"
+            labelPlacement="start"
+            hint="Keep related tickets together as they arrive."
+            action="switch-demo"
+            checked
+          />
+          <Switch
+            label="Hide Verified column"
+            labelPlacement="start"
+            action="switch-demo"
+          />
+        </List>
+      </CatalogExample>
     </CatalogExampleStack>
   );
 }

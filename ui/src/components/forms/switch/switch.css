@@ -29,6 +29,11 @@
   display: inline-flex;
   flex: none;
 }
+.kui-switch[data-label-placement="start"] .kui-switch__row {
+  width: auto;
+  flex-direction: row-reverse;
+  justify-content: space-between;
+}
 .kui-switch__input {
   position: absolute;
   inset: 0;
@@ -109,6 +114,10 @@
 }
 .kui-switch[data-size="compact"] .kui-switch__hint {
   font-size: var(--kui-font-xs, remify(12px));
+}
+.kui-switch[data-label-placement="start"] .kui-switch__hint {
+  padding-inline: 0
+    calc(var(--_kui-switch-height) * 1.75 + var(--_kui-switch-gap));
 }
 @media (prefers-reduced-motion: reduce) {
   .kui-switch__thumb {
