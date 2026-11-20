@@ -10,7 +10,10 @@ This is the shared source of truth for Kerf's engineering guidance.
 (this project's rules) plus the curated shared rules Hot Sheet installs. Edit
 `project-local.md`, never `AGENTS.md`, and regenerate with
 `rulesync generate --config .hotsheet2/rulesync.generated.jsonc`; a direct
-edit to `AGENTS.md` is lost at the next generation.
+edit to `AGENTS.md` is lost at the next generation. In a fresh worktree,
+restore the ignored `.rulesync/rules/.curated/` inputs matching the selections
+in `.hotsheet2/guidance-sources.json` before generating. Use the same command
+with `--check` to verify the output.
 Use this repository's skills under each tool's provider directory for workflows.
 Selected shared skills are pinned in `.hotsheet2/guidance-sources.json` and installed
 into both `.claude/skills/` and `.agents/skills/`; keep project-owned adapters in sync.
@@ -73,7 +76,7 @@ The framework is a small set of independent modules that compose. Each one earns
 - `src/dev-invariants.ts` — the structural invariant checks over the live list bindings (`KERF_DEV_INVARIANTS=1` warns, `=throw` throws). Each invariant is the negation of a reconciler defect that actually shipped — marker-live / marker-id, row-parent / row-live, row-order, row-alias, region-overlap, and a row-count agreement against the source length. `throw` mode exists because a warning inside a passing test is invisible: kerf's own suites turn corruption into a failure at the render that caused it. Internal.
 - `src/item-version.ts` — per-item version stamps, so a same-reference `arraySignal.update()` (mutate the object and hand back the same reference) still invalidates that row's memoized HTML in every consumer of the signal. Internal.
 - `src/dev-signal.ts` — dev-mode `DevSignal` subclass: one-shot warn on a `.value` write to a signal that never had a subscriber (`KERF_DEV_WARN_UNTRACKED_SIGNALS=1`). Internal.
-- `src/dev-binding-warn.ts` / `src/dev-delegate-warn.ts` / `src/dev-each-warn.ts` / `src/dev-list-index-warn.ts` / `src/dev-list-key-warn.ts` / `src/dev-list-rebind-warn.ts` / `src/dev-listener-warn.ts` / `src/dev-overlay-warn.ts` / `src/dev-parser-repair-warn.ts` / `src/dev-rerender-warn.ts` / `src/dev-selector-fanout-warn.ts` / `src/dev-store-warn.ts` — the installed diagnostic family (design rules in `docs/11-dev-warnings.md`): stale fine-grained binding on the byte-equal fast path (`…_STALE_BINDING`), `delegate()` inside an `effect()` body (`…_DELEGATE_IN_EFFECT`), `each()` under `data-morph-skip` + duplicate `cacheKey`s (`…_EACH_IN_MORPH_SKIP` / `…_DUPLICATE_EACH_KEYS`), morph-rebuilt nodes carrying imperative listeners (`…_REBUILT_LISTENERS`), value-only re-renders that could have been bindings (`…_VALUE_ONLY_RERENDER`), narrow `store.set()` calls (`…_NARROW_SET`), a rebuilt `each()` container self-healed with row-state loss (`…_LIST_REBIND`), a row-index binding read after the row moved (`…_STALE_INDEX`), markup the HTML parser silently repaired before kerf ever saw it (`…_PARSER_REPAIR`), and one signal write re-evaluating hundreds of `computed()`s of which almost none change — the per-row equality fan-out `selector()` / `setSelector()` replace (`…_SELECTOR_FANOUT`, counted through the creation-time `wrapComputed` hook on `computed()` plus the `DevSignal` write side). The `KERF_DEV_WARN_*` members are individually switched through `devFlag()` (`enableWarnings()` override, then environment fallback). Also an overlay surface opened over a modal `<dialog>` that kerf could not fully repair (`dev-overlay-warn.ts`: `hidden` without a top-layer API, `inert` for a lifted surface with focusable controls). `dev-list-key-warn.ts`, `dev-overlay-warn.ts`, and the missing-row-key warning are always on once `kerfjs/dev` is installed and deliberately skip that second gate. All are reachable only through the dev entry (`src/dev-hooks.ts` is the seam); kerf never consults `NODE_ENV` itself. Internal.
+- `src/dev-binding-warn.ts` / `src/dev-delegate-warn.ts` / `src/dev-each-warn.ts` / `src/dev-list-index-warn.ts` / `src/dev-list-key-warn.ts` / `src/dev-list-rebind-warn.ts` / `src/dev-listener-warn.ts` / `src/dev-overlay-warn.ts` / `src/dev-parser-repair-warn.ts` / `src/dev-rerender-warn.ts` / `src/dev-selector-fanout-warn.ts` / `src/dev-store-warn.ts` — the installed diagnostic family (design rules in `docs/11-dev-warnings.md`): a changed global binding source automatically retargeted on the byte-equal fast path (`…_STALE_BINDING`), `delegate()` inside an `effect()` body (`…_DELEGATE_IN_EFFECT`), `each()` under `data-morph-skip` + duplicate `cacheKey`s (`…_EACH_IN_MORPH_SKIP` / `…_DUPLICATE_EACH_KEYS`), morph-rebuilt nodes carrying imperative listeners (`…_REBUILT_LISTENERS`), value-only re-renders that could have been bindings (`…_VALUE_ONLY_RERENDER`), narrow `store.set()` calls (`…_NARROW_SET`), a rebuilt `each()` container self-healed with row-state loss (`…_LIST_REBIND`), a row-index binding read after the row moved (`…_STALE_INDEX`), markup the HTML parser silently repaired before kerf ever saw it (`…_PARSER_REPAIR`), and one signal write re-evaluating hundreds of `computed()`s of which almost none change — the per-row equality fan-out `selector()` / `setSelector()` replace (`…_SELECTOR_FANOUT`, counted through the creation-time `wrapComputed` hook on `computed()` plus the `DevSignal` write side). The `KERF_DEV_WARN_*` members are individually switched through `devFlag()` (`enableWarnings()` override, then environment fallback). Also an overlay surface opened over a modal `<dialog>` that kerf could not fully repair (`dev-overlay-warn.ts`: `hidden` without a top-layer API, `inert` for a lifted surface with focusable controls). `dev-list-key-warn.ts`, `dev-overlay-warn.ts`, and the missing-row-key warning are always on once `kerfjs/dev` is installed and deliberately skip that second gate. All are reachable only through the dev entry (`src/dev-hooks.ts` is the seam); kerf never consults `NODE_ENV` itself. Internal.
 - `src/toElement.ts` — SVG-aware JSX → DOM helper. Routes SVG content through `DOMParser('image/svg+xml')`.
 - `src/testing.ts` — `kerfjs/testing` subpath. Re-exports `clearStoreRegistry` for unit-test isolation.
 - `src/renderDocument.ts` — `renderDocument(node, options?)` (main barrel): a tiny SSR helper that prepends the doctype to a rendered document (`"<!DOCTYPE html>" + page.toString()`), so server routes stop reinventing it. Takes a `SafeHtml` or string; optional `{ doctype }` (default `'html'`). Pure string work, no DOM dependency.
@@ -236,7 +239,7 @@ npm run test:integration          # tests/integration only
 npm run test:dist                 # build, then targeted dist regression suite (tests/dist) vs dist/
 npm run test:dist:full            # build, then full unit + integration suite remapped onto dist/
 npm run test:dist:jsx-typing      # KF-123: build, then `tsc -p tests/dist/jsx-typing/tsconfig.json` — typechecks consumer .tsx against dist/jsx-runtime.d.ts
-npm run test:packed:jsx-typing    # pack kerfjs, install the tarball shape into a scratch consumer, and compile its JSXChildren contract
+npm run test:packed:jsx-typing    # pack kerfjs, compile the consumer’s JSXChildren and edited signal leaves, then verify the rendered text, titles, and mount counts
 npm run test:dist:examples        # build, then typechecks the complete example apps (site/src/examples/complete/) against dist/
 npm run test:dist:scaffold-typing # build, then typechecks the create-kerf-component template's src/ against dist/ (the living-proof gate for the scaffold)
 npm run test:browser              # build, then Playwright across chromium/firefox/webkit (tests/browser/) — globalSetup also rebuilds tests/dist/consumer-app/ AND tests/dist/example-apps/ (KF-165)
@@ -294,12 +297,11 @@ or opted out) the interim guard applies: a local `--repeat-each` above 1 that
 includes WebKit is refused unless `KERF_ALLOW_WEBKIT_REPEAT=1` is set while no
 other browser suite runs, and any local WebKit run warns. CI is unaffected.
 
-Visually validate every site-facing change with Playwright, not just DOM
-assertions. From `site/`, `npm run test:visual` builds three full-page captures
+For the shared **Visual QA** review, run `npm run test:visual` from `site/`
+on every site-facing change. Its Playwright suite builds three full-page captures
 for every emitted HTML surface (including standalone pages such as `404.html`)
 at desktop, tablet, and mobile widths while checking page overflow, broken
-images, and collapsed main content. Inspect the generated
-captures before handoff. Set `KERF_VISUAL_ROUTE=api/` (or another built route such as
+images, and collapsed main content. Set `KERF_VISUAL_ROUTE=api/` (or another built route such as
 `run/chat/`) to focus the matrix while iterating, then run the unfiltered command.
 
 **Scoped sibling-package gates.** The last step of `check:core` is `scripts/check-package-gates.mjs`, which makes the local gate agree with CI's per-package jobs. It diffs against the upstream merge-base (including uncommitted and untracked files) and runs `npm --prefix ui run check` when `src/`, `ui/`, or the root manifest/lockfile changed — `@kerfjs/ui` bundles the core, so a core-size change can break its demo budget — plus the `eslint-plugin` check (matrix parity, lint, then the rule tests) when `eslint-plugin/`, `ui/ai/`, `ui/package.json`, or `.github/workflows/ci.yml` changed (its rules read `@kerfjs/ui`'s shipped catalog and profile data, and `ci.yml` holds its ESLint matrix) and the `create-kerf-component` check (lint, then tests) when its directory or a `ui/ai` schema it bundles changed; with no upstream it runs all three. It also prints a warning when the latest completed CI run on `main` is not green (via `gh`; prints a non-blocking unavailable-status warning when `gh` is unavailable or offline). `KERF_SKIP_PACKAGE_GATES=1` / `KERF_SKIP_CI_STATUS=1` opt out. The browser-heavy CI gates — ui `test:e2e`, the design-template drift render, and the root Playwright matrix — remain CI-only; run them locally when a change is browser- or template-sensitive.
@@ -432,7 +434,7 @@ Numbered docs in `docs/` cover the design. Reading order:
 8. `8-api-reference.md` — every export.
 9. `9-live-demo.md` — the Astro + Starlight documentation site and the GitHub Pages deploy of `examples/reactivity-demo`.
 10. `10-migrating.md` — the 15-page `/kerf/migrating/` comparison hub: index, incremental-adoption guide, and 13 framework pages (React, Preact, Vue, Svelte, Solid, Angular, Lit, Alpine, htmx, jQuery, Redux, Astro, vanjs).
-11. `11-dev-warnings.md` — the twelve opt-in `KERF_DEV_WARN_*` diagnostics (rebuilt listeners, untracked signals, narrow store sets, duplicate cache keys, each-in-morph-skip, delegate-in-effect, stale bindings, value-only re-renders, list rebinds, stale row indices, parser repairs, selector fan-outs), structural invariants, and always-on dev guards.
+11. `11-dev-warnings.md` — the twelve opt-in `KERF_DEV_WARN_*` diagnostics (rebuilt listeners, untracked signals, narrow store sets, duplicate cache keys, each-in-morph-skip, delegate-in-effect, global binding source changes, value-only re-renders, list rebinds, stale row indices, parser repairs, selector fan-outs), structural invariants, and always-on dev guards.
 12. `12-ai-assistant-configs.md` — how the drop-in Claude Code skill + Cursor rules ship inside the npm package, the canonical-file version + marker contract, and the `kerfjs/ai-assistant-configs` ESLint rule.
 13. `13-component-packages.md` — building and publishing reusable kerf components as npm packages (no-instance model, per-instance state via factories, event/cleanup patterns, `kerfjs`-as-peer-dependency packaging).
 14. `14-feature-coverage.md` — the feature/behavior coverage axis (orthogonal to line coverage): a per-behavior index mapping each behavior — especially reconciler _state transitions_ — to the test that guards it, enforced by `scripts/check-feature-coverage.mjs` (`npm run check:features`).
@@ -470,7 +472,7 @@ The shared **Requirements Documentation** rule owns same-change documentation up
 - `docs/ai/requirements-summary.md` — synthesized view of every numbered doc with status markers.
 - `docs/ai/usage-guide.md` — consumer-facing cheat sheet for AI assistants writing apps _with_ kerf (when to recommend it, public API at a glance, hard rules, common errors → fixes). Keep in sync with `docs/8-api-reference.md`.
 
-Update all three whenever the corresponding source / design changes. The repo-root [`llms.txt`](../llms.txt) is the AI-discovery entry point and indexes the docs above — update it when the doc set changes.
+Update all three whenever the corresponding source / design changes. The repo-root [`llms.txt`](./llms.txt) is the AI-discovery entry point and indexes the docs above — update it when the doc set changes.
 
 ### Drop-in AI-tool config
 
@@ -492,7 +494,7 @@ These three root files are the **source of truth**. A `npm install kerfjs` lands
 
 ## The `eslint-plugin-kerfjs` peer range is a tested range
 
-The plugin's `peerDependencies.eslint` names **only** ESLint majors its rule suite has actually been executed against — currently `^9.0.0 || ^10.0.0`, verified against the latest release of each.
+The plugin's `peerDependencies.eslint` names **only** ESLint majors its rule suite has actually been executed against — currently `^9.0.0 || ^10.0.0`, verified against the pinned release of each in the CI matrix.
 
 This replaced an open `>=8`, worth remembering as the cautionary case. It promised every ESLint that would ever exist while the suite ran on 9 alone — and ESLint 8 was not merely untested but **unusable**: the package is ESM-only, and ESLint 8 loads `.eslintrc` plugins with `require()`, so `extends: ["plugin:kerfjs/…"]` fails to resolve the plugin at all. (8's opt-in flat-config mode does work, but that is not the path an ESLint 8 project is on by default, so the range does not claim it.) An open range cannot be wrong in a way npm will report — the consumer installs cleanly and finds out themselves.
 
@@ -511,7 +513,7 @@ The lesson generalizes past version numbers: **passing rule tests are not proof 
 
 **The plugin's range and the repo's own ESLint are unrelated.** `eslint.config.js` ignores `eslint-plugin/**` and never loads the local plugin, so upgrading the root devDependency gives zero signal about plugin compatibility — and the two may legitimately diverge (the repo lints with the newest while the plugin keeps supporting older majors for consumers). The plugin's own suite is the only evidence that counts.
 
-Compatibility across majors lives in one place: `eslint-plugin/tests/helpers/rule-tester.js`. RuleTester's config shape changed at ESLint 9 (`languageOptions` vs top-level `parserOptions`, parser module vs resolved path), and the helper branches on the installed version so the rule tests themselves stay version-agnostic.
+Keep RuleTester setup in `eslint-plugin/tests/helpers/rule-tester.js`. Both supported majors use the same flat-config `languageOptions` and parser module. Update the helper if a future supported major needs a different configuration.
 
 ## Releasing
 
