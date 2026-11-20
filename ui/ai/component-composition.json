@@ -6107,6 +6107,11 @@
           "id": "clearing the field after a commit",
           "owner": "application",
           "required": false
+        },
+        {
+          "id": "a stable value prop for initial and form-reset text; changing it after blur replaces the displayed text",
+          "owner": "application",
+          "required": false
         }
       ],
       "wiring": {

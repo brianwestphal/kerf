@@ -49,7 +49,7 @@ Exact prop names and types: [`@kerfjs/ui/combobox`](../public-api-signatures-v1.
 
 ## State and wiring
 
-**The app owns:** the suggestions and the committed values; normalizing and validating created values; clearing the field after a commit.
+**The app owns:** the suggestions and the committed values; normalizing and validating created values; clearing the field after a commit; a stable value prop for initial and form-reset text; changing it after blur replaces the displayed text.
 
 **Wiring:** `wireComboboxes` is required.
 

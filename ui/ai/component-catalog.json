@@ -7856,7 +7856,8 @@
       "appOwns": [
         "the suggestions and the committed values",
         "normalizing and validating created values",
-        "clearing the field after a commit"
+        "clearing the field after a commit",
+        "a stable value prop for initial and form-reset text; changing it after blur replaces the displayed text"
       ],
       "variants": [
         "with create",

@@ -12,7 +12,11 @@ export interface ComboboxProps {
   label: string;
   /** Suggestions to filter as the person types. */
   suggestions: readonly ComboboxSuggestion[];
-  /** Initial text; the field owns its text while the person types. */
+  /**
+   * Text on first render and native form reset. Keep this value stable while the
+   * user edits. Changing it while focused updates the reset value; changing it
+   * after blur also replaces the displayed text.
+   */
   value?: string;
   placeholder?: string;
   /** Optional hint below the field, such as "Press Enter to add". */
