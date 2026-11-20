@@ -1,0 +1,19 @@
+{
+  "name": "kerf-authoring-defaults-baseline",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "bench": "node run.mjs"
+  },
+  "dependencies": {
+    "@babel/core": "7.28.5",
+    "@kobalte/core": "0.13.11",
+    "babel-preset-solid": "1.9.9",
+    "esbuild": "0.25.12",
+    "react": "19.2.0",
+    "react-dom": "19.2.0",
+    "react-aria-components": "1.13.0",
+    "solid-js": "1.9.9"
+  }
+}

@@ -282,3 +282,5 @@ When the API is stable enough to publish numbers:
 
 [upstream]: https://github.com/krausest/js-framework-benchmark
 [results]: https://krausest.github.io/js-framework-benchmark/current.html
+
+For the production-browser comparison of ordinary and tuned list updates, editable-row focus preservation, and keyboard picker behavior, see the [authoring defaults baseline](./authoring-defaults/README.md).

@@ -1,0 +1,19 @@
+body {
+  padding: 20px;
+  font: 16px system-ui;
+}
+main {
+  max-width: 340px;
+}
+[role="combobox"] {
+  padding: 6px;
+}
+[role="listbox"] {
+  background: white;
+  color: #222;
+  border: 1px solid #555;
+  padding: 4px;
+}
+[role="option"] {
+  padding: 4px;
+}

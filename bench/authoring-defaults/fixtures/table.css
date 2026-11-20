@@ -1,0 +1,17 @@
+body {
+  font: 14px system-ui;
+}
+ul {
+  height: 360px;
+  overflow: auto;
+  width: 420px;
+  padding: 0;
+}
+li {
+  display: flex;
+  height: 24px;
+  gap: 8px;
+}
+li.chosen {
+  background: #caf;
+}

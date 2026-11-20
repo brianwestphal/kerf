@@ -1,0 +1,4074 @@
+{
+  "metadata": {
+    "revision": "9ee444b22c327e54746e50ced03a19714ac6b8b6",
+    "node": "v26.13.0",
+    "platform": "darwin",
+    "arch": "arm64",
+    "cpu": "Apple M5 Pro",
+    "seed": 1729,
+    "rounds": 8,
+    "viewport": { "width": 1000, "height": 760 },
+    "dependencies": {
+      "@babel/core": "7.28.5",
+      "@kobalte/core": "0.13.11",
+      "babel-preset-solid": "1.9.9",
+      "esbuild": "0.25.12",
+      "react": "19.2.0",
+      "react-dom": "19.2.0",
+      "react-aria-components": "1.13.0",
+      "solid-js": "1.9.9"
+    },
+    "lockSha256": "a738cebad07f02053ad16eac538d48ee0490c50749926251888cd99539ccaa80",
+    "rootLockSha256": "67b387795e1ad31e9a590ba4447454987048d2cf59a5ec20652cc95397f03a86",
+    "uiLockSha256": "2500d019d2e7410a040b78df7166f526ea5d1ad2600368bbc149489b1e8cbbc3",
+    "playwright": "1.63.0",
+    "fixtureSha256": "b2e2792b3003a7e455ae0113b939eca092dad3c3e9a5242178bb03314c137601",
+    "reactCompiler": false,
+    "browser": "153.0.8010.12"
+  },
+  "builds": {
+    "kerf-ordinary": {
+      "/asset.js": {
+        "rawBytes": 44076,
+        "gzipBytes": 16296,
+        "sha256": "0b4f3fc280f0eb4d1a53a0132cad08b497182af2e7d96cffabca36daa339a175"
+      },
+      "/asset.css": {
+        "rawBytes": 140,
+        "gzipBytes": 139,
+        "sha256": "945b175fb2250f5144ac4a4758139b1ecd553861f831406c228fe81a49e5d1a2"
+      }
+    },
+    "kerf-tuned": {
+      "/asset.js": {
+        "rawBytes": 49948,
+        "gzipBytes": 18434,
+        "sha256": "7b7f4fbeb444e9252b56340b34c35936a2338a80167609de5eb9f00b7ae755bd"
+      },
+      "/asset.css": {
+        "rawBytes": 140,
+        "gzipBytes": 139,
+        "sha256": "945b175fb2250f5144ac4a4758139b1ecd553861f831406c228fe81a49e5d1a2"
+      }
+    },
+    "kerf-picker": {
+      "/asset.js": {
+        "rawBytes": 66016,
+        "gzipBytes": 24560,
+        "sha256": "fbd1157c94b539f82055fbce868a078a9639750f9d7e2f420a0eca72bca4d5a6"
+      },
+      "/asset.css": {
+        "rawBytes": 19532,
+        "gzipBytes": 3809,
+        "sha256": "99f376ccce5bdb7af2cc56fb34fd545076e818021481d26a9c483929cc262ff6"
+      }
+    },
+    "solid-ordinary": {
+      "/asset.js": {
+        "rawBytes": 18621,
+        "gzipBytes": 7371,
+        "sha256": "54d0f24d03d1a8e3fe2e83fd75ed5c487c812ea65ccf82be6d9428830aba62d6"
+      },
+      "/asset.css": {
+        "rawBytes": 140,
+        "gzipBytes": 139,
+        "sha256": "945b175fb2250f5144ac4a4758139b1ecd553861f831406c228fe81a49e5d1a2"
+      }
+    },
+    "solid-tuned": {
+      "/asset.js": {
+        "rawBytes": 18986,
+        "gzipBytes": 7529,
+        "sha256": "07e1dcbffa02c4721879fbbf6ae93aa4024c49082fd47d0e6d8d86b6a41613e7"
+      },
+      "/asset.css": {
+        "rawBytes": 140,
+        "gzipBytes": 139,
+        "sha256": "945b175fb2250f5144ac4a4758139b1ecd553861f831406c228fe81a49e5d1a2"
+      }
+    },
+    "solid-picker": {
+      "/asset.js": {
+        "rawBytes": 114940,
+        "gzipBytes": 38991,
+        "sha256": "fa5da408c9c18b6c4a8ae9f44364aa5fbdf91b8b07afa85dcffb058b5419c24e"
+      },
+      "/asset.css": {
+        "rawBytes": 190,
+        "gzipBytes": 155,
+        "sha256": "6a56edfa287b005e8553994b12b26957024b715bac25b4a673e013b95dce01f2"
+      }
+    },
+    "react-ordinary": {
+      "/asset.js": {
+        "rawBytes": 195453,
+        "gzipBytes": 60915,
+        "sha256": "33606bb32488d7ed9cd5fa556bc80a3a620595e5bdc506453962f41d10d9500b"
+      },
+      "/asset.css": {
+        "rawBytes": 140,
+        "gzipBytes": 139,
+        "sha256": "945b175fb2250f5144ac4a4758139b1ecd553861f831406c228fe81a49e5d1a2"
+      }
+    },
+    "react-tuned": {
+      "/asset.js": {
+        "rawBytes": 195466,
+        "gzipBytes": 60921,
+        "sha256": "42b86c0f5f58de50c97ff9f031652e020235afe56fa93afa979ee035da153949"
+      },
+      "/asset.css": {
+        "rawBytes": 140,
+        "gzipBytes": 139,
+        "sha256": "945b175fb2250f5144ac4a4758139b1ecd553861f831406c228fe81a49e5d1a2"
+      }
+    },
+    "react-picker": {
+      "/asset.js": {
+        "rawBytes": 398604,
+        "gzipBytes": 120681,
+        "sha256": "59c6b382fd1cf21ca885c0ac9bbee991792055c94d7dfd2f43098d2319e60753"
+      },
+      "/asset.css": {
+        "rawBytes": 190,
+        "gzipBytes": 155,
+        "sha256": "6a56edfa287b005e8553994b12b26957024b715bac25b4a673e013b95dce01f2"
+      }
+    }
+  },
+  "pages": [
+    {
+      "name": "react-tuned",
+      "round": -1,
+      "pass": "correctness-counters",
+      "assets": ["/asset.css", "/asset.js"],
+      "samples": [
+        { "operation": "mount", "view": 1, "row": 1000, "mutationRecords": 1 },
+        { "operation": "label", "view": 1, "mutationRecords": 1 },
+        { "operation": "select", "view": 1, "row": 2, "mutationRecords": 6 },
+        { "operation": "update", "view": 1, "row": 1, "mutationRecords": 3 },
+        { "operation": "swap", "view": 1, "mutationRecords": 1994 },
+        { "operation": "refetch", "view": 1, "mutationRecords": 0 },
+        { "operation": "remove", "view": 1, "mutationRecords": 1 },
+        { "operation": "dispose", "mutationRecords": 1 }
+      ],
+      "heap": { "cycles": 3, "beforeBytes": 3367764, "afterBytes": 3554572 },
+      "ok": true
+    },
+    {
+      "name": "kerf-picker",
+      "round": -1,
+      "pass": "correctness-counters",
+      "assets": ["/asset.css", "/asset.js"],
+      "samples": [
+        {
+          "operation": "mount",
+          "cycle": 0,
+          "syncMs": 0.8999999761581421,
+          "opportunityMs": 13.899999976158142
+        },
+        { "operation": "keyboardCommit", "cycle": 0, "opportunityMs": 8.5 },
+        {
+          "operation": "dispose",
+          "cycle": 0,
+          "syncMs": 0.19999992847442627,
+          "opportunityMs": 14.5
+        },
+        {
+          "operation": "mount",
+          "cycle": 1,
+          "syncMs": 0.10000002384185791,
+          "opportunityMs": 16.899999976158142
+        },
+        {
+          "operation": "keyboardCommit",
+          "cycle": 1,
+          "opportunityMs": 9.700000047683716
+        },
+        {
+          "operation": "dispose",
+          "cycle": 1,
+          "syncMs": 0,
+          "opportunityMs": 13.700000047683716
+        }
+      ],
+      "heap": { "cycles": 3, "beforeBytes": 2262940, "afterBytes": 2358096 },
+      "ok": true
+    },
+    {
+      "name": "solid-picker",
+      "round": -1,
+      "pass": "correctness-counters",
+      "assets": ["/asset.css", "/asset.js"],
+      "samples": [
+        {
+          "operation": "mount",
+          "cycle": 0,
+          "syncMs": 5.299999952316284,
+          "opportunityMs": 12.299999952316284
+        },
+        {
+          "operation": "keyboardCommit",
+          "cycle": 0,
+          "opportunityMs": 6.199999928474426
+        },
+        {
+          "operation": "dispose",
+          "cycle": 0,
+          "syncMs": 0.20000004768371582,
+          "opportunityMs": 14.200000047683716
+        },
+        {
+          "operation": "mount",
+          "cycle": 1,
+          "syncMs": 0.5,
+          "opportunityMs": 15.200000047683716
+        },
+        {
+          "operation": "keyboardCommit",
+          "cycle": 1,
+          "opportunityMs": 7.800000071525574
+        },
+        {
+          "operation": "dispose",
+          "cycle": 1,
+          "syncMs": 0.10000002384185791,
+          "opportunityMs": 14
+        }
+      ],
+      "heap": { "cycles": 3, "beforeBytes": 2823832, "afterBytes": 3082884 },
+      "ok": true
+    },
+    {
+      "name": "kerf-tuned",
+      "round": -1,
+      "pass": "correctness-counters",
+      "assets": ["/asset.css", "/asset.js"],
+      "samples": [
+        {
+          "operation": "mount",
+          "view": 1,
+          "row": 1000,
+          "classExpression": 1000,
+          "mutationRecords": 1003
+        },
+        { "operation": "label", "mutationRecords": 1 },
+        { "operation": "select", "classExpression": 2, "mutationRecords": 2 },
+        {
+          "operation": "update",
+          "view": 1,
+          "row": 1,
+          "classExpression": 1,
+          "mutationRecords": 2
+        },
+        { "operation": "swap", "view": 1, "mutationRecords": 4 },
+        { "operation": "refetch", "view": 1, "mutationRecords": 0 },
+        { "operation": "remove", "view": 1, "mutationRecords": 1 },
+        { "operation": "dispose", "mutationRecords": 1 }
+      ],
+      "heap": { "cycles": 3, "beforeBytes": 2179128, "afterBytes": 2306916 },
+      "ok": true
+    },
+    {
+      "name": "solid-ordinary",
+      "round": -1,
+      "pass": "correctness-counters",
+      "assets": ["/asset.css", "/asset.js"],
+      "samples": [
+        {
+          "operation": "mount",
+          "view": 1,
+          "row": 1000,
+          "classExpression": 1000,
+          "mutationRecords": 1
+        },
+        { "operation": "label", "mutationRecords": 1 },
+        {
+          "operation": "select",
+          "classExpression": 1000,
+          "mutationRecords": 2
+        },
+        { "operation": "update", "mutationRecords": 1 },
+        { "operation": "swap", "mutationRecords": 4 },
+        { "operation": "refetch", "mutationRecords": 0 },
+        { "operation": "remove", "mutationRecords": 1 },
+        { "operation": "dispose", "mutationRecords": 1 }
+      ],
+      "heap": { "cycles": 3, "beforeBytes": 2025656, "afterBytes": 2108376 },
+      "ok": true
+    },
+    {
+      "name": "react-ordinary",
+      "round": -1,
+      "pass": "correctness-counters",
+      "assets": ["/asset.css", "/asset.js"],
+      "samples": [
+        { "operation": "mount", "view": 1, "row": 1000, "mutationRecords": 1 },
+        {
+          "operation": "label",
+          "view": 1,
+          "row": 1000,
+          "mutationRecords": 2001
+        },
+        {
+          "operation": "select",
+          "view": 1,
+          "row": 1000,
+          "mutationRecords": 2002
+        },
+        {
+          "operation": "update",
+          "view": 1,
+          "row": 1000,
+          "mutationRecords": 2001
+        },
+        {
+          "operation": "swap",
+          "view": 1,
+          "row": 1000,
+          "mutationRecords": 3994
+        },
+        {
+          "operation": "refetch",
+          "view": 1,
+          "row": 1000,
+          "mutationRecords": 2000
+        },
+        {
+          "operation": "remove",
+          "view": 1,
+          "row": 999,
+          "mutationRecords": 1999
+        },
+        { "operation": "dispose", "mutationRecords": 1 }
+      ],
+      "heap": { "cycles": 3, "beforeBytes": 3359296, "afterBytes": 3520088 },
+      "ok": true
+    },
+    {
+      "name": "solid-tuned",
+      "round": -1,
+      "pass": "correctness-counters",
+      "assets": ["/asset.css", "/asset.js"],
+      "samples": [
+        {
+          "operation": "mount",
+          "view": 1,
+          "row": 1000,
+          "classExpression": 1000,
+          "mutationRecords": 1
+        },
+        { "operation": "label", "mutationRecords": 1 },
+        { "operation": "select", "classExpression": 2, "mutationRecords": 2 },
+        { "operation": "update", "mutationRecords": 1 },
+        { "operation": "swap", "mutationRecords": 4 },
+        { "operation": "refetch", "mutationRecords": 0 },
+        { "operation": "remove", "mutationRecords": 1 },
+        { "operation": "dispose", "mutationRecords": 1 }
+      ],
+      "heap": { "cycles": 3, "beforeBytes": 2041204, "afterBytes": 2118996 },
+      "ok": true
+    },
+    {
+      "name": "kerf-ordinary",
+      "round": -1,
+      "pass": "correctness-counters",
+      "assets": ["/asset.css", "/asset.js"],
+      "samples": [
+        { "operation": "mount", "view": 1, "row": 1000, "mutationRecords": 1 },
+        { "operation": "label", "view": 1, "row": 1000, "mutationRecords": 1 },
+        { "operation": "select", "view": 1, "row": 1000, "mutationRecords": 2 },
+        { "operation": "update", "view": 1, "row": 1000, "mutationRecords": 1 },
+        {
+          "operation": "swap",
+          "view": 1,
+          "row": 1000,
+          "mutationRecords": 1994
+        },
+        {
+          "operation": "refetch",
+          "view": 1,
+          "row": 1000,
+          "mutationRecords": 0
+        },
+        {
+          "operation": "remove",
+          "view": 1,
+          "row": 999,
+          "mutationRecords": 1003
+        },
+        { "operation": "dispose", "mutationRecords": 1 }
+      ],
+      "heap": { "cycles": 3, "beforeBytes": 2094664, "afterBytes": 2195100 },
+      "ok": true
+    },
+    {
+      "name": "react-picker",
+      "round": -1,
+      "pass": "correctness-counters",
+      "assets": ["/asset.css", "/asset.js"],
+      "samples": [
+        {
+          "operation": "mount",
+          "cycle": 0,
+          "syncMs": 6.799999952316284,
+          "opportunityMs": 9.399999976158142
+        },
+        {
+          "operation": "keyboardCommit",
+          "cycle": 0,
+          "opportunityMs": 3.899999976158142
+        },
+        {
+          "operation": "dispose",
+          "cycle": 0,
+          "syncMs": 0.30000007152557373,
+          "opportunityMs": 12.300000071525574
+        },
+        {
+          "operation": "mount",
+          "cycle": 1,
+          "syncMs": 0.9000000953674316,
+          "opportunityMs": 13
+        },
+        {
+          "operation": "keyboardCommit",
+          "cycle": 1,
+          "opportunityMs": 7.899999976158142
+        },
+        {
+          "operation": "dispose",
+          "cycle": 1,
+          "syncMs": 0.19999992847442627,
+          "opportunityMs": 12.5
+        }
+      ],
+      "heap": { "cycles": 3, "beforeBytes": 4317500, "afterBytes": 4778952 },
+      "ok": true
+    },
+    {
+      "name": "kerf-tuned",
+      "round": 0,
+      "pass": "timing",
+      "assets": ["/asset.css", "/asset.js"],
+      "coldMount": {
+        "operation": "mount",
+        "syncMs": 7.600000023841858,
+        "opportunityMs": 14.199999928474426
+      },
+      "samples": [
+        {
+          "operation": "mount",
+          "syncMs": 3.700000047683716,
+          "opportunityMs": 18.600000023841858
+        },
+        {
+          "operation": "label",
+          "syncMs": 0,
+          "opportunityMs": 7.900000095367432
+        },
+        {
+          "operation": "select",
+          "syncMs": 0,
+          "opportunityMs": 10.399999976158142
+        },
+        {
+          "operation": "update",
+          "syncMs": 0.8999999761581421,
+          "opportunityMs": 9.5
+        },
+        {
+          "operation": "swap",
+          "syncMs": 0.2999999523162842,
+          "opportunityMs": 10.699999928474426
+        },
+        {
+          "operation": "refetch",
+          "syncMs": 0.30000007152557373,
+          "opportunityMs": 10.200000047683716
+        },
+        {
+          "operation": "remove",
+          "syncMs": 0.30000007152557373,
+          "opportunityMs": 8.200000047683716
+        },
+        {
+          "operation": "dispose",
+          "syncMs": 1,
+          "opportunityMs": 10.799999952316284
+        }
+      ],
+      "ok": true
+    },
+    {
+      "name": "react-picker",
+      "round": 0,
+      "pass": "timing",
+      "assets": ["/asset.css", "/asset.js"],
+      "coldMount": {
+        "operation": "mount",
+        "cycle": 0,
+        "syncMs": 6.700000047683716,
+        "opportunityMs": 11.5
+      },
+      "samples": [
+        {
+          "operation": "mount",
+          "cycle": 0,
+          "syncMs": 0.8000000715255737,
+          "opportunityMs": 17.200000047683716
+        },
+        { "operation": "keyboardCommit", "cycle": 0, "opportunityMs": 9.5 },
+        {
+          "operation": "dispose",
+          "cycle": 0,
+          "syncMs": 0.10000002384185791,
+          "opportunityMs": 14.600000023841858
+        },
+        {
+          "operation": "mount",
+          "cycle": 1,
+          "syncMs": 0.6000000238418579,
+          "opportunityMs": 15.600000023841858
+        },
+        {
+          "operation": "keyboardCommit",
+          "cycle": 1,
+          "opportunityMs": 9.200000047683716
+        },
+        {
+          "operation": "dispose",
+          "cycle": 1,
+          "syncMs": 0.10000002384185791,
+          "opportunityMs": 14.100000023841858
+        }
+      ],
+      "ok": true
+    },
+    {
+      "name": "solid-picker",
+      "round": 0,
+      "pass": "timing",
+      "assets": ["/asset.css", "/asset.js"],
+      "coldMount": {
+        "operation": "mount",
+        "cycle": 0,
+        "syncMs": 5.5,
+        "opportunityMs": 11.5
+      },
+      "samples": [
+        {
+          "operation": "mount",
+          "cycle": 0,
+          "syncMs": 0.5,
+          "opportunityMs": 15.300000071525574
+        },
+        {
+          "operation": "keyboardCommit",
+          "cycle": 0,
+          "opportunityMs": 9.800000071525574
+        },
+        {
+          "operation": "dispose",
+          "cycle": 0,
+          "syncMs": 0.10000002384185791,
+          "opportunityMs": 14.899999976158142
+        },
+        {
+          "operation": "mount",
+          "cycle": 1,
+          "syncMs": 0.2999999523162842,
+          "opportunityMs": 15.100000023841858
+        },
+        {
+          "operation": "keyboardCommit",
+          "cycle": 1,
+          "opportunityMs": 8.899999976158142
+        },
+        {
+          "operation": "dispose",
+          "cycle": 1,
+          "syncMs": 0.10000002384185791,
+          "opportunityMs": 14.799999952316284
+        }
+      ],
+      "ok": true
+    },
+    {
+      "name": "react-ordinary",
+      "round": 0,
+      "pass": "timing",
+      "assets": ["/asset.css", "/asset.js"],
+      "coldMount": {
+        "operation": "mount",
+        "syncMs": 6.600000023841858,
+        "opportunityMs": 6.700000047683716
+      },
+      "samples": [
+        {
+          "operation": "mount",
+          "syncMs": 2.600000023841858,
+          "opportunityMs": 20
+        },
+        {
+          "operation": "label",
+          "syncMs": 0.10000002384185791,
+          "opportunityMs": 9.100000023841858
+        },
+        {
+          "operation": "select",
+          "syncMs": 0,
+          "opportunityMs": 10.099999904632568
+        },
+        { "operation": "update", "syncMs": 0, "opportunityMs": 10 },
+        {
+          "operation": "swap",
+          "syncMs": 0.09999990463256836,
+          "opportunityMs": 9.299999952316284
+        },
+        {
+          "operation": "refetch",
+          "syncMs": 0.10000002384185791,
+          "opportunityMs": 9.600000023841858
+        },
+        {
+          "operation": "remove",
+          "syncMs": 0,
+          "opportunityMs": 9.399999976158142
+        },
+        {
+          "operation": "dispose",
+          "syncMs": 1.7000000476837158,
+          "opportunityMs": 9.600000023841858
+        }
+      ],
+      "ok": true
+    },
+    {
+      "name": "solid-ordinary",
+      "round": 0,
+      "pass": "timing",
+      "assets": ["/asset.css", "/asset.js"],
+      "coldMount": {
+        "operation": "mount",
+        "syncMs": 4.799999952316284,
+        "opportunityMs": 15.799999952316284
+      },
+      "samples": [
+        {
+          "operation": "mount",
+          "syncMs": 3.100000023841858,
+          "opportunityMs": 19.5
+        },
+        { "operation": "label", "syncMs": 0, "opportunityMs": 8.5 },
+        {
+          "operation": "select",
+          "syncMs": 0.3999999761581421,
+          "opportunityMs": 10.100000023841858
+        },
+        {
+          "operation": "update",
+          "syncMs": 0.8000000715255737,
+          "opportunityMs": 10.200000047683716
+        },
+        {
+          "operation": "swap",
+          "syncMs": 1.100000023841858,
+          "opportunityMs": 8.200000047683716
+        },
+        {
+          "operation": "refetch",
+          "syncMs": 0.7000000476837158,
+          "opportunityMs": 9.600000023841858
+        },
+        {
+          "operation": "remove",
+          "syncMs": 1,
+          "opportunityMs": 9.300000071525574
+        },
+        {
+          "operation": "dispose",
+          "syncMs": 1.100000023841858,
+          "opportunityMs": 7.600000023841858
+        }
+      ],
+      "ok": true
+    },
+    {
+      "name": "solid-tuned",
+      "round": 0,
+      "pass": "timing",
+      "assets": ["/asset.css", "/asset.js"],
+      "coldMount": {
+        "operation": "mount",
+        "syncMs": 5.400000095367432,
+        "opportunityMs": 15.800000071525574
+      },
+      "samples": [
+        {
+          "operation": "mount",
+          "syncMs": 3.3000000715255737,
+          "opportunityMs": 19.40000009536743
+        },
+        { "operation": "label", "syncMs": 0, "opportunityMs": 7 },
+        {
+          "operation": "select",
+          "syncMs": 0.19999992847442627,
+          "opportunityMs": 9.899999976158142
+        },
+        {
+          "operation": "update",
+          "syncMs": 0.7000000476837158,
+          "opportunityMs": 9.700000047683716
+        },
+        {
+          "operation": "swap",
+          "syncMs": 1.0999999046325684,
+          "opportunityMs": 10.299999952316284
+        },
+        {
+          "operation": "refetch",
+          "syncMs": 0.7000000476837158,
+          "opportunityMs": 11.600000023841858
+        },
+        {
+          "operation": "remove",
+          "syncMs": 1.100000023841858,
+          "opportunityMs": 10.200000047683716
+        },
+        {
+          "operation": "dispose",
+          "syncMs": 0.7999999523162842,
+          "opportunityMs": 10
+        }
+      ],
+      "ok": true
+    },
+    {
+      "name": "kerf-picker",
+      "round": 0,
+      "pass": "timing",
+      "assets": ["/asset.css", "/asset.js"],
+      "coldMount": {
+        "operation": "mount",
+        "cycle": 0,
+        "syncMs": 1,
+        "opportunityMs": 13.699999928474426
+      },
+      "samples": [
+        {
+          "operation": "mount",
+          "cycle": 0,
+          "syncMs": 0.10000002384185791,
+          "opportunityMs": 16.700000047683716
+        },
+        {
+          "operation": "keyboardCommit",
+          "cycle": 0,
+          "opportunityMs": 11.899999976158142
+        },
+        {
+          "operation": "dispose",
+          "cycle": 0,
+          "syncMs": 0.10000002384185791,
+          "opportunityMs": 15
+        },
+        {
+          "operation": "mount",
+          "cycle": 1,
+          "syncMs": 0.10000002384185791,
+          "opportunityMs": 15.800000071525574
+        },
+        { "operation": "keyboardCommit", "cycle": 1, "opportunityMs": 11.5 },
+        {
+          "operation": "dispose",
+          "cycle": 1,
+          "syncMs": 0,
+          "opportunityMs": 15.099999904632568
+        }
+      ],
+      "ok": true
+    },
+    {
+      "name": "react-tuned",
+      "round": 0,
+      "pass": "timing",
+      "assets": ["/asset.css", "/asset.js"],
+      "coldMount": {
+        "operation": "mount",
+        "syncMs": 6.799999952316284,
+        "opportunityMs": 7
+      },
+      "samples": [
+        {
+          "operation": "mount",
+          "syncMs": 3.200000047683716,
+          "opportunityMs": 19
+        },
+        {
+          "operation": "label",
+          "syncMs": 0.10000002384185791,
+          "opportunityMs": 9
+        },
+        {
+          "operation": "select",
+          "syncMs": 0,
+          "opportunityMs": 10.100000023841858
+        },
+        {
+          "operation": "update",
+          "syncMs": 0.10000002384185791,
+          "opportunityMs": 9.900000095367432
+        },
+        {
+          "operation": "swap",
+          "syncMs": 0,
+          "opportunityMs": 8.299999952316284
+        },
+        {
+          "operation": "refetch",
+          "syncMs": 0,
+          "opportunityMs": 9.299999952316284
+        },
+        {
+          "operation": "remove",
+          "syncMs": 0.10000002384185791,
+          "opportunityMs": 10.799999952316284
+        },
+        {
+          "operation": "dispose",
+          "syncMs": 1.2000000476837158,
+          "opportunityMs": 9.600000023841858
+        }
+      ],
+      "ok": true
+    },
+    {
+      "name": "kerf-ordinary",
+      "round": 0,
+      "pass": "timing",
+      "assets": ["/asset.css", "/asset.js"],
+      "coldMount": {
+        "operation": "mount",
+        "syncMs": 3.0999999046325684,
+        "opportunityMs": 13.099999904632568
+      },
+      "samples": [
+        {
+          "operation": "mount",
+          "syncMs": 1.600000023841858,
+          "opportunityMs": 19.5
+        },
+        {
+          "operation": "label",
+          "syncMs": 1.5,
+          "opportunityMs": 8.299999952316284
+        },
+        {
+          "operation": "select",
+          "syncMs": 0.7999999523162842,
+          "opportunityMs": 9.599999904632568
+        },
+        {
+          "operation": "update",
+          "syncMs": 0.8999999761581421,
+          "opportunityMs": 9.799999952316284
+        },
+        {
+          "operation": "swap",
+          "syncMs": 5.200000047683716,
+          "opportunityMs": 15.100000023841858
+        },
+        {
+          "operation": "refetch",
+          "syncMs": 0.40000009536743164,
+          "opportunityMs": 9
+        },
+        {
+          "operation": "remove",
+          "syncMs": 4.800000071525574,
+          "opportunityMs": 13.200000047683716
+        },
+        {
+          "operation": "dispose",
+          "syncMs": 0.7999999523162842,
+          "opportunityMs": 9.5
+        }
+      ],
+      "ok": true
+    },
+    {
+      "name": "kerf-tuned",
+      "round": 1,
+      "pass": "timing",
+      "assets": ["/asset.css", "/asset.js"],
+      "coldMount": { "operation": "mount", "syncMs": 7, "opportunityMs": 14 },
+      "samples": [
+        {
+          "operation": "mount",
+          "syncMs": 3.200000047683716,
+          "opportunityMs": 19.90000009536743
+        },
+        {
+          "operation": "label",
+          "syncMs": 0.09999990463256836,
+          "opportunityMs": 8.599999904632568
+        },
+        {
+          "operation": "select",
+          "syncMs": 0.10000002384185791,
+          "opportunityMs": 9.899999976158142
+        },
+        {
+          "operation": "update",
+          "syncMs": 0.8999999761581421,
+          "opportunityMs": 8.5
+        },
+        {
+          "operation": "swap",
+          "syncMs": 0.2999999523162842,
+          "opportunityMs": 10.799999952316284
+        },
+        {
+          "operation": "refetch",
+          "syncMs": 0.3999999761581421,
+          "opportunityMs": 9.899999976158142
+        },
+        {
+          "operation": "remove",
+          "syncMs": 0.3999999761581421,
+          "opportunityMs": 10.700000047683716
+        },
+        {
+          "operation": "dispose",
+          "syncMs": 0.8999999761581421,
+          "opportunityMs": 10
+        }
+      ],
+      "ok": true
+    },
+    {
+      "name": "solid-ordinary",
+      "round": 1,
+      "pass": "timing",
+      "assets": ["/asset.css", "/asset.js"],
+      "coldMount": {
+        "operation": "mount",
+        "syncMs": 4.799999952316284,
+        "opportunityMs": 15.299999952316284
+      },
+      "samples": [
+        {
+          "operation": "mount",
+          "syncMs": 3.0999999046325684,
+          "opportunityMs": 21
+        },
+        { "operation": "label", "syncMs": 0, "opportunityMs": 7 },
+        {
+          "operation": "select",
+          "syncMs": 0.2999999523162842,
+          "opportunityMs": 9.599999904632568
+        },
+        {
+          "operation": "update",
+          "syncMs": 0.8000000715255737,
+          "opportunityMs": 11
+        },
+        {
+          "operation": "swap",
+          "syncMs": 1,
+          "opportunityMs": 8.800000071525574
+        },
+        {
+          "operation": "refetch",
+          "syncMs": 0.7000000476837158,
+          "opportunityMs": 10.399999976158142
+        },
+        {
+          "operation": "remove",
+          "syncMs": 0.8999999761581421,
+          "opportunityMs": 9.899999976158142
+        },
+        {
+          "operation": "dispose",
+          "syncMs": 1.0999999046325684,
+          "opportunityMs": 7.399999976158142
+        }
+      ],
+      "ok": true
+    },
+    {
+      "name": "kerf-ordinary",
+      "round": 1,
+      "pass": "timing",
+      "assets": ["/asset.css", "/asset.js"],
+      "coldMount": { "operation": "mount", "syncMs": 3, "opportunityMs": 15 },
+      "samples": [
+        {
+          "operation": "mount",
+          "syncMs": 1.7999999523162842,
+          "opportunityMs": 19
+        },
+        {
+          "operation": "label",
+          "syncMs": 1.2999999523162842,
+          "opportunityMs": 5.700000047683716
+        },
+        { "operation": "select", "syncMs": 1, "opportunityMs": 9.5 },
+        {
+          "operation": "update",
+          "syncMs": 0.8999999761581421,
+          "opportunityMs": 11.100000023841858
+        },
+        {
+          "operation": "swap",
+          "syncMs": 4.799999952316284,
+          "opportunityMs": 14.799999952316284
+        },
+        { "operation": "refetch", "syncMs": 0.5, "opportunityMs": 8.5 },
+        {
+          "operation": "remove",
+          "syncMs": 4.900000095367432,
+          "opportunityMs": 11.5
+        },
+        {
+          "operation": "dispose",
+          "syncMs": 0.7999999523162842,
+          "opportunityMs": 10.599999904632568
+        }
+      ],
+      "ok": true
+    },
+    {
+      "name": "react-ordinary",
+      "round": 1,
+      "pass": "timing",
+      "assets": ["/asset.css", "/asset.js"],
+      "coldMount": {
+        "operation": "mount",
+        "syncMs": 6.600000023841858,
+        "opportunityMs": 6.699999928474426
+      },
+      "samples": [
+        {
+          "operation": "mount",
+          "syncMs": 2.9000000953674316,
+          "opportunityMs": 20.100000023841858
+        },
+        {
+          "operation": "label",
+          "syncMs": 0.10000002384185791,
+          "opportunityMs": 7.5
+        },
+        {
+          "operation": "select",
+          "syncMs": 0.10000002384185791,
+          "opportunityMs": 9.299999952316284
+        },
+        {
+          "operation": "update",
+          "syncMs": 0.09999990463256836,
+          "opportunityMs": 9.699999928474426
+        },
+        {
+          "operation": "swap",
+          "syncMs": 0,
+          "opportunityMs": 9.899999976158142
+        },
+        {
+          "operation": "refetch",
+          "syncMs": 0,
+          "opportunityMs": 9.699999928474426
+        },
+        {
+          "operation": "remove",
+          "syncMs": 0,
+          "opportunityMs": 9.399999976158142
+        },
+        {
+          "operation": "dispose",
+          "syncMs": 1.2000000476837158,
+          "opportunityMs": 10.200000047683716
+        }
+      ],
+      "ok": true
+    },
+    {
+      "name": "kerf-picker",
+      "round": 1,
+      "pass": "timing",
+      "assets": ["/asset.css", "/asset.js"],
+      "coldMount": {
+        "operation": "mount",
+        "cycle": 0,
+        "syncMs": 1,
+        "opportunityMs": 13.200000047683716
+      },
+      "samples": [
+        {
+          "operation": "mount",
+          "cycle": 0,
+          "syncMs": 0.10000002384185791,
+          "opportunityMs": 15.600000023841858
+        },
+        {
+          "operation": "keyboardCommit",
+          "cycle": 0,
+          "opportunityMs": 11.100000023841858
+        },
+        {
+          "operation": "dispose",
+          "cycle": 0,
+          "syncMs": 0.10000002384185791,
+          "opportunityMs": 14.699999928474426
+        },
+        {
+          "operation": "mount",
+          "cycle": 1,
+          "syncMs": 0.20000004768371582,
+          "opportunityMs": 15
+        },
+        {
+          "operation": "keyboardCommit",
+          "cycle": 1,
+          "opportunityMs": 9.300000071525574
+        },
+        {
+          "operation": "dispose",
+          "cycle": 1,
+          "syncMs": 0,
+          "opportunityMs": 16.59999990463257
+        }
+      ],
+      "ok": true
+    },
+    {
+      "name": "solid-picker",
+      "round": 1,
+      "pass": "timing",
+      "assets": ["/asset.css", "/asset.js"],
+      "coldMount": {
+        "operation": "mount",
+        "cycle": 0,
+        "syncMs": 5.399999976158142,
+        "opportunityMs": 12.5
+      },
+      "samples": [
+        {
+          "operation": "mount",
+          "cycle": 0,
+          "syncMs": 0.3999999761581421,
+          "opportunityMs": 15.200000047683716
+        },
+        {
+          "operation": "keyboardCommit",
+          "cycle": 0,
+          "opportunityMs": 9.299999952316284
+        },
+        {
+          "operation": "dispose",
+          "cycle": 0,
+          "syncMs": 0.20000004768371582,
+          "opportunityMs": 14.600000023841858
+        },
+        {
+          "operation": "mount",
+          "cycle": 1,
+          "syncMs": 0.5,
+          "opportunityMs": 15.800000071525574
+        },
+        {
+          "operation": "keyboardCommit",
+          "cycle": 1,
+          "opportunityMs": 10.600000023841858
+        },
+        {
+          "operation": "dispose",
+          "cycle": 1,
+          "syncMs": 0.10000002384185791,
+          "opportunityMs": 15
+        }
+      ],
+      "ok": true
+    },
+    {
+      "name": "react-tuned",
+      "round": 1,
+      "pass": "timing",
+      "assets": ["/asset.css", "/asset.js"],
+      "coldMount": {
+        "operation": "mount",
+        "syncMs": 6.899999976158142,
+        "opportunityMs": 7
+      },
+      "samples": [
+        {
+          "operation": "mount",
+          "syncMs": 3.100000023841858,
+          "opportunityMs": 19.799999952316284
+        },
+        {
+          "operation": "label",
+          "syncMs": 0,
+          "opportunityMs": 7.199999928474426
+        },
+        {
+          "operation": "select",
+          "syncMs": 0,
+          "opportunityMs": 8.600000023841858
+        },
+        {
+          "operation": "update",
+          "syncMs": 0.10000002384185791,
+          "opportunityMs": 8.700000047683716
+        },
+        {
+          "operation": "swap",
+          "syncMs": 0.10000002384185791,
+          "opportunityMs": 10.100000023841858
+        },
+        {
+          "operation": "refetch",
+          "syncMs": 0,
+          "opportunityMs": 11.299999952316284
+        },
+        {
+          "operation": "remove",
+          "syncMs": 0,
+          "opportunityMs": 7.799999952316284
+        },
+        {
+          "operation": "dispose",
+          "syncMs": 1.3000000715255737,
+          "opportunityMs": 9.700000047683716
+        }
+      ],
+      "ok": true
+    },
+    {
+      "name": "react-picker",
+      "round": 1,
+      "pass": "timing",
+      "assets": ["/asset.css", "/asset.js"],
+      "coldMount": {
+        "operation": "mount",
+        "cycle": 0,
+        "syncMs": 6.700000047683716,
+        "opportunityMs": 11.600000023841858
+      },
+      "samples": [
+        {
+          "operation": "mount",
+          "cycle": 0,
+          "syncMs": 0.7000000476837158,
+          "opportunityMs": 15.300000071525574
+        },
+        {
+          "operation": "keyboardCommit",
+          "cycle": 0,
+          "opportunityMs": 7.299999952316284
+        },
+        {
+          "operation": "dispose",
+          "cycle": 0,
+          "syncMs": 0.2999999523162842,
+          "opportunityMs": 14.299999952316284
+        },
+        {
+          "operation": "mount",
+          "cycle": 1,
+          "syncMs": 0.7000000476837158,
+          "opportunityMs": 16
+        },
+        { "operation": "keyboardCommit", "cycle": 1, "opportunityMs": 10 },
+        {
+          "operation": "dispose",
+          "cycle": 1,
+          "syncMs": 0.10000002384185791,
+          "opportunityMs": 12.800000071525574
+        }
+      ],
+      "ok": true
+    },
+    {
+      "name": "solid-tuned",
+      "round": 1,
+      "pass": "timing",
+      "assets": ["/asset.css", "/asset.js"],
+      "coldMount": {
+        "operation": "mount",
+        "syncMs": 5.200000047683716,
+        "opportunityMs": 15.899999976158142
+      },
+      "samples": [
+        {
+          "operation": "mount",
+          "syncMs": 3.200000047683716,
+          "opportunityMs": 19.700000047683716
+        },
+        {
+          "operation": "label",
+          "syncMs": 0,
+          "opportunityMs": 7.100000023841858
+        },
+        {
+          "operation": "select",
+          "syncMs": 0.20000004768371582,
+          "opportunityMs": 9.5
+        },
+        {
+          "operation": "update",
+          "syncMs": 0.7000000476837158,
+          "opportunityMs": 10.399999976158142
+        },
+        {
+          "operation": "swap",
+          "syncMs": 1.2000000476837158,
+          "opportunityMs": 10.5
+        },
+        {
+          "operation": "refetch",
+          "syncMs": 0.6000000238418579,
+          "opportunityMs": 10.299999952316284
+        },
+        {
+          "operation": "remove",
+          "syncMs": 1.100000023841858,
+          "opportunityMs": 9.700000047683716
+        },
+        {
+          "operation": "dispose",
+          "syncMs": 0.7999999523162842,
+          "opportunityMs": 11.199999928474426
+        }
+      ],
+      "ok": true
+    },
+    {
+      "name": "solid-tuned",
+      "round": 2,
+      "pass": "timing",
+      "assets": ["/asset.css", "/asset.js"],
+      "coldMount": {
+        "operation": "mount",
+        "syncMs": 5.300000071525574,
+        "opportunityMs": 15.5
+      },
+      "samples": [
+        {
+          "operation": "mount",
+          "syncMs": 3.0999999046325684,
+          "opportunityMs": 20.799999952316284
+        },
+        { "operation": "label", "syncMs": 0, "opportunityMs": 7 },
+        {
+          "operation": "select",
+          "syncMs": 0.10000002384185791,
+          "opportunityMs": 10
+        },
+        {
+          "operation": "update",
+          "syncMs": 0.6000000238418579,
+          "opportunityMs": 9.399999976158142
+        },
+        {
+          "operation": "swap",
+          "syncMs": 1.100000023841858,
+          "opportunityMs": 9.699999928474426
+        },
+        {
+          "operation": "refetch",
+          "syncMs": 0.7000000476837158,
+          "opportunityMs": 9.5
+        },
+        {
+          "operation": "remove",
+          "syncMs": 1,
+          "opportunityMs": 8.700000047683716
+        },
+        {
+          "operation": "dispose",
+          "syncMs": 0.7000000476837158,
+          "opportunityMs": 9.5
+        }
+      ],
+      "ok": true
+    },
+    {
+      "name": "kerf-picker",
+      "round": 2,
+      "pass": "timing",
+      "assets": ["/asset.css", "/asset.js"],
+      "coldMount": {
+        "operation": "mount",
+        "cycle": 0,
+        "syncMs": 0.8999999761581421,
+        "opportunityMs": 13.299999952316284
+      },
+      "samples": [
+        {
+          "operation": "mount",
+          "cycle": 0,
+          "syncMs": 0.10000002384185791,
+          "opportunityMs": 15.699999928474426
+        },
+        { "operation": "keyboardCommit", "cycle": 0, "opportunityMs": 11 },
+        {
+          "operation": "dispose",
+          "cycle": 0,
+          "syncMs": 0.10000002384185791,
+          "opportunityMs": 14.700000047683716
+        },
+        {
+          "operation": "mount",
+          "cycle": 1,
+          "syncMs": 0,
+          "opportunityMs": 15.899999976158142
+        },
+        {
+          "operation": "keyboardCommit",
+          "cycle": 1,
+          "opportunityMs": 10.799999952316284
+        },
+        {
+          "operation": "dispose",
+          "cycle": 1,
+          "syncMs": 0,
+          "opportunityMs": 14.899999976158142
+        }
+      ],
+      "ok": true
+    },
+    {
+      "name": "kerf-ordinary",
+      "round": 2,
+      "pass": "timing",
+      "assets": ["/asset.css", "/asset.js"],
+      "coldMount": {
+        "operation": "mount",
+        "syncMs": 3,
+        "opportunityMs": 14.899999976158142
+      },
+      "samples": [
+        {
+          "operation": "mount",
+          "syncMs": 1.399999976158142,
+          "opportunityMs": 20.5
+        },
+        {
+          "operation": "label",
+          "syncMs": 1.1999999284744263,
+          "opportunityMs": 8.299999952316284
+        },
+        {
+          "operation": "select",
+          "syncMs": 0.8999999761581421,
+          "opportunityMs": 10
+        },
+        {
+          "operation": "update",
+          "syncMs": 0.8999999761581421,
+          "opportunityMs": 11.299999952316284
+        },
+        {
+          "operation": "swap",
+          "syncMs": 5,
+          "opportunityMs": 16.100000023841858
+        },
+        {
+          "operation": "refetch",
+          "syncMs": 0.3999999761581421,
+          "opportunityMs": 9.600000023841858
+        },
+        {
+          "operation": "remove",
+          "syncMs": 4.899999976158142,
+          "opportunityMs": 12.600000023841858
+        },
+        {
+          "operation": "dispose",
+          "syncMs": 0.8999999761581421,
+          "opportunityMs": 10.699999928474426
+        }
+      ],
+      "ok": true
+    },
+    {
+      "name": "react-ordinary",
+      "round": 2,
+      "pass": "timing",
+      "assets": ["/asset.css", "/asset.js"],
+      "coldMount": {
+        "operation": "mount",
+        "syncMs": 6.700000047683716,
+        "opportunityMs": 6.800000071525574
+      },
+      "samples": [
+        {
+          "operation": "mount",
+          "syncMs": 2.5999999046325684,
+          "opportunityMs": 20.899999976158142
+        },
+        { "operation": "label", "syncMs": 0, "opportunityMs": 7.5 },
+        { "operation": "select", "syncMs": 0, "opportunityMs": 11 },
+        {
+          "operation": "update",
+          "syncMs": 0.10000002384185791,
+          "opportunityMs": 8
+        },
+        {
+          "operation": "swap",
+          "syncMs": 0.10000002384185791,
+          "opportunityMs": 9.899999976158142
+        },
+        { "operation": "refetch", "syncMs": 0, "opportunityMs": 10 },
+        {
+          "operation": "remove",
+          "syncMs": 0,
+          "opportunityMs": 9.799999952316284
+        },
+        {
+          "operation": "dispose",
+          "syncMs": 1.100000023841858,
+          "opportunityMs": 10.5
+        }
+      ],
+      "ok": true
+    },
+    {
+      "name": "solid-ordinary",
+      "round": 2,
+      "pass": "timing",
+      "assets": ["/asset.css", "/asset.js"],
+      "coldMount": {
+        "operation": "mount",
+        "syncMs": 4.5,
+        "opportunityMs": 15.799999952316284
+      },
+      "samples": [
+        {
+          "operation": "mount",
+          "syncMs": 2.799999952316284,
+          "opportunityMs": 19.799999952316284
+        },
+        {
+          "operation": "label",
+          "syncMs": 0,
+          "opportunityMs": 8.300000071525574
+        },
+        {
+          "operation": "select",
+          "syncMs": 0.3999999761581421,
+          "opportunityMs": 10.299999952316284
+        },
+        {
+          "operation": "update",
+          "syncMs": 0.7000000476837158,
+          "opportunityMs": 10.600000023841858
+        },
+        {
+          "operation": "swap",
+          "syncMs": 1,
+          "opportunityMs": 10.100000023841858
+        },
+        {
+          "operation": "refetch",
+          "syncMs": 0.6000000238418579,
+          "opportunityMs": 11.100000023841858
+        },
+        {
+          "operation": "remove",
+          "syncMs": 0.8999999761581421,
+          "opportunityMs": 9.199999928474426
+        },
+        {
+          "operation": "dispose",
+          "syncMs": 1.100000023841858,
+          "opportunityMs": 11.5
+        }
+      ],
+      "ok": true
+    },
+    {
+      "name": "solid-picker",
+      "round": 2,
+      "pass": "timing",
+      "assets": ["/asset.css", "/asset.js"],
+      "coldMount": {
+        "operation": "mount",
+        "cycle": 0,
+        "syncMs": 5.299999952316284,
+        "opportunityMs": 12.899999976158142
+      },
+      "samples": [
+        {
+          "operation": "mount",
+          "cycle": 0,
+          "syncMs": 0.40000009536743164,
+          "opportunityMs": 14.300000071525574
+        },
+        {
+          "operation": "keyboardCommit",
+          "cycle": 0,
+          "opportunityMs": 10.900000095367432
+        },
+        {
+          "operation": "dispose",
+          "cycle": 0,
+          "syncMs": 0.19999992847442627,
+          "opportunityMs": 15.600000023841858
+        },
+        {
+          "operation": "mount",
+          "cycle": 1,
+          "syncMs": 0.30000007152557373,
+          "opportunityMs": 15.5
+        },
+        { "operation": "keyboardCommit", "cycle": 1, "opportunityMs": 8.5 },
+        {
+          "operation": "dispose",
+          "cycle": 1,
+          "syncMs": 0.09999990463256836,
+          "opportunityMs": 17
+        }
+      ],
+      "ok": true
+    },
+    {
+      "name": "react-tuned",
+      "round": 2,
+      "pass": "timing",
+      "assets": ["/asset.css", "/asset.js"],
+      "coldMount": {
+        "operation": "mount",
+        "syncMs": 6.299999952316284,
+        "opportunityMs": 6.5
+      },
+      "samples": [
+        {
+          "operation": "mount",
+          "syncMs": 3.100000023841858,
+          "opportunityMs": 20.399999976158142
+        },
+        { "operation": "label", "syncMs": 0, "opportunityMs": 9.5 },
+        {
+          "operation": "select",
+          "syncMs": 0.10000002384185791,
+          "opportunityMs": 11.299999952316284
+        },
+        {
+          "operation": "update",
+          "syncMs": 0,
+          "opportunityMs": 8.299999952316284
+        },
+        {
+          "operation": "swap",
+          "syncMs": 0.10000002384185791,
+          "opportunityMs": 11.600000023841858
+        },
+        {
+          "operation": "refetch",
+          "syncMs": 0.10000002384185791,
+          "opportunityMs": 10.299999952316284
+        },
+        {
+          "operation": "remove",
+          "syncMs": 0.10000002384185791,
+          "opportunityMs": 8.600000023841858
+        },
+        {
+          "operation": "dispose",
+          "syncMs": 1.1999999284744263,
+          "opportunityMs": 11.299999952316284
+        }
+      ],
+      "ok": true
+    },
+    {
+      "name": "kerf-tuned",
+      "round": 2,
+      "pass": "timing",
+      "assets": ["/asset.css", "/asset.js"],
+      "coldMount": {
+        "operation": "mount",
+        "syncMs": 7.100000023841858,
+        "opportunityMs": 15.100000023841858
+      },
+      "samples": [
+        {
+          "operation": "mount",
+          "syncMs": 4.100000023841858,
+          "opportunityMs": 22.299999952316284
+        },
+        {
+          "operation": "label",
+          "syncMs": 0,
+          "opportunityMs": 6.299999952316284
+        },
+        {
+          "operation": "select",
+          "syncMs": 0.09999990463256836,
+          "opportunityMs": 8.099999904632568
+        },
+        {
+          "operation": "update",
+          "syncMs": 1,
+          "opportunityMs": 8.200000047683716
+        },
+        {
+          "operation": "swap",
+          "syncMs": 0.19999992847442627,
+          "opportunityMs": 8.899999976158142
+        },
+        {
+          "operation": "refetch",
+          "syncMs": 0.3999999761581421,
+          "opportunityMs": 8.5
+        },
+        {
+          "operation": "remove",
+          "syncMs": 0.30000007152557373,
+          "opportunityMs": 7.600000023841858
+        },
+        {
+          "operation": "dispose",
+          "syncMs": 1.2000000476837158,
+          "opportunityMs": 7.200000047683716
+        }
+      ],
+      "ok": true
+    },
+    {
+      "name": "react-picker",
+      "round": 2,
+      "pass": "timing",
+      "assets": ["/asset.css", "/asset.js"],
+      "coldMount": {
+        "operation": "mount",
+        "cycle": 0,
+        "syncMs": 6.400000095367432,
+        "opportunityMs": 10.600000023841858
+      },
+      "samples": [
+        {
+          "operation": "mount",
+          "cycle": 0,
+          "syncMs": 0.6000000238418579,
+          "opportunityMs": 14.700000047683716
+        },
+        {
+          "operation": "keyboardCommit",
+          "cycle": 0,
+          "opportunityMs": 10.200000047683716
+        },
+        {
+          "operation": "dispose",
+          "cycle": 0,
+          "syncMs": 0,
+          "opportunityMs": 13.600000023841858
+        },
+        {
+          "operation": "mount",
+          "cycle": 1,
+          "syncMs": 0.7999999523162842,
+          "opportunityMs": 16
+        },
+        {
+          "operation": "keyboardCommit",
+          "cycle": 1,
+          "opportunityMs": 8.700000047683716
+        },
+        {
+          "operation": "dispose",
+          "cycle": 1,
+          "syncMs": 0.09999990463256836,
+          "opportunityMs": 12.599999904632568
+        }
+      ],
+      "ok": true
+    },
+    {
+      "name": "solid-picker",
+      "round": 3,
+      "pass": "timing",
+      "assets": ["/asset.css", "/asset.js"],
+      "coldMount": {
+        "operation": "mount",
+        "cycle": 0,
+        "syncMs": 5.600000023841858,
+        "opportunityMs": 12.799999952316284
+      },
+      "samples": [
+        {
+          "operation": "mount",
+          "cycle": 0,
+          "syncMs": 0.40000009536743164,
+          "opportunityMs": 13.900000095367432
+        },
+        {
+          "operation": "keyboardCommit",
+          "cycle": 0,
+          "opportunityMs": 11.700000047683716
+        },
+        {
+          "operation": "dispose",
+          "cycle": 0,
+          "syncMs": 0.10000002384185791,
+          "opportunityMs": 14.700000047683716
+        },
+        {
+          "operation": "mount",
+          "cycle": 1,
+          "syncMs": 0.5,
+          "opportunityMs": 15.899999976158142
+        },
+        {
+          "operation": "keyboardCommit",
+          "cycle": 1,
+          "opportunityMs": 9.399999976158142
+        },
+        {
+          "operation": "dispose",
+          "cycle": 1,
+          "syncMs": 0.10000002384185791,
+          "opportunityMs": 14.799999952316284
+        }
+      ],
+      "ok": true
+    },
+    {
+      "name": "kerf-picker",
+      "round": 3,
+      "pass": "timing",
+      "assets": ["/asset.css", "/asset.js"],
+      "coldMount": {
+        "operation": "mount",
+        "cycle": 0,
+        "syncMs": 0.8999999761581421,
+        "opportunityMs": 14.700000047683716
+      },
+      "samples": [
+        {
+          "operation": "mount",
+          "cycle": 0,
+          "syncMs": 0.09999990463256836,
+          "opportunityMs": 14.399999976158142
+        },
+        {
+          "operation": "keyboardCommit",
+          "cycle": 0,
+          "opportunityMs": 12.299999952316284
+        },
+        {
+          "operation": "dispose",
+          "cycle": 0,
+          "syncMs": 0.10000002384185791,
+          "opportunityMs": 15
+        },
+        {
+          "operation": "mount",
+          "cycle": 1,
+          "syncMs": 0.10000002384185791,
+          "opportunityMs": 15.799999952316284
+        },
+        {
+          "operation": "keyboardCommit",
+          "cycle": 1,
+          "opportunityMs": 10.299999952316284
+        },
+        {
+          "operation": "dispose",
+          "cycle": 1,
+          "syncMs": 0.09999990463256836,
+          "opportunityMs": 14.899999976158142
+        }
+      ],
+      "ok": true
+    },
+    {
+      "name": "solid-tuned",
+      "round": 3,
+      "pass": "timing",
+      "assets": ["/asset.css", "/asset.js"],
+      "coldMount": {
+        "operation": "mount",
+        "syncMs": 5.5,
+        "opportunityMs": 15.600000023841858
+      },
+      "samples": [
+        {
+          "operation": "mount",
+          "syncMs": 3.700000047683716,
+          "opportunityMs": 19.700000047683716
+        },
+        {
+          "operation": "label",
+          "syncMs": 0,
+          "opportunityMs": 6.399999976158142
+        },
+        {
+          "operation": "select",
+          "syncMs": 0.10000002384185791,
+          "opportunityMs": 10.5
+        },
+        {
+          "operation": "update",
+          "syncMs": 0.8000000715255737,
+          "opportunityMs": 8.100000023841858
+        },
+        {
+          "operation": "swap",
+          "syncMs": 1.100000023841858,
+          "opportunityMs": 10.299999952316284
+        },
+        {
+          "operation": "refetch",
+          "syncMs": 0.8999999761581421,
+          "opportunityMs": 10.299999952316284
+        },
+        {
+          "operation": "remove",
+          "syncMs": 1.2999999523162842,
+          "opportunityMs": 7.599999904632568
+        },
+        {
+          "operation": "dispose",
+          "syncMs": 1.100000023841858,
+          "opportunityMs": 8.800000071525574
+        }
+      ],
+      "ok": true
+    },
+    {
+      "name": "kerf-tuned",
+      "round": 3,
+      "pass": "timing",
+      "assets": ["/asset.css", "/asset.js"],
+      "coldMount": {
+        "operation": "mount",
+        "syncMs": 7.100000023841858,
+        "opportunityMs": 15.200000047683716
+      },
+      "samples": [
+        {
+          "operation": "mount",
+          "syncMs": 4.200000047683716,
+          "opportunityMs": 21
+        },
+        {
+          "operation": "label",
+          "syncMs": 0,
+          "opportunityMs": 6.899999976158142
+        },
+        {
+          "operation": "select",
+          "syncMs": 0,
+          "opportunityMs": 8.899999976158142
+        },
+        {
+          "operation": "update",
+          "syncMs": 1,
+          "opportunityMs": 9.199999928474426
+        },
+        {
+          "operation": "swap",
+          "syncMs": 0.30000007152557373,
+          "opportunityMs": 8.300000071525574
+        },
+        {
+          "operation": "refetch",
+          "syncMs": 0.3999999761581421,
+          "opportunityMs": 7.5
+        },
+        {
+          "operation": "remove",
+          "syncMs": 0.3999999761581421,
+          "opportunityMs": 8.799999952316284
+        },
+        {
+          "operation": "dispose",
+          "syncMs": 1.2000000476837158,
+          "opportunityMs": 8.700000047683716
+        }
+      ],
+      "ok": true
+    },
+    {
+      "name": "solid-ordinary",
+      "round": 3,
+      "pass": "timing",
+      "assets": ["/asset.css", "/asset.js"],
+      "coldMount": {
+        "operation": "mount",
+        "syncMs": 4.899999976158142,
+        "opportunityMs": 14.299999952316284
+      },
+      "samples": [
+        {
+          "operation": "mount",
+          "syncMs": 3.8000000715255737,
+          "opportunityMs": 19.600000023841858
+        },
+        {
+          "operation": "label",
+          "syncMs": 0,
+          "opportunityMs": 7.299999952316284
+        },
+        {
+          "operation": "select",
+          "syncMs": 0.5,
+          "opportunityMs": 9.100000023841858
+        },
+        {
+          "operation": "update",
+          "syncMs": 0.8000000715255737,
+          "opportunityMs": 8.100000023841858
+        },
+        {
+          "operation": "swap",
+          "syncMs": 1.2999999523162842,
+          "opportunityMs": 6.600000023841858
+        },
+        {
+          "operation": "refetch",
+          "syncMs": 0.7999999523162842,
+          "opportunityMs": 7.799999952316284
+        },
+        {
+          "operation": "remove",
+          "syncMs": 1,
+          "opportunityMs": 6.300000071525574
+        },
+        {
+          "operation": "dispose",
+          "syncMs": 1.2000000476837158,
+          "opportunityMs": 6.600000023841858
+        }
+      ],
+      "ok": true
+    },
+    {
+      "name": "react-tuned",
+      "round": 3,
+      "pass": "timing",
+      "assets": ["/asset.css", "/asset.js"],
+      "coldMount": {
+        "operation": "mount",
+        "syncMs": 6.700000047683716,
+        "opportunityMs": 6.700000047683716
+      },
+      "samples": [
+        {
+          "operation": "mount",
+          "syncMs": 3.6999999284744263,
+          "opportunityMs": 20.899999976158142
+        },
+        {
+          "operation": "label",
+          "syncMs": 0,
+          "opportunityMs": 6.300000071525574
+        },
+        {
+          "operation": "select",
+          "syncMs": 0,
+          "opportunityMs": 7.200000047683716
+        },
+        {
+          "operation": "update",
+          "syncMs": 0,
+          "opportunityMs": 8.100000023841858
+        },
+        {
+          "operation": "swap",
+          "syncMs": 0,
+          "opportunityMs": 8.700000047683716
+        },
+        {
+          "operation": "refetch",
+          "syncMs": 0,
+          "opportunityMs": 9.200000047683716
+        },
+        {
+          "operation": "remove",
+          "syncMs": 0,
+          "opportunityMs": 9.199999928474426
+        },
+        {
+          "operation": "dispose",
+          "syncMs": 1.2000000476837158,
+          "opportunityMs": 9
+        }
+      ],
+      "ok": true
+    },
+    {
+      "name": "kerf-ordinary",
+      "round": 3,
+      "pass": "timing",
+      "assets": ["/asset.css", "/asset.js"],
+      "coldMount": {
+        "operation": "mount",
+        "syncMs": 3.100000023841858,
+        "opportunityMs": 15.100000023841858
+      },
+      "samples": [
+        {
+          "operation": "mount",
+          "syncMs": 1.7999999523162842,
+          "opportunityMs": 21.100000023841858
+        },
+        {
+          "operation": "label",
+          "syncMs": 1.3000000715255737,
+          "opportunityMs": 7.800000071525574
+        },
+        {
+          "operation": "select",
+          "syncMs": 0.8999999761581421,
+          "opportunityMs": 8.799999952316284
+        },
+        {
+          "operation": "update",
+          "syncMs": 1.0999999046325684,
+          "opportunityMs": 9
+        },
+        {
+          "operation": "swap",
+          "syncMs": 5.699999928474426,
+          "opportunityMs": 13.699999928474426
+        },
+        {
+          "operation": "refetch",
+          "syncMs": 0.3999999761581421,
+          "opportunityMs": 9.600000023841858
+        },
+        {
+          "operation": "remove",
+          "syncMs": 5.300000071525574,
+          "opportunityMs": 11.200000047683716
+        },
+        {
+          "operation": "dispose",
+          "syncMs": 0.6999999284744263,
+          "opportunityMs": 9.799999952316284
+        }
+      ],
+      "ok": true
+    },
+    {
+      "name": "react-ordinary",
+      "round": 3,
+      "pass": "timing",
+      "assets": ["/asset.css", "/asset.js"],
+      "coldMount": {
+        "operation": "mount",
+        "syncMs": 6.200000047683716,
+        "opportunityMs": 6.399999976158142
+      },
+      "samples": [
+        {
+          "operation": "mount",
+          "syncMs": 3.200000047683716,
+          "opportunityMs": 20.600000023841858
+        },
+        {
+          "operation": "label",
+          "syncMs": 0,
+          "opportunityMs": 5.600000023841858
+        },
+        {
+          "operation": "select",
+          "syncMs": 0,
+          "opportunityMs": 8.799999952316284
+        },
+        {
+          "operation": "update",
+          "syncMs": 0.10000002384185791,
+          "opportunityMs": 9
+        },
+        {
+          "operation": "swap",
+          "syncMs": 0.09999990463256836,
+          "opportunityMs": 9.399999976158142
+        },
+        {
+          "operation": "refetch",
+          "syncMs": 0.10000002384185791,
+          "opportunityMs": 9.399999976158142
+        },
+        { "operation": "remove", "syncMs": 0, "opportunityMs": 8 },
+        {
+          "operation": "dispose",
+          "syncMs": 1.3000000715255737,
+          "opportunityMs": 9.300000071525574
+        }
+      ],
+      "ok": true
+    },
+    {
+      "name": "react-picker",
+      "round": 3,
+      "pass": "timing",
+      "assets": ["/asset.css", "/asset.js"],
+      "coldMount": {
+        "operation": "mount",
+        "cycle": 0,
+        "syncMs": 6.299999952316284,
+        "opportunityMs": 11.5
+      },
+      "samples": [
+        {
+          "operation": "mount",
+          "cycle": 0,
+          "syncMs": 0.7000000476837158,
+          "opportunityMs": 15.600000023841858
+        },
+        {
+          "operation": "keyboardCommit",
+          "cycle": 0,
+          "opportunityMs": 9.100000023841858
+        },
+        {
+          "operation": "dispose",
+          "cycle": 0,
+          "syncMs": 0.10000002384185791,
+          "opportunityMs": 14
+        },
+        {
+          "operation": "mount",
+          "cycle": 1,
+          "syncMs": 0.6000000238418579,
+          "opportunityMs": 15.799999952316284
+        },
+        {
+          "operation": "keyboardCommit",
+          "cycle": 1,
+          "opportunityMs": 9.100000023841858
+        },
+        {
+          "operation": "dispose",
+          "cycle": 1,
+          "syncMs": 0.10000002384185791,
+          "opportunityMs": 13.900000095367432
+        }
+      ],
+      "ok": true
+    },
+    {
+      "name": "solid-ordinary",
+      "round": 4,
+      "pass": "timing",
+      "assets": ["/asset.css", "/asset.js"],
+      "coldMount": {
+        "operation": "mount",
+        "syncMs": 4.899999976158142,
+        "opportunityMs": 14.699999928474426
+      },
+      "samples": [
+        {
+          "operation": "mount",
+          "syncMs": 3.8000000715255737,
+          "opportunityMs": 20.800000071525574
+        },
+        {
+          "operation": "label",
+          "syncMs": 0,
+          "opportunityMs": 6.600000023841858
+        },
+        {
+          "operation": "select",
+          "syncMs": 0.5999999046325684,
+          "opportunityMs": 7.899999976158142
+        },
+        {
+          "operation": "update",
+          "syncMs": 0.6999999284744263,
+          "opportunityMs": 10.299999952316284
+        },
+        {
+          "operation": "swap",
+          "syncMs": 1.3000000715255737,
+          "opportunityMs": 8
+        },
+        {
+          "operation": "refetch",
+          "syncMs": 0.8000000715255737,
+          "opportunityMs": 7.900000095367432
+        },
+        {
+          "operation": "remove",
+          "syncMs": 1.0999999046325684,
+          "opportunityMs": 8.399999976158142
+        },
+        {
+          "operation": "dispose",
+          "syncMs": 1.2999999523162842,
+          "opportunityMs": 8.600000023841858
+        }
+      ],
+      "ok": true
+    },
+    {
+      "name": "solid-picker",
+      "round": 4,
+      "pass": "timing",
+      "assets": ["/asset.css", "/asset.js"],
+      "coldMount": {
+        "operation": "mount",
+        "cycle": 0,
+        "syncMs": 5.5,
+        "opportunityMs": 12.699999928474426
+      },
+      "samples": [
+        {
+          "operation": "mount",
+          "cycle": 0,
+          "syncMs": 0.3999999761581421,
+          "opportunityMs": 15.700000047683716
+        },
+        {
+          "operation": "keyboardCommit",
+          "cycle": 0,
+          "opportunityMs": 10.100000023841858
+        },
+        {
+          "operation": "dispose",
+          "cycle": 0,
+          "syncMs": 0.10000002384185791,
+          "opportunityMs": 14.799999952316284
+        },
+        {
+          "operation": "mount",
+          "cycle": 1,
+          "syncMs": 0.2999999523162842,
+          "opportunityMs": 15.899999976158142
+        },
+        {
+          "operation": "keyboardCommit",
+          "cycle": 1,
+          "opportunityMs": 9.900000095367432
+        },
+        {
+          "operation": "dispose",
+          "cycle": 1,
+          "syncMs": 0.19999992847442627,
+          "opportunityMs": 14.699999928474426
+        }
+      ],
+      "ok": true
+    },
+    {
+      "name": "solid-tuned",
+      "round": 4,
+      "pass": "timing",
+      "assets": ["/asset.css", "/asset.js"],
+      "coldMount": {
+        "operation": "mount",
+        "syncMs": 5.400000095367432,
+        "opportunityMs": 15.700000047683716
+      },
+      "samples": [
+        {
+          "operation": "mount",
+          "syncMs": 3.8000000715255737,
+          "opportunityMs": 20.800000071525574
+        },
+        {
+          "operation": "label",
+          "syncMs": 0.10000002384185791,
+          "opportunityMs": 6.400000095367432
+        },
+        {
+          "operation": "select",
+          "syncMs": 0.10000002384185791,
+          "opportunityMs": 8.899999976158142
+        },
+        {
+          "operation": "update",
+          "syncMs": 0.7999999523162842,
+          "opportunityMs": 8.899999976158142
+        },
+        {
+          "operation": "swap",
+          "syncMs": 1.399999976158142,
+          "opportunityMs": 8.599999904632568
+        },
+        {
+          "operation": "refetch",
+          "syncMs": 0.8999999761581421,
+          "opportunityMs": 10.699999928474426
+        },
+        {
+          "operation": "remove",
+          "syncMs": 1.1999999284744263,
+          "opportunityMs": 7.899999976158142
+        },
+        {
+          "operation": "dispose",
+          "syncMs": 1,
+          "opportunityMs": 8.399999976158142
+        }
+      ],
+      "ok": true
+    },
+    {
+      "name": "react-tuned",
+      "round": 4,
+      "pass": "timing",
+      "assets": ["/asset.css", "/asset.js"],
+      "coldMount": {
+        "operation": "mount",
+        "syncMs": 6.5,
+        "opportunityMs": 6.700000047683716
+      },
+      "samples": [
+        {
+          "operation": "mount",
+          "syncMs": 3.799999952316284,
+          "opportunityMs": 20.700000047683716
+        },
+        {
+          "operation": "label",
+          "syncMs": 0.10000002384185791,
+          "opportunityMs": 5.400000095367432
+        },
+        { "operation": "select", "syncMs": 0, "opportunityMs": 9 },
+        {
+          "operation": "update",
+          "syncMs": 0,
+          "opportunityMs": 8.700000047683716
+        },
+        {
+          "operation": "swap",
+          "syncMs": 0,
+          "opportunityMs": 8.899999976158142
+        },
+        {
+          "operation": "refetch",
+          "syncMs": 0,
+          "opportunityMs": 9.199999928474426
+        },
+        {
+          "operation": "remove",
+          "syncMs": 0,
+          "opportunityMs": 7.900000095367432
+        },
+        {
+          "operation": "dispose",
+          "syncMs": 1.2000000476837158,
+          "opportunityMs": 8.5
+        }
+      ],
+      "ok": true
+    },
+    {
+      "name": "kerf-tuned",
+      "round": 4,
+      "pass": "timing",
+      "assets": ["/asset.css", "/asset.js"],
+      "coldMount": {
+        "operation": "mount",
+        "syncMs": 7.200000047683716,
+        "opportunityMs": 14
+      },
+      "samples": [
+        {
+          "operation": "mount",
+          "syncMs": 3.899999976158142,
+          "opportunityMs": 20.699999928474426
+        },
+        {
+          "operation": "label",
+          "syncMs": 0.09999990463256836,
+          "opportunityMs": 6.799999952316284
+        },
+        {
+          "operation": "select",
+          "syncMs": 0.09999990463256836,
+          "opportunityMs": 9.399999976158142
+        },
+        {
+          "operation": "update",
+          "syncMs": 0.9000000953674316,
+          "opportunityMs": 9.300000071525574
+        },
+        {
+          "operation": "swap",
+          "syncMs": 0.20000004768371582,
+          "opportunityMs": 9.899999976158142
+        },
+        {
+          "operation": "refetch",
+          "syncMs": 0.40000009536743164,
+          "opportunityMs": 9.200000047683716
+        },
+        {
+          "operation": "remove",
+          "syncMs": 0.2999999523162842,
+          "opportunityMs": 9.5
+        },
+        {
+          "operation": "dispose",
+          "syncMs": 1.100000023841858,
+          "opportunityMs": 8.900000095367432
+        }
+      ],
+      "ok": true
+    },
+    {
+      "name": "react-picker",
+      "round": 4,
+      "pass": "timing",
+      "assets": ["/asset.css", "/asset.js"],
+      "coldMount": {
+        "operation": "mount",
+        "cycle": 0,
+        "syncMs": 6.200000047683716,
+        "opportunityMs": 10.799999952316284
+      },
+      "samples": [
+        {
+          "operation": "mount",
+          "cycle": 0,
+          "syncMs": 0.7000000476837158,
+          "opportunityMs": 17.399999976158142
+        },
+        {
+          "operation": "keyboardCommit",
+          "cycle": 0,
+          "opportunityMs": 9.700000047683716
+        },
+        {
+          "operation": "dispose",
+          "cycle": 0,
+          "syncMs": 0.20000004768371582,
+          "opportunityMs": 13
+        },
+        {
+          "operation": "mount",
+          "cycle": 1,
+          "syncMs": 0.7000000476837158,
+          "opportunityMs": 16.700000047683716
+        },
+        {
+          "operation": "keyboardCommit",
+          "cycle": 1,
+          "opportunityMs": 9.400000095367432
+        },
+        {
+          "operation": "dispose",
+          "cycle": 1,
+          "syncMs": 0,
+          "opportunityMs": 13.5
+        }
+      ],
+      "ok": true
+    },
+    {
+      "name": "kerf-ordinary",
+      "round": 4,
+      "pass": "timing",
+      "assets": ["/asset.css", "/asset.js"],
+      "coldMount": {
+        "operation": "mount",
+        "syncMs": 3,
+        "opportunityMs": 15.100000023841858
+      },
+      "samples": [
+        {
+          "operation": "mount",
+          "syncMs": 1.5,
+          "opportunityMs": 19.799999952316284
+        },
+        {
+          "operation": "label",
+          "syncMs": 1.1999999284744263,
+          "opportunityMs": 8.699999928474426
+        },
+        {
+          "operation": "select",
+          "syncMs": 0.7999999523162842,
+          "opportunityMs": 10.299999952316284
+        },
+        {
+          "operation": "update",
+          "syncMs": 0.8999999761581421,
+          "opportunityMs": 10.299999952316284
+        },
+        {
+          "operation": "swap",
+          "syncMs": 4.5,
+          "opportunityMs": 15.399999976158142
+        },
+        {
+          "operation": "refetch",
+          "syncMs": 0.40000009536743164,
+          "opportunityMs": 10.5
+        },
+        {
+          "operation": "remove",
+          "syncMs": 4.600000023841858,
+          "opportunityMs": 12.5
+        },
+        {
+          "operation": "dispose",
+          "syncMs": 0.7999999523162842,
+          "opportunityMs": 10
+        }
+      ],
+      "ok": true
+    },
+    {
+      "name": "kerf-picker",
+      "round": 4,
+      "pass": "timing",
+      "assets": ["/asset.css", "/asset.js"],
+      "coldMount": {
+        "operation": "mount",
+        "cycle": 0,
+        "syncMs": 0.7999999523162842,
+        "opportunityMs": 14.699999928474426
+      },
+      "samples": [
+        {
+          "operation": "mount",
+          "cycle": 0,
+          "syncMs": 0,
+          "opportunityMs": 15.100000023841858
+        },
+        {
+          "operation": "keyboardCommit",
+          "cycle": 0,
+          "opportunityMs": 11.399999976158142
+        },
+        {
+          "operation": "dispose",
+          "cycle": 0,
+          "syncMs": 0.09999990463256836,
+          "opportunityMs": 15
+        },
+        {
+          "operation": "mount",
+          "cycle": 1,
+          "syncMs": 0.10000002384185791,
+          "opportunityMs": 15.899999976158142
+        },
+        {
+          "operation": "keyboardCommit",
+          "cycle": 1,
+          "opportunityMs": 10.399999976158142
+        },
+        {
+          "operation": "dispose",
+          "cycle": 1,
+          "syncMs": 0,
+          "opportunityMs": 14.900000095367432
+        }
+      ],
+      "ok": true
+    },
+    {
+      "name": "react-ordinary",
+      "round": 4,
+      "pass": "timing",
+      "assets": ["/asset.css", "/asset.js"],
+      "coldMount": {
+        "operation": "mount",
+        "syncMs": 6.899999976158142,
+        "opportunityMs": 7
+      },
+      "samples": [
+        {
+          "operation": "mount",
+          "syncMs": 3.399999976158142,
+          "opportunityMs": 20.899999976158142
+        },
+        {
+          "operation": "label",
+          "syncMs": 0,
+          "opportunityMs": 6.800000071525574
+        },
+        {
+          "operation": "select",
+          "syncMs": 0,
+          "opportunityMs": 8.200000047683716
+        },
+        {
+          "operation": "update",
+          "syncMs": 0,
+          "opportunityMs": 8.700000047683716
+        },
+        {
+          "operation": "swap",
+          "syncMs": 0.10000002384185791,
+          "opportunityMs": 9.600000023841858
+        },
+        {
+          "operation": "refetch",
+          "syncMs": 0.10000002384185791,
+          "opportunityMs": 9.200000047683716
+        },
+        {
+          "operation": "remove",
+          "syncMs": 0.10000002384185791,
+          "opportunityMs": 9.700000047683716
+        },
+        {
+          "operation": "dispose",
+          "syncMs": 1.3000000715255737,
+          "opportunityMs": 9.400000095367432
+        }
+      ],
+      "ok": true
+    },
+    {
+      "name": "kerf-tuned",
+      "round": 5,
+      "pass": "timing",
+      "assets": ["/asset.css", "/asset.js"],
+      "coldMount": {
+        "operation": "mount",
+        "syncMs": 6.399999976158142,
+        "opportunityMs": 15.199999928474426
+      },
+      "samples": [
+        {
+          "operation": "mount",
+          "syncMs": 4.199999928474426,
+          "opportunityMs": 19.299999952316284
+        },
+        {
+          "operation": "label",
+          "syncMs": 0,
+          "opportunityMs": 6.199999928474426
+        },
+        {
+          "operation": "select",
+          "syncMs": 0,
+          "opportunityMs": 7.899999976158142
+        },
+        {
+          "operation": "update",
+          "syncMs": 0.8999999761581421,
+          "opportunityMs": 8.200000047683716
+        },
+        {
+          "operation": "swap",
+          "syncMs": 0.40000009536743164,
+          "opportunityMs": 10.600000023841858
+        },
+        {
+          "operation": "refetch",
+          "syncMs": 0.40000009536743164,
+          "opportunityMs": 9.300000071525574
+        },
+        {
+          "operation": "remove",
+          "syncMs": 0.2999999523162842,
+          "opportunityMs": 9.600000023841858
+        },
+        {
+          "operation": "dispose",
+          "syncMs": 1.100000023841858,
+          "opportunityMs": 9.600000023841858
+        }
+      ],
+      "ok": true
+    },
+    {
+      "name": "react-tuned",
+      "round": 5,
+      "pass": "timing",
+      "assets": ["/asset.css", "/asset.js"],
+      "coldMount": {
+        "operation": "mount",
+        "syncMs": 6.899999976158142,
+        "opportunityMs": 7.100000023841858
+      },
+      "samples": [
+        { "operation": "mount", "syncMs": 3, "opportunityMs": 19 },
+        {
+          "operation": "label",
+          "syncMs": 0,
+          "opportunityMs": 5.800000071525574
+        },
+        {
+          "operation": "select",
+          "syncMs": 0.09999990463256836,
+          "opportunityMs": 8.5
+        },
+        {
+          "operation": "update",
+          "syncMs": 0.19999992847442627,
+          "opportunityMs": 8.399999976158142
+        },
+        {
+          "operation": "swap",
+          "syncMs": 0.10000002384185791,
+          "opportunityMs": 7.799999952316284
+        },
+        { "operation": "refetch", "syncMs": 0, "opportunityMs": 7.5 },
+        { "operation": "remove", "syncMs": 0, "opportunityMs": 8.5 },
+        {
+          "operation": "dispose",
+          "syncMs": 1.2999999523162842,
+          "opportunityMs": 8.899999976158142
+        }
+      ],
+      "ok": true
+    },
+    {
+      "name": "react-picker",
+      "round": 5,
+      "pass": "timing",
+      "assets": ["/asset.css", "/asset.js"],
+      "coldMount": {
+        "operation": "mount",
+        "cycle": 0,
+        "syncMs": 7.099999904632568,
+        "opportunityMs": 11.199999928474426
+      },
+      "samples": [
+        {
+          "operation": "mount",
+          "cycle": 0,
+          "syncMs": 0.8999999761581421,
+          "opportunityMs": 15.199999928474426
+        },
+        {
+          "operation": "keyboardCommit",
+          "cycle": 0,
+          "opportunityMs": 2.899999976158142
+        },
+        {
+          "operation": "dispose",
+          "cycle": 0,
+          "syncMs": 0.19999992847442627,
+          "opportunityMs": 13.299999952316284
+        },
+        {
+          "operation": "mount",
+          "cycle": 1,
+          "syncMs": 0.8999999761581421,
+          "opportunityMs": 14.299999952316284
+        },
+        {
+          "operation": "keyboardCommit",
+          "cycle": 1,
+          "opportunityMs": 6.299999952316284
+        },
+        {
+          "operation": "dispose",
+          "cycle": 1,
+          "syncMs": 0.19999992847442627,
+          "opportunityMs": 12.599999904632568
+        }
+      ],
+      "ok": true
+    },
+    {
+      "name": "solid-ordinary",
+      "round": 5,
+      "pass": "timing",
+      "assets": ["/asset.css", "/asset.js"],
+      "coldMount": {
+        "operation": "mount",
+        "syncMs": 5,
+        "opportunityMs": 14.099999904632568
+      },
+      "samples": [
+        {
+          "operation": "mount",
+          "syncMs": 3.100000023841858,
+          "opportunityMs": 20.100000023841858
+        },
+        {
+          "operation": "label",
+          "syncMs": 0,
+          "opportunityMs": 6.699999928474426
+        },
+        {
+          "operation": "select",
+          "syncMs": 0.5,
+          "opportunityMs": 9.100000023841858
+        },
+        {
+          "operation": "update",
+          "syncMs": 0.8000000715255737,
+          "opportunityMs": 8.600000023841858
+        },
+        {
+          "operation": "swap",
+          "syncMs": 1.2000000476837158,
+          "opportunityMs": 9.100000023841858
+        },
+        {
+          "operation": "refetch",
+          "syncMs": 0.7000000476837158,
+          "opportunityMs": 9.299999952316284
+        },
+        { "operation": "remove", "syncMs": 1, "opportunityMs": 8 },
+        {
+          "operation": "dispose",
+          "syncMs": 1.100000023841858,
+          "opportunityMs": 9.399999976158142
+        }
+      ],
+      "ok": true
+    },
+    {
+      "name": "kerf-ordinary",
+      "round": 5,
+      "pass": "timing",
+      "assets": ["/asset.css", "/asset.js"],
+      "coldMount": {
+        "operation": "mount",
+        "syncMs": 3.100000023841858,
+        "opportunityMs": 13.300000071525574
+      },
+      "samples": [
+        {
+          "operation": "mount",
+          "syncMs": 1.899999976158142,
+          "opportunityMs": 18.5
+        },
+        {
+          "operation": "label",
+          "syncMs": 1.5,
+          "opportunityMs": 7.299999952316284
+        },
+        {
+          "operation": "select",
+          "syncMs": 1,
+          "opportunityMs": 10.100000023841858
+        },
+        {
+          "operation": "update",
+          "syncMs": 0.8999999761581421,
+          "opportunityMs": 9.200000047683716
+        },
+        {
+          "operation": "swap",
+          "syncMs": 4.899999976158142,
+          "opportunityMs": 13.5
+        },
+        {
+          "operation": "refetch",
+          "syncMs": 0.5,
+          "opportunityMs": 10.400000095367432
+        },
+        {
+          "operation": "remove",
+          "syncMs": 4.899999976158142,
+          "opportunityMs": 13.5
+        },
+        {
+          "operation": "dispose",
+          "syncMs": 0.8999999761581421,
+          "opportunityMs": 9.100000023841858
+        }
+      ],
+      "ok": true
+    },
+    {
+      "name": "react-ordinary",
+      "round": 5,
+      "pass": "timing",
+      "assets": ["/asset.css", "/asset.js"],
+      "coldMount": {
+        "operation": "mount",
+        "syncMs": 6.600000023841858,
+        "opportunityMs": 6.800000071525574
+      },
+      "samples": [
+        {
+          "operation": "mount",
+          "syncMs": 2.8000000715255737,
+          "opportunityMs": 19.5
+        },
+        {
+          "operation": "label",
+          "syncMs": 0,
+          "opportunityMs": 7.300000071525574
+        },
+        {
+          "operation": "select",
+          "syncMs": 0.10000002384185791,
+          "opportunityMs": 7.300000071525574
+        },
+        {
+          "operation": "update",
+          "syncMs": 0,
+          "opportunityMs": 9.400000095367432
+        },
+        {
+          "operation": "swap",
+          "syncMs": 0.09999990463256836,
+          "opportunityMs": 9.5
+        },
+        {
+          "operation": "refetch",
+          "syncMs": 0.10000002384185791,
+          "opportunityMs": 9.100000023841858
+        },
+        { "operation": "remove", "syncMs": 0, "opportunityMs": 9 },
+        {
+          "operation": "dispose",
+          "syncMs": 1.2999999523162842,
+          "opportunityMs": 10.599999904632568
+        }
+      ],
+      "ok": true
+    },
+    {
+      "name": "solid-tuned",
+      "round": 5,
+      "pass": "timing",
+      "assets": ["/asset.css", "/asset.js"],
+      "coldMount": {
+        "operation": "mount",
+        "syncMs": 5.200000047683716,
+        "opportunityMs": 15.100000023841858
+      },
+      "samples": [
+        {
+          "operation": "mount",
+          "syncMs": 3,
+          "opportunityMs": 19.200000047683716
+        },
+        {
+          "operation": "label",
+          "syncMs": 0,
+          "opportunityMs": 5.799999952316284
+        },
+        {
+          "operation": "select",
+          "syncMs": 0,
+          "opportunityMs": 9.399999976158142
+        },
+        {
+          "operation": "update",
+          "syncMs": 0.6000000238418579,
+          "opportunityMs": 9.399999976158142
+        },
+        {
+          "operation": "swap",
+          "syncMs": 1.2000000476837158,
+          "opportunityMs": 10.100000023841858
+        },
+        {
+          "operation": "refetch",
+          "syncMs": 0.7000000476837158,
+          "opportunityMs": 9.600000023841858
+        },
+        {
+          "operation": "remove",
+          "syncMs": 0.8999999761581421,
+          "opportunityMs": 10.100000023841858
+        },
+        {
+          "operation": "dispose",
+          "syncMs": 0.8000000715255737,
+          "opportunityMs": 9.800000071525574
+        }
+      ],
+      "ok": true
+    },
+    {
+      "name": "solid-picker",
+      "round": 5,
+      "pass": "timing",
+      "assets": ["/asset.css", "/asset.js"],
+      "coldMount": {
+        "operation": "mount",
+        "cycle": 0,
+        "syncMs": 5.399999976158142,
+        "opportunityMs": 12.099999904632568
+      },
+      "samples": [
+        {
+          "operation": "mount",
+          "cycle": 0,
+          "syncMs": 0.3999999761581421,
+          "opportunityMs": 14
+        },
+        {
+          "operation": "keyboardCommit",
+          "cycle": 0,
+          "opportunityMs": 6.399999976158142
+        },
+        {
+          "operation": "dispose",
+          "cycle": 0,
+          "syncMs": 0.20000004768371582,
+          "opportunityMs": 15.799999952316284
+        },
+        {
+          "operation": "mount",
+          "cycle": 1,
+          "syncMs": 0.3999999761581421,
+          "opportunityMs": 15.300000071525574
+        },
+        { "operation": "keyboardCommit", "cycle": 1, "opportunityMs": 8 },
+        {
+          "operation": "dispose",
+          "cycle": 1,
+          "syncMs": 0.20000004768371582,
+          "opportunityMs": 13.600000023841858
+        }
+      ],
+      "ok": true
+    },
+    {
+      "name": "kerf-picker",
+      "round": 5,
+      "pass": "timing",
+      "assets": ["/asset.css", "/asset.js"],
+      "coldMount": {
+        "operation": "mount",
+        "cycle": 0,
+        "syncMs": 0.8999999761581421,
+        "opportunityMs": 14
+      },
+      "samples": [
+        {
+          "operation": "mount",
+          "cycle": 0,
+          "syncMs": 0.10000002384185791,
+          "opportunityMs": 15.299999952316284
+        },
+        {
+          "operation": "keyboardCommit",
+          "cycle": 0,
+          "opportunityMs": 7.899999976158142
+        },
+        {
+          "operation": "dispose",
+          "cycle": 0,
+          "syncMs": 0.09999990463256836,
+          "opportunityMs": 15.399999976158142
+        },
+        {
+          "operation": "mount",
+          "cycle": 1,
+          "syncMs": 0.19999992847442627,
+          "opportunityMs": 15.699999928474426
+        },
+        { "operation": "keyboardCommit", "cycle": 1, "opportunityMs": 9 },
+        {
+          "operation": "dispose",
+          "cycle": 1,
+          "syncMs": 0.10000002384185791,
+          "opportunityMs": 14.399999976158142
+        }
+      ],
+      "ok": true
+    },
+    {
+      "name": "kerf-picker",
+      "round": 6,
+      "pass": "timing",
+      "assets": ["/asset.css", "/asset.js"],
+      "coldMount": {
+        "operation": "mount",
+        "cycle": 0,
+        "syncMs": 0.9000000953674316,
+        "opportunityMs": 12.5
+      },
+      "samples": [
+        {
+          "operation": "mount",
+          "cycle": 0,
+          "syncMs": 0.20000004768371582,
+          "opportunityMs": 15.5
+        },
+        {
+          "operation": "keyboardCommit",
+          "cycle": 0,
+          "opportunityMs": 10.600000023841858
+        },
+        {
+          "operation": "dispose",
+          "cycle": 0,
+          "syncMs": 0.10000002384185791,
+          "opportunityMs": 13.5
+        },
+        {
+          "operation": "mount",
+          "cycle": 1,
+          "syncMs": 0.19999992847442627,
+          "opportunityMs": 16.5
+        },
+        {
+          "operation": "keyboardCommit",
+          "cycle": 1,
+          "opportunityMs": 10.100000023841858
+        },
+        {
+          "operation": "dispose",
+          "cycle": 1,
+          "syncMs": 0.10000002384185791,
+          "opportunityMs": 12.700000047683716
+        }
+      ],
+      "ok": true
+    },
+    {
+      "name": "kerf-ordinary",
+      "round": 6,
+      "pass": "timing",
+      "assets": ["/asset.css", "/asset.js"],
+      "coldMount": {
+        "operation": "mount",
+        "syncMs": 3,
+        "opportunityMs": 14.799999952316284
+      },
+      "samples": [
+        {
+          "operation": "mount",
+          "syncMs": 1.600000023841858,
+          "opportunityMs": 18.200000047683716
+        },
+        {
+          "operation": "label",
+          "syncMs": 1.3000000715255737,
+          "opportunityMs": 6.899999976158142
+        },
+        { "operation": "select", "syncMs": 1, "opportunityMs": 8.5 },
+        {
+          "operation": "update",
+          "syncMs": 1,
+          "opportunityMs": 7.800000071525574
+        },
+        {
+          "operation": "swap",
+          "syncMs": 5.100000023841858,
+          "opportunityMs": 14.700000047683716
+        },
+        {
+          "operation": "refetch",
+          "syncMs": 0.3999999761581421,
+          "opportunityMs": 9.5
+        },
+        {
+          "operation": "remove",
+          "syncMs": 4.899999976158142,
+          "opportunityMs": 11
+        },
+        {
+          "operation": "dispose",
+          "syncMs": 0.7999999523162842,
+          "opportunityMs": 9.699999928474426
+        }
+      ],
+      "ok": true
+    },
+    {
+      "name": "react-ordinary",
+      "round": 6,
+      "pass": "timing",
+      "assets": ["/asset.css", "/asset.js"],
+      "coldMount": {
+        "operation": "mount",
+        "syncMs": 6.699999928474426,
+        "opportunityMs": 6.799999952316284
+      },
+      "samples": [
+        {
+          "operation": "mount",
+          "syncMs": 2.799999952316284,
+          "opportunityMs": 17.5
+        },
+        { "operation": "label", "syncMs": 0, "opportunityMs": 6.5 },
+        {
+          "operation": "select",
+          "syncMs": 0.10000002384185791,
+          "opportunityMs": 9.100000023841858
+        },
+        {
+          "operation": "update",
+          "syncMs": 0,
+          "opportunityMs": 9.700000047683716
+        },
+        {
+          "operation": "swap",
+          "syncMs": 0,
+          "opportunityMs": 9.300000071525574
+        },
+        {
+          "operation": "refetch",
+          "syncMs": 0.10000002384185791,
+          "opportunityMs": 9.5
+        },
+        {
+          "operation": "remove",
+          "syncMs": 0,
+          "opportunityMs": 9.699999928474426
+        },
+        {
+          "operation": "dispose",
+          "syncMs": 1.2000000476837158,
+          "opportunityMs": 8.5
+        }
+      ],
+      "ok": true
+    },
+    {
+      "name": "solid-ordinary",
+      "round": 6,
+      "pass": "timing",
+      "assets": ["/asset.css", "/asset.js"],
+      "coldMount": {
+        "operation": "mount",
+        "syncMs": 4.699999928474426,
+        "opportunityMs": 14.100000023841858
+      },
+      "samples": [
+        { "operation": "mount", "syncMs": 3, "opportunityMs": 19.5 },
+        {
+          "operation": "label",
+          "syncMs": 0,
+          "opportunityMs": 7.600000023841858
+        },
+        {
+          "operation": "select",
+          "syncMs": 0.3999999761581421,
+          "opportunityMs": 9.599999904632568
+        },
+        {
+          "operation": "update",
+          "syncMs": 0.6999999284744263,
+          "opportunityMs": 9
+        },
+        {
+          "operation": "swap",
+          "syncMs": 1,
+          "opportunityMs": 9.600000023841858
+        },
+        {
+          "operation": "refetch",
+          "syncMs": 0.7999999523162842,
+          "opportunityMs": 9.600000023841858
+        },
+        {
+          "operation": "remove",
+          "syncMs": 0.8999999761581421,
+          "opportunityMs": 9.799999952316284
+        },
+        {
+          "operation": "dispose",
+          "syncMs": 1.0999999046325684,
+          "opportunityMs": 9.599999904632568
+        }
+      ],
+      "ok": true
+    },
+    {
+      "name": "react-tuned",
+      "round": 6,
+      "pass": "timing",
+      "assets": ["/asset.css", "/asset.js"],
+      "coldMount": {
+        "operation": "mount",
+        "syncMs": 6.799999952316284,
+        "opportunityMs": 7
+      },
+      "samples": [
+        {
+          "operation": "mount",
+          "syncMs": 3.1999999284744263,
+          "opportunityMs": 19.5
+        },
+        {
+          "operation": "label",
+          "syncMs": 0,
+          "opportunityMs": 5.600000023841858
+        },
+        {
+          "operation": "select",
+          "syncMs": 0,
+          "opportunityMs": 11.199999928474426
+        },
+        {
+          "operation": "update",
+          "syncMs": 0.09999990463256836,
+          "opportunityMs": 8.299999952316284
+        },
+        {
+          "operation": "swap",
+          "syncMs": 0.10000002384185791,
+          "opportunityMs": 7.699999928474426
+        },
+        {
+          "operation": "refetch",
+          "syncMs": 0,
+          "opportunityMs": 8.299999952316284
+        },
+        {
+          "operation": "remove",
+          "syncMs": 0,
+          "opportunityMs": 10.800000071525574
+        },
+        {
+          "operation": "dispose",
+          "syncMs": 1.2000000476837158,
+          "opportunityMs": 7.299999952316284
+        }
+      ],
+      "ok": true
+    },
+    {
+      "name": "solid-picker",
+      "round": 6,
+      "pass": "timing",
+      "assets": ["/asset.css", "/asset.js"],
+      "coldMount": {
+        "operation": "mount",
+        "cycle": 0,
+        "syncMs": 5.299999952316284,
+        "opportunityMs": 10.899999976158142
+      },
+      "samples": [
+        {
+          "operation": "mount",
+          "cycle": 0,
+          "syncMs": 0.5,
+          "opportunityMs": 13.799999952316284
+        },
+        {
+          "operation": "keyboardCommit",
+          "cycle": 0,
+          "opportunityMs": 9.100000023841858
+        },
+        {
+          "operation": "dispose",
+          "cycle": 0,
+          "syncMs": 0.19999992847442627,
+          "opportunityMs": 12.5
+        },
+        {
+          "operation": "mount",
+          "cycle": 1,
+          "syncMs": 0.5,
+          "opportunityMs": 17.300000071525574
+        },
+        {
+          "operation": "keyboardCommit",
+          "cycle": 1,
+          "opportunityMs": 9.200000047683716
+        },
+        {
+          "operation": "dispose",
+          "cycle": 1,
+          "syncMs": 0.20000004768371582,
+          "opportunityMs": 14.399999976158142
+        }
+      ],
+      "ok": true
+    },
+    {
+      "name": "react-picker",
+      "round": 6,
+      "pass": "timing",
+      "assets": ["/asset.css", "/asset.js"],
+      "coldMount": {
+        "operation": "mount",
+        "cycle": 0,
+        "syncMs": 6.699999928474426,
+        "opportunityMs": 11.699999928474426
+      },
+      "samples": [
+        {
+          "operation": "mount",
+          "cycle": 0,
+          "syncMs": 0.7999999523162842,
+          "opportunityMs": 15.100000023841858
+        },
+        {
+          "operation": "keyboardCommit",
+          "cycle": 0,
+          "opportunityMs": 6.700000047683716
+        },
+        {
+          "operation": "dispose",
+          "cycle": 0,
+          "syncMs": 0.20000004768371582,
+          "opportunityMs": 13.299999952316284
+        },
+        {
+          "operation": "mount",
+          "cycle": 1,
+          "syncMs": 0.7000000476837158,
+          "opportunityMs": 13.700000047683716
+        },
+        {
+          "operation": "keyboardCommit",
+          "cycle": 1,
+          "opportunityMs": 9.100000023841858
+        },
+        {
+          "operation": "dispose",
+          "cycle": 1,
+          "syncMs": 0.30000007152557373,
+          "opportunityMs": 13
+        }
+      ],
+      "ok": true
+    },
+    {
+      "name": "solid-tuned",
+      "round": 6,
+      "pass": "timing",
+      "assets": ["/asset.css", "/asset.js"],
+      "coldMount": {
+        "operation": "mount",
+        "syncMs": 5.300000071525574,
+        "opportunityMs": 14.800000071525574
+      },
+      "samples": [
+        {
+          "operation": "mount",
+          "syncMs": 3,
+          "opportunityMs": 19.100000023841858
+        },
+        { "operation": "label", "syncMs": 0, "opportunityMs": 6.5 },
+        {
+          "operation": "select",
+          "syncMs": 0,
+          "opportunityMs": 8.399999976158142
+        },
+        {
+          "operation": "update",
+          "syncMs": 0.6000000238418579,
+          "opportunityMs": 8.899999976158142
+        },
+        {
+          "operation": "swap",
+          "syncMs": 1.2000000476837158,
+          "opportunityMs": 9.800000071525574
+        },
+        {
+          "operation": "refetch",
+          "syncMs": 0.7999999523162842,
+          "opportunityMs": 9.5
+        },
+        {
+          "operation": "remove",
+          "syncMs": 1.100000023841858,
+          "opportunityMs": 9.399999976158142
+        },
+        {
+          "operation": "dispose",
+          "syncMs": 0.8000000715255737,
+          "opportunityMs": 9.399999976158142
+        }
+      ],
+      "ok": true
+    },
+    {
+      "name": "kerf-tuned",
+      "round": 6,
+      "pass": "timing",
+      "assets": ["/asset.css", "/asset.js"],
+      "coldMount": {
+        "operation": "mount",
+        "syncMs": 6.899999976158142,
+        "opportunityMs": 15.200000047683716
+      },
+      "samples": [
+        {
+          "operation": "mount",
+          "syncMs": 3.5,
+          "opportunityMs": 20.300000071525574
+        },
+        { "operation": "label", "syncMs": 0, "opportunityMs": 6 },
+        {
+          "operation": "select",
+          "syncMs": 0.10000002384185791,
+          "opportunityMs": 9.399999976158142
+        },
+        {
+          "operation": "update",
+          "syncMs": 0.8999999761581421,
+          "opportunityMs": 9.5
+        },
+        {
+          "operation": "swap",
+          "syncMs": 0.3999999761581421,
+          "opportunityMs": 8.399999976158142
+        },
+        {
+          "operation": "refetch",
+          "syncMs": 0.3999999761581421,
+          "opportunityMs": 7.699999928474426
+        },
+        {
+          "operation": "remove",
+          "syncMs": 0.30000007152557373,
+          "opportunityMs": 10.399999976158142
+        },
+        {
+          "operation": "dispose",
+          "syncMs": 1.100000023841858,
+          "opportunityMs": 8
+        }
+      ],
+      "ok": true
+    },
+    {
+      "name": "solid-tuned",
+      "round": 7,
+      "pass": "timing",
+      "assets": ["/asset.css", "/asset.js"],
+      "coldMount": {
+        "operation": "mount",
+        "syncMs": 5.399999976158142,
+        "opportunityMs": 15.299999952316284
+      },
+      "samples": [
+        {
+          "operation": "mount",
+          "syncMs": 3.0999999046325684,
+          "opportunityMs": 17.899999976158142
+        },
+        {
+          "operation": "label",
+          "syncMs": 0.10000002384185791,
+          "opportunityMs": 6.600000023841858
+        },
+        {
+          "operation": "select",
+          "syncMs": 0.10000002384185791,
+          "opportunityMs": 9.5
+        },
+        {
+          "operation": "update",
+          "syncMs": 0.5999999046325684,
+          "opportunityMs": 9.799999952316284
+        },
+        {
+          "operation": "swap",
+          "syncMs": 1.0999999046325684,
+          "opportunityMs": 10.199999928474426
+        },
+        {
+          "operation": "refetch",
+          "syncMs": 0.7000000476837158,
+          "opportunityMs": 8.600000023841858
+        },
+        {
+          "operation": "remove",
+          "syncMs": 1,
+          "opportunityMs": 9.399999976158142
+        },
+        {
+          "operation": "dispose",
+          "syncMs": 0.7999999523162842,
+          "opportunityMs": 9.399999976158142
+        }
+      ],
+      "ok": true
+    },
+    {
+      "name": "kerf-ordinary",
+      "round": 7,
+      "pass": "timing",
+      "assets": ["/asset.css", "/asset.js"],
+      "coldMount": {
+        "operation": "mount",
+        "syncMs": 3.200000047683716,
+        "opportunityMs": 14.899999976158142
+      },
+      "samples": [
+        {
+          "operation": "mount",
+          "syncMs": 1.600000023841858,
+          "opportunityMs": 19.200000047683716
+        },
+        {
+          "operation": "label",
+          "syncMs": 1.1999999284744263,
+          "opportunityMs": 7.699999928474426
+        },
+        {
+          "operation": "select",
+          "syncMs": 0.8999999761581421,
+          "opportunityMs": 9.5
+        },
+        {
+          "operation": "update",
+          "syncMs": 1,
+          "opportunityMs": 8.700000047683716
+        },
+        {
+          "operation": "swap",
+          "syncMs": 5,
+          "opportunityMs": 14.899999976158142
+        },
+        {
+          "operation": "refetch",
+          "syncMs": 0.5,
+          "opportunityMs": 7.899999976158142
+        },
+        {
+          "operation": "remove",
+          "syncMs": 4.700000047683716,
+          "opportunityMs": 11.899999976158142
+        },
+        {
+          "operation": "dispose",
+          "syncMs": 0.8999999761581421,
+          "opportunityMs": 10.600000023841858
+        }
+      ],
+      "ok": true
+    },
+    {
+      "name": "react-picker",
+      "round": 7,
+      "pass": "timing",
+      "assets": ["/asset.css", "/asset.js"],
+      "coldMount": {
+        "operation": "mount",
+        "cycle": 0,
+        "syncMs": 7,
+        "opportunityMs": 10.099999904632568
+      },
+      "samples": [
+        {
+          "operation": "mount",
+          "cycle": 0,
+          "syncMs": 0.8999999761581421,
+          "opportunityMs": 14.899999976158142
+        },
+        {
+          "operation": "keyboardCommit",
+          "cycle": 0,
+          "opportunityMs": 6.200000047683716
+        },
+        {
+          "operation": "dispose",
+          "cycle": 0,
+          "syncMs": 0.20000004768371582,
+          "opportunityMs": 13.100000023841858
+        },
+        {
+          "operation": "mount",
+          "cycle": 1,
+          "syncMs": 0.7999999523162842,
+          "opportunityMs": 15.399999976158142
+        },
+        {
+          "operation": "keyboardCommit",
+          "cycle": 1,
+          "opportunityMs": 13.199999928474426
+        },
+        {
+          "operation": "dispose",
+          "cycle": 1,
+          "syncMs": 0.20000004768371582,
+          "opportunityMs": 13.5
+        }
+      ],
+      "ok": true
+    },
+    {
+      "name": "react-tuned",
+      "round": 7,
+      "pass": "timing",
+      "assets": ["/asset.css", "/asset.js"],
+      "coldMount": {
+        "operation": "mount",
+        "syncMs": 6.899999976158142,
+        "opportunityMs": 7
+      },
+      "samples": [
+        {
+          "operation": "mount",
+          "syncMs": 3.100000023841858,
+          "opportunityMs": 19.799999952316284
+        },
+        {
+          "operation": "label",
+          "syncMs": 0,
+          "opportunityMs": 7.199999928474426
+        },
+        {
+          "operation": "select",
+          "syncMs": 0,
+          "opportunityMs": 7.399999976158142
+        },
+        {
+          "operation": "update",
+          "syncMs": 0.10000002384185791,
+          "opportunityMs": 10.400000095367432
+        },
+        {
+          "operation": "swap",
+          "syncMs": 0,
+          "opportunityMs": 11.399999976158142
+        },
+        { "operation": "refetch", "syncMs": 0, "opportunityMs": 9.5 },
+        {
+          "operation": "remove",
+          "syncMs": 0.10000002384185791,
+          "opportunityMs": 9.900000095367432
+        },
+        {
+          "operation": "dispose",
+          "syncMs": 1.1999999284744263,
+          "opportunityMs": 10.799999952316284
+        }
+      ],
+      "ok": true
+    },
+    {
+      "name": "kerf-picker",
+      "round": 7,
+      "pass": "timing",
+      "assets": ["/asset.css", "/asset.js"],
+      "coldMount": {
+        "operation": "mount",
+        "cycle": 0,
+        "syncMs": 0.9000000953674316,
+        "opportunityMs": 14.800000071525574
+      },
+      "samples": [
+        {
+          "operation": "mount",
+          "cycle": 0,
+          "syncMs": 0.19999992847442627,
+          "opportunityMs": 15.699999928474426
+        },
+        {
+          "operation": "keyboardCommit",
+          "cycle": 0,
+          "opportunityMs": 10.299999952316284
+        },
+        {
+          "operation": "dispose",
+          "cycle": 0,
+          "syncMs": 0.09999990463256836,
+          "opportunityMs": 13.699999928474426
+        },
+        {
+          "operation": "mount",
+          "cycle": 1,
+          "syncMs": 0.10000002384185791,
+          "opportunityMs": 16.899999976158142
+        },
+        { "operation": "keyboardCommit", "cycle": 1, "opportunityMs": 11 },
+        {
+          "operation": "dispose",
+          "cycle": 1,
+          "syncMs": 0,
+          "opportunityMs": 14.600000023841858
+        }
+      ],
+      "ok": true
+    },
+    {
+      "name": "kerf-tuned",
+      "round": 7,
+      "pass": "timing",
+      "assets": ["/asset.css", "/asset.js"],
+      "coldMount": {
+        "operation": "mount",
+        "syncMs": 6.899999976158142,
+        "opportunityMs": 14.100000023841858
+      },
+      "samples": [
+        {
+          "operation": "mount",
+          "syncMs": 3.3000000715255737,
+          "opportunityMs": 19.800000071525574
+        },
+        {
+          "operation": "label",
+          "syncMs": 0,
+          "opportunityMs": 5.699999928474426
+        },
+        {
+          "operation": "select",
+          "syncMs": 0.10000002384185791,
+          "opportunityMs": 9.700000047683716
+        },
+        {
+          "operation": "update",
+          "syncMs": 0.8999999761581421,
+          "opportunityMs": 11.299999952316284
+        },
+        {
+          "operation": "swap",
+          "syncMs": 0.2999999523162842,
+          "opportunityMs": 10.100000023841858
+        },
+        {
+          "operation": "refetch",
+          "syncMs": 0.40000009536743164,
+          "opportunityMs": 9.800000071525574
+        },
+        {
+          "operation": "remove",
+          "syncMs": 0.3999999761581421,
+          "opportunityMs": 9.699999928474426
+        },
+        {
+          "operation": "dispose",
+          "syncMs": 1.100000023841858,
+          "opportunityMs": 9.899999976158142
+        }
+      ],
+      "ok": true
+    },
+    {
+      "name": "solid-picker",
+      "round": 7,
+      "pass": "timing",
+      "assets": ["/asset.css", "/asset.js"],
+      "coldMount": {
+        "operation": "mount",
+        "cycle": 0,
+        "syncMs": 5.399999976158142,
+        "opportunityMs": 12.600000023841858
+      },
+      "samples": [
+        {
+          "operation": "mount",
+          "cycle": 0,
+          "syncMs": 0.3999999761581421,
+          "opportunityMs": 15.299999952316284
+        },
+        {
+          "operation": "keyboardCommit",
+          "cycle": 0,
+          "opportunityMs": 9.100000023841858
+        },
+        {
+          "operation": "dispose",
+          "cycle": 0,
+          "syncMs": 0.10000002384185791,
+          "opportunityMs": 14.200000047683716
+        },
+        {
+          "operation": "mount",
+          "cycle": 1,
+          "syncMs": 0.5,
+          "opportunityMs": 13.800000071525574
+        },
+        {
+          "operation": "keyboardCommit",
+          "cycle": 1,
+          "opportunityMs": 10.799999952316284
+        },
+        {
+          "operation": "dispose",
+          "cycle": 1,
+          "syncMs": 0.09999990463256836,
+          "opportunityMs": 14.399999976158142
+        }
+      ],
+      "ok": true
+    },
+    {
+      "name": "solid-ordinary",
+      "round": 7,
+      "pass": "timing",
+      "assets": ["/asset.css", "/asset.js"],
+      "coldMount": {
+        "operation": "mount",
+        "syncMs": 4.900000095367432,
+        "opportunityMs": 15.900000095367432
+      },
+      "samples": [
+        {
+          "operation": "mount",
+          "syncMs": 3.100000023841858,
+          "opportunityMs": 20.90000009536743
+        },
+        {
+          "operation": "label",
+          "syncMs": 0,
+          "opportunityMs": 8.900000095367432
+        },
+        {
+          "operation": "select",
+          "syncMs": 0.3999999761581421,
+          "opportunityMs": 9.700000047683716
+        },
+        {
+          "operation": "update",
+          "syncMs": 0.7000000476837158,
+          "opportunityMs": 10.100000023841858
+        },
+        {
+          "operation": "swap",
+          "syncMs": 1.2000000476837158,
+          "opportunityMs": 9.900000095367432
+        },
+        {
+          "operation": "refetch",
+          "syncMs": 0.6999999284744263,
+          "opportunityMs": 11.600000023841858
+        },
+        {
+          "operation": "remove",
+          "syncMs": 0.8999999761581421,
+          "opportunityMs": 9.299999952316284
+        },
+        {
+          "operation": "dispose",
+          "syncMs": 1,
+          "opportunityMs": 9.799999952316284
+        }
+      ],
+      "ok": true
+    },
+    {
+      "name": "react-ordinary",
+      "round": 7,
+      "pass": "timing",
+      "assets": ["/asset.css", "/asset.js"],
+      "coldMount": {
+        "operation": "mount",
+        "syncMs": 6.899999976158142,
+        "opportunityMs": 7
+      },
+      "samples": [
+        {
+          "operation": "mount",
+          "syncMs": 2.6999999284744263,
+          "opportunityMs": 19.399999976158142
+        },
+        {
+          "operation": "label",
+          "syncMs": 0,
+          "opportunityMs": 7.399999976158142
+        },
+        { "operation": "select", "syncMs": 0, "opportunityMs": 10.5 },
+        { "operation": "update", "syncMs": 0, "opportunityMs": 9.5 },
+        {
+          "operation": "swap",
+          "syncMs": 0,
+          "opportunityMs": 9.700000047683716
+        },
+        {
+          "operation": "refetch",
+          "syncMs": 0.10000002384185791,
+          "opportunityMs": 9.5
+        },
+        {
+          "operation": "remove",
+          "syncMs": 0.10000002384185791,
+          "opportunityMs": 9.199999928474426
+        },
+        {
+          "operation": "dispose",
+          "syncMs": 1.3000000715255737,
+          "opportunityMs": 7.5
+        }
+      ],
+      "ok": true
+    }
+  ]
+}
