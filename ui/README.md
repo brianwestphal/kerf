@@ -982,3 +982,13 @@ declarations. An application that bundles Web Awesome components
 redistributes them, so it should retain Web Awesome's MIT notice; Font Awesome
 Free, whose icons Web Awesome embeds, asks that the attribution comments in
 those icons stay intact.
+
+To inspect one Combobox or ChoiceChips use, run
+`kerf-ui-doctor --root . --explain-use src/picker.tsx:12:7` at a position
+inside its JSX opening tag. Add `--format json` for the versioned result.
+The query reads the consumer's nearest workspace tsconfig and the shipped
+component contract. With no tsconfig it inspects the selected file and its
+imports. It reports literal interaction mode, application-owned state, wiring
+and cleanup call sites, and unresolved relationships. Use those sites to
+verify root containment and actual teardown. Dynamic props and application
+wrappers can leave the mode or contract unknown.

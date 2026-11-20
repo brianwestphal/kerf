@@ -385,6 +385,9 @@ export function loadUiContract(context) {
       publicTokens: new Set(
         catalog.entries.flatMap((entry) => entry.boundaries.publicTokens),
       ),
+      choiceWiring: loadCommonJs(
+        resolve(dirname(profileContractPath), 'choice-wiring-mode.cjs'),
+      ),
       error: undefined,
     };
     cache.set(key, { stamps, value });

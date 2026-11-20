@@ -58,54 +58,21 @@ function entryModules(entryFile, currentFile, currentText) {
   return modules;
 }
 
-// Only the listbox mode needs wireChoiceChips. Static radio and toggle groups
-// use native inputs; an expression whose value is unknown still needs wiring.
-function choiceChipsNeedsWiring(attributes) {
-  const multiple = attributes.find(
-    (attribute) => attribute.name?.name === 'multiple',
-  );
-  if (!multiple) return false;
-  if (!multiple.value) return true;
-  if (multiple.value.type === 'Literal')
-    return multiple.value.value !== 'toggle';
-  const expression = multiple.value.expression;
-  if (expression?.type === 'Literal')
-    return expression.value !== 'toggle' && expression.value !== false;
-  return true;
-}
-
-function sourceChoiceChipsNeedsWiring(source, name) {
-  const opening = new RegExp(`<${name}(?=[\\s/>])`, 'g');
-  for (const match of source.matchAll(opening)) {
-    let braces = 0;
-    let quote;
-    let end = match.index + match[0].length;
-    for (; end < source.length; end++) {
-      const char = source[end];
-      if (quote) {
-        if (char === '\\') end++;
-        else if (char === quote) quote = undefined;
-      } else if (char === '"' || char === "'" || char === '`') quote = char;
-      else if (char === '{') braces++;
-      else if (char === '}') braces--;
-      else if (char === '>' && braces === 0) break;
-    }
-    if (end === source.length) continue;
-    const attributes = source.slice(match.index + match[0].length, end);
-    const multiple = attributes.match(
-      /(?:^|\s)multiple(?:\s*=\s*(?:\{\s*([^}]*)\s*\}|(["'])(.*?)\2))?(?=\s|\/|$)/,
-    );
-    if (!multiple) continue;
-    if (
-      multiple[3] === 'toggle' ||
-      multiple[1]?.trim() === "'toggle'" ||
-      multiple[1]?.trim() === '"toggle"' ||
-      multiple[1]?.trim() === 'false'
-    )
-      continue;
-    return true;
-  }
-  return false;
+function literalAttributes(attributes) {
+  return attributes.map((attribute) => {
+    if (attribute.type === 'JSXSpreadAttribute') return ['...', null];
+    const value = attribute.value;
+    const expression =
+      value?.type === 'JSXExpressionContainer' ? value.expression : value;
+    return [
+      attribute.name.name,
+      value == null
+        ? true
+        : expression?.type === 'Literal'
+          ? expression.value
+          : null,
+    ];
+  });
 }
 
 // The entry graph is read from disk because ESLint visits one source file at a
@@ -138,7 +105,7 @@ function moduleUses(source, file, contract) {
           key &&
           new RegExp(`<${local}(?=[\\s/>])`).test(source) &&
           (key !== '@kerfjs/ui:choice-chips' ||
-            sourceChoiceChipsNeedsWiring(source, local))
+            contract.choiceWiring.choiceUses(source, local))
         )
           uses.add(key);
       }
@@ -154,7 +121,7 @@ function moduleUses(source, file, contract) {
           key &&
           new RegExp(`<${namespace}\\.${name}(?=[\\s/>])`).test(source) &&
           (key !== '@kerfjs/ui:choice-chips' ||
-            sourceChoiceChipsNeedsWiring(source, `${namespace}\\.${name}`))
+            contract.choiceWiring.choiceUses(source, `${namespace}.${name}`))
         )
           uses.add(key);
       }
@@ -314,7 +281,8 @@ export default {
           key &&
           !used.has(key) &&
           (key !== '@kerfjs/ui:choice-chips' ||
-            choiceChipsNeedsWiring(node.attributes))
+            contract.choiceWiring.choiceMode(literalAttributes(node.attributes))
+              .required !== false)
         )
           used.set(key, node.name);
       },

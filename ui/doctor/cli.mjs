@@ -34,6 +34,7 @@ try {
     console.log(`Usage: kerf-ui-doctor [--full | --changed] [options]
 
 Options:
+  --explain-use <file:line:column>  Explain this JSX opening tag and its wiring
   --root <path>          Workspace root (default: current directory)
   --package <name|path>  Select one workspace package
   --path <path>          Restrict changed mode (repeatable)
@@ -53,6 +54,7 @@ Exit codes: 0 clean, 1 findings, 2 configuration/tool failure, 130 cancelled.`);
   const { options } = parseCliArguments(args, {
     values: {
       '--root': 'root',
+      '--explain-use': 'explainUse',
       '--package': 'package',
       '--path': 'paths',
       '--config': 'config',
@@ -91,31 +93,42 @@ Exit codes: 0 clean, 1 findings, 2 configuration/tool failure, 130 cancelled.`);
     throw new Error('--fail-on must be error, review, or warning.');
   if (!['recommended-ui', 'strict-ui'].includes(eslintConfig))
     throw new Error('--eslint must be recommended-ui or strict-ui.');
-  const abort = new globalThis.AbortController();
-  process.once('SIGINT', () => abort.abort());
-  const paths =
-    changed && !explicitPaths.length ? await changedPaths(root) : explicitPaths;
-  const report = await runUiDoctor({
-    root,
-    package: packageSelector,
-    mode: changed ? 'changed' : full ? 'full' : undefined,
-    paths,
-    configPath,
-    cache: !noCache,
-    signal: abort.signal,
-    eslintConfig,
-    failOn,
-    browser: url
-      ? { url, browsers: browserList?.split(',').map((item) => item.trim()) }
-      : undefined,
-  });
-  const rendered =
-    format === 'json'
-      ? JSON.stringify(report, null, 2)
-      : formatUiDoctorText(report);
-  if (output) await writeFile(resolve(root, output), `${rendered}\n`);
-  else console.log(rendered);
-  process.exitCode = report.exitCode;
+  if (options.explainUse) {
+    const { explainUse, formatUse } = await import('./explain-use.mjs');
+    const report = explainUse(root, options.explainUse);
+    const rendered =
+      format === 'json' ? JSON.stringify(report, null, 2) : formatUse(report);
+    if (output) await writeFile(resolve(root, output), rendered + '\n');
+    else console.log(rendered);
+  } else {
+    const abort = new globalThis.AbortController();
+    process.once('SIGINT', () => abort.abort());
+    const paths =
+      changed && !explicitPaths.length
+        ? await changedPaths(root)
+        : explicitPaths;
+    const report = await runUiDoctor({
+      root,
+      package: packageSelector,
+      mode: changed ? 'changed' : full ? 'full' : undefined,
+      paths,
+      configPath,
+      cache: !noCache,
+      signal: abort.signal,
+      eslintConfig,
+      failOn,
+      browser: url
+        ? { url, browsers: browserList?.split(',').map((item) => item.trim()) }
+        : undefined,
+    });
+    const rendered =
+      format === 'json'
+        ? JSON.stringify(report, null, 2)
+        : formatUiDoctorText(report);
+    if (output) await writeFile(resolve(root, output), `${rendered}\n`);
+    else console.log(rendered);
+    process.exitCode = report.exitCode;
+  }
 } catch (error) {
   console.error(`kerf-ui-doctor: ${error.message}`);
   process.exitCode =

@@ -368,3 +368,19 @@ process.exitCode = report.exitCode;
 `--package` accepts either a workspace package name or a workspace-relative package path. The doctor uses the selected package for compiler, lint, profile-discovery start, and analyzer scope, while workspace profile precedence and root lockfiles remain authoritative.
 
 A repair agent should run JSON mode, apply only source-located safe changes, and rerun until exit `0`. Do not treat exit `2`, a skipped required stage, or an empty changed selection as clean. Browser evidence is objective input; the evaluator's named subjective rubric still requires human review.
+
+## Explain one JSX use
+
+`kerf-ui-doctor --root . --explain-use src/picker.tsx:12:7 --format json`
+inspects a one-based position inside a Combobox or ChoiceChips opening tag.
+The version 1 response includes the component contract, active mode,
+application-owned state, event, candidate wiring roots and source locations
+of cleanup calls. Text format is the default. A native wrapping ChoiceChips
+group needs no behavior installation. Its listbox or scrolling mode uses
+`wireChoiceChips`. A dynamic mode reports the unresolved alternatives.
+
+The project's TypeScript source graph supplies evidence of calls. Even when
+the same root binding appears in both locations, verify that setup executes
+for this mount and its owner invokes cleanup. Unknown wrappers need manual
+inspection. Use the returned component card, exact prop signatures, and
+catalog route to check a proposed change with the keyboard.
