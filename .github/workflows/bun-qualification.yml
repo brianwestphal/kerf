@@ -23,7 +23,7 @@ env:
   NODE_VERSION: '22'
   BUN_QUALIFICATION_EVIDENCE: /tmp/kerf-bun-qualification
   BUN_INSTALL_CACHE_DIR: /tmp/kerf-bun-cache
-  BUN_QUALIFICATION_CI_SHA256: 6a047682a90c5daf0ac2ffac243a1464da2b502156f5ea1ed4a69b2c74c7976a
+  BUN_QUALIFICATION_CI_SHA256: 5a8c640b83d8c250c5cc9a89cabf4e08f53b29e1ae23443711ca8027163a1e6f
 jobs:
   test:
     runs-on: ubuntu-24.04
@@ -241,11 +241,14 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: npm
-          cache-dependency-path: eslint-plugin/package-lock.json
+          cache-dependency-path: |
+            eslint-plugin/package-lock.json
+            ui/package-lock.json
       - name: Install the exact candidate installer (not repository dependencies)
         working-directory: .
         run: npm install --global bun@1.4.4
       - run: node "$GITHUB_WORKSPACE/scripts/bun-candidate-install.mjs" eslint-plugin
+      - run: node "$GITHUB_WORKSPACE/scripts/bun-candidate-install.mjs" eslint-plugin --prefix ../ui --omit=dev --ignore-scripts
       - run: npm run lint
       - run: bun add --no-save eslint@${{ matrix.eslint }} && bun pm ls --all > "$BUN_QUALIFICATION_EVIDENCE/eslint-plugin-final-lock-view.txt" && node "$GITHUB_WORKSPACE/scripts/bun-installed-inventory.mjs" . "$BUN_QUALIFICATION_EVIDENCE/eslint-plugin-final-installed.json" --expect eslint@${{ matrix.eslint }} && cp bun.lock "$BUN_QUALIFICATION_EVIDENCE/eslint-plugin-final.bun.lock" && cp package.json "$BUN_QUALIFICATION_EVIDENCE/eslint-plugin-final-package.json"
       - run: node -e "console.log('eslint', require('eslint').ESLint.version)"
