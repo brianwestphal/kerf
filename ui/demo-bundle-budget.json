@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 164600,
-  "totalJavaScriptGzip": 470100,
-  "measuredLargestJavaScriptGzip": 164545,
-  "measuredTotalJavaScriptGzip": 470030,
+  "totalJavaScriptGzip": 470300,
+  "measuredLargestJavaScriptGzip": 164547,
+  "measuredTotalJavaScriptGzip": 470219,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -7571,6 +7571,22 @@
         "measuredTotalJavaScriptGzip": 470030,
         "largestJavaScriptGzip": 164600,
         "totalJavaScriptGzip": 470100
+      }
+    },
+    {
+      "at": "2026-11-20T04:41:11.153Z",
+      "reason": "KF-HZTE26 renders secondary record text and accessible descriptions in PopupMenu and adds its record menu example",
+      "old": {
+        "measuredLargestJavaScriptGzip": 164545,
+        "measuredTotalJavaScriptGzip": 470030,
+        "largestJavaScriptGzip": 164600,
+        "totalJavaScriptGzip": 470100
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 164547,
+        "measuredTotalJavaScriptGzip": 470219,
+        "largestJavaScriptGzip": 164600,
+        "totalJavaScriptGzip": 470300
       }
     }
   ]

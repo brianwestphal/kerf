@@ -41,7 +41,8 @@ function entryKey(entry: PopupMenuEntry): string {
     entry.disabledReason ?? '',
     String(entry.icon ?? ''),
     String(entry.details ?? ''),
-    JSON.stringify(entry.attributes ?? {}),
+    JSON.stringify(entry.attributes ?? {}) +
+      (entry.description ? ':' + JSON.stringify(entry.description) : ''),
     ...(entry.submenu ?? []).map(entryKey),
   ].join('\u0001');
 }
@@ -63,6 +64,8 @@ function item(entry: Command, choiceLevel: boolean) {
       data-action={entry.action}
       value={entry.value}
       data-tone={entry.tone === 'danger' ? 'danger' : undefined}
+      aria-label={entry.description ? entry.label : undefined}
+      aria-description={entry.description || undefined}
       aria-checked={choice ? String(entry.checked) : undefined}
       aria-disabled={entry.disabled ? 'true' : undefined}
       aria-haspopup={entry.submenu ? 'menu' : undefined}
@@ -79,7 +82,16 @@ function item(entry: Command, choiceLevel: boolean) {
           {entry.icon}
         </span>
       ) : null}
-      <span class="kui-popup-menu__item-label">{entry.label}</span>
+      {entry.description ? (
+        <span class="kui-popup-menu__item-copy">
+          <span class="kui-popup-menu__item-label">{entry.label}</span>
+          <span class="kui-popup-menu__description" aria-hidden="true">
+            {entry.description}
+          </span>
+        </span>
+      ) : (
+        <span class="kui-popup-menu__item-label">{entry.label}</span>
+      )}
       {entry.details ? (
         <span class="kui-popup-menu__details">{entry.details}</span>
       ) : null}

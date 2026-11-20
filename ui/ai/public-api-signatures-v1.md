@@ -643,6 +643,8 @@ type PopupMenuDataAttributes = Readonly<Record<`data-${string}`, string | undefi
 interface PopupMenuItem {
     kind?: 'item';
     label: string;
+    /** Quiet secondary text beneath the label, announced as the item description. */
+    description?: string;
     /** Delegated `data-action` the app handles when the item is chosen. */
     action?: string;
     /** The item's value, reported in the menu's `kui-menu-select` event. */

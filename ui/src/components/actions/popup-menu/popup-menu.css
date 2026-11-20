@@ -321,11 +321,22 @@
   height: 100%;
 }
 
-.kui-popup-menu__item-label {
+.kui-popup-menu__item-copy,
+.kui-popup-menu__item > .kui-popup-menu__item-label {
   flex: 1 1 auto;
   min-width: 0;
   padding-block: var(--_kui-popup-row-label-padding-block);
   line-height: var(--_kui-popup-row-label-line-height);
+}
+
+.kui-popup-menu__description {
+  display: block;
+  color: var(--kui-color-text-quiet);
+  font-size: var(--kui-font-s);
+  overflow-wrap: anywhere;
+}
+.kui-popup-menu__item-copy {
+  overflow-wrap: anywhere;
 }
 
 .kui-popup-menu__details {

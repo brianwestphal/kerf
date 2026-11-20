@@ -34,6 +34,8 @@ type PopupMenuDataAttributes = Readonly<
 export interface PopupMenuItem {
   kind?: 'item';
   label: string;
+  /** Quiet secondary text beneath the label, announced as the item description. */
+  description?: string;
   /** Delegated `data-action` the app handles when the item is chosen. */
   action?: string;
   /** The item's value, reported in the menu's `kui-menu-select` event. */
@@ -197,7 +199,16 @@ function renderItem(entry: PopupMenuCommand, levelHasChoice: boolean) {
           {entry.icon}
         </span>
       ) : null}
-      <span class="kui-popup-menu__item-label">{entry.label}</span>
+      {entry.description ? (
+        <span class="kui-popup-menu__item-copy">
+          <span class="kui-popup-menu__item-label">{entry.label}</span>
+          <span class="kui-popup-menu__description" aria-hidden="true">
+            {entry.description}
+          </span>
+        </span>
+      ) : (
+        <span class="kui-popup-menu__item-label">{entry.label}</span>
+      )}
       {entry.details ? (
         <span class="kui-popup-menu__details">{entry.details}</span>
       ) : null}
@@ -225,6 +236,8 @@ function renderItem(entry: PopupMenuCommand, levelHasChoice: boolean) {
       data-action={entry.action}
       value={entry.value}
       data-tone={tone}
+      aria-label={entry.description ? entry.label : undefined}
+      aria-description={entry.description || undefined}
       aria-checked={ariaChecked}
       aria-disabled={ariaDisabled}
       aria-haspopup={ariaHaspopup}

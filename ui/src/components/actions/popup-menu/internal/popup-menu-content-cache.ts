@@ -122,6 +122,12 @@ function hashEntry(entry: PopupMenuEntry): void {
   hashPart(String(entry.details ?? ''));
   hashCode(FIELD_SEPARATOR);
   hashText(entry.attributes ? JSON.stringify(entry.attributes) : '{}');
+  if (entry.description) {
+    // Extend the serialized attributes field only when a description is present.
+    // JSON quoting keeps separators inside the text distinct from the next entry.
+    hashCode(0x3a);
+    hashPart(JSON.stringify(entry.description));
+  }
   for (const child of entry.submenu ?? []) {
     hashCode(FIELD_SEPARATOR);
     hashEntry(child);

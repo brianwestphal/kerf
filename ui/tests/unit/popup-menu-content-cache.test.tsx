@@ -30,6 +30,7 @@ const richItems = (): PopupMenuEntry[] => [
     label: 'Copy',
     action: 'copy',
     value: 'copy',
+    description: 'Copies "<text>"',
     icon: icon(Copy, 'copy'),
     details: new SafeHtml('<kbd>⌘C</kbd>'),
     attributes: { 'data-row': '7', 'data-skip': undefined },
@@ -131,6 +132,21 @@ describe('PopupMenu content key and markup cache', () => {
       expect(String(PopupMenu(props))).toBe(String(ReferencePopupMenu(props)));
     },
   );
+
+  it('refreshes the markup when only secondary text changes', () => {
+    const render = (description?: string) =>
+      String(
+        PopupMenu({
+          text: 'Commands',
+          items: [{ label: 'Copy', description }],
+        }),
+      );
+    expect(render('')).toBe(render());
+    const first = render('Copy to clipboard');
+    const second = render('Copy to file');
+    expect(keyOf(first)).not.toBe(keyOf(second));
+    expect(second).toContain('aria-description="Copy to file"');
+  });
 
   it('hashes a part below the long-part length by its characters', () => {
     const short = new SafeHtml('x'.repeat(LONG_PART_LENGTH - 1));

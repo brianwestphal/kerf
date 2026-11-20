@@ -761,6 +761,8 @@ keeps the open menu's state out of the morph. Register
 submenus, and dismissal for every PopupMenu in the document. Do not hand-write
 `wa-dropdown` or menu markup for a menu.
 
+Give a record command a short `label` and a plain-text `description` to show its secondary text on the next line. Assistive technology announces the label as the name and the secondary text as the description. A trailing status badge still belongs in `details`.
+
 When the app changes the items of an open menu, the content key rebuilds its
 root. The register reopens that root and keeps focus on the same command (by
 `data-action`, then label), or moves focus to the first available command if

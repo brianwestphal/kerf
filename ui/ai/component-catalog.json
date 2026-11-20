@@ -8780,6 +8780,7 @@
         "disabled items",
         "nested actions",
         "checked choices and trailing details",
+        "description: a quiet second line under an item’s label for secondary text, such as a ticket title under its number",
         "danger tone and disabled reasons",
         "context trigger with a rendered anchor point and a zero-footprint anchor host",
         "placement",

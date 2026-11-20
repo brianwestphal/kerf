@@ -67,3 +67,42 @@ test('a context menu and its submenu are named', async ({ page }) => {
     context.getByRole('menuitem', { name: 'Copy Reference' }),
   ).toBeVisible();
 });
+
+for (const width of [390, 1280]) {
+  test(`record commands expose the secondary line as their description at ${width}px`, async ({
+    page,
+    browserName,
+  }) => {
+    await page.setViewportSize({ width, height: 850 });
+    const trigger = page.getByRole('button', { name: 'Recent Tickets' });
+    await trigger.click();
+    const menu = page.getByRole('menu', { name: 'Recent Tickets' });
+    const item = menu.getByRole('menuitem', { name: 'KF-104', exact: true });
+    await expect(item).toHaveAccessibleDescription(
+      'Keep the active project visible when the navigation panel opens',
+    );
+    await expect(item.getByText('Draft')).toBeVisible();
+    const layout = await item.evaluate((element) => {
+      const label = element
+        .querySelector('.kui-popup-menu__item-label')!
+        .getBoundingClientRect();
+      const desc = element
+        .querySelector('.kui-popup-menu__description')!
+        .getBoundingClientRect();
+      const details = element
+        .querySelector('.kui-popup-menu__details')!
+        .getBoundingClientRect();
+      return {
+        stacked: desc.top >= label.bottom - 1,
+        fits: desc.right <= details.left + 1,
+        overflow: element.scrollWidth - element.clientWidth,
+      };
+    });
+    expect(layout).toEqual({ stacked: true, fits: true, overflow: 0 });
+    if (browserName === 'chromium')
+      await menu.screenshot({
+        path: `test-results/popup-menu-records-${width}.png`,
+        animations: 'disabled',
+      });
+  });
+}

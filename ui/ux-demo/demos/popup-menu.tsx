@@ -94,6 +94,23 @@ export function PopupMenuDemo() {
           }
         />
       </CatalogExample>
+      <CatalogExample label="Recent Tickets" align="text-trigger">
+        <PopupMenu
+          text="Recent Tickets"
+          items={[
+            {
+              label: 'KF-104',
+              description:
+                'Keep the active project visible when the navigation panel opens',
+              details: <Badge>Draft</Badge>,
+            },
+            {
+              label: 'KF-101',
+              description: 'Remember the last selected workspace',
+            },
+          ]}
+        />
+      </CatalogExample>
       <CatalogExample label="Trailing Toolbar Menu" align="none">
         <Toolbar
           label="Ticket View"
