@@ -98,6 +98,65 @@ Per-entry `resources` render as "open in new tab" links in the footer, and
 `ToolbarControlGroup` (grouped by each entry's `group`), so register its elements
 with `@kerfjs/ui/popup-menu/register` when you use it.
 
+## Import a library catalog
+
+A catalog publisher exports a typed `CatalogPackage` with a stable package
+name, display label, entries and optional `imports` of other published
+manifests. Import the Kerf UI manifest from the optional
+`@kerfjs/ui/catalog-library` subpath. It contains the library's real
+component metadata and imports its curated Web Awesome integration metadata.
+It leaves preview implementations to packages that distribute them.
+
+```ts
+import { composeCatalog, type CatalogPackage } from '@kerfjs/ui/catalog';
+import { kerfCatalogPackage } from '@kerfjs/ui/catalog-library';
+
+const app: CatalogPackage = {
+  package: 'review-app',
+  label: 'Review App',
+  imports: [kerfCatalogPackage],
+  entries: [{
+    id: 'appearance-menu',
+    name: 'Appearance Menu',
+    category: 'Controls',
+    uses: [{ package: '@kerfjs/ui', id: 'popup-menu' }],
+    loadPreview: () => import('./appearance-preview.js').then(module => module.render),
+  }],
+};
+const graph = composeCatalog(app);
+```
+
+Build the graph once outside render. Pass its `groups` through
+`Catalog.secondarySections`, update each group's controlled `expanded` and
+optional `tagFilter.show` by stable group id, and pass the active qualified
+entry id to the shell. `wireCatalog` supplies the group id to `onToggleSecondary`
+and the second argument of `onToggleSecondaryFilter` when a group has an id.
+The existing single-group form retains its callback arguments. Sidebar search
+matches the package label as well as categories and entry names.
+
+`catalogEntryId(packageName, localId)` produces the route value, e.g.
+`@kerfjs/ui:popup-menu`. Pass it to `URLSearchParams` as written. On startup,
+accept a bookmarked id only if `graph.entries.has(id)`, and expand the owning
+package when selecting an entry. Two packages may use the same local id.
+Names, categories and import order can change without invalidating the link.
+
+Each `uses` string names an entry in its own package. An object names the exact
+target package and entry. The resolver indexes the whole graph before resolving
+those edges and supplies both **Uses** and **Used by** to the related menu.
+An import makes metadata reachable without implying a component relationship.
+The first depth-first visit determines display order. Repeating the same
+manifest object or relationship is harmless. Conflicting definitions of one
+package, duplicate local ids, missing targets and cycles throw with the
+offending names. A package name must be nonempty and contain no colon.
+
+`graph.loadPreview(id)` returns an optional render function. Loading begins on
+request, simultaneous requests share one load, successful loads are reused, and
+a rejected load can be retried. Keep active-selection ownership with the app so
+a slow old preview cannot overwrite the current one. The [runnable consumer
+example](examples/composed-catalog.tsx) uses `resource` for this, restores
+bookmarks, preserves existing query parameters, and shows a metadata-only
+entry when its publisher supplies no preview.
+
 ## Catalog demo authoring contract
 
 This section is the single authoritative contract for tools and people that

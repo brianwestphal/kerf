@@ -3666,9 +3666,10 @@ export { DEFAULT_BREAKPOINTS, type DeviceBreakpoints, type DeviceClass, type Dev
 ```ts
 import * as kerfjs from 'kerfjs';
 import { SafeHtml } from 'kerfjs';
-import { b as CatalogProps } from './types-DmHWkSd6.js';
-export { a as CatalogBackgroundStyle, c as CatalogBrand, d as CatalogEntry, e as CatalogRelated, C as CatalogResource, f as CatalogSecondaryGroup, g as CatalogSection, h as CatalogSettingsConfig, i as CatalogStageRootAttributes, j as CatalogTagFilter, k as CatalogUxReview } from './types-DmHWkSd6.js';
+import { d as CatalogProps } from './types-CuKf5G87.js';
+export { c as CatalogBackgroundStyle, e as CatalogBrand, a as CatalogEntry, f as CatalogRelated, C as CatalogResource, b as CatalogSecondaryGroup, g as CatalogSection, h as CatalogSettingsConfig, i as CatalogStageRootAttributes, j as CatalogTagFilter, k as CatalogUxReview } from './types-CuKf5G87.js';
 import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
+export { C as CatalogPackage, a as CatalogPackageEntry, b as CatalogPreview, c as CatalogReference, d as ComposedCatalog, e as catalogEntryId, f as composeCatalog } from './compose-B_GFfFhm.js';
 import './toolbar.js';
 import './extension-attributes-CnqvBmj3.js';
 import './sides-BPSWde0A.js';
@@ -3820,10 +3821,41 @@ declare function loadUxReviewProject(pageUrl: string | URL, fetchImpl?: typeof g
 export { Catalog, CatalogExample, type CatalogExampleAlign, type CatalogExampleProps, CatalogExampleStack, type CatalogExampleStackProps, type CatalogExampleStackWidth, type CatalogExampleViewport, CatalogProps, UX_REVIEW_PROJECT_PATH, type UxReviewCapture, loadUxReviewProject, uxReviewCaptureUrl };
 ```
 
+## `@kerfjs/ui/catalog-library`
+
+```ts
+import { C as CatalogPackage } from './compose-B_GFfFhm.js';
+import './semantic-content-BbzjvSu9.js';
+import 'kerfjs';
+import './types-CuKf5G87.js';
+import './toolbar.js';
+import './extension-attributes-CnqvBmj3.js';
+import './sides-BPSWde0A.js';
+import './pane.js';
+import './scroll-clearance-BikHljTc.js';
+import './anchor-name-BZ1rpxaw.js';
+import './css-values.js';
+import './surface-tint-DQgYCaP9.js';
+import './workbench.js';
+import './nav-stack-IKSMxo2A.js';
+import './list.js';
+import './flex-alignment-4ms8ZbV8.js';
+import './panel-toolbar-CEcHHDkn.js';
+import './lucide-icon.js';
+import 'lucide';
+import './toolbar-text.js';
+import './resizable-region.js';
+
+/** The shipped Kerf UI catalog, including its curated Web Awesome integration catalog. */
+declare const kerfCatalogPackage: CatalogPackage;
+
+export { kerfCatalogPackage };
+```
+
 ## `@kerfjs/ui/catalog-resources`
 
 ```ts
-import { C as CatalogResource } from './types-DmHWkSd6.js';
+import { C as CatalogResource } from './types-CuKf5G87.js';
 import './toolbar.js';
 import 'kerfjs';
 import './semantic-content-BbzjvSu9.js';
@@ -3881,7 +3913,7 @@ export { type CatalogGuidanceKind, type CatalogResourceKind, type CatalogResourc
 
 ```ts
 import { Signal } from 'kerfjs';
-import { a as CatalogBackgroundStyle } from './types-DmHWkSd6.js';
+import { c as CatalogBackgroundStyle } from './types-CuKf5G87.js';
 import './toolbar.js';
 import './semantic-content-BbzjvSu9.js';
 import './extension-attributes-CnqvBmj3.js';
@@ -3920,12 +3952,12 @@ interface WireCatalogOptions {
      */
     onToggleSettings?: () => void;
     /** Invoked when the secondary (ecosystem) group's disclosure toggle is activated. */
-    onToggleSecondary?: () => void;
+    onToggleSecondary?: (groupId?: string) => void;
     /**
      * Invoked with the switch's new state when the secondary group's tag-filter
      * switch changes; the app updates `tagFilter.show`.
      */
-    onToggleSecondaryFilter?: (show: boolean) => void;
+    onToggleSecondaryFilter?: (show: boolean, groupId?: string) => void;
     /** When set, `?<urlParam>=<id>` is written on select via `history.replaceState`. */
     urlParam?: string;
     /**

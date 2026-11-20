@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 164600,
-  "totalJavaScriptGzip": 470500,
-  "measuredLargestJavaScriptGzip": 164547,
-  "measuredTotalJavaScriptGzip": 470475,
+  "totalJavaScriptGzip": 470600,
+  "measuredLargestJavaScriptGzip": 164546,
+  "measuredTotalJavaScriptGzip": 470542,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -7603,6 +7603,22 @@
         "measuredTotalJavaScriptGzip": 470475,
         "largestJavaScriptGzip": 164600,
         "totalJavaScriptGzip": 470500
+      }
+    },
+    {
+      "at": "2026-11-20T05:50:41.249Z",
+      "reason": "KF-9518M8: route package-scoped groups and tag filters and retain the Related menu installer in production consumers; the library catalog is opt-in.",
+      "old": {
+        "measuredLargestJavaScriptGzip": 164547,
+        "measuredTotalJavaScriptGzip": 470475,
+        "largestJavaScriptGzip": 164600,
+        "totalJavaScriptGzip": 470500
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 164546,
+        "measuredTotalJavaScriptGzip": 470542,
+        "largestJavaScriptGzip": 164600,
+        "totalJavaScriptGzip": 470600
       }
     }
   ]

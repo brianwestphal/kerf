@@ -42,7 +42,10 @@ export function CatalogSecondarySections({
     <List
       dividerSides="t"
       controlInsets="t"
-      rootAttributes={{ 'data-catalog-secondary-group': group.label }}
+      rootAttributes={{
+        'data-catalog-secondary-group': group.label,
+        'data-catalog-group-id': group.id,
+      }}
     >
       {group.collapsible ? (
         <ListHeader

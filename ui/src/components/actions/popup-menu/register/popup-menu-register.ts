@@ -1,8 +1,6 @@
-import { installHelpTags } from '../../../../wiring/help-tags.js';
-import { installPopupMenus } from '../internal/popup-menu-controller.js';
+import { installPopupMenuElements } from './popup-menu-registration.js';
 
-installPopupMenus();
-installHelpTags();
+installPopupMenuElements();
 
 /**
  * Marker export for tests and tooling; importing this module wires every

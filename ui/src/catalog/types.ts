@@ -12,6 +12,8 @@ export interface CatalogResource {
 
 /** A related entry offered in the detail footer's "Related entries" popup menu. */
 export interface CatalogRelated {
+  /** Optional package identity displayed below the target name. */
+  description?: string;
   id: string;
   name: string;
   /** Group heading in the menu, e.g. "Uses" / "Used by". */
@@ -35,6 +37,8 @@ export interface CatalogSection {
 
 /** A quieter, optionally collapsible group of catalog sections. */
 export interface CatalogSecondaryGroup {
+  /** Stable group identity reported by the wiring. Omit to retain the single-group callback arguments. */
+  id?: string;
   label: string;
   sections: readonly CatalogSection[];
   collapsible?: boolean;
@@ -185,7 +189,7 @@ export interface CatalogProps {
    * (`wireCatalog`'s `onUxReviewProject`); omit it on static hosting.
    */
   uxReview?: CatalogUxReview;
-  secondarySections?: CatalogSecondaryGroup;
+  secondarySections?: CatalogSecondaryGroup | readonly CatalogSecondaryGroup[];
   sidebarFooter?: KerfUiContent;
   status?: KerfUiContent;
   /** Preview background (default `checkerboard`). */

@@ -450,6 +450,11 @@ pretending app-local components are `@kerfjs/ui` exports. A package that
 keeps a `kerf.components.json` generates this extension with
 `kerf-component-catalog` by setting `kerfComponentCatalog.selectionOutput`
 instead of maintaining a second JSON by hand.
+A developer catalog can import the published `kerfCatalogPackage` from
+`@kerfjs/ui/catalog-library`, including its Web Awesome integration catalog.
+`composeCatalog` resolves package-qualified navigation, Uses and Used by, and
+optional previews. See [Import a library catalog](./docs/catalog.md#import-a-library-catalog).
+
 For a consumer UX demo, `@kerfjs/ui/catalog-projection` derives rows and
 relationships from that extension; `kerf-catalog-demo --write` emits a typed
 module and `--check` catches drift. See the [catalog guide](./docs/catalog.md)
@@ -563,7 +568,7 @@ context so adding the declaration boundary does not mutate a frozen measured
 regression suite.
 
 `npm run catalog:sync` deterministically projects the fields used by the UX
-catalog into `ux-demo/catalog.generated.ts`, including the existing guidance
+catalog into `src/catalog/packages/catalog.generated.ts`, including the existing guidance
 path and the first-party source path for each main, recipe, or Web Awesome
 specimen. First-party component entries also derive their implementation path
 from the canonical browser import. Do not edit that generated file.

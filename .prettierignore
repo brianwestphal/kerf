@@ -48,7 +48,7 @@ ui/ai-regressions/results/
 ui/ai-regressions/authoring-defaults/attempts/
 ui/ai-regressions/response.schema.json
 ui/ai-regressions/run*.schema.json
-ui/ux-demo/catalog.generated.ts
+ui/src/catalog/packages/catalog.generated.ts
 ui/docs/design/sketch/button/*.json
 ui/docs/design/sketch/button/*.html
 ui/docs/design/sketch/button/inputs/
