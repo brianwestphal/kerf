@@ -32,6 +32,15 @@ A `computed` is a derived signal. Its body is re-run whenever any signal it read
 
 `computed` is read via `.value`, just like `signal`. From a consumer's perspective, you can't tell whether a value is a raw signal or a computed — which is the point.
 
+For a formatted label, create the computed once where its inputs are owned and pass it to each text or attribute hole. One calculation supplies both holes. Keep changing inputs, such as the selected units, inside the calculation as signal reads.
+
+```tsx
+const label = computed(() => count.value + " items");
+const stop = mount(root, () => <span title={label}>{label}</span>);
+```
+
+The same `label` works in a tagged HTML text or attribute hole. See the [formatted-leaf measurements](reports/2026-11-19-formatted-leaves.md) for the setup and update tradeoff.
+
 ## 2.3 `effect(fn)`
 
 ```ts
