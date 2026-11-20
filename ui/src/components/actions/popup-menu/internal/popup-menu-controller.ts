@@ -110,6 +110,25 @@ const isRtl = (element: Element): boolean =>
 const labelOf = (item: Element): string =>
   itemLabel(item, '.kui-popup-menu__item-label');
 
+/** Match one item at its own level. An action can be shared by a whole list. */
+function replacementItem(
+  menu: HTMLElement,
+  old: HTMLElement,
+): HTMLElement | undefined {
+  const items = levelItems(menu);
+  const action = old.getAttribute('data-action');
+  const value = old.getAttribute('value');
+  const candidates = items.filter(
+    (item) =>
+      (!action || item.getAttribute('data-action') === action) &&
+      (value === null || item.getAttribute('value') === value),
+  );
+  if ((action || value !== null) && candidates.length === 1)
+    return candidates[0];
+  const named = candidates.filter((item) => labelOf(item) === labelOf(old));
+  return named.length === 1 ? named[0] : undefined;
+}
+
 function focusItem(menu: HTMLElement, focus: Focus): void {
   if (focus === 'none') return;
   const items = levelItems(menu);
@@ -136,6 +155,8 @@ export function installPopupMenus(doc: Document = document): void {
   const typeahead = createTypeahead(win);
   // Open root menus, for dismissal by a press outside them.
   const openRoots = new Set<HTMLElement>();
+  // A cancelled nested choice may synchronously replace the content-keyed root.
+  const keptChoices = new WeakMap<HTMLElement, HTMLElement>();
   // Menus closing without returning focus (a press outside moves it).
   const quiet = new WeakSet<HTMLElement>();
   // Each menu's toggle count, so a deferred focus return from an earlier
@@ -278,6 +299,7 @@ export function installPopupMenus(doc: Document = document): void {
       const target = event.target as Element;
       focusWithin = menu.contains(target);
       if (focusWithin) focusedItem = target.closest<HTMLElement>(ITEM);
+      if (target !== keptChoices.get(menu)) keptChoices.delete(menu);
     };
     doc.addEventListener('focusin', onFocus, true);
     const observer = new win.MutationObserver((records) => {
@@ -289,8 +311,17 @@ export function installPopupMenus(doc: Document = document): void {
         ),
       );
       const replacement = replacements.length === 1 ? replacements[0] : null;
-      const identity = focusedItem?.getAttribute('data-action');
-      const label = focusedItem && labelOf(focusedItem);
+      const choice = keptChoices.get(menu);
+      const path: HTMLElement[] = [];
+      let level = choice?.closest<HTMLElement>(MENU);
+      while (level && level !== menu) {
+        const parentItem = openerOf(level);
+        if (!parentItem) break;
+        path.push(parentItem);
+        cancelClose(level);
+        stopFollowing(level);
+        level = parentItem.closest<HTMLElement>(MENU);
+      }
       // A detached native popover may already have closed without a toggle.
       // Clear its owner state even in that case, without returning focus.
       quiet.add(menu);
@@ -301,15 +332,25 @@ export function installPopupMenus(doc: Document = document): void {
       quiet.delete(menu);
       if (!focusWithin || !replacement) return;
       openRoot(replacement, { ...detail, focus: 'none' });
-      const next = rootMenuOf(replacement);
+      let next = rootMenuOf(replacement);
       if (!next || !isOpen(next)) return;
-      const items = levelItems(next);
+      let target = choice ?? focusedItem;
+      for (const old of path.reverse()) {
+        const item = replacementItem(next, old);
+        const submenu = item && submenuOf(item);
+        if (!item || !submenu) {
+          target = null;
+          break;
+        }
+        openSubmenu(item, submenu, 'none', false);
+        if (!isOpen(submenu)) {
+          target = item;
+          break;
+        }
+        next = submenu;
+      }
       const match =
-        items.find((item) =>
-          identity !== null && identity !== undefined
-            ? item.getAttribute('data-action') === identity
-            : labelOf(item) === label,
-        ) ?? items[0];
+        (target && replacementItem(next, target)) || levelItems(next)[0];
       (match ?? next).focus({ preventScroll: true });
       if (match) revealInMenu(match, next);
     });
@@ -409,6 +450,10 @@ export function installPopupMenus(doc: Document = document): void {
       }),
     );
     if (proceed) closeRoot(root, true);
+    else if (item.closest(MENU)?.hasAttribute('data-submenu')) {
+      const menu = rootMenuOf(root);
+      if (menu) keptChoices.set(menu, item);
+    }
   };
 
   const runTypeahead = (menu: HTMLElement, key: string): boolean => {
@@ -646,6 +691,10 @@ export function installPopupMenus(doc: Document = document): void {
       const toggle = (toggles.get(menu) ?? 0) + 1;
       toggles.set(menu, toggle);
       if ((event as ToggleEvent).newState !== 'closed') return;
+      const root = menu.closest(ROOT);
+      const top = root && rootMenuOf(root);
+      if (top && menu.contains(keptChoices.get(top) ?? null))
+        keptChoices.delete(top);
       stopFollowing(menu);
       cancelClose(menu);
       openRoots.delete(menu);

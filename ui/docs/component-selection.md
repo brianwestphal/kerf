@@ -764,7 +764,10 @@ submenus, and dismissal for every PopupMenu in the document. Do not hand-write
 When the app changes the items of an open menu, the content key rebuilds its
 root. The register reopens that root and keeps focus on the same command (by
 `data-action`, then label), or moves focus to the first available command if
-the focused one was removed. An open submenu returns to the root level.
+the focused one was removed. If the app cancels a nested `kui-menu-select`
+and changes the items, the controller reopens the surviving submenu path
+and focuses the chosen command there. Give sibling submenu triggers distinct
+labels or stable action/value identities.
 
 ```tsx
 <ToolbarControlGroup single nestedDropdown menuInset="compact">

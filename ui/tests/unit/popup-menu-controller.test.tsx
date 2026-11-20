@@ -583,6 +583,110 @@ describe('PopupMenu register: keyboard navigation', () => {
     ).toBe('true');
   });
 
+  it.each([true, false])(
+    'restores surviving levels after a cancelled choice (keep parent: %s)',
+    async (keepParent) => {
+      const showAll = {
+        label: 'Show All Projects',
+        action: 'toggle',
+        checked: false,
+      };
+      const entries = (children: PopupMenuEntry[]): PopupMenuEntry[] => [
+        { label: 'Sites', submenu: children },
+      ];
+      const add = (children: PopupMenuEntry[]) => ({
+        label: 'Add a Site',
+        submenu: children,
+      });
+      const { host, root, trigger, item } = setup({
+        items: entries([add([showAll])]),
+      });
+      click(trigger);
+      key(item('Sites'), 'ArrowRight');
+      key(item('Add a Site'), 'ArrowRight');
+      const toggle = item('Show All Projects');
+      root.addEventListener(POPUP_MENU_SELECT_EVENT, (event) => {
+        event.preventDefault();
+        const choices = [
+          { label: 'Project Two' },
+          { ...showAll, checked: true },
+        ];
+        const items = entries(
+          keepParent ? [add(choices)] : [{ label: 'Back to sites' }],
+        );
+        morph(host, PopupMenu({ text: 'Actions', items }));
+      });
+      click(toggle);
+      await flush();
+      const open = [
+        ...host.querySelectorAll<HTMLElement>('[data-submenu]'),
+      ].filter(isShown);
+      expect(open).toHaveLength(keepParent ? 2 : 1);
+      expect(document.activeElement?.textContent).toBe(
+        keepParent ? showAll.label : 'Back to sites',
+      );
+      if (keepParent)
+        expect(document.activeElement?.getAttribute('aria-checked')).toBe(
+          'true',
+        );
+    },
+  );
+
+  it('focuses the parent if the replacement submenu cannot open', async () => {
+    const { host, root, trigger, item } = setup();
+    click(trigger);
+    key(item('Share'), 'ArrowRight');
+    root.addEventListener(POPUP_MENU_SELECT_EVENT, (event) => {
+      event.preventDefault();
+      const next = root.cloneNode(true) as HTMLElement;
+      const sub = next.querySelector<HTMLElement>('[data-submenu]')!;
+      vi.spyOn(sub, 'showPopover').mockImplementation(() => {
+        throw new Error('cannot open');
+      });
+      root.replaceWith(next);
+    });
+    click(item('Mail'));
+    await flush();
+    expect(document.activeElement?.textContent).toBe('Share');
+    expect(isShown(host.querySelector('[data-submenu]'))).toBe(false);
+  });
+
+  it('forgets a cancelled choice after its submenu closes', async () => {
+    const { host, root, trigger, item, submenu } = setup();
+    click(trigger);
+    key(item('Share'), 'ArrowRight');
+    root.addEventListener(POPUP_MENU_SELECT_EVENT, (event) =>
+      event.preventDefault(),
+    );
+    click(item('Mail'));
+    submenu!.hidePopover();
+    await flush();
+    morph(
+      host,
+      PopupMenu({ text: 'Actions', items: [...ENTRIES, { label: 'More' }] }),
+    );
+    await flush();
+    expect(isShown(host.querySelector('[data-submenu]'))).toBe(false);
+  });
+
+  it('falls back to the root if the detached submenu lost its opener', async () => {
+    const { host, root, trigger, item } = setup();
+    click(trigger);
+    key(item('Share'), 'ArrowRight');
+    const mail = item('Mail');
+    const opener = item('Share');
+    root.addEventListener(POPUP_MENU_SELECT_EVENT, (event) => {
+      event.preventDefault();
+      const replacement = root.cloneNode(true) as HTMLElement;
+      root.replaceWith(replacement);
+      opener.remove();
+    });
+    click(mail);
+    await flush();
+    expect(isShown(host.querySelector('[data-submenu]'))).toBe(false);
+    expect(document.activeElement?.textContent).toBe('Copy');
+  });
+
   it('focuses the first surviving item when a rebuild removes the focused command', async () => {
     const items: PopupMenuEntry[] = [
       { label: 'Copy', action: 'copy' },

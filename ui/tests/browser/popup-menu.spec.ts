@@ -198,6 +198,54 @@ test('an open PopupMenu keeps its command focus when a content-key rebuild repla
   await expect(root.getByRole('menuitem', { name: 'Priority' })).toBeFocused();
 });
 
+test('a cancelled checkbox selection reopens its rebuilt submenu with the changed items', async ({
+  page,
+  browserName,
+}) => {
+  await page.goto('/?component=popup-menu');
+  const { root, trigger, submenu, approve } = nestedMenu(page);
+  await trigger.press('Enter');
+  await page.keyboard.press('ArrowRight');
+  await expect(approve).toBeFocused();
+  await root.evaluate((old) => {
+    old.addEventListener(
+      'kui-menu-select',
+      (event) => {
+        event.preventDefault();
+        const replacement = old.cloneNode(true) as HTMLElement;
+        const checkbox = replacement.querySelector(
+          '[role="menuitemcheckbox"]',
+        )!;
+        checkbox.setAttribute('aria-checked', 'false');
+        const extra = replacement
+          .querySelector('[data-decision="other"]')!
+          .cloneNode(true) as HTMLElement;
+        extra.querySelector('.kui-popup-menu__item-label')!.textContent =
+          'Request Review';
+        checkbox.after(extra);
+        old.replaceWith(replacement);
+      },
+      { once: true },
+    );
+  });
+  await approve.press('Space');
+  await expect(approve).toHaveAttribute('aria-checked', 'false');
+  await expect(approve).toBeFocused();
+  await expect(
+    submenu.getByRole('menuitem', { name: 'Request Review' }),
+  ).toBeVisible();
+  if (browserName === 'chromium') {
+    await settled(submenu);
+    await submenu.screenshot({
+      path: 'test-results/cancelled-choice-submenu.png',
+    });
+  }
+  await approve.press('ArrowDown');
+  await expect(
+    submenu.getByRole('menuitem', { name: 'Request Review' }),
+  ).toBeFocused();
+});
+
 test('nested checked choices, disabled commands, and context opening work', async ({
   page,
   browserName,
