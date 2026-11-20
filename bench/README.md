@@ -284,3 +284,5 @@ When the API is stable enough to publish numbers:
 [results]: https://krausest.github.io/js-framework-benchmark/current.html
 
 For the production-browser comparison of ordinary and tuned list updates, editable-row focus preservation, and keyboard picker behavior, see the [authoring defaults baseline](./authoring-defaults/README.md).
+
+The [keyed content-row experiment](./keyed-content-rows/README.md) compares row ownership, focus preservation, live positions and heap cost under immutable refetch.
