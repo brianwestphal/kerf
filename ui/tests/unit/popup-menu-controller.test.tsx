@@ -632,6 +632,51 @@ describe('PopupMenu register: keyboard navigation', () => {
     },
   );
 
+  it('restores a pointer choice by value when matching labels and actions are reordered', async () => {
+    const option = (value: string) => ({
+      label: 'Open',
+      action: 'open',
+      value,
+    });
+    const entries = (values: string[]) => [
+      { label: 'Projects', submenu: values.map(option) },
+    ];
+    const { host, root, trigger, item } = setup({ items: entries(['a', 'b']) });
+    click(trigger);
+    key(item('Projects'), 'ArrowRight');
+    const choice = root.querySelector<HTMLElement>('[value="b"]')!;
+    root.addEventListener(POPUP_MENU_SELECT_EVENT, (event) =>
+      event.preventDefault(),
+    );
+    click(choice);
+    // A pointer choice can receive focus after dispatch and before the next render.
+    choice.focus();
+    morph(
+      host,
+      PopupMenu({ text: 'Actions', items: entries(['c', 'b', 'a']) }),
+    );
+    await flush();
+    expect(isShown(host.querySelector('[data-submenu]'))).toBe(true);
+    expect(document.activeElement?.getAttribute('value')).toBe('b');
+  });
+
+  it('allows a cancelled selection handler to remove the root menu immediately', async () => {
+    const { root, trigger, item, menu } = setup();
+    click(trigger);
+    key(item('Share'), 'ArrowRight');
+    await flush();
+    const positioned = floating.positions.length;
+    root.addEventListener(POPUP_MENU_SELECT_EVENT, (event) => {
+      event.preventDefault();
+      root.remove();
+      root.replaceChildren();
+    });
+    click(item('Mail'));
+    await flush();
+    expect(root.contains(menu)).toBe(false);
+    expect(floating.positions).toHaveLength(positioned);
+  });
+
   it('focuses the parent if the replacement submenu cannot open', async () => {
     const { host, root, trigger, item } = setup();
     click(trigger);
