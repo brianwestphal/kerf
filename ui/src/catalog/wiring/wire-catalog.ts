@@ -28,12 +28,12 @@ export interface WireCatalogOptions {
    */
   onToggleSettings?: () => void;
   /** Invoked when the secondary (ecosystem) group's disclosure toggle is activated. */
-  onToggleSecondary?: () => void;
+  onToggleSecondary?: (groupId?: string) => void;
   /**
    * Invoked with the switch's new state when the secondary group's tag-filter
    * switch changes; the app updates `tagFilter.show`.
    */
-  onToggleSecondaryFilter?: (show: boolean) => void;
+  onToggleSecondaryFilter?: (show: boolean, groupId?: string) => void;
   /** When set, `?<urlParam>=<id>` is written on select via `history.replaceState`. */
   urlParam?: string;
   /**
@@ -408,8 +408,16 @@ export function wireCatalog(
   }
   if (onToggleSecondary) {
     disposers.push(
-      delegate(root, 'click', `[data-action="${toggleSecondaryAction}"]`, () =>
-        onToggleSecondary(),
+      delegate(
+        root,
+        'click',
+        `[data-action="${toggleSecondaryAction}"]`,
+        (_event, element) => {
+          const id = element.closest<HTMLElement>('[data-catalog-group-id]')
+            ?.dataset.catalogGroupId;
+          if (id) onToggleSecondary(id);
+          else onToggleSecondary();
+        },
       ),
     );
   }
@@ -419,8 +427,13 @@ export function wireCatalog(
         root,
         'change',
         `[data-action="${toggleSecondaryFilterAction}"]`,
-        (_event, element) =>
-          onToggleSecondaryFilter((element as HTMLInputElement).checked),
+        (_event, element) => {
+          const checked = (element as HTMLInputElement).checked;
+          const id = element.closest<HTMLElement>('[data-catalog-group-id]')
+            ?.dataset.catalogGroupId;
+          if (id) onToggleSecondaryFilter(checked, id);
+          else onToggleSecondaryFilter(checked);
+        },
       ),
     );
   }

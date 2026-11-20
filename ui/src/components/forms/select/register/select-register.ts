@@ -1,10 +1,7 @@
-// The Catalog's related-entries menus are PopupMenus: PopupMenu's own
-// registration installs them (and the help tags) through its public register
-// module rather than reaching into its internal controller.
-import '../../../actions/popup-menu/register/popup-menu-register.js';
-
+import { installPopupMenuElements } from '../../../actions/popup-menu/register/popup-menu-registration.js';
 import { installSelects } from '../internal/select-controller.js';
 
+installPopupMenuElements();
 installSelects();
 
 /**

@@ -48,6 +48,7 @@ const curatedEntries = [
   ['@kerfjs/ui/wire-resizable-regions', 'dist/wire-resizable-regions.d.ts'],
   ['@kerfjs/ui/device-class', 'dist/device-class.d.ts'],
   ['@kerfjs/ui/catalog', 'dist/catalog.d.ts'],
+  ['@kerfjs/ui/catalog-library', 'dist/catalog-library.d.ts'],
   ['@kerfjs/ui/catalog-resources', 'dist/catalog-resources.d.ts'],
   ['@kerfjs/ui/wire-catalog', 'dist/wire-catalog.d.ts'],
   ['@kerfjs/ui/segmented-control', 'dist/segmented-control.d.ts'],

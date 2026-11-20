@@ -11,6 +11,15 @@ export {
   type CatalogExampleStackProps,
   type CatalogExampleStackWidth,
 } from './catalog/components/catalog-example-stack.js';
+export {
+  catalogEntryId,
+  type CatalogPackage,
+  type CatalogPackageEntry,
+  type CatalogPreview,
+  type CatalogReference,
+  composeCatalog,
+  type ComposedCatalog,
+} from './catalog/packages/compose.js';
 export type {
   CatalogBackgroundStyle,
   CatalogBrand,

@@ -42,6 +42,7 @@ function relatedMenuItems(
       if (entry.group === group)
         items.push({
           label: entry.name,
+          description: entry.description,
           action: selectAction,
           attributes: { 'data-item-id': entry.id },
         });

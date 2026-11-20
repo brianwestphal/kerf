@@ -203,6 +203,10 @@
       "browser": "./dist/browser/catalog.js",
       "import": "./dist/catalog.js"
     },
+    "./catalog-library": {
+      "types": "./dist/catalog-library.d.ts",
+      "import": "./dist/catalog-library.js"
+    },
     "./catalog-resources": {
       "types": "./dist/catalog-resources.d.ts",
       "import": "./dist/catalog-resources.js"

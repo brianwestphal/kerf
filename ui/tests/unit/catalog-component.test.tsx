@@ -1626,6 +1626,77 @@ describe('wireCatalog', () => {
     stop();
   });
 
+  it('routes scoped disclosures and filters to the owning package and finds the selected entry across groups', () => {
+    const groups = ['lib', 'donor'].map((id) => ({
+      id,
+      label: id,
+      collapsible: true,
+      expanded: true,
+      tagFilter: { tag: 'Hidden', label: 'Show Hidden', show: false },
+      sections: [
+        {
+          category: 'Actions',
+          entries: [
+            {
+              id: id + ':button',
+              name: id + ' button',
+              related: [
+                {
+                  id: 'lib:button',
+                  name: 'Button',
+                  group: 'Uses',
+                  description: 'lib',
+                },
+                {
+                  id: 'app:button',
+                  name: 'Button',
+                  group: 'Used by',
+                  description: 'app',
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    }));
+    const root = mountShell(
+      asHtml(
+        Catalog({
+          brand: { title: 'Catalog' },
+          sections: [],
+          secondarySections: groups,
+          active: 'donor:button',
+          content: raw('<b/>'),
+        }),
+      ),
+    );
+    const toggle = vi.fn();
+    const filter = vi.fn();
+    const stop = wireCatalog(root, {
+      onSelect: vi.fn(),
+      onToggleSecondary: toggle,
+      onToggleSecondaryFilter: filter,
+    });
+    const group = root.querySelector('[data-catalog-group-id="donor"]')!;
+    group
+      .querySelector<HTMLElement>('[data-action="catalog-toggle-secondary"]')!
+      .click();
+    const input = group.querySelector<HTMLInputElement>(
+      '[data-action="catalog-toggle-secondary-filter"]',
+    )!;
+    input.checked = true;
+    input.dispatchEvent(new Event('change', { bubbles: true }));
+    expect(toggle.mock.calls).toEqual([['donor']]);
+    expect(filter.mock.calls).toEqual([[true, 'donor']]);
+    expect(
+      root.querySelector('[aria-label="donor button Header"]'),
+    ).not.toBeNull();
+    expect(root.querySelector('[data-catalog-related]')?.textContent).toContain(
+      'Used by',
+    );
+    stop();
+  });
+
   it('reports the secondary-group tag-filter switch state', () => {
     const root = mountShell(
       asHtml(

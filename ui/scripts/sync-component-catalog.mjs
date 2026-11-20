@@ -6,7 +6,7 @@ import { COMPONENTS } from './build-design-templates.mjs';
 const check = process.argv.includes('--check');
 const catalogUrl = new URL('../ai/component-catalog.json', import.meta.url);
 const generatedUrl = new URL(
-  '../ux-demo/catalog.generated.ts',
+  '../src/catalog/packages/catalog.generated.ts',
   import.meta.url,
 );
 const catalog = JSON.parse(await readFile(catalogUrl, 'utf8'));
@@ -78,7 +78,7 @@ if (check) {
   }
   if (current !== generated) {
     console.error(
-      '[sync-component-catalog] ux-demo/catalog.generated.ts is stale; run npm run catalog:sync.',
+      '[sync-component-catalog] src/catalog/packages/catalog.generated.ts is stale; run npm run catalog:sync.',
     );
     process.exitCode = 1;
   } else {
@@ -88,5 +88,7 @@ if (check) {
   }
 } else {
   await writeFile(generatedUrl, generated);
-  console.log('[sync-component-catalog] wrote ux-demo/catalog.generated.ts.');
+  console.log(
+    '[sync-component-catalog] wrote src/catalog/packages/catalog.generated.ts.',
+  );
 }

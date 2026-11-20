@@ -73,11 +73,17 @@ export function Catalog({
   className = '',
   slot,
 }: CatalogProps) {
+  const groups = !secondarySections
+    ? []
+    : 'sections' in secondarySections
+      ? [secondarySections]
+      : secondarySections;
   const found =
     findEntry(sections, active) ??
-    (secondarySections
-      ? findEntry(secondarySections.sections, active)
-      : undefined);
+    findEntry(
+      groups.flatMap((group) => group.sections),
+      active,
+    );
   const selected = found?.entry;
   const name = selected?.name ?? '';
   const nextTheme = theme === 'dark' ? 'light' : 'dark';
@@ -155,7 +161,7 @@ export function Catalog({
               brand={brand}
               sections={sections}
               active={active}
-              secondarySections={secondarySections}
+              groups={groups}
               footer={sidebarFooter}
               selectAction={selectAction}
               toggleSecondaryAction={toggleSecondaryAction}

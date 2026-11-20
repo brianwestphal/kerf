@@ -14,7 +14,7 @@ interface CatalogSidebarProps {
   brand: CatalogBrand;
   sections: readonly CatalogSection[];
   active: string;
-  secondarySections?: CatalogSecondaryGroup;
+  groups: readonly CatalogSecondaryGroup[];
   footer?: KerfUiContent;
   selectAction: string;
   toggleSecondaryAction: string;
@@ -26,7 +26,7 @@ export function CatalogSidebar({
   brand,
   sections,
   active,
-  secondarySections,
+  groups,
   footer,
   selectAction,
   toggleSecondaryAction,
@@ -47,15 +47,15 @@ export function CatalogSidebar({
           active={active}
           selectAction={selectAction}
         />
-        {secondarySections ? (
+        {groups.map((group) => (
           <CatalogSecondarySections
-            group={secondarySections}
+            group={group}
             active={active}
             selectAction={selectAction}
             toggleAction={toggleSecondaryAction}
             filterAction={toggleSecondaryFilterAction}
           />
-        ) : null}
+        ))}
         <ListInsetText
           sides="rl"
           rootAttributes={{ 'data-catalog-filter-empty': '' }}

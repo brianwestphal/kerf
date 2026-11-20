@@ -37,7 +37,6 @@ vi.mock('@floating-ui/dom', () => ({
 }));
 
 import {
-  installPopupMenus,
   POINTER_OPENED,
   SUBMENU_CLOSE_DELAY,
   TYPEAHEAD_RESET,
@@ -51,6 +50,7 @@ import {
   type PopupMenuEntry,
   type PopupMenuProps,
 } from '../../src/components/actions/popup-menu/popup-menu.js';
+import { installPopupMenuElements } from '../../src/components/actions/popup-menu/register/popup-menu-registration.js';
 import {
   installPopoverPolyfill,
   isShown,
@@ -60,9 +60,9 @@ import {
 
 beforeAll(() => {
   installPopoverPolyfill();
-  installPopupMenus();
+  installPopupMenuElements();
   // Idempotent per document.
-  installPopupMenus();
+  installPopupMenuElements();
 });
 
 beforeEach(() => {

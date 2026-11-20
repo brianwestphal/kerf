@@ -1,7 +1,7 @@
 import {
   generatedKerfCatalog,
   generatedWebAwesomeCatalog,
-} from './catalog.generated.js';
+} from '../src/catalog/packages/catalog.generated.js';
 
 export const catalogCategories = [
   'Foundation',
