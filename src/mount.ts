@@ -31,8 +31,8 @@ import {
   type BindingContext,
   coerceText,
   disposeRowBindings,
+  GlobalBindings,
   newBindingContext,
-  wireBindings,
 } from './bindings.js';
 import { devHooks, type WarnOnceContext } from './dev-hooks.js';
 import {
@@ -196,18 +196,9 @@ export function mount(
     warnedShiftIds: new Set(),
     rebuiltLists: new Set(),
   };
-  // KF-294: per-mount fine-grained binding context + live-effect disposers.
-  // `bindingCtx` is reset and repopulated each render; `bindingDisposers`
-  // holds the per-hole effects so they're torn down on unmount.
   const bindingCtx: BindingContext = newBindingContext();
-  let bindingDisposers: ReadonlyArray<() => void> = [];
-  // KF-338: the global-hole binding list that is ACTUALLY wired (bound to live
-  // effects) right now. On the fast path the effects aren't re-wired, so this
-  // list — captured whenever `wireBindings` runs — describes the signal
-  // instances the live effects are still bound to. The stale-binding dev warn
-  // compares it against this render's registered holes. Retained only when the
-  // warning is opted in, so the fast path stays allocation-free when it's off.
-  let prevWiredBindings: Binding[] = [];
+  const globalBindings = new GlobalBindings();
+  let previousBindings: Binding[] = [];
   let isFirst = true;
   // KF-88: the static-surrounds HTML string from the previous render. If a
   // re-render produces the same string (the common case when a signal flips
@@ -290,13 +281,8 @@ export function mount(
       // (KERF_DEV_WARN_PARSER_REPAIR). First render only: the shape is a
       // property of the markup, not of any particular update.
       devHooks.parserRepair?.(prevStaticHtml);
-      bindingDisposers = wireBindings(
-        rootEl,
-        bindingCtx,
-        bindingDisposers,
-        boundRows(),
-      );
-      if (devHooks.staleBindingEnabled?.()) prevWiredBindings = bindingCtx.list;
+      globalBindings.sync(rootEl, bindingCtx.list, false, boundRows);
+      if (devHooks.staleBindingEnabled?.()) previousBindings = bindingCtx.list;
       isFirst = false;
     } else {
       let nextStaticHtml = runSubsequentRender(
@@ -333,39 +319,12 @@ export function mount(
           scanCache,
         );
       }
-      // A changed static-surrounds string means morph() ran, which strips
-      // bound attributes (absent from the template) and removes inserted text
-      // nodes. Re-wire against the post-morph DOM. When the surrounds are
-      // unchanged (KF-88 fast path — the select-row / partial-update case),
-      // morph is skipped and the existing binding effects stay live, so we
-      // leave them untouched.
-      //
-      // KF-299 staleness note: leaving the effects untouched on the fast path
-      // is correct for the canonical pattern — `class={computed(() => sig.value)}`
-      // re-creates the `computed` each render, but the live effect stays bound
-      // to the FIRST computed, which reads the SAME underlying signal(s), so
-      // later changes still fire. It goes stale only if a render switches which
-      // signal INSTANCE it binds (e.g. `class={cond ? sigA : sigB}` where the
-      // surrounds byte-string is unchanged) — an anti-pattern; bind one
-      // `computed` that switches internally instead. Same "bound signal must be
-      // stable across renders" constraint as row bindings (see docs 2-reactivity
-      // §2.9). Re-wiring here would need fast-path text-node reuse to avoid
-      // duplicating inserted text nodes, so it's not worth it for an anti-pattern.
-      if (nextStaticHtml !== prevStaticHtml) {
-        bindingDisposers = wireBindings(
-          rootEl,
-          bindingCtx,
-          bindingDisposers,
-          boundRows(),
-        );
-        if (devHooks.staleBindingEnabled?.())
-          prevWiredBindings = bindingCtx.list;
-      } else {
-        // KF-338: fast path — the effects stay bound to `prevWiredBindings`.
-        // Dev-warn (opt-in) if this render tried to bind a DIFFERENT signal
-        // instance to a hole, which silently goes stale (the effect isn't
-        // re-wired). The warner short-circuits on its env gate first.
-        devHooks.staleBinding?.(prevWiredBindings, bindingCtx.list);
+      const sameHtml = nextStaticHtml === prevStaticHtml;
+      globalBindings.sync(rootEl, bindingCtx.list, sameHtml, boundRows);
+      if (devHooks.staleBindingEnabled?.()) {
+        if (sameHtml)
+          devHooks.staleBinding?.(previousBindings, bindingCtx.list);
+        previousBindings = bindingCtx.list;
       }
       prevStaticHtml = nextStaticHtml;
     }
@@ -425,8 +384,9 @@ export function mount(
 
   /** Release everything the mount holds except the effect itself. */
   const releaseResources = (): void => {
-    for (const d of bindingDisposers) d();
-    bindingDisposers = [];
+    globalBindings.dispose();
+    bindingCtx.list = [];
+    previousBindings = [];
     // KF-294: tear down every list row's fine-grained binding effects too.
     for (const b of bindings.values()) {
       for (const item of b.items) disposeRowBindings(item.bindingDisposers);

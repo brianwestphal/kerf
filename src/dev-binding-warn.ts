@@ -1,45 +1,6 @@
-/**
- * Dev-mode warning for silently-stale fine-grained bindings on the fast path
- * (KERF_DEV_WARN_STALE_BINDING=1).
- *
- * `mount()` has a fast path: when a re-render produces byte-for-byte identical
- * static-surrounds HTML (`nextStaticHtml === prevStaticHtml`), the morph AND the
- * binding re-wiring are both skipped and the existing per-hole binding effects
- * stay live — each bound to the FIRST signal instance registered for its hole.
- *
- * That is correct for the canonical pattern `class={computed(() => sig.value)}`:
- * the fresh computed each render reads the same underlying signal(s), so the
- * original effect keeps firing. A hole goes silently STALE only when a render
- * switches which signal INSTANCE it binds while the surrounds string is
- * unchanged — `class={cond ? sigA : sigB}`. kerf keeps the original effect bound
- * to `sigA` and never re-binds to `sigB`, so the hole freezes with no error: the
- * UI just stops updating. See docs/2-reactivity §2.9.
- *
- * This warner detects that: on a fast-path render `mount()` calls
- * `maybeWarnStaleBinding(prevWired, current)`, comparing — per hole, in
- * registration order — the signal instance this render registered
- * (`bindingCtx.list`) against the signal instance that is actually wired (the
- * previously-wired list retained by `mount()`). A per-hole difference fires a
- * one-shot warning naming the hole (kind / attr / id) and pointing at the "bind
- * one computed that switches internally" fix.
- *
- * Why opt-in: the comparison is raw signal identity, so a GLOBAL (static-
- * surround) hole bound with a *fresh inline* `computed(() => …)` — a new
- * instance every render, but reading the same signals, hence safe — also differs
- * on the fast path and would warn. Binding a STABLE signal / computed reference
- * for global holes (the idiomatic shape) avoids that; the opt-in gate keeps the
- * diagnostic available for projects that want it without penalizing ones that
- * pass a fresh inline computed into a global hole. (Row holes inside `each()` are
- * wired per-row-node and disposed on row removal, so they are not subject to
- * this fast-path staleness and never reach this warner.)
- *
- * With the dev entry absent, the nullable hook slots make this module
- * unreachable. With diagnostics installed but this warning switched off, the
- * predicate returns before comparison work, and `mount()` gates the
- * previously-wired-list retention on the same switch so the fast path stays
- * allocation-free.
+/** Opt-in report of changed global signal instances on a byte-equal render.
+ * Kerf retargets these automatically. Stable references avoid effect churn.
  */
-
 import type { Binding } from './bindings.js';
 import { devFlag, silenceHint } from './dev-warn-config.js';
 
@@ -68,7 +29,6 @@ export function maybeWarnStaleBinding(
   prevWired: readonly Binding[],
   current: readonly Binding[],
 ): void {
-  if (!isOptedIn()) return;
   const n = Math.min(prevWired.length, current.length);
   for (let i = 0; i < n; i++) {
     const cur = current[i];
@@ -77,11 +37,8 @@ export function maybeWarnStaleBinding(
     warnedHoles.add(cur.id);
     console.warn(
       `kerf: fine-grained binding ${describeHole(cur)} switched to a different signal instance ` +
-        'on a render whose static-surrounds HTML was byte-for-byte unchanged. On that fast path kerf ' +
-        'keeps the original binding effect and does NOT re-bind, so this hole is now stale — it still ' +
-        'tracks the FIRST signal instance and will not reflect the new one. Bind one computed that ' +
-        'switches internally (e.g. class={computed(() => cond.value ? sigA.value : sigB.value)}) instead ' +
-        'of switching which signal instance you bind (see docs/2-reactivity §2.9). ' +
+        'on a byte-equal render. Kerf retargeted this hole. If the source changes unnecessarily, ' +
+        'reuse a stable signal or computed to avoid restarting its effect (docs/2-reactivity §2.9). ' +
         silenceHint('staleBinding'),
     );
   }

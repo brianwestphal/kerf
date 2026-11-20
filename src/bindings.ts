@@ -17,7 +17,7 @@
  *
  *   - GLOBAL holes — signals in the static surrounds (outside any `each()`
  *     row). Markers: `data-kfb` attribute / `<!--kfb:{id}-->` comment. Ids come
- *     from the mount render context's counter; wired by `wireBindings()` over
+ *     from the mount render context's counter; wired by `GlobalBindings` over
  *     the whole mount root; disposed/re-wired by `mount()` each render.
  *
  *   - ROW holes — signals inside an `each()` row. Markers: `data-kfbrow`
@@ -100,10 +100,6 @@ let context: BindingContext | null = null;
 let rowSink: Binding[] | null = null;
 let rowCounter = 0;
 
-// Frozen shared sentinel for the no-holes case — readonly so no caller can
-// push into it and corrupt every other no-hole mount.
-const NO_DISPOSERS: ReadonlyArray<() => void> = Object.freeze([]);
-
 export function newBindingContext(): BindingContext {
   return { counter: 0, list: [] };
 }
@@ -183,36 +179,90 @@ export function bindText(signal: Signal<unknown>): string | null {
   return null;
 }
 
-/**
- * Wire this render's GLOBAL bindings against the freshly-built live DOM.
- * Disposes `prevDisposers` first (a surrounds-changed morph strips bound attrs
- * and removes inserted text nodes, so we re-establish them), then attaches one
- * effect per hole. Zero-cost when there are no global holes.
- *
- * `rows` — the `each()` rows bound in this mount — are not searched: a row
- * renders in row scope, so it carries only `data-kfbrow` / `kfbr:` markers,
- * never a global one. Skipping them keeps the marker search proportional to
- * the surrounds instead of to every row's subtree.
- */
-export function wireBindings(
-  rootEl: Element,
-  ctx: BindingContext,
-  prevDisposers: ReadonlyArray<() => void>,
-  rows?: ReadonlySet<Element>,
-): ReadonlyArray<() => void> {
-  for (const d of prevDisposers) d();
-  if (ctx.list.length === 0) return NO_DISPOSERS;
-  const disposers: Array<() => void> = [];
-  try {
-    wireInto(rootEl, ctx.list, disposers, rows);
-  } catch (err) {
-    // A hole whose first write threw (a throwing `computed`, a screened URL in
-    // dev) must not strand the effects wired before it: nobody would ever
-    // receive their disposers.
-    for (const d of disposers) d();
-    throw err;
+interface GlobalSlot {
+  binding: Binding;
+  target: Element | Comment | undefined;
+  dispose?: () => void;
+}
+
+/** One slot per registered global hole, including holes whose markers were omitted. */
+export class GlobalBindings {
+  private slots: GlobalSlot[] = [];
+  private retry = false;
+
+  dispose(): void {
+    for (const slot of this.slots) slot.dispose?.();
+    this.slots.length = 0;
+    this.retry = false;
   }
-  return disposers;
+
+  sync(
+    root: Element,
+    bindings: Binding[],
+    sameHtml: boolean,
+    rows: () => ReadonlySet<Element> | undefined,
+  ): void {
+    if (!sameHtml) this.dispose();
+    const slots = this.slots;
+    // Retire all changed destinations before writing any new one: e.g. two
+    // bound attribute names can swap while their marker ids stay unchanged.
+    let changed = this.retry || bindings.length !== slots.length;
+    for (let i = 0; i < slots.length; i++) {
+      const slot = slots[i];
+      const prev = slot.binding;
+      const next = bindings[i];
+      const sameMarker = next && prev.id === next.id && prev.kind === next.kind;
+      const sameDestination =
+        sameMarker &&
+        (prev.kind !== 'attr' || prev.attr === (next as AttrBinding).attr);
+      if (sameDestination && prev.signal === next.signal) continue;
+      changed = true;
+      slot.dispose?.();
+      slot.dispose = undefined;
+      if (!sameDestination && prev.kind === 'attr' && slot.target)
+        setBoundAttr(slot.target as Element, prev.attr, null);
+      if (!sameMarker || (slot.target && !root.contains(slot.target)))
+        slot.target = undefined;
+    }
+    if (!changed) return;
+
+    if (slots.length > bindings.length) slots.length = bindings.length;
+    this.retry = false;
+    let markers: Markers | undefined;
+    try {
+      for (let i = 0; i < bindings.length; i++) {
+        const binding = bindings[i];
+        const slot = (slots[i] ??= { binding, target: undefined });
+        if (slot.dispose) continue;
+        slot.binding = binding;
+        if (!slot.target) {
+          markers ??= indexMarkers(root, BIND_ATTR, TEXT_MARKER_PREFIX, rows());
+          slot.target =
+            binding.kind === 'attr'
+              ? markers.attrs.get(binding.id)
+              : markers.texts.get(binding.id);
+        }
+        if (slot.target)
+          slot.dispose =
+            binding.kind === 'attr'
+              ? attachAttrEffect(
+                  slot.target as Element,
+                  binding.attr,
+                  binding.signal,
+                )
+              : attachTextEffect(slot.target as Comment, binding.signal);
+      }
+    } catch (err) {
+      // Release every subscription. Keep the destinations for retry: the next
+      // render might change an attribute name that was already written.
+      for (const slot of slots) {
+        slot.dispose?.();
+        slot.dispose = undefined;
+      }
+      this.retry = true;
+      throw err;
+    }
+  }
 }
 
 /**
@@ -278,7 +328,7 @@ export function wireRowBindings(
       }
     }
   } catch (err) {
-    // Same contract as `wireBindings`: a hole that throws on its first write
+    // Same contract as `GlobalBindings`: a hole that throws on its first write
     // disposes the row's already-wired effects before the error propagates
     // (only wired holes were pushed, so every entry is callable).
     for (const d of disposers) d();
@@ -345,35 +395,6 @@ export function carryOrRewireRowBindings(
     bindingDisposers:
       newLen > 0 ? wireRowBindings(node, newBindings as Binding[]) : undefined,
   };
-}
-
-/**
- * GLOBAL-scope wiring core. Indexes `data-kfb`-marked elements + `kfb:`
- * comment markers under `scope` by binding id, then attaches an effect per
- * binding. Row-scope wiring lives in `wireRowBindings` (with its own inlined
- * root-attr fast path), so this always operates on the GLOBAL marker names.
- */
-function wireInto(
-  scope: Element,
-  bindings: Binding[],
-  disposers: Array<() => void>,
-  rows: ReadonlySet<Element> | undefined,
-): void {
-  const markers = indexMarkers(scope, BIND_ATTR, TEXT_MARKER_PREFIX, rows);
-
-  for (const b of bindings) {
-    if (b.kind === 'attr') {
-      const el = markers.attrs.get(b.id);
-      /* c8 ignore next -- defensive: a registered binding always emits its marker into `scope`. */
-      if (el === undefined) continue;
-      disposers.push(attachAttrEffect(el, b.attr, b.signal));
-    } else {
-      const marker = markers.texts.get(b.id);
-      /* c8 ignore next -- defensive: same invariant as the attr branch. */
-      if (marker === undefined) continue;
-      disposers.push(attachTextEffect(marker, b.signal));
-    }
-  }
 }
 
 /**

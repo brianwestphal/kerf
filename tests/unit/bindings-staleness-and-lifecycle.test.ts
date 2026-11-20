@@ -34,31 +34,28 @@ describe('fine-grained bindings — staleness + transition matrix (KF-299)', () 
   }
 
   it('global hole: a re-created computed reading a stable source survives a fast-path re-render', () => {
-    // The canonical pattern: `class={computed(() => cls.value)}`. `computed()`
-    // is a fresh instance every render, and a coarse re-render that leaves the
-    // surrounds byte-identical takes the KF-88 fast path (no re-wire). The
-    // original effect stays bound to the first computed — which reads the SAME
-    // `cls` signal — so a later `cls` change still updates the node. No staleness.
+    // Each coarse render creates a new computed that still reads cls.
     const trigger = signal(0);
     const cls = signal('a');
     const render = vi.fn(() => {
-      void trigger.value; // read so render re-runs on trigger change; not in the output
+      const prefix = trigger.value; // snapshot deliberately captured by this computed
       return jsx('div', {
         id: 'd',
-        class: computed(() => cls.value),
+        class: computed(() => prefix + cls.value),
         children: 'static',
       });
     });
     const dispose = mount(root, render);
     const d = root.querySelector('#d') as HTMLElement;
-    expect(d.getAttribute('class')).toBe('a');
+    expect(d.getAttribute('class')).toBe('0a');
 
-    trigger.value = 1; // coarse re-render, surrounds byte-identical → fast path, no re-wire
+    trigger.value = 1; // coarse re-render, surrounds byte-identical → same node, new computed
     expect(render).toHaveBeenCalledTimes(2);
     expect(root.querySelector('#d')).toBe(d); // same node
 
-    cls.value = 'b'; // the still-live original binding must fire
-    expect(d.getAttribute('class')).toBe('b');
+    expect(d.getAttribute('class')).toBe('1a');
+    cls.value = 'b';
+    expect(d.getAttribute('class')).toBe('1b');
     dispose();
   });
 
@@ -194,6 +191,88 @@ describe('fine-grained bindings — lifecycle', () => {
     expect(s.getAttribute('class')).toBe('two');
     expect(render).toHaveBeenCalledTimes(2);
 
+    dispose();
+  });
+});
+
+describe('global binding retargeting', () => {
+  it('switches source on the same text node and attribute without disturbing a neighboring effect', () => {
+    const choose = signal(true);
+    const a = signal('same');
+    const b = signal('same');
+    const neighbor = signal('stable');
+    const dispose = mount(root, () =>
+      jsx('p', {
+        title: choose.value ? a : b,
+        lang: neighbor,
+        children: choose.value ? a : b,
+      }),
+    );
+    const node = root.firstElementChild!;
+    const text = node.lastChild;
+    const set = vi.spyOn(node, 'setAttribute');
+    choose.value = false;
+    b.value = 'new';
+    a.value = 'unused';
+    expect([node.textContent, node.getAttribute('title')]).toEqual([
+      'new',
+      'new',
+    ]);
+    choose.value = true;
+    expect([node.textContent, node.getAttribute('title')]).toEqual([
+      'unused',
+      'unused',
+    ]);
+    expect(node.lastChild).toBe(text);
+    expect(set.mock.calls.every(([name]) => name === 'title')).toBe(true);
+    dispose();
+    a.value = 'detached';
+    expect(text?.nodeValue).toBe('unused');
+  });
+
+  it('clears old form properties before assigning swapped or renamed destinations', () => {
+    const flip = signal(false);
+    const on = signal(true);
+    const off = signal(false);
+    const dispose = mount(root, () =>
+      jsx(
+        'input',
+        flip.value
+          ? { disabled: on, title: off }
+          : { checked: on, disabled: off },
+      ),
+    );
+    const input = root.firstElementChild as HTMLInputElement;
+    expect(input.checked).toBe(true);
+    flip.value = true;
+    expect(input.checked).toBe(false);
+    expect(input.disabled).toBe(true);
+    expect(input.hasAttribute('checked')).toBe(false);
+    dispose();
+  });
+
+  it('releases partial subscriptions after a failed switch and wires the next successful render', () => {
+    const step = signal(0);
+    const a = signal('a');
+    const b = signal('b');
+    const err = computed<string>(() => {
+      throw new Error('bad source');
+    });
+    const dispose = mount(root, () =>
+      jsx('p', {
+        [step.value === 2 ? 'lang' : 'title']: step.value ? b : a,
+        children: step.value === 1 ? err : a,
+      }),
+    );
+    expect(() => {
+      step.value = 1;
+    }).toThrow('bad source');
+    b.value = 'later';
+    expect(root.firstElementChild?.getAttribute('title')).toBe('b');
+    step.value = 2;
+    expect(root.firstElementChild?.getAttribute('title')).toBeNull();
+    expect(root.firstElementChild?.getAttribute('lang')).toBe('later');
+    expect(root.textContent).toBe('a');
     dispose();
   });
 });

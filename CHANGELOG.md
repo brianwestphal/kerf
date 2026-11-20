@@ -18,6 +18,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 ### Fixed
 
 - **PopupMenu keeps a cancelled choice open in its submenu (KF-8QBJWN).** Rebuilding the menu with new items restores the matching submenu path and keyboard focus.
+- **Global signal bindings follow their latest source (KF-ZMER8Y).** Switching the signal supplied to a text or attribute hole now updates that same node immediately, even when its surrounding markup is unchanged. Unchanged holes retain their subscriptions.
 
 - **ValueTable rows grow to fit a value that newly wraps in WebKit (KF-PY1SN2).** When a `ValueTable` narrowed (a rail or sheet resizing, a `stackBelow` table stacking), WebKit kept a row's earlier height, so a value that had fit on one line and now wrapped drew over the next row. The table now lays its rows out in block flow rather than as grid rows; its width and every row's own layout are unchanged.
 - **Kerf UI keeps its geometry with Web Awesome 3.15 (KF-Y25K9Z).** Web Awesome 3.15 widened a checkbox group's default gap to 0.75em and added a top padding to every open `<details>` content box in `native.css`. The Web Awesome bridge now keeps stacked checkboxes 8px apart (the 28px pitch a Checkbox List shares), and a Disclosure's content box adds no padding of its own, so its content stays on the title's text column.

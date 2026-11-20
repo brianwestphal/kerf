@@ -61,9 +61,7 @@ describe('KF-387 seam: fine-grained bindings × data-morph-skip', () => {
   });
 
   it('switching the bound signal INSTANCE re-binds when the surrounds change in the same render', () => {
-    // docs/2 §2.9 scopes the stale-binding hazard to the BYTE-EQUAL fast
-    // path. The complement claim — a render that switches instances while
-    // also changing the surrounds re-wires cleanly — was never asserted.
+    // On the morph path the live marker must be resolved again.
     const use2 = signal(false);
     const s1 = signal('one');
     const s2 = signal('two');

@@ -66,6 +66,8 @@ const DIST = resolve(ROOT, 'dist');
  * ratchet the budget down. Wide enough to absorb ordinary churn, tight enough
  * that a 1 KB win can't quietly be spent again later.
  */
+// KF-ZMER8Y: mount retains and retargets global slots (+0.20 KB main, +0.20–0.22 KB
+// on core-dependent entries). Budgets below include the measured production change.
 const SLACK_KB = 0.35;
 
 const BUDGETS = [
@@ -91,7 +93,7 @@ const BUDGETS = [
     // delegate snapshot records its path (+0.03), and both list reconcilers
     // share one bulk row parse and offender diagnosis (parseRows), each() one
     // renderRow helper, and mount() a shorter nested-mount walk.
-    budgetKb: 15.2,
+    budgetKb: 15.35,
     description: 'realistic app import — the number the docs advertise',
     entry: `
       import { signal, computed, effect, batch, mount, each, delegate } from '${DIST}/index.js';
@@ -120,7 +122,7 @@ const BUDGETS = [
     // delegate snapshot records its path (+0.03), and both list reconcilers
     // share one bulk row parse and offender diagnosis (parseRows), each() one
     // renderRow helper, and mount() a shorter nested-mount walk.
-    budgetKb: 17.45,
+    budgetKb: 17.65,
     description: 'the whole public barrel — worst case for a consumer',
     entry: `
       import * as kerf from '${DIST}/index.js';
@@ -245,7 +247,7 @@ const BUDGETS = [
     // delegate snapshot records its path (+0.03), and both list reconcilers
     // share one bulk row parse and offender diagnosis (parseRows), each() one
     // renderRow helper, and mount() a shorter nested-mount walk.
-    budgetKb: 23.45,
+    budgetKb: 23.6,
     description:
       'the overlay/modal subpath (overlay + confirm + prompt + form + choice + popover + tooltip + positioning + toast) — includes shared core',
     entry: `
@@ -271,7 +273,7 @@ const BUDGETS = [
     // delegate snapshot records its path (+0.03), and both list reconcilers
     // share one bulk row parse and offender diagnosis (parseRows), each() one
     // renderRow helper, and mount() a shorter nested-mount walk.
-    budgetKb: 13.55,
+    budgetKb: 13.75,
     description:
       'the dispose-scope subpath (disposeScope + disposeSubtree + observeRemovals) — includes shared core',
     entry: `
@@ -314,7 +316,7 @@ const BUDGETS = [
     // KF-1267Y6 + KF-7HV0MF (+0.06 KB): snapshot recovery after a row-render
     // throw and frozen virtualized frames after rejected arraySignal keys.
     // Measured list entry: 15.83 KB min+gzip; retain ~0.07 KB headroom.
-    budgetKb: 15.9,
+    budgetKb: 16.1,
     description:
       'the bindList subpath (keyed per-row mount + virtualization) — includes shared core',
     entry: `
@@ -367,7 +369,7 @@ const BUDGETS = [
     // delegate snapshot records its path (+0.03), and both list reconcilers
     // share one bulk row parse and offender diagnosis (parseRows), each() one
     // renderRow helper, and mount() a shorter nested-mount walk.
-    budgetKb: 13.1,
+    budgetKb: 13.25,
     description:
       'the remount subpath (remountOn — keyed subtree replacement) — includes shared core',
     entry: `
@@ -398,7 +400,7 @@ const BUDGETS = [
     // Same figure as `main` (see its KF-G7N4PK note).
     // KF-GS850A: same measured growth as `main`, with the dev-code guard intact.
     // KF-FMGEJ6 + KF-7HMTZQ: same as `main`.
-    budgetKb: 15.2,
+    budgetKb: 15.35,
     description:
       'same as `main`, and asserts zero dev-diagnostic code leaked in',
     forbid: [

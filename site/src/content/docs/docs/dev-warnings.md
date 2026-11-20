@@ -235,39 +235,11 @@ would have missed same-count-different-keys cases.
 
 **Switch:** `enableWarnings({ staleBinding: true })` · env fallback `KERF_DEV_WARN_STALE_BINDING=1`
 
-**Trigger:** `mount()` takes its fast path (a re-render whose static-surrounds
-HTML is byte-for-byte identical to the previous render, so the morph AND the
-fine-grained binding re-wiring are both skipped) and a GLOBAL (static-surround)
-hole registers a **different signal instance** than the one currently wired.
-**What it catches:** the silently-stale-binding pattern documented in
-the reactivity guide — `class={cond ? sigA : sigB}` (switching which
-signal _instance_ a hole binds while the surrounds string is unchanged). On the
-fast path kerf keeps the original binding effect bound to `sigA` and never
-re-binds to `sigB`, so the hole freezes: no error, the UI just stops updating.
+**Trigger:** a global text or attribute hole switches signal instance on a rerender with byte-identical surrounding HTML. Kerf immediately installs a subscription to the new source. The diagnostic identifies the hole so an author can avoid unnecessary effect restarts, such as an inline computed recreated on each render.
 
-**Mechanism.** `mount()` retains the global-hole binding list that is actually
-wired (`prevWiredBindings`, refreshed whenever `wireBindings` runs — first
-render and every surrounds-changed morph). On a fast-path render it calls
-`maybeWarnStaleBinding(prevWiredBindings, bindingCtx.list)`, which: (1)
-short-circuits when its per-warning switch is off; (2) walks the two lists in registration
-order (they describe the same holes in the same order on the fast path); (3)
-when a hole's signal instance differs and hasn't already warned, fires a
-one-shot `console.warn` naming the hole (kind / attr / id) and pointing at "bind
-one `computed` that switches internally" as the fix. The retention itself is
-gated on the same opt-in, so the fast path stays allocation-free when the
-warning is off.
+**Dedup scope.** Once per global binding id. Row-scoped bindings have their own lifecycle.
 
-**Dedup scope.** Per hole (the stable per-hole binding id). One warning per
-switched hole, not one per render pass.
-
-**Why opt-in.** The comparison is raw signal identity, so a global hole bound
-with a _fresh inline_ `computed(() => …)` — a new instance every render, but
-reading the same signals, hence safe — would also differ on the fast path and
-warn. Binding a stable signal / computed reference for global holes (the
-idiomatic shape) avoids that; the opt-in gate keeps the diagnostic available
-without penalising projects that pass a fresh inline computed into a global
-hole. (Row holes inside `each()` are wired per-row-node and disposed on row
-removal, so they never reach this warner.)
+**Why opt-in.** Source switching is supported. Reuse a stable computed when its inputs and transformation stay the same across renders.
 
 ### <span id="kerf_dev_warn_value_only_rerender1"></span>`valueOnlyRerender`
 

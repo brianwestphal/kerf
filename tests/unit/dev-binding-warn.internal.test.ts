@@ -1,16 +1,4 @@
-/**
- * Dev-mode warning for silently-stale fine-grained bindings on the fast path
- * (`enableWarnings({ staleBinding: true })`, or `KERF_DEV_WARN_STALE_BINDING=1` as the `devFlag()`
- * environment fallback).
- *
- * `maybeWarnStaleBinding` is called by `mount()` on a fast-path (byte-equal
- * static-surrounds) render. It compares this render's registered holes against
- * the previously-wired holes and warns once per hole whose signal INSTANCE
- * switched — the `class={cond ? sigA : sigB}` anti-pattern that silently goes
- * stale because the fast path never re-binds. Tests cover the opt-out / opt-in /
- * dedup / production-shape (hooks uninstalled) paths and the wiring-path retention.
- */
-
+/** Opt-in performance diagnostic for retargeted global binding effects. */
 import {
   afterEach,
   beforeEach,
@@ -65,9 +53,9 @@ describe('dev-binding-warn (KERF_DEV_WARN_STALE_BINDING=1, opt-in)', () => {
     );
     expect(warnSpy).not.toHaveBeenCalled(); // first render — no switch yet
 
-    cond.value = false; // fast-path re-render; hole now wants sigB, effect stuck on sigA
+    cond.value = false; // fast-path re-render; hole now wants sigB, effect follows sigB
     expect(warnSpy).toHaveBeenCalledTimes(1);
-    expect(warnSpy.mock.calls[0][0]).toMatch(/different signal instance/);
+    expect(warnSpy.mock.calls[0][0]).toMatch(/Kerf retargeted this hole/);
     expect(warnSpy.mock.calls[0][0]).toMatch(/attr 'class'/);
     expect(warnSpy.mock.calls[0][0]).toMatch(/KERF_DEV_WARN_STALE_BINDING=0/);
   });
@@ -165,7 +153,7 @@ describe('dev-binding-warn (KERF_DEV_WARN_STALE_BINDING=1, opt-in)', () => {
       () => jsx('div', { class: sigs[which.value], children: 'x' }) as never,
     );
     which.value = 1; // sig1 vs wired sig0 → differ → warn
-    which.value = 2; // sig2 vs wired sig0 → differ → but deduped for this hole
+    which.value = 2; // sig2 vs wired sig1 → differ → but deduped for this hole
     expect(warnSpy).toHaveBeenCalledTimes(1);
   });
 

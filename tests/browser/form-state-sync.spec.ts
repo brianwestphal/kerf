@@ -326,3 +326,36 @@ test('a keyed row’s value attribute does not swallow a re-typed earlier value 
   );
   expect(changes).toEqual(['First']);
 });
+
+test('retargeting a bound checkbox restores the selected source after a user edit', async ({
+  page,
+}) => {
+  const result = await page.evaluate(() => {
+    const { mount, signal } = (window as any).kerf;
+    const { jsx } = (window as any).jsxRuntime;
+    const root = document.body.appendChild(document.createElement('div'));
+    const a = signal(true),
+      b = signal(true),
+      chooseA = signal(true);
+    const stop = mount(root, () =>
+      jsx('input', { type: 'checkbox', checked: chooseA.value ? a : b }),
+    );
+    const input = root.firstElementChild as HTMLInputElement;
+    input.click();
+    const dirty = input.checked;
+    chooseA.value = false;
+    const switched = input.checked;
+    a.value = false;
+    const inactive = input.checked;
+    stop();
+    b.value = false;
+    return [
+      dirty,
+      switched,
+      inactive,
+      input.checked,
+      root.firstElementChild === input,
+    ];
+  });
+  expect(result).toEqual([false, true, true, true, true]);
+});

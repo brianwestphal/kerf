@@ -6,8 +6,8 @@
       "source": "kerf.claude-skill.md",
       "bundle": "ai/skill.md",
       "dest": ".claude/skills/kerf-app/SKILL.md",
-      "version": "1.32.0",
-      "sha256": "4328157437a8a9a3393789dc014b107fcf76a8a5d439f9747b85c72ff945b68a",
+      "version": "1.33.0",
+      "sha256": "c707fcd01923bd2ed74a33e894e43ff1a7be45b9021e91902884530f09382857",
       "history": {
         "1.0.0": "bef982cb743fd4c73e666ee5cf774112e57c93ebb13b24bbacbf08577db0930a",
         "1.1.0": "f2aadb21e33dd389028951ae1ecbd9f8ba68648b3c5beba43fb4dfa2ab29f195",
@@ -47,7 +47,8 @@
         "1.29.0": "1816494efdc7e3b15d9c5213988477f68f82c5c2a2e4a685956500845ae5cc90",
         "1.30.0": "2e78139920bbb6e6fd1e396cd6ed3edf772cfdbd2f0eb84d0c3077f9cd2035c6",
         "1.31.0": "9880f36aa1994da1b02c35fed72079d2484c0f384f68e22ae47d0634b233a1cb",
-        "1.32.0": "4328157437a8a9a3393789dc014b107fcf76a8a5d439f9747b85c72ff945b68a"
+        "1.32.0": "4328157437a8a9a3393789dc014b107fcf76a8a5d439f9747b85c72ff945b68a",
+        "1.33.0": "c707fcd01923bd2ed74a33e894e43ff1a7be45b9021e91902884530f09382857"
       }
     },
     {
@@ -66,8 +67,8 @@
       "source": "kerf.cursorrules",
       "bundle": "ai/cursorrules",
       "dest": ".cursorrules",
-      "version": "1.28.0",
-      "sha256": "02390793e0100e5c65777c25cffa141c3cb506f3ec722ce25df78258ce846ea0",
+      "version": "1.29.0",
+      "sha256": "f8ebbc8be4740ff2eb097c69a0b98fe47e17708637ae82d3adb8c160e09f3c7a",
       "history": {
         "1.0.0": "98f7faff2b7585ef9cc511add42ea5d9bf0cbae8307b066af090e9281136d2ab",
         "1.1.0": "a2ec8c221dc694c98b81009cd2d99f9159a45fda94585de2f54471b227099eda",
@@ -103,7 +104,8 @@
         "1.25.0": "c52120502cc76fa5c6588a551b1d7f8097e2f6cd8a496d30a8bad0e103ea37db",
         "1.26.0": "a583bad7217181229f7bc7047a472f87867738d9514f926dc9805b7e2443d8c2",
         "1.27.0": "e8d8a56ed88ee427c2edc9ddfb4358780e19ea70c0feeae4e052d8b7c4520aae",
-        "1.28.0": "02390793e0100e5c65777c25cffa141c3cb506f3ec722ce25df78258ce846ea0"
+        "1.28.0": "02390793e0100e5c65777c25cffa141c3cb506f3ec722ce25df78258ce846ea0",
+        "1.29.0": "f8ebbc8be4740ff2eb097c69a0b98fe47e17708637ae82d3adb8c160e09f3c7a"
       }
     }
   ]

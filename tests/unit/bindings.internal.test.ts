@@ -20,6 +20,7 @@ import {
   type Binding,
   carryOrRewireRowBindings,
   disposeRowBindings,
+  GlobalBindings,
   ROW_TEXT_PREFIX,
   wireRowBindings,
 } from '../../src/bindings.js';
@@ -139,5 +140,53 @@ describe('wireRowBindings — dense disposer array when a marker is missing', ()
     // The root-hole effect wired before the throw was disposed.
     cls.value = 'y';
     expect(node.getAttribute('class')).toBe('x');
+  });
+});
+
+describe('GlobalBindings marker ownership', () => {
+  it('re-indexes a replaced target and skips omitted markers without shifting later slots', () => {
+    const root = document.createElement('div');
+    root.innerHTML = '<i data-kfb="a1"></i><!--kfb:t2-->';
+    const state = new GlobalBindings();
+    const a = signal('a'),
+      b = signal('b');
+    const bindings = (source: typeof a): Binding[] => [
+      { id: 'a0', kind: 'attr', attr: 'lang', signal: source },
+      { id: 'a1', kind: 'attr', attr: 'title', signal: source },
+      { id: 't2', kind: 'text', signal: source },
+    ];
+    let walks = 0;
+    const skipRows = () => {
+      walks++;
+      return undefined;
+    };
+    state.sync(root, bindings(a), false, skipRows);
+    expect(walks).toBe(1);
+    state.sync(root, bindings(a), true, skipRows);
+    expect(walks).toBe(1);
+    const old = root.firstElementChild!;
+    const replacement = old.cloneNode(false) as Element;
+    old.replaceWith(replacement);
+    state.sync(root, bindings(b), true, skipRows);
+    expect(walks).toBe(2);
+    b.value = 'new';
+    a.value = 'unused';
+    expect([
+      old.getAttribute('title'),
+      replacement.getAttribute('title'),
+      root.textContent,
+    ]).toEqual(['a', 'new', 'new']);
+    // A view can create a bound segment that it omits from its final JSX.
+    // Its registered-but-missing tail disappears on the next equal render.
+    state.sync(
+      root,
+      [...bindings(b), { id: 'a3', kind: 'attr', attr: 'lang', signal: b }],
+      true,
+      skipRows,
+    );
+    state.sync(root, bindings(b), true, skipRows);
+    state.dispose();
+    b.value = 'later';
+    expect(root.textContent).toBe('new');
   });
 });
