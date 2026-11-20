@@ -3,7 +3,7 @@
   "largestJavaScriptGzip": 164600,
   "totalJavaScriptGzip": 470700,
   "measuredLargestJavaScriptGzip": 164547,
-  "measuredTotalJavaScriptGzip": 470676,
+  "measuredTotalJavaScriptGzip": 470674,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -7622,7 +7622,7 @@
       }
     },
     {
-      "at": "2026-11-20T06:38:46.542Z",
+      "at": "2026-11-20T06:43:09.687Z",
       "reason": "KF-P1HVK0 adds the native Switch placement prop and a full-width two-setting catalog example demonstrating trailing tracks and wrapping hints.",
       "old": {
         "measuredLargestJavaScriptGzip": 164546,
@@ -7632,7 +7632,7 @@
       },
       "next": {
         "measuredLargestJavaScriptGzip": 164547,
-        "measuredTotalJavaScriptGzip": 470676,
+        "measuredTotalJavaScriptGzip": 470674,
         "largestJavaScriptGzip": 164600,
         "totalJavaScriptGzip": 470700
       }

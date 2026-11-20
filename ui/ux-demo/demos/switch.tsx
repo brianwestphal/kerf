@@ -38,7 +38,7 @@ export function SwitchDemo() {
           <Switch size="compact" label="Show timestamps" action="switch-demo" />
         </List>
       </CatalogExample>
-      <CatalogExample label="General settings" viewport={{ width: 'full' }}>
+      <CatalogExample label="General Settings" viewport={{ width: 'full' }}>
         <List gap="m">
           <Switch
             label="Group new tickets automatically"

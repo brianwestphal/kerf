@@ -49,7 +49,7 @@ test('settings align their tracks to the logical end and wrap the label and hint
   await page.setViewportSize({ width: 1200, height: 900 });
   await page.goto('/?component=switch');
   const region = page.getByRole('region', {
-    name: 'General settings',
+    name: 'General Settings',
     exact: false,
   });
   const first = switchRoot(region, setting);
@@ -111,7 +111,7 @@ test('a trailing switch keeps its native label, description, keyboard action and
   await page.setViewportSize({ width: 1200, height: 900 });
   await page.goto('/?component=switch');
   const region = page.getByRole('region', {
-    name: 'General settings',
+    name: 'General Settings',
     exact: false,
   });
   const field = switchRoot(region, setting);
