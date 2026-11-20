@@ -1,0 +1,28 @@
+{
+  "id": "kerf-candidate-2",
+  "attempt": 1,
+  "browser": "153.0.8010.12",
+  "imports": [
+    "kerfjs",
+    "kerfjs/list",
+    "@kerfjs/ui/combobox",
+    "@kerfjs/ui/wire-comboboxes"
+  ],
+  "build": false,
+  "compile": {
+    "pass": false,
+    "diagnostics": [
+      "app.tsx(2,10): error TS2305: Module '\"kerfjs/list\"' has no exported member 'each'."
+    ]
+  },
+  "buildError": "No matching export in \"../../dist/list.js\" for import \"each\"",
+  "tasks": {},
+  "observed": {},
+  "calibration": {
+    "badgeAfterInactiveWrite": null,
+    "titleAfterInactiveWrite": null,
+    "sameFocusedInput": null,
+    "selectionRowCalls": null,
+    "remountCommits": null
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "id": "solid-current-2",
+  "framework": "solid",
+  "condition": "current",
+  "replicate": 2,
+  "model": "gpt-6.2-sol",
+  "reasoning": "low",
+  "effortCeilingSeconds": 240,
+  "provider": "Codex CLI 0.170.0 via ChatGPT",
+  "elapsedMs": 38159,
+  "promptBytes": 4048,
+  "guidanceBytes": 754,
+  "promptSha256": "14fb968f0b437bd87d2e872f9c95f019c39ec3a80d5d28de1d7ffb2aea8ed944",
+  "responseSha256": "d2d9b1acb1c1b7446143d9254313c542ef333679f5354cfa04dab188932d1f0c",
+  "attempt": 1,
+  "toolsUsed": 0,
+  "filesReadByModel": 0,
+  "usage": {
+    "input_tokens": 17203,
+    "cached_input_tokens": 0,
+    "cache_write_input_tokens": 0,
+    "output_tokens": 1777,
+    "reasoning_output_tokens": 412
+  }
+}

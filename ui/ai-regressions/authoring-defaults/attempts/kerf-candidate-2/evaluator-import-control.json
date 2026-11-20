@@ -1,0 +1,81 @@
+{
+  "id": "kerf-candidate-2",
+  "attempt": 1,
+  "browser": "153.0.8010.12",
+  "imports": [
+    "kerfjs",
+    "kerfjs",
+    "@kerfjs/ui/combobox",
+    "@kerfjs/ui/wire-comboboxes"
+  ],
+  "build": true,
+  "compile": {
+    "pass": true,
+    "diagnostics": []
+  },
+  "buildError": null,
+  "tasks": {
+    "label": {
+      "pass": true,
+      "checks": {
+        "initial": true,
+        "switched": true,
+        "inactiveIgnored": true,
+        "activeTracked": true,
+        "same": true,
+        "focused": true,
+        "draft": true,
+        "caret": true
+      },
+      "errors": []
+    },
+    "rows": {
+      "pass": true,
+      "checks": {
+        "markedRowsOnMount": true,
+        "order": true,
+        "selection": true,
+        "newLabel": true,
+        "same": true,
+        "focused": true,
+        "draft": true,
+        "caret": true
+      },
+      "errors": []
+    },
+    "picker": {
+      "pass": true,
+      "checks": {
+        "singleBlueberry": true
+      },
+      "errors": []
+    },
+    "remount": {
+      "pass": true,
+      "checks": {
+        "removed0": true,
+        "removed1": true,
+        "staleSilent": true,
+        "singleBlueberry": true,
+        "disposedSilent": true
+      },
+      "errors": []
+    }
+  },
+  "observed": {
+    "inactiveBadgeMutations": 0,
+    "badgeAfterInactiveWrite": "7 crates",
+    "titleAfterInactiveWrite": "7 crates",
+    "selectionRowCalls": 0,
+    "sameFocusedInput": true,
+    "remountCommits": 1
+  },
+  "calibration": {
+    "badgeAfterInactiveWrite": true,
+    "titleAfterInactiveWrite": true,
+    "sameFocusedInput": true,
+    "selectionRowCalls": true,
+    "remountCommits": true
+  },
+  "intervention": "Evaluator changed only the each import specifier from kerfjs/list to kerfjs; never an authored attempt."
+}

@@ -1,0 +1,30 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "prediction": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "badgeAfterInactiveWrite": { "type": "string" },
+        "titleAfterInactiveWrite": { "type": "string" },
+        "sameFocusedInput": { "type": "boolean" },
+        "selectionRowCalls": { "type": "integer" },
+        "remountCommits": { "type": "integer" },
+        "keyboardOwner": { "type": "string" },
+        "rationale": { "type": "string" }
+      },
+      "required": [
+        "badgeAfterInactiveWrite",
+        "titleAfterInactiveWrite",
+        "sameFocusedInput",
+        "selectionRowCalls",
+        "remountCommits",
+        "keyboardOwner",
+        "rationale"
+      ]
+    },
+    "source": { "type": "string" }
+  },
+  "required": ["prediction", "source"]
+}

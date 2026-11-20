@@ -14,6 +14,8 @@ ai-regressions/component-catalog-v1.schema.snapshot.json
 ai-regressions/contexts/*.snapshot.json
 ai-regressions/corpus*.json
 ai-regressions/results/
+# Frozen author responses and machine-scored study artifacts.
+ai-regressions/authoring-defaults/attempts/
 ai-regressions/response.schema.json
 ai-regressions/run*.schema.json
 ux-demo/catalog.generated.ts

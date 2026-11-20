@@ -1,0 +1,26 @@
+{
+  "id": "kerf-candidate-1-a2",
+  "framework": "kerf",
+  "condition": "candidate",
+  "replicate": 1,
+  "model": "gpt-6.2-sol",
+  "reasoning": "low",
+  "effortCeilingSeconds": 240,
+  "provider": "Codex CLI 0.170.0 via ChatGPT",
+  "elapsedMs": 36227,
+  "promptBytes": 8785,
+  "guidanceBytes": 1210,
+  "promptSha256": "1fbd9be3ea9befd6a43e5bcdece483d9336fb8214abb8ac9aabc4273469db3d8",
+  "responseSha256": "f33fc466316276cd118aec897b0272b6181eacf7bf777d704a9064de3d82e1a2",
+  "attempt": 2,
+  "feedbackPolicy": "guidance-static-browser",
+  "toolsUsed": 0,
+  "filesReadByModel": 0,
+  "usage": {
+    "input_tokens": 18391,
+    "cached_input_tokens": 0,
+    "cache_write_input_tokens": 0,
+    "output_tokens": 1655,
+    "reasoning_output_tokens": 60
+  }
+}

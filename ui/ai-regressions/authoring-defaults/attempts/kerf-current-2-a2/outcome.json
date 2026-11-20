@@ -1,0 +1,54 @@
+{
+  "id": "kerf-current-2-a2",
+  "attempt": 2,
+  "browser": "153.0.8010.12",
+  "imports": [
+    "kerfjs",
+    "@kerfjs/ui/combobox",
+    "@kerfjs/ui/wire-comboboxes"
+  ],
+  "build": true,
+  "compile": {
+    "pass": true,
+    "diagnostics": []
+  },
+  "buildError": null,
+  "tasks": {
+    "label": {
+      "pass": false,
+      "checks": {},
+      "errors": [
+        "page.evaluate: Error: mount: rootEl is already inside (or contains) a mounted tree. kerf supports one mount per tree — compose with plain functions that return JSX instead of nesting mounts."
+      ]
+    },
+    "rows": {
+      "pass": false,
+      "checks": {},
+      "errors": [
+        "page.evaluate: Error: mount: rootEl is already inside (or contains) a mounted tree. kerf supports one mount per tree — compose with plain functions that return JSX instead of nesting mounts."
+      ]
+    },
+    "picker": {
+      "pass": false,
+      "checks": {},
+      "errors": [
+        "page.evaluate: Error: mount: rootEl is already inside (or contains) a mounted tree. kerf supports one mount per tree — compose with plain functions that return JSX instead of nesting mounts."
+      ]
+    },
+    "remount": {
+      "pass": false,
+      "checks": {},
+      "errors": [
+        "page.evaluate: Error: mount: rootEl is already inside (or contains) a mounted tree. kerf supports one mount per tree — compose with plain functions that return JSX instead of nesting mounts."
+      ]
+    }
+  },
+  "observed": {},
+  "calibration": {
+    "badgeAfterInactiveWrite": null,
+    "titleAfterInactiveWrite": null,
+    "sameFocusedInput": null,
+    "selectionRowCalls": null,
+    "remountCommits": null
+  }
+}

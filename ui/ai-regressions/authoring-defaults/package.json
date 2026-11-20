@@ -1,0 +1,10 @@
+{
+  "name": "kerf-authoring-study-types",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "devDependencies": {
+    "@types/react": "19.2.0",
+    "@types/react-dom": "19.2.0"
+  }
+}

@@ -1,0 +1,82 @@
+{
+  "id": "react-current-1",
+  "attempt": 1,
+  "browser": "153.0.8010.12",
+  "imports": [
+    "react",
+    "react-dom/client",
+    "react-aria-components"
+  ],
+  "build": true,
+  "compile": {
+    "pass": false,
+    "diagnostics": [
+      "app.tsx(49,46): error TS2339: Property 'id' does not exist on type 'object'.",
+      "app.tsx(49,57): error TS2339: Property 'name' does not exist on type 'object'."
+    ]
+  },
+  "buildError": null,
+  "tasks": {
+    "label": {
+      "pass": true,
+      "checks": {
+        "initial": true,
+        "switched": true,
+        "inactiveIgnored": true,
+        "activeTracked": true,
+        "same": true,
+        "focused": true,
+        "draft": true,
+        "caret": true
+      },
+      "errors": []
+    },
+    "rows": {
+      "pass": true,
+      "checks": {
+        "markedRowsOnMount": true,
+        "order": true,
+        "selection": true,
+        "newLabel": true,
+        "same": true,
+        "focused": true,
+        "draft": true,
+        "caret": true
+      },
+      "errors": []
+    },
+    "picker": {
+      "pass": true,
+      "checks": {
+        "singleBlueberry": true
+      },
+      "errors": []
+    },
+    "remount": {
+      "pass": true,
+      "checks": {
+        "removed0": true,
+        "removed1": true,
+        "staleSilent": true,
+        "singleBlueberry": true,
+        "disposedSilent": true
+      },
+      "errors": []
+    }
+  },
+  "observed": {
+    "inactiveBadgeMutations": 0,
+    "badgeAfterInactiveWrite": "7 crates",
+    "titleAfterInactiveWrite": "7 crates",
+    "selectionRowCalls": 2,
+    "sameFocusedInput": true,
+    "remountCommits": 1
+  },
+  "calibration": {
+    "badgeAfterInactiveWrite": true,
+    "titleAfterInactiveWrite": true,
+    "sameFocusedInput": true,
+    "selectionRowCalls": true,
+    "remountCommits": true
+  }
+}

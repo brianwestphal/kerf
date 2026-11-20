@@ -1,0 +1,26 @@
+{
+  "id": "react-current-1-a2",
+  "framework": "react",
+  "condition": "current",
+  "replicate": 1,
+  "model": "gpt-6.2-sol",
+  "reasoning": "low",
+  "effortCeilingSeconds": 240,
+  "provider": "Codex CLI 0.170.0 via ChatGPT",
+  "elapsedMs": 31898,
+  "promptBytes": 7844,
+  "guidanceBytes": 706,
+  "promptSha256": "34d8b2845f31c074ef8dc493be598e7cb0b1eb87c16b4f55cb96c9414846fcaf",
+  "responseSha256": "fcb8f11bf2160c832ca2994ceb1018a1aee9f26ebe96283f6a6b8eb4c942dc1e",
+  "attempt": 2,
+  "feedbackPolicy": "guidance-static-browser",
+  "toolsUsed": 0,
+  "filesReadByModel": 0,
+  "usage": {
+    "input_tokens": 18231,
+    "cached_input_tokens": 0,
+    "cache_write_input_tokens": 0,
+    "output_tokens": 1325,
+    "reasoning_output_tokens": 39
+  }
+}
