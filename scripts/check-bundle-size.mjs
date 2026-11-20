@@ -315,8 +315,9 @@ const BUDGETS = [
     // renderRow helper, and mount() a shorter nested-mount walk.
     // KF-1267Y6 + KF-7HV0MF (+0.06 KB): snapshot recovery after a row-render
     // throw and frozen virtualized frames after rejected arraySignal keys.
-    // Measured list entry: 15.83 KB min+gzip; retain ~0.07 KB headroom.
-    budgetKb: 16.1,
+    // KF-ZMER8Y: Node 22.23.5 gzips this entry to 16,487 bytes (16.1006 KiB).
+    // A 16.10 KiB cap admits 16,486 whole bytes; 16.11 leaves 9 bytes.
+    budgetKb: 16.11,
     description:
       'the bindList subpath (keyed per-row mount + virtualization) — includes shared core',
     entry: `
