@@ -1,4 +1,4 @@
-<!-- kerf-skill-version: 1.27.0 -->
+<!-- kerf-skill-version: 1.28.0 -->
 
 # kerf.cursorrules — rules for building apps with kerf
 
@@ -240,27 +240,17 @@ mount(
   `,
 );
 
-// Fine-grained binding (opt-in): pass the signal/computed ITSELF into a hole
-// so a change updates ONLY that node (no render re-run, no reconcile). For a
-// hot spot driven by an external signal (selection class) — not everywhere.
-// Use computed(), never a bare () => ….
+// Create one selector per owner. Only the old and new keys notify on a flip.
 const selectedId = signal<number | null>(null);
+const isSelected = selector(selectedId);
 mount(listEl, () => (
-  <ul>
-    {each(
-      rows.value,
-      (row) => (
-        <li class={computed(() => (row.id === selectedId.value ? "sel" : ""))}>
-          {row.label}
-        </li>
-      ),
-      (row) => row.id,
-    )}
-  </ul>
+  <ul>{each(rows.value, row => (
+    <li data-key={row.id} class={computed(() => isSelected(row.id).value ? "sel" : "")}>
+      {row.label}
+    </li>
+  ))}</ul>
 ));
-// Large list: `const isSelected = selector(selectedId)` (from "kerfjs") and
-// `computed(() => (isSelected(row.id).value ? "sel" : ""))` — one subscription
-// to selectedId instead of one per row, so a selection flip is O(1).
+// Read the flag inside the bound computed so selecting never rerenders the list.
 ```
 
 ## Common errors → fixes

@@ -820,27 +820,17 @@ delegate(rootEl, "click", INC.selector, () => {
   count.value += 1;
 });
 
-// 5. Bindings inside each() rows work the same way — the canonical
-//    selection pattern: a shared signal drives one row attribute, and a
-//    selection flip touches ~2 DOM nodes with no render and no reconcile.
+// Create one selector per owner. Only the old and new keys notify on a flip.
 const selectedId = signal<number | null>(null);
+const isSelected = selector(selectedId);
 mount(rootEl, () => (
-  <ul>
-    {each(
-      items.value,
-      (it) => (
-        <li class={computed(() => (it.id === selectedId.value ? "sel" : ""))}>
-          {it.label}
-        </li>
-      ),
-      (it) => it.id,
-    )}
-  </ul>
+  <ul>{each(items.value, row => (
+    <li data-key={row.id} class={computed(() => isSelected(row.id).value ? "sel" : "")}>
+      {row.label}
+    </li>
+  ))}</ul>
 ));
-// selectedId.value = 3  → only the ~2 affected <li> class attrs update; no re-render.
-// For a large list, `const isSelected = selector(selectedId)` and
-// `computed(() => (isSelected(it.id).value ? "sel" : ""))` make the flip O(1):
-// one subscription to selectedId instead of one per row.
+// Read the flag inside the bound computed so selecting never rerenders the list.
 // Live per-key values (prices, presence) from a socket: keep a
 // Map<id, Signal<V>> and write only the changed entity's signal (O(1)),
 // not one signal<Map> replaced per message (O(N) clone + N re-evaluations).

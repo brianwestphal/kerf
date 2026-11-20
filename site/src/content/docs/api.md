@@ -45,14 +45,29 @@ interface ReadonlySignal<T> {
 
 Keyed equality against one signal, at O(1) per change. `selector(source)` returns a reader `(key) => ReadonlySignal<boolean>` whose signal is `true` exactly when `source.value` equals `key`. The selector subscribes to `source` once; a change notifies only the previous key's and the next key's subscribers. The plain pattern, `computed(() => row.id === selectedId.value)`, subscribes every row to `selectedId`, so one selection re-evaluates all N rows.
 
-```ts
-const selectedId = signal<number | null>(null);
-const isSelected = selector(selectedId);
+```tsx
+// selectable-rows.tsx
+import { computed, delegate, each, mount, selector, signal, type ReadonlySignal } from "kerfjs";
 
-each(rows.value, (row) => (
-  <tr class={computed(() => (isSelected(row.id).value ? "danger" : ""))}>…</tr>
-), (row) => row.id);
+export function mountChoices(root: HTMLElement, rows: ReadonlySignal<{ id: string; label: string }[]>) {
+  const selectedId = signal<string | null>(null);
+  const isSelected = selector(selectedId);
+  const unmount = mount(root, () => <ul>{each(rows.value, row =>
+    <li data-key={row.id}>
+      <button type="button" data-select={row.id}
+        aria-pressed={computed(() => isSelected(row.id).value ? "true" : "false")}>
+        {row.label}
+      </button>
+    </li>
+  )}</ul>);
+  const unwire = delegate(root, "click", "button[data-select]", (_event, button) => {
+    selectedId.value = button.getAttribute("data-select");
+  });
+  return () => { unwire(); unmount(); };
+}
 ```
+
+Create the selector once per list owner. The button binds a computed string because ARIA expects the words `true` and `false`. Reading the flag in the row renderer instead would bake its current value into cached row HTML. `data-key` identifies the row across moves. The optional `each` option `key` identifies a list across conditional renders, and `cacheKey` invalidates cached row HTML. Selection needs neither option here. Static rows need no selection subscriptions. On a local 1,000-row JavaScript microbenchmark, a selector flip took about 0.002 ms versus 0.065 ms with a cache comparator. Creating and disposing the selector-bound rows took 11.6 ms versus 9.3 ms with static classes. These happy-dom measurements exclude layout and paint. The [row-selector demo](/kerf/run/row-selector/) shows the mount render count while you select rows.
 
 - **Entries follow their subscribers.** A key's signal joins the selector when its first subscriber arrives and leaves when its last one goes, so removing a row (which disposes its bindings) releases its entry. The selector's own subscription to `source` exists only while some key is watched.
 - **Key signals are always current.** A held key signal read outside any effect returns the current comparison; unsubscribed, it reads the source lazily rather than following the selector's flip. Signals handed out outside a subscriber are not cached.
@@ -304,9 +319,8 @@ requires a stable identity (see below).
 
 ```ts
 each(rows.value, (row) => <tr data-key={row.id}>{row.label}</tr>);
-each(rows.value, (row) => <tr…>…</tr>, (row) => row.id === selectedId ? 1 : 0);
 each(rows.value, (row) => <tr…>…</tr>, { key: 'rows' });
-each(rows.value, (row) => <tr…>…</tr>, { key: 'rows', cacheKey: (row) => row.id === selectedId });
+each(rows.value, renderRow, { key: 'rows', cacheKey: () => displayFormat.value });
 ```
 
 A `cacheKey` over the selection re-renders the rows whose key changed. For selection, binding the row's class to `selector(selectedId)` (see [`selector`](#selectorksource-readonlysignalk-selectork)) keeps every row cached and updates only the two affected attributes.

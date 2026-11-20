@@ -1,7 +1,7 @@
 ---
 name: kerf-app
 description: Build UIs in the kerf reactive framework and its @kerfjs/ui component package (https://github.com/brianwestphal/kerf). Use this skill whenever the user is writing or modifying code that imports `kerfjs` or `@kerfjs/ui`, asks to add a feature to a kerf app, or asks "how do I do X in kerf?". Use it proactively the moment you spot a kerf import in the file you're editing.
-kerf-skill-version: 1.31.0
+kerf-skill-version: 1.32.0
 ---
 
 # Building apps with kerf
@@ -265,29 +265,17 @@ const cart = defineStore({
 // the template describes liveCard's CHILDREN; liveCard's own attributes are untouched
 morph(liveCard, '<h2 class="card-title">…</h2><p>…</p>');
 
-// Pattern 5: fine-grained binding (opt-in) — pass the signal/computed ITSELF
-// into a hole so a change updates ONLY that node (no render re-run, no
-// reconcile). For a hot spot driven by an external signal (selection class,
-// live status attr) — not everywhere. Use computed(), never a bare () => ….
+// Create one selector per owner. Only the old and new keys notify on a flip.
 const selectedId = signal<number | null>(null);
+const isSelected = selector(selectedId);
 mount(listEl, () => (
-  <ul>
-    {each(
-      rows.value,
-      (row) => (
-        <li class={computed(() => (row.id === selectedId.value ? "sel" : ""))}>
-          {row.label}
-        </li>
-      ),
-      (row) => row.id,
-    )}
-  </ul>
+  <ul>{each(rows.value, row => (
+    <li data-key={row.id} class={computed(() => isSelected(row.id).value ? "sel" : "")}>
+      {row.label}
+    </li>
+  ))}</ul>
 ));
-// selectedId.value = 3  → only the ~2 affected <li> class attrs update.
-// Large list: `const isSelected = selector(selectedId)` (from "kerfjs") and
-// `computed(() => (isSelected(row.id).value ? "sel" : ""))` — one subscription
-// to selectedId instead of one per row, so a selection flip is O(1).
-
+// Read the flag inside the bound computed so selecting never rerenders the list.
 // Pattern 6: no build step (CDN / importmap) — the html tagged template
 // instead of JSX. Same runtime semantics; real HTML attribute names; a hole
 // must be a text position or a COMPLETE attribute value (partials throw).

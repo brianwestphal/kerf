@@ -30,6 +30,56 @@ afterEach(() => {
 });
 
 describe('selector() in a mounted keyed list', () => {
+  it('keeps accessible button state current across moves and row lifetimes', () => {
+    const items = [{ id: 'a' }, { id: 'b' }, { id: 'c' }];
+    const rows = signal(items);
+    const selected = signal<string | null>(null);
+    const isSelected = selector(selected);
+    const evaluations: string[] = [];
+    let renders = 0;
+    const dispose = mount(root, () => {
+      renders++;
+      return jsx('ul', {
+        children: each(rows.value, ({ id }) =>
+          jsx('li', {
+            'data-key': id,
+            children: jsx('button', {
+              'aria-pressed': computed(() => {
+                evaluations.push(id);
+                return isSelected(id).value ? 'true' : 'false';
+              }),
+              children: id,
+            }),
+          }),
+        ),
+      });
+    });
+    const pressed = () =>
+      [...root.querySelectorAll('button[aria-pressed="true"]')].map(
+        (el) => el.textContent,
+      );
+    evaluations.length = 0;
+    selected.value = 'a';
+    selected.value = 'c';
+    expect(evaluations.sort()).toEqual(['a', 'a', 'c']);
+    expect(renders).toBe(1);
+    expect(pressed()).toEqual(['c']);
+    const original = root.querySelector('[data-key="c"]');
+    rows.value = [...items].reverse();
+    expect(root.querySelector('li')).toBe(original);
+    expect(pressed()).toEqual(['c']);
+    rows.value = [items[0]];
+    expect(pressed()).toEqual([]);
+    rows.value = items;
+    expect(pressed()).toEqual(['c']);
+    selected.value = 'missing';
+    expect(pressed()).toEqual([]);
+    dispose();
+    evaluations.length = 0;
+    selected.value = 'a';
+    expect(evaluations).toEqual([]);
+  });
+
   it('renders identically to the plain computed pattern in the same list', () => {
     const rows = arraySignal<Row>([1, 2, 3, 4].map((id) => ({ id })));
     const selectedId = signal<number | null>(null);
