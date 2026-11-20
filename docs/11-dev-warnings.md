@@ -48,9 +48,9 @@ before the program runs:
   Hard Rule 9 partial-set bugs as type errors. All complete example apps in
   this repo are under that gate.
 - **`eslint-plugin-kerfjs`** — a separate publishable package, in
-  [`eslint-plugin/`](../eslint-plugin/README.md), with fifteen rules: eight
-  core rules in its `recommended` config plus seven `ui-*` rules for
-  `@kerfjs/ui` consumers. The core rules fire at edit time for hard-rule
+  [`eslint-plugin/`](../eslint-plugin/README.md), with eight core rules in
+  its `recommended` config, seven `ui-*` rules for `@kerfjs/ui` consumers,
+  and one opt-in typed suggestion. The core rules fire at edit time for hard-rule
   violations the dev-warns can't see syntactically. Four are errors:
   `no-inline-jsx-event-handlers` (Rule 10), `require-data-key-in-each`
   (Rule 2), `no-nested-mount` (Rule 6), and `prefer-module-jsx-augmentation`
@@ -64,6 +64,14 @@ before the program runs:
   `ui-css-values`, `ui-exceptional-shorthands`, `ui-preferences`, `ui-wiring`
   — are enabled only by the `recommended-ui` and `strict-ui` configs, which add
   them on top of the core set.
+
+  The optional `kerfjs/prefer-signal-leaf` rule uses the consumer's TypeScript
+  program to suggest a direct signal binding for scalar text or a string
+  `title` in ordinary native JSX returned from an inline Kerf mount. The
+  suggestion must explain how the edit moves a subscription out of the
+  render. All presets leave it off, and `--fix` leaves the read as written.
+  The [rule reference](../eslint-plugin/docs/rules/prefer-signal-leaf.md)
+  defines the eligible contexts and exclusions.
 
 The three layers are complementary, not redundant. Lint catches AST-shaped
 antipatterns at edit time; tsc catches type-shaped bugs at build time; the

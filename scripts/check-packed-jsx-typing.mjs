@@ -10,6 +10,7 @@ import {
 import { basename, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
+import { applySignalLeafSuggestions } from './lib/apply-signal-leaf-suggestions.mjs';
 import { fail, ok } from './lib/report.mjs';
 
 const root = fileURLToPath(new URL('..', import.meta.url));
@@ -45,6 +46,14 @@ try {
   const fixture = resolve(root, 'tests/dist/jsx-typing/consumer.tsx');
   const consumer = join(temporary, basename(fixture));
   copyFileSync(fixture, consumer);
+  copyFileSync(
+    resolve(root, 'tests/dist/jsx-typing/signal-leaf.tsx'),
+    join(temporary, 'signal-leaf.tsx'),
+  );
+  writeFileSync(
+    join(temporary, 'package.json'),
+    '{"type":"module","private":true}',
+  );
   writeFileSync(
     join(temporary, 'tsconfig.json'),
     `${JSON.stringify(
@@ -62,24 +71,51 @@ try {
           jsxImportSource: 'kerfjs',
           types: [],
         },
-        files: [basename(consumer)],
+        include: [basename(consumer), 'signal-leaf.tsx', 'bound.tsx'],
       },
       null,
       2,
     )}\n`,
   );
 
+  applySignalLeafSuggestions(temporary);
   execFileSync(
     process.execPath,
     [resolve(root, 'node_modules/typescript7/bin/tsc'), '-p', temporary],
     { cwd: root, stdio: 'inherit' },
+  );
+  copyFileSync(
+    resolve(root, 'tests/dist/jsx-typing/signal-leaf.fixture.mjs'),
+    join(temporary, 'signal-leaf.test.mjs'),
+  );
+  const config = join(temporary, 'vitest.config.mjs');
+  writeFileSync(
+    config,
+    'export default ' +
+      JSON.stringify({
+        root: temporary,
+        test: {
+          environment: resolve(root, 'tests/happy-dom-environment.ts'),
+          include: ['signal-leaf.test.mjs'],
+        },
+      }),
+  );
+  execFileSync(
+    process.execPath,
+    [
+      resolve(root, 'node_modules/vitest/vitest.mjs'),
+      'run',
+      '--config',
+      config,
+    ],
+    { cwd: temporary, stdio: 'inherit' },
   );
   const manifest = JSON.parse(
     readFileSync(join(packageRoot, 'package.json'), 'utf8'),
   );
   ok(
     'check-packed-jsx-typing',
-    `OK — ${manifest.name}@${manifest.version} exports recursive JSXChildren declarations.`,
+    `OK — ${manifest.name}@${manifest.version} accepts recursive JSX children and the editor-suggested signal bindings.`,
   );
 } catch (error) {
   fail('check-packed-jsx-typing', error.message);

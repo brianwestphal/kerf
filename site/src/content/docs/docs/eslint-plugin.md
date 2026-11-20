@@ -13,8 +13,8 @@ description: eslint-plugin-kerfjs — core and optional UI rules for kerf applic
 
 The core syntax rules analyze the AST without TypeScript parser services. The
 AI-config rule reads the filesystem, and the optional UI rules also resolve
-catalog and profile artifacts. Consumers configure their own parser; no
-TypeScript parser service is required.
+catalog and profile artifacts. Consumers configure their own parser. An optional
+typed rule can also use the TypeScript program configured for the application.
 
 ## Install
 
@@ -44,8 +44,8 @@ export default [
 The package is ESM-only and supports flat config. Legacy `.eslintrc` plugin
 loading is not supported. For UI components, install `@kerfjs/ui` and add
 `kerfjs.configs['recommended-ui']` or `kerfjs.configs['strict-ui']`; these
-presets add six catalog, ownership, composition, CSS-value, preference, and
-wiring rules to the eight core rules. See the
+presets add seven catalog, ownership, composition, CSS-value, shorthand,
+preference, and wiring rules to the eight core rules. See the
 [package README](https://github.com/brianwestphal/kerf/blob/main/eslint-plugin/README.md)
 for their configuration and complete rule table.
 
@@ -132,6 +132,16 @@ const TOGGLE = attr("data-action", "toggle");
 <button {...TOGGLE.attrs}>Toggle</button>;
 delegate(root, "click", TOGGLE.selector, handler);
 ```
+
+### `kerfjs/prefer-signal-leaf` (typed, opt-in)
+
+In a Kerf mount, changing `<span>{label.value}</span>` to
+`<span>{label}</span>` lets a signal update the text directly. Enable
+`"kerfjs/prefer-signal-leaf": "warn"` with `@typescript-eslint/parser` and
+`parserOptions: { projectService: true }` for strict Kerf TSX files. The
+editor offers the edit for a small set of native text and title bindings.
+Review whether any other work depends on the mount rerunning. Every preset
+leaves this rule off. [Configuration and eligibility](https://github.com/brianwestphal/kerf/blob/main/eslint-plugin/docs/rules/prefer-signal-leaf.md)
 
 ## Why these rules, and not more
 

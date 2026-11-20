@@ -13,7 +13,7 @@ This plugin sits alongside two other defense layers shipped by [`kerfjs`](https:
 | Opt-in dev-warns (`KERF_DEV_WARN_*`) | Hard Rules 4 (rebuilt listeners), 7 (untracked signals), 8 (narrow set)                                                                                          | Runtime       |
 | **This plugin**                      | Hard Rules 2, 5, 6, 10, 12 — AST-shaped antipatterns; plus rename-safety / `raw()`-audit nudges and a project-hygiene check for the bundled AI-assistant configs | **Edit time** |
 
-The core syntax rules analyze the AST without TypeScript parser services. `ai-assistant-configs` reads the filesystem, and the optional UI rules also resolve catalog and profile artifacts. Consumers configure their own parser; no `@typescript-eslint/parser` _service_ is required.
+The core syntax rules analyze the AST without TypeScript parser services. `ai-assistant-configs` reads the filesystem, and the optional UI rules also resolve catalog and profile artifacts. Consumers configure their own parser. The optional `prefer-signal-leaf` suggestion uses an existing TypeScript parser service.
 
 ## Install
 
@@ -118,6 +118,7 @@ Use flat config (`eslint.config.js`), shown above. The `legacy-recommended` expo
 | [`require-delegate-disposer`](docs/rules/require-delegate-disposer.md)           | 5 — capture `delegate()` disposers when scope < page            | `warn`                 |
 | [`no-nested-mount`](docs/rules/no-nested-mount.md)                               | 6 — one `mount()` per root                                      | `error`                |
 | [`prefer-module-jsx-augmentation`](docs/rules/prefer-module-jsx-augmentation.md) | 12 — augment `kerfjs/jsx-runtime`, not global                   | `error`                |
+| [`prefer-signal-leaf`](docs/rules/prefer-signal-leaf.md)                         | — (typed editor suggestion for a mounted DOM leaf)              | off                    |
 | [`prefer-attr-selector`](docs/rules/prefer-attr-selector.md)                     | — (rename-safety nudge for `delegate()` selectors)              | `warn`                 |
 | [`no-raw-with-dynamic-arg`](docs/rules/no-raw-with-dynamic-arg.md)               | — (XSS audit trail)                                             | `warn`                 |
 | [`ai-assistant-configs`](docs/rules/ai-assistant-configs.md)                     | — (project hygiene)                                             | `warn`                 |

@@ -4,6 +4,7 @@ import noNestedMount from './lib/rules/no-nested-mount.js';
 import noRawWithDynamicArg from './lib/rules/no-raw-with-dynamic-arg.js';
 import preferAttrSelector from './lib/rules/prefer-attr-selector.js';
 import preferModuleJsxAugmentation from './lib/rules/prefer-module-jsx-augmentation.js';
+import preferSignalLeaf from './lib/rules/prefer-signal-leaf.js';
 import requireDataKeyInEach from './lib/rules/require-data-key-in-each.js';
 import requireDelegateDisposer from './lib/rules/require-delegate-disposer.js';
 import uiComponentOwnership from './lib/rules/ui-component-ownership.js';
@@ -24,6 +25,7 @@ const plugin = {
     'no-nested-mount': noNestedMount,
     'prefer-module-jsx-augmentation': preferModuleJsxAugmentation,
     'prefer-attr-selector': preferAttrSelector,
+    'prefer-signal-leaf': preferSignalLeaf,
     'ai-assistant-configs': aiAssistantConfigs,
     'ui-component-ownership': uiComponentOwnership,
     'ui-composition': uiComposition,
