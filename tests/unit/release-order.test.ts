@@ -161,4 +161,15 @@ describe('release workflow ordering', () => {
   it('the core release workflow does not wait on itself', () => {
     expect(jobs('release.yml')['wait-for-core']).toBeUndefined();
   });
+
+  it('installs the UI parser dependencies before testing the plugin for release', () => {
+    const commands = jobs('release-eslint-plugin.yml').test.steps!.map(
+      (step) => step.run,
+    );
+    const install = commands.indexOf(
+      'npm ci --prefix ../ui --omit=dev --ignore-scripts',
+    );
+    expect(install).toBeGreaterThanOrEqual(0);
+    expect(commands.indexOf('npm test')).toBeGreaterThan(install);
+  });
 });

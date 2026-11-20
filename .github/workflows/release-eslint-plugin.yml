@@ -49,8 +49,12 @@ jobs:
         with:
           node-version: '${{ env.NODE_VERSION }}'
           cache: npm
-          cache-dependency-path: eslint-plugin/package-lock.json
+          cache-dependency-path: |
+            eslint-plugin/package-lock.json
+            ui/package-lock.json
       - run: npm ci
+      # The wiring tests load the parser from the sibling UI checkout.
+      - run: npm ci --prefix ../ui --omit=dev --ignore-scripts
       - run: npm test
 
   # ─── Detect: stable or beta? ────────────────────────────────────────
