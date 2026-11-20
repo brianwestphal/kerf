@@ -24,6 +24,7 @@ import {
   signal,
   type SafeHtml,
 } from 'kerfjs';
+import { action, type ActionHandler, delegateActions } from 'kerfjs/actions';
 import { arraySignal } from 'kerfjs/array-signal';
 import type { JSXChildren as RuntimeJSXChildren } from 'kerfjs/jsx-runtime';
 
@@ -157,3 +158,29 @@ delegate(root, 'click', '.x', (_e, el) => {
   const t: Element = el;
   void t;
 });
+
+// A consumer can constrain the existing action factory to a particular event table.
+const clicks = {
+  save: (_event, button) => {
+    button.disabled = true;
+  },
+} satisfies Record<string, ActionHandler<HTMLButtonElement>>;
+const changes = {
+  edit: (_event, input) => {
+    input.select();
+  },
+} satisfies Record<string, ActionHandler<HTMLInputElement>>;
+const clickSpec = action<keyof typeof clicks>;
+const changeSpec = action<keyof typeof changes>;
+const checkedButton = <button {...clickSpec('save').attrs}>Save</button>;
+void checkedButton;
+changeSpec('edit');
+// @ts-expect-error -- misspelled action
+clickSpec('saev');
+// @ts-expect-error -- change handler belongs to a different event table
+clickSpec('edit');
+declare const actionsRoot: HTMLElement;
+delegateActions(actionsRoot, 'click', clicks);
+delegateActions(actionsRoot, 'change', changes);
+const pluginCommands: Record<string, ActionHandler<HTMLButtonElement>> = clicks;
+action<keyof typeof pluginCommands>('any-plugin-command');

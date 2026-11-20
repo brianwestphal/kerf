@@ -124,6 +124,16 @@ mount(root, () => (
 
 Components return Kerf `SafeHtml`. They do not own application state or attach transient listeners. Actions are stable `data-action` hooks; the application wires them once with `delegate()` or `delegateActions()` and retains the disposer.
 
+For an application-owned command table, derive the accepted names from its
+handlers with `const click = action<keyof typeof clicks>`. Pass the resulting
+spec's `.value` to a UI component or spread its `.attrs` onto native JSX.
+Use `satisfies Record<string, ActionHandler<…>>` to check the table while
+retaining its literal keys. An explicit `Record<string, …>` annotation widens
+the keys to arbitrary strings. Define a separate table for each event. Direct
+string props still accept application- or plugin-defined names. The
+[typed action table example](./docs/examples/typed-action-table.tsx) shows
+both emitters and the owning root's setup and cleanup.
+
 Component content positions use one convention: `children` is the homogeneous
 primary region, while semantic positions and replacement content use explicit
 named `SafeHtml` props such as `header`, `footer`, `leading`, `trailing`,

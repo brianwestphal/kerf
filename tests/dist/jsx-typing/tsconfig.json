@@ -18,6 +18,7 @@
       "kerfjs": ["../../../dist/index.d.ts"],
       "kerfjs/jsx-runtime": ["../../../dist/jsx-runtime.d.ts"],
       "kerfjs/array-signal": ["../../../dist/array-signal.d.ts"],
+      "kerfjs/actions": ["../../../dist/actions.d.ts"],
       "kerfjs/testing": ["../../../dist/testing.d.ts"]
     },
 
