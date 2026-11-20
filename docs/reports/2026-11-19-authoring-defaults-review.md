@@ -29,6 +29,8 @@ A Kerf UI Combobox packages labeling, input and suggestions into one readable ca
 
 ## Priorities
 
+The [decision record](2026-11-19-authoring-decisions.md) reconciles these recommendations with the implementation, browser costs and independent authoring study.
+
 1. Keep source retargeting correct and measure the stable fast path. Preserve static rows and the ability to render without a browser.
 2. Lead selectable-list examples with one selector per owner. Choose a new row API only where its lifetime solves a demonstrated problem.
 3. Keep a field's behavior, seed policy, and disposer close enough to inspect together. Preserve the low-level delegated implementation. Use typed command tables to check action names across native and UI controls.
