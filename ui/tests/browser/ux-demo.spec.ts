@@ -3139,7 +3139,7 @@ test('pastes plain text into SearchField from a rich clipboard item', async ({
       }),
     ]);
   });
-  await editor.press('Meta+V');
+  await editor.press('ControlOrMeta+V');
   await expect(editor).toHaveText('Release train');
   await expect(editor.locator('h1, br')).toHaveCount(0);
   await expect(editor).toHaveCSS(
