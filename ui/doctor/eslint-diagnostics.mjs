@@ -27,3 +27,16 @@ export function projectConsumerCoreConfig(config, file) {
     ...(globals ? { languageOptions: { globals } } : {}),
   };
 }
+
+export function groupConsumerCoreConfigs(configs) {
+  const groups = new Map();
+  for (const config of configs) {
+    if (!config) continue;
+    const { files, ...projection } = config;
+    const key = JSON.stringify(projection);
+    const group = groups.get(key);
+    if (group) group.files.push(...files);
+    else groups.set(key, { ...projection, files: [...files] });
+  }
+  return [...groups.values()];
+}

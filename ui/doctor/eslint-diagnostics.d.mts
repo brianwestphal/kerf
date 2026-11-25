@@ -26,3 +26,7 @@ export function projectConsumerCoreConfig(
   config: ConsumerEslintConfigLike | undefined,
   file: string,
 ): ProjectedConsumerCoreConfig | undefined;
+
+export function groupConsumerCoreConfigs(
+  configs: (ProjectedConsumerCoreConfig | undefined)[],
+): ProjectedConsumerCoreConfig[];

@@ -2,6 +2,9 @@ import { mkdtempSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
+import { ESLint } from 'eslint';
+import tsParser from '@typescript-eslint/parser';
+
 import { createRuleTester } from '../helpers/rule-tester.js';
 import { appFile, appRoot, appSettings } from '../helpers/ui-app-fixture.js';
 import {
@@ -10,7 +13,7 @@ import {
   uiSettings,
 } from '../helpers/ui-contract-fixture.js';
 
-import wiring from '../../lib/rules/ui-wiring.js';
+import wiring, { clearUiWiringModuleCache } from '../../lib/rules/ui-wiring.js';
 
 const tester = createRuleTester();
 const settings = uiSettings();
@@ -557,3 +560,57 @@ tester.run('ui-wiring', wiring, {
 });
 
 console.log('ui-wiring: OK');
+
+const eslint = new ESLint({
+  cwd: wiringRoot,
+  overrideConfigFile: true,
+  overrideConfig: [
+    {
+      files: ['**/*.tsx'],
+      languageOptions: {
+        parser: tsParser,
+        parserOptions: {
+          ecmaVersion: 'latest',
+          sourceType: 'module',
+          ecmaFeatures: { jsx: true },
+        },
+      },
+      settings: entrySettings,
+      plugins: { kerfjs: { rules: { 'ui-wiring': wiring } } },
+      rules: { 'kerfjs/ui-wiring': 'error' },
+    },
+  ],
+});
+const lintEntry = async (code) =>
+  (await eslint.lintText(code, { filePath: wiringEntry }))[0].messages.map(
+    ({ ruleId, message, line, column }) => ({
+      ruleId,
+      message,
+      line,
+      column,
+    }),
+  );
+const missingWiring = "import './leaf';";
+clearUiWiringModuleCache();
+const first = await lintEntry(missingWiring);
+const second = await lintEntry(missingWiring);
+if (!first.length || JSON.stringify(first) !== JSON.stringify(second))
+  throw new Error('Memoized wiring graph changed lint diagnostics');
+if (!first.some(({ message }) => message.includes('search-field')))
+  throw new Error(
+    'Fixture did not exercise the cross-file search-field wiring',
+  );
+try {
+  writeFileSync(
+    wiringLeaf,
+    "import { Select } from '@kerfjs/ui'; <Select />;\n",
+  );
+  const changed = await lintEntry(missingWiring);
+  if (changed.some(({ message }) => message.includes('search-field')))
+    throw new Error('Memoized wiring graph ignored a changed dependency');
+} finally {
+  writeFileSync(
+    wiringLeaf,
+    "import { SearchField, Select } from '@kerfjs/ui'; export const View = () => <><SearchField /><Select /></>;\n",
+  );
+}

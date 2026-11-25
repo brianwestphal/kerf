@@ -34,6 +34,7 @@ import {
   collectProjectGuidanceFiles,
 } from './project-guidance-checks.mjs';
 import {
+  groupConsumerCoreConfigs,
   isForeignRuleDefinitionDiagnostic,
   projectConsumerCoreConfig,
 } from './eslint-diagnostics.mjs';
@@ -1033,7 +1034,7 @@ async function runEslint({
         ),
       ),
     );
-    configs.push(...consumerCoreConfigs.filter(Boolean));
+    configs.push(...groupConsumerCoreConfigs(consumerCoreConfigs));
   }
   const eslint = new ESLint({
     cwd: packageRoot,

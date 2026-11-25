@@ -14,6 +14,7 @@ import Ajv from 'ajv';
 import { afterEach, describe, expect, it } from 'vitest';
 
 import {
+  groupConsumerCoreConfigs,
   isForeignRuleDefinitionDiagnostic,
   projectConsumerCoreConfig,
 } from '../../doctor/eslint-diagnostics.mjs';
@@ -595,6 +596,30 @@ describe('Kerf UI doctor', () => {
         'src/view.ts',
       ),
     ).toBeUndefined();
+  });
+
+  it('groups identical consumer core projections without changing file coverage', () => {
+    const first = projectConsumerCoreConfig(
+      { rules: { 'no-empty-pattern': 'error' } },
+      'src/a.ts',
+    );
+    const second = projectConsumerCoreConfig(
+      { rules: { 'no-empty-pattern': 'error' } },
+      'src/b.ts',
+    );
+    const distinct = projectConsumerCoreConfig(
+      { rules: { 'no-empty-pattern': 'warn' } },
+      'src/c.ts',
+    );
+    expect(
+      groupConsumerCoreConfigs([first, undefined, second, distinct]),
+    ).toEqual([
+      {
+        files: ['src/a.ts', 'src/b.ts'],
+        rules: { 'no-empty-pattern': 'error' },
+      },
+      { files: ['src/c.ts'], rules: { 'no-empty-pattern': 'warn' } },
+    ]);
   });
 
   it('cancels the explicit browser stage deterministically and does not cache a partial run', async () => {

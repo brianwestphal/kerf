@@ -1,5 +1,5 @@
-import { existsSync, readFileSync } from 'node:fs';
-import { relative, resolve } from 'node:path';
+import { existsSync, readFileSync, statSync } from 'node:fs';
+import { dirname, relative, resolve } from 'node:path';
 
 import {
   helperCall,
@@ -32,27 +32,82 @@ function moduleImportSources(source) {
   return [...withoutComments.matchAll(staticImports)].map((match) => match[1]);
 }
 
+// ESLint invokes this rule once per file, but a wiring entry usually reaches
+// the same modules on every invocation. Cache parsing and import resolution;
+// the DFS below still builds the right graph for each entry and current buffer.
+const moduleCache = new Map();
+export function clearUiWiringModuleCache() {
+  moduleCache.clear();
+}
+function stamp(path) {
+  try {
+    const { mtimeMs, ctimeMs, size } = statSync(path);
+    return `${mtimeMs}:${ctimeMs}:${size}`;
+  } catch {
+    return null;
+  }
+}
+
+function moduleData(file, currentFile, currentText) {
+  const onDisk = stamp(file);
+  const cached = moduleCache.get(file);
+  const sourceIsCurrent = file === currentFile;
+  const fresh =
+    cached &&
+    cached.stamp === onDisk &&
+    (!sourceIsCurrent || cached.source === currentText) &&
+    cached.directories.every(([path, value]) => stamp(path) === value);
+  if (fresh) return cached;
+  let source;
+  try {
+    source = sourceIsCurrent ? currentText : readFileSync(file, 'utf8');
+  } catch {
+    return null;
+  }
+  const dependencies = [];
+  const directories = new Map();
+  for (const [, specifier] of [
+    ...source.matchAll(imports),
+    ...source.matchAll(dynamicImports),
+  ]) {
+    if (!specifier.startsWith('.')) continue;
+    const candidates = relativeImportCandidates(file, specifier);
+    for (const candidate of candidates) {
+      const directory = dirname(candidate);
+      if (!directories.has(directory))
+        directories.set(directory, stamp(directory));
+    }
+    const dependency = candidates.find(
+      (candidate) => script.test(candidate) && existsSync(candidate),
+    );
+    if (dependency) dependencies.push(dependency);
+  }
+  const data = {
+    source,
+    dependencies,
+    stamp: onDisk,
+    directories: [...directories],
+  };
+  // An unsaved editor buffer must not become the disk result seen by another
+  // file's lint pass.
+  if (!sourceIsCurrent) moduleCache.set(file, data);
+  else if (onDisk !== null)
+    try {
+      if (source === readFileSync(file, 'utf8')) moduleCache.set(file, data);
+    } catch {
+      // A virtual ESLint file has no reusable disk result.
+    }
+  return data;
+}
+
 function entryModules(entryFile, currentFile, currentText) {
   const modules = new Map();
   const visit = (file) => {
     if (modules.has(file)) return;
-    let source;
-    try {
-      source = file === currentFile ? currentText : readFileSync(file, 'utf8');
-    } catch {
-      return;
-    }
-    modules.set(file, source);
-    for (const [, specifier] of [
-      ...source.matchAll(imports),
-      ...source.matchAll(dynamicImports),
-    ]) {
-      if (!specifier.startsWith('.')) continue;
-      const dependency = relativeImportCandidates(file, specifier).find(
-        (candidate) => script.test(candidate) && existsSync(candidate),
-      );
-      if (dependency) visit(dependency);
-    }
+    const data = moduleData(file, currentFile, currentText);
+    if (!data) return;
+    modules.set(file, data.source);
+    for (const dependency of data.dependencies) visit(dependency);
   };
   visit(entryFile);
   return modules;
