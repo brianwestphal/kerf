@@ -971,6 +971,23 @@ ListHeader({
   action: 'toggle',
   expanded: false,
 });
+ListHeader({
+  label: 'Title action',
+  titleAction: 'toggle-all',
+  titleActionLabel: 'Hide all items',
+  action: 'add',
+  actionLabel: 'Add item',
+  actionIcon: icon,
+});
+// @ts-expect-error A title action needs its own accessible name.
+ListHeader({ label: 'Title action', titleAction: 'toggle-all' });
+// @ts-expect-error A title action must not claim disclosure state.
+ListHeader({
+  label: 'Title action',
+  titleAction: 'toggle-all',
+  titleActionLabel: 'Hide all',
+  expanded: false,
+});
 // @ts-expect-error KUI-T001 toggle mode requires controlled expanded state.
 ListHeader({ label: 'Toggle', toggle: true, action: 'toggle' });
 // @ts-expect-error KUI-T001 a trailing action requires its accessible label and icon.

@@ -919,6 +919,21 @@ type ListHeaderNoOverflow = {
     overflowDisabled?: never;
     overflowTriggerAttributes?: never;
 };
+type ListHeaderTrailingAction = {
+    action: string;
+    actionLabel: string;
+    actionIcon: SafeHtml;
+    actionDisabled?: boolean;
+    disabledReason?: string;
+    triggerAttributes?: ListHeaderTriggerAttributes;
+} | {
+    action?: never;
+    actionLabel?: never;
+    actionIcon?: never;
+    actionDisabled?: never;
+    disabledReason?: never;
+    triggerAttributes?: never;
+};
 type ListHeaderModeProps = ({
     /** Render the title as a controlled disclosure trigger. */
     toggle: true;
@@ -930,7 +945,22 @@ type ListHeaderModeProps = ({
     actionLabel?: never;
     actionDisabled?: boolean;
     disabledReason?: string;
+    titleAction?: never;
+    titleActionLabel?: never;
+    titleActionDisabled?: never;
+    titleDisabledReason?: never;
+    titleTriggerAttributes?: never;
 } & ListHeaderOverflowProps) | ({
+    /** Render the title as a named action inside a native heading. */
+    titleAction: string;
+    titleActionLabel: string;
+    titleActionDisabled?: boolean;
+    titleDisabledReason?: string;
+    titleTriggerAttributes?: ListHeaderTriggerAttributes;
+    toggle?: false;
+    headingLevel?: HeadingLevel;
+    expanded?: never;
+} & ListHeaderTrailingAction & ListHeaderNoOverflow) | ({
     /** Render a separately named trailing action. */
     toggle?: false;
     /**
@@ -944,6 +974,11 @@ type ListHeaderModeProps = ({
     expanded?: never;
     actionDisabled?: boolean;
     disabledReason?: string;
+    titleAction?: never;
+    titleActionLabel?: never;
+    titleActionDisabled?: never;
+    titleDisabledReason?: never;
+    titleTriggerAttributes?: never;
 } & ListHeaderNoOverflow) | ({
     /** Render a passive section heading. */
     toggle?: false;
@@ -958,6 +993,11 @@ type ListHeaderModeProps = ({
     expanded?: never;
     actionDisabled?: never;
     disabledReason?: never;
+    titleAction?: never;
+    titleActionLabel?: never;
+    titleActionDisabled?: never;
+    titleDisabledReason?: never;
+    titleTriggerAttributes?: never;
 } & ListHeaderNoOverflow);
 type ListHeaderIndicatorProps = {
     count: number;
@@ -973,7 +1013,7 @@ type ListHeaderIndicatorProps = {
     status?: string | SafeHtml | undefined;
 };
 type ListHeaderProps = ListHeaderBaseProps & ListHeaderIndicatorProps & ListHeaderModeProps;
-declare function ListHeader({ label, size, headingLevel, count, countLabel, badge, status, density, divider, inline, width, wrap, leadingEdge, indicatorTone, action, actionLabel, actionIcon, actionDisabled, disabledReason, expanded, toggle, overflowAction, overflowLabel, overflowIcon, overflowDisabled, overflowTriggerAttributes, placeholder, rootAttributes, triggerAttributes, controls, slot, }: ListHeaderProps): SafeHtml;
+declare function ListHeader({ label, size, headingLevel, count, countLabel, badge, status, density, divider, inline, width, wrap, leadingEdge, indicatorTone, action, actionLabel, actionIcon, actionDisabled, disabledReason, titleAction, titleActionLabel, titleActionDisabled, titleDisabledReason, titleTriggerAttributes, expanded, toggle, overflowAction, overflowLabel, overflowIcon, overflowDisabled, overflowTriggerAttributes, placeholder, rootAttributes, triggerAttributes, controls, slot, }: ListHeaderProps): SafeHtml;
 
 export { ListHeader, type ListHeaderProps };
 ```

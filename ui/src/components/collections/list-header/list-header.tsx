@@ -136,6 +136,24 @@ type ListHeaderNoOverflow = {
   overflowTriggerAttributes?: never;
 };
 
+type ListHeaderTrailingAction =
+  | {
+      action: string;
+      actionLabel: string;
+      actionIcon: SafeHtml;
+      actionDisabled?: boolean;
+      disabledReason?: string;
+      triggerAttributes?: ListHeaderTriggerAttributes;
+    }
+  | {
+      action?: never;
+      actionLabel?: never;
+      actionIcon?: never;
+      actionDisabled?: never;
+      disabledReason?: never;
+      triggerAttributes?: never;
+    };
+
 type ListHeaderModeProps =
   | ({
       /** Render the title as a controlled disclosure trigger. */
@@ -148,7 +166,24 @@ type ListHeaderModeProps =
       actionLabel?: never;
       actionDisabled?: boolean;
       disabledReason?: string;
+      titleAction?: never;
+      titleActionLabel?: never;
+      titleActionDisabled?: never;
+      titleDisabledReason?: never;
+      titleTriggerAttributes?: never;
     } & ListHeaderOverflowProps)
+  | ({
+      /** Render the title as a named action inside a native heading. */
+      titleAction: string;
+      titleActionLabel: string;
+      titleActionDisabled?: boolean;
+      titleDisabledReason?: string;
+      titleTriggerAttributes?: ListHeaderTriggerAttributes;
+      toggle?: false;
+      headingLevel?: HeadingLevel;
+      expanded?: never;
+    } & ListHeaderTrailingAction &
+      ListHeaderNoOverflow)
   | ({
       /** Render a separately named trailing action. */
       toggle?: false;
@@ -163,6 +198,11 @@ type ListHeaderModeProps =
       expanded?: never;
       actionDisabled?: boolean;
       disabledReason?: string;
+      titleAction?: never;
+      titleActionLabel?: never;
+      titleActionDisabled?: never;
+      titleDisabledReason?: never;
+      titleTriggerAttributes?: never;
     } & ListHeaderNoOverflow)
   | ({
       /** Render a passive section heading. */
@@ -178,6 +218,11 @@ type ListHeaderModeProps =
       expanded?: never;
       actionDisabled?: never;
       disabledReason?: never;
+      titleAction?: never;
+      titleActionLabel?: never;
+      titleActionDisabled?: never;
+      titleDisabledReason?: never;
+      titleTriggerAttributes?: never;
     } & ListHeaderNoOverflow);
 
 type ListHeaderIndicatorProps =
@@ -215,6 +260,11 @@ export function ListHeader({
   actionIcon,
   actionDisabled = false,
   disabledReason,
+  titleAction,
+  titleActionLabel,
+  titleActionDisabled = false,
+  titleDisabledReason,
+  titleTriggerAttributes = {},
   expanded,
   toggle = false,
   overflowAction,
@@ -235,6 +285,15 @@ export function ListHeader({
   const extensionTriggerAttributes = {
     ...filterControlAttributes(
       triggerAttributes,
+      PROTECTED_TRIGGER_DATA_ATTRIBUTES,
+    ),
+    ...(controls === undefined || titleAction
+      ? {}
+      : { 'aria-controls': controls }),
+  };
+  const extensionTitleTriggerAttributes = {
+    ...filterControlAttributes(
+      titleTriggerAttributes,
       PROTECTED_TRIGGER_DATA_ATTRIBUTES,
     ),
     ...(controls === undefined ? {} : { 'aria-controls': controls }),
@@ -281,6 +340,7 @@ export function ListHeader({
       </>
     );
   const busy = placeholder ? ('true' as const) : undefined;
+  const Heading = `h${headingLevel}` as const;
   if (toggle) {
     return (
       <header
@@ -367,14 +427,34 @@ export function ListHeader({
       slot={slot}
     >
       <div class="kui-list-header__title">
-        <Text
-          variant={`h${headingLevel}`}
-          border="none"
-          aria-label={accessibleLabel}
-        >
-          {label}
-        </Text>
-        {indicator}
+        {titleAction ? (
+          <Heading class="kui-list-header__heading">
+            <button
+              {...extensionTitleTriggerAttributes}
+              type="button"
+              class="kui-list-header__title-action"
+              data-action={placeholder ? undefined : titleAction}
+              aria-label={titleActionLabel}
+              title={titleActionDisabled ? titleDisabledReason : undefined}
+              disabled={titleActionDisabled || placeholder || undefined}
+              data-kui-disabled={titleActionDisabled ? 'true' : undefined}
+            >
+              <span>{label}</span>
+              {indicator}
+            </button>
+          </Heading>
+        ) : (
+          <>
+            <Text
+              variant={`h${headingLevel}`}
+              border="none"
+              aria-label={accessibleLabel}
+            >
+              {label}
+            </Text>
+            {indicator}
+          </>
+        )}
       </div>
       {action && (
         <button

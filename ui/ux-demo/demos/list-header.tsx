@@ -8,7 +8,7 @@ import { Text } from '@kerfjs/ui/text';
 import { Ellipsis, Plus } from 'lucide';
 
 import { DemoListPopover } from './demo-list-popover.js';
-import { listHeaderGroupOpen } from './state.js';
+import { listHeaderGroupOpen, listHeaderItemsVisible } from './state.js';
 
 export function ListHeaderDemo() {
   const unpricedCount = 3;
@@ -90,6 +90,29 @@ export function ListHeaderDemo() {
       </CatalogExample>
       <CatalogExample align="none">
         <ListHeader label="Notes" count={0} countLabel="0 notes" />
+      </CatalogExample>
+      <CatalogExample
+        label="Title Action"
+        note="The heading itself is a button that shows or hides all rows without disclosure semantics. A separate trailing action can remain."
+        align="none"
+        viewport={{ width: 'sidebar', frame: 'solid' }}
+        rootAttributes={{ 'data-demo-list-header-title-action': '' }}
+      >
+        <List>
+          <ListHeader
+            label="Demo AI Shells"
+            headingLevel={3}
+            titleAction="toggle-list-header-items"
+            titleActionLabel={`${listHeaderItemsVisible.value ? 'Hide' : 'Show'} all Demo AI Shells`}
+            action="log-more"
+            actionLabel="Add Demo AI Shell"
+            actionIcon={<LucideIcon icon={Plus} name="plus" />}
+          />
+          <List hidden={!listHeaderItemsVisible.value}>
+            <ListItem label="Design shell" action="log-more" />
+            <ListItem label="Review shell" action="log-more" />
+          </List>
+        </List>
       </CatalogExample>
       <CatalogExample align="none">
         <ListHeader label="Duplicates" count={2} countLabel="2 duplicates" />

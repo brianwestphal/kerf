@@ -2163,6 +2163,41 @@ describe('production UI primitives', () => {
     );
     expect(customToggle).toContain('<span>Custom</span>');
     expect(customToggle).not.toContain('data-component="disclosure-arrow"');
+    const titleAction = asHtml(
+      ListHeader({
+        label: 'Demo AI Shells',
+        headingLevel: 3,
+        count: 2,
+        countLabel: '2 shells',
+        titleAction: 'toggle-all-shells',
+        titleActionLabel: 'Hide all Demo AI Shells',
+        controls: 'shells',
+        action: 'add-shell',
+        actionLabel: 'Add shell',
+        actionIcon: icon,
+      }),
+    );
+    expect(titleAction).toMatch(
+      /<h3[^>]*class="kui-list-header__heading"/,
+    );
+    expect(titleAction).toMatch(
+      /<button[^>]*class="kui-list-header__title-action"[^>]*data-action="toggle-all-shells"[^>]*aria-label="Hide all Demo AI Shells"/,
+    );
+    expect(titleAction).toContain('aria-controls="shells"');
+    expect(titleAction).toContain('data-action="add-shell"');
+    expect(titleAction).not.toContain('aria-expanded');
+    expect(titleAction).not.toContain('data-component="disclosure-arrow"');
+    const disabledTitleAction = asHtml(
+      ListHeader({
+        label: 'Locked shells',
+        titleAction: 'toggle-all-shells',
+        titleActionLabel: 'Show all locked shells',
+        titleActionDisabled: true,
+        titleDisabledReason: 'Unavailable',
+      }),
+    );
+    expect(disabledTitleAction).toContain('title="Unavailable" disabled');
+    expect(disabledTitleAction).toContain('data-kui-disabled="true"');
     const header = asHtml(
       ListHeader({
         label: 'Workspace',

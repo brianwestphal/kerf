@@ -241,6 +241,7 @@ import {
   inspectorSection,
   itemTypes,
   listHeaderGroupOpen,
+  listHeaderItemsVisible,
   menuActionCurrent,
   menuActionPressed,
   menuToolsOpen,
@@ -781,6 +782,12 @@ const stopActions = delegateActions(app, 'click', {
     actionLog.value = listHeaderGroupOpen.value
       ? 'Group opened'
       : 'Group closed';
+  },
+  'toggle-list-header-items': () => {
+    listHeaderItemsVisible.value = !listHeaderItemsVisible.value;
+    actionLog.value = listHeaderItemsVisible.value
+      ? 'All Demo AI Shells shown'
+      : 'All Demo AI Shells hidden';
   },
   'toggle-menu-tools': () => {
     menuToolsOpen.value = !menuToolsOpen.value;
