@@ -791,6 +791,17 @@ declare function openPopupMenuAt(menu: PopupMenuElement, x: number, y: number, o
 declare function openPopupMenu(menu: PopupMenuElement): void;
 /** Close an open PopupMenu, and any submenu it shows. */
 declare function closePopupMenu(menu: PopupMenuElement): void;
+/** Whether a rendered PopupMenu root is open, for trigger or context menus. */
+declare function isPopupMenuOpen(menu: PopupMenuElement): boolean;
+/**
+ * Return the PopupMenu root whose own panel just closed, or undefined for an
+ * opening, submenu closure, or unrelated event. Native `toggle` does not
+ * bubble: observe it with a capture listener on an ancestor (such as the app
+ * root), then pass each event here. The controller resets open state during
+ * `beforetoggle`; a focus return, when appropriate, precedes the closed
+ * `toggle` notification.
+ */
+declare function closedPopupMenuRoot(event: Event): PopupMenuElement | undefined;
 /**
  * An action menu: a trigger button that opens a list of commands in the top
  * layer. A `single` `ToolbarControlGroup` (with `nestedDropdown`) or a
@@ -804,7 +815,7 @@ declare function closePopupMenu(menu: PopupMenuElement): void;
  */
 declare function PopupMenu({ text, label, icon, triggerContent, items, placement, caret, disabled, emphasis, size, rootAttributes, slot, context, anchor, popupNote, }: PopupMenuProps): SafeHtml;
 
-export { PopupMenu, type PopupMenuAnchor, type PopupMenuDivider, type PopupMenuElement, type PopupMenuEmphasis, type PopupMenuEntry, type PopupMenuHeading, type PopupMenuItem, type PopupMenuPlacement, type PopupMenuProps, type PopupMenuSize, closePopupMenu, openPopupMenu, openPopupMenuAt };
+export { PopupMenu, type PopupMenuAnchor, type PopupMenuDivider, type PopupMenuElement, type PopupMenuEmphasis, type PopupMenuEntry, type PopupMenuHeading, type PopupMenuItem, type PopupMenuPlacement, type PopupMenuProps, type PopupMenuSize, closePopupMenu, closedPopupMenuRoot, isPopupMenuOpen, openPopupMenu, openPopupMenuAt };
 ```
 
 ## `@kerfjs/ui/list-header`

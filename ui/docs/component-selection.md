@@ -849,6 +849,13 @@ point, at its `placement` unless the call names one for that opening
 keeps the same collision placement, focus management, submenu keyboard
 navigation, and outside/Escape dismissal as a trigger-anchored one.
 
+Read a rendered root's state with `isPopupMenuOpen` (`root`). To observe root
+dismissal, capture native `toggle` events on an ancestor and pass each event
+to `closedPopupMenuRoot` (`event`); it returns the root only for its own closed
+panel, not for a submenu closure or opening. The controller resets open state
+and handles focus return before the closed toggle notification. This keeps app
+code independent of PopupMenu's internal trigger and panel selectors.
+
 The menu opens in the browser top layer, flips and shifts at viewport edges,
 and limits its height to the available space, scrolling past it. It shifts
 only along its trigger's (or point's) edge, never across it: when neither

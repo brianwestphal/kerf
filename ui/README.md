@@ -903,6 +903,19 @@ import "@kerfjs/ui/popup-menu/register";
 `select/register` defines the form-associated `kui-select` root and wires every `Select` in the document; `popup-menu/register` wires every `PopupMenu` (opening, keyboard navigation, submenus, the `kui-menu-select` event, and focus return). That boundary keeps custom-element and document-listener side effects out of bundles that use unrelated components. Automated consumer-bundle tests enforce it, and also prove that no public entry except `@kerfjs/ui/webawesome.css` pulls in Web Awesome. Either registration also installs help tags: an icon-only Select, PopupMenu, or `aria-label`-named `<button>` in a `ToolbarControlGroup` shows its name in an `aria-hidden` tooltip on hover and keyboard focus. A toolbar with icon-only buttons but neither control imports `@kerfjs/ui/help-tags/register`, which registers only the tooltip.
 
 `PopupMenu` items may include `submenu` children, `checked` choices, a leading `icon`, trailing `details`, `disabledReason`, and a `danger` tone. The app owns choice state and dispatches each item's `action`. For a right-click menu, set `context: true`, a `label`, and `anchor={pointSignal.value}`; the app's `contextmenu` handler stores `{ x: event.clientX, y: event.clientY }` in that signal and calls `openPopupMenu(menu)`. The menu renders its own zero-footprint anchor host and keeps the point across re-renders, so it needs no wrapper or CSS (`openPopupMenuAt(menu, x, y, { placement? })` still opens a menu rendered without `anchor`); `closePopupMenu(menu)` closes it programmatically. See [component selection](docs/component-selection.md#popup-menu-migration) for examples.
+For a rendered PopupMenu root, `isPopupMenuOpen(root)` reads its current open
+state. To observe dismissal, listen for native `toggle` in capture mode and
+pass the event to `closedPopupMenuRoot(event)`. It returns the root only after
+its own panel closes, never when a nested submenu closes. By then Kerf has
+reset open state and, when appropriate, returned focus to the opener:
+
+```ts
+app.addEventListener('toggle', (event) => {
+  const root = closedPopupMenuRoot(event);
+  if (root) onMenuDismissed(root);
+}, true);
+```
+
 Use `label` for a visible label or `ariaLabel` for a visually hidden name. A
 nonempty visible label takes precedence when both are supplied. Kerf names the
 native trigger without adding visible label spacing; this also works with

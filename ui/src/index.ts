@@ -19,7 +19,9 @@ export {
   type FloatingToolbarProps,
 } from './components/actions/floating-toolbar/floating-toolbar.js';
 export {
+  closedPopupMenuRoot,
   closePopupMenu,
+  isPopupMenuOpen,
   openPopupMenu,
   openPopupMenuAt,
   PopupMenu,

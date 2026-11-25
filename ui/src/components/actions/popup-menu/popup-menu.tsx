@@ -377,6 +377,40 @@ export function closePopupMenu(menu: PopupMenuElement): void {
   menu.dispatchEvent(new CustomEvent(POPUP_MENU_CLOSE_EVENT));
 }
 
+/** Whether a rendered PopupMenu root is open, for trigger or context menus. */
+export function isPopupMenuOpen(menu: PopupMenuElement): boolean {
+  return (
+    menu
+      .querySelector(
+        ':scope > .kui-popup-menu__trigger, :scope > .kui-popup-menu__context-anchor',
+      )
+      ?.getAttribute('aria-expanded') === 'true'
+  );
+}
+
+/**
+ * Return the PopupMenu root whose own panel just closed, or undefined for an
+ * opening, submenu closure, or unrelated event. Native `toggle` does not
+ * bubble: observe it with a capture listener on an ancestor (such as the app
+ * root), then pass each event here. The controller resets open state during
+ * `beforetoggle`; a focus return, when appropriate, precedes the closed
+ * `toggle` notification.
+ */
+export function closedPopupMenuRoot(
+  event: Event,
+): PopupMenuElement | undefined {
+  if (event.type !== 'toggle' || (event as ToggleEvent).newState !== 'closed')
+    return undefined;
+  const panel = event.target;
+  if (!(panel instanceof Element) || !panel.matches('.kui-popup-menu__menu'))
+    return undefined;
+  const root = panel.parentElement;
+  return root?.matches('.kui-popup-menu') &&
+    root.querySelector(':scope > .kui-popup-menu__menu') === panel
+    ? (root as PopupMenuElement)
+    : undefined;
+}
+
 interface PopupMenuContentProps {
   context: boolean;
   label: string | undefined;

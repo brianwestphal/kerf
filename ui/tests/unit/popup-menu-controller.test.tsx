@@ -43,7 +43,9 @@ import {
 } from '../../src/components/actions/popup-menu/internal/popup-menu-controller.js';
 import { POPUP_MENU_SELECT_EVENT } from '../../src/components/actions/popup-menu/internal/popup-menu-events.js';
 import {
+  closedPopupMenuRoot,
   closePopupMenu,
+  isPopupMenuOpen,
   openPopupMenu,
   openPopupMenuAt,
   PopupMenu,
@@ -141,6 +143,51 @@ const pointer = (target: Element, type: string, init: PointerEventInit = {}) =>
   );
 
 describe('PopupMenu register: opening and closing', () => {
+  it('reports root state and closed root toggles without counting submenu closure', async () => {
+    const { root, menu, submenu } = setup();
+    const closed: HTMLElement[] = [];
+    const onToggle = (event: Event) => {
+      const owner = closedPopupMenuRoot(event);
+      if (owner) closed.push(owner);
+    };
+    document.addEventListener('toggle', onToggle, true);
+    try {
+      expect(isPopupMenuOpen(root)).toBe(false);
+      openPopupMenu(root);
+      expect(isPopupMenuOpen(root)).toBe(true);
+      submenu!.showPopover();
+      submenu!.hidePopover();
+      expect(closed).toEqual([]);
+      expect(isPopupMenuOpen(root)).toBe(true);
+      closePopupMenu(root);
+      expect(closed).toEqual([root]);
+      expect(isPopupMenuOpen(root)).toBe(false);
+      openPopupMenu(root);
+      expect(isPopupMenuOpen(root)).toBe(true);
+      menu.hidePopover();
+      expect(closed).toEqual([root, root]);
+      expect(isPopupMenuOpen(root)).toBe(false);
+      await flush();
+    } finally {
+      document.removeEventListener('toggle', onToggle, true);
+    }
+  });
+
+  it('reads context-anchor state and ignores unrelated toggle events', () => {
+    const { root, menu } = setup({ context: true, label: 'Context' });
+    expect(isPopupMenuOpen(root)).toBe(false);
+    openPopupMenuAt(root, 25, 35);
+    expect(isPopupMenuOpen(root)).toBe(true);
+    expect(closedPopupMenuRoot(new Event('toggle'))).toBeUndefined();
+    const unrelated = new Event('toggle');
+    Object.defineProperty(unrelated, 'newState', { value: 'closed' });
+    document.body.dispatchEvent(unrelated);
+    expect(closedPopupMenuRoot(unrelated)).toBeUndefined();
+    closePopupMenu(root);
+    expect(isPopupMenuOpen(root)).toBe(false);
+    expect(isShown(menu)).toBe(false);
+  });
+
   it('opens from its trigger, focuses the first item, and places the menu', async () => {
     const { trigger, menu, item } = setup();
     click(trigger);
@@ -973,12 +1020,21 @@ describe('PopupMenu register: choosing', () => {
 
   it('keeps the menu open when the choice event is canceled', () => {
     const { root, trigger, menu, item } = setup();
+    const closed: HTMLElement[] = [];
+    const onToggle = (event: Event) => {
+      const owner = closedPopupMenuRoot(event);
+      if (owner) closed.push(owner);
+    };
+    document.addEventListener('toggle', onToggle, true);
     root.addEventListener(POPUP_MENU_SELECT_EVENT, (event) =>
       event.preventDefault(),
     );
     click(trigger);
     click(item('Cut'));
     expect(isShown(menu)).toBe(true);
+    expect(isPopupMenuOpen(root)).toBe(true);
+    expect(closed).toEqual([]);
+    document.removeEventListener('toggle', onToggle, true);
   });
 
   it('blocks a disabled command before the application sees its click', () => {

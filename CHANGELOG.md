@@ -16,6 +16,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Added
 
+- **PopupMenu root lifecycle helpers (KF-4NH48X).** `isPopupMenuOpen(root)` reads trigger or context-menu state, and `closedPopupMenuRoot(event)` identifies a closed root panel from a captured native toggle event without counting submenu closures.
+
 - **Workbench Pane scroll region hook (KF-9EE8VN).** `mainPane.contentClassName` and panel `pane.contentClassName` now reach the Pane content slot so apps can identify its scroller without relying on Kerf's internal class names.
 
 - **Switch supports trailing tracks in settings rows (KF-P1HVK0).** Pass `labelPlacement="start"` to align the label and hint at the leading edge and the track at the trailing edge, including in right-to-left layouts.

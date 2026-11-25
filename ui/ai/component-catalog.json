@@ -8743,7 +8743,9 @@
         "PopupMenu",
         "openPopupMenu",
         "openPopupMenuAt",
-        "closePopupMenu"
+        "closePopupMenu",
+        "isPopupMenuOpen",
+        "closedPopupMenuRoot"
       ],
       "useWhen": [
         "Offer a short list of commands behind one trigger, such as a toolbar sort or More menu.",

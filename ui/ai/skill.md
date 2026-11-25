@@ -649,6 +649,13 @@ For `Select`, mark an unavailable choice with `disabled` and optionally `disable
 
 For nested action menus, use `PopupMenuItem.submenu` with item, heading, and divider entries; headings and dividers do not enter keyboard navigation. Items support `checked`, `icon`, `details`, `disabledReason`, and `tone`. The app owns choice state. For a right-click menu, use `PopupMenu` with `context: true` and `anchor` (a signal holding the pointer's `{ x, y }` client coordinates); the `contextmenu` handler sets that signal and calls `openPopupMenu(menu)`. Its `placement` applies at that point (`top-start` opens above it), with the same viewport flip. The menu owns its zero-footprint anchor host and keeps the point across re-renders, so never wrap it in a fixed/1px/z-index anchor element or re-apply the point after a render; `openPopupMenuAt(menu, x, y)` is only for a menu rendered without `anchor`. Call `closePopupMenu` for programmatic dismissal. `openPopupMenuAt` also opens a button-triggered `PopupMenu` (one without `context`) at the pointer for one opening (`bottom-start`, or pass `{ placement: 'top-start' }` as a fourth argument to open above the point; the flip still applies); it returns to its trigger once closed, so a row's visible overflow menu doubles as its context menu. For a row's trailing "…" overflow menu, pass `ListActionRow` a `trailingMenu: { label, icon, items, placement?, disabled? }` instead of the `trailingAction*` props; never compose a `PopupMenu` next to or inside a `ListItem`.
 
+Use `isPopupMenuOpen(root)` to read a rendered root's open state. To observe
+root dismissal, capture native `toggle` on an ancestor and pass the event to
+`closedPopupMenuRoot(event)`; it returns the root only when the root panel
+closes, not when a submenu closes. The controller has reset open state and
+handled focus return before that closed toggle notification. Do not inspect
+PopupMenu's private trigger or panel class names in app code.
+
 ## Select lifecycle ownership
 
 Import `@kerfjs/ui/select/register` once. It defines the form-associated
