@@ -4659,6 +4659,8 @@ interface EmptyStateProps {
     detail?: string;
     icon?: SafeHtml;
     action?: KerfUiContent;
+    /** Start-aligned secondary content, such as diagnostic Disclosure details. */
+    secondaryContent?: KerfUiContent;
     busy?: boolean;
     className?: string;
     /** Native named-slot assignment when composed inside a web component. */
@@ -4667,7 +4669,7 @@ interface EmptyStateProps {
      * test hook; the component's own markers stay protected. */
     rootAttributes?: RootDataAttributes;
 }
-declare function EmptyState({ title, detail, icon, action, busy, className, slot, rootAttributes, }: EmptyStateProps): SafeHtml;
+declare function EmptyState({ title, detail, icon, action, secondaryContent, busy, className, slot, rootAttributes, }: EmptyStateProps): SafeHtml;
 
 export { EmptyState, type EmptyStateProps };
 ```

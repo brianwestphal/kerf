@@ -7571,6 +7571,13 @@
           "accepts": ["control"],
           "cardinality": { "min": 0, "max": 1 },
           "exclusiveWith": []
+        },
+        {
+          "id": "secondary-content",
+          "jsx": { "prop": "secondaryContent" },
+          "accepts": ["disclosure", "diagnostic-content"],
+          "cardinality": { "min": 0, "max": 1 },
+          "exclusiveWith": []
         }
       ],
       "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },

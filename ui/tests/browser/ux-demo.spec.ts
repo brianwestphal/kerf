@@ -1629,6 +1629,46 @@ test('loads component-reachable package CSS through browser subpaths', async ({
   ).toHaveCSS('display', 'block');
 });
 
+test('keeps EmptyState recovery centered and its open diagnostic disclosure readable', async ({
+  page,
+}) => {
+  for (const width of [1280, 390]) {
+    await page.setViewportSize({ width, height: 844 });
+    await page.goto('/?component=empty-state');
+    const state = page
+      .locator('[data-demo="empty-state"] [data-component="empty-state"]')
+      .filter({ hasText: 'Project Unavailable' });
+    const summary = state.locator('.kui-disclosure__summary');
+    const arrow = summary.locator('[data-component="disclosure-arrow"]');
+    const title = summary.locator('.kui-disclosure__title');
+    const details = state.locator('.kui-disclosure__content');
+    const action = state.locator('.kui-empty-state__action');
+    await expect(summary).toBeVisible();
+    await expect(details).toBeVisible();
+    const [stateBox, arrowBox, titleBox, actionBox] = await Promise.all([
+      state.boundingBox(),
+      arrow.boundingBox(),
+      title.boundingBox(),
+      action.boundingBox(),
+    ]);
+    expect(stateBox).not.toBeNull();
+    expect(arrowBox).not.toBeNull();
+    expect(titleBox).not.toBeNull();
+    expect(actionBox).not.toBeNull();
+    expect(titleBox!.x - (arrowBox!.x + arrowBox!.width)).toBeLessThan(16);
+    expect(
+      Math.abs(
+        actionBox!.x +
+          actionBox!.width / 2 -
+          (stateBox!.x + stateBox!.width / 2),
+      ),
+    ).toBeLessThan(2);
+    await expect(details).toHaveCSS('text-align', 'start');
+    expect(stateBox!.x).toBeGreaterThanOrEqual(0);
+    expect(stateBox!.x + stateBox!.width).toBeLessThanOrEqual(width);
+  }
+});
+
 test('sizes and rotates the first-class disclosure arrow while Select keeps its independent half scale', async ({
   page,
   browserName,

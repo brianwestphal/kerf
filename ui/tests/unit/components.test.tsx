@@ -57,6 +57,7 @@ import { DisclosureArrow } from '../../src/components/navigation/disclosure-arro
 import { TabBar } from '../../src/components/navigation/tab-bar/tab-bar.js';
 import { TabBarItem } from '../../src/components/navigation/tab-bar-item/tab-bar-item.js';
 import { ContentItem } from '../../src/components/surfaces/content-item/content-item.js';
+import { Disclosure } from '../../src/components/surfaces/disclosure/disclosure.js';
 import {
   DialogSurface,
   PopoverDialogSurface,
@@ -3463,6 +3464,20 @@ describe('production UI primitives', () => {
     expect(empty).toContain(
       'data-busy="false" role="status" aria-busy="false"',
     );
+    const withSecondary = asHtml(
+      EmptyState({
+        title: 'Project unavailable',
+        action: icon,
+        secondaryContent: Disclosure({
+          title: 'Technical Details',
+          children: 'Could not load the project.',
+          open: true,
+        }),
+      }),
+    );
+    expect(withSecondary).toContain('kui-empty-state__secondary');
+    expect(withSecondary).toContain('Technical Details');
+    expect(withSecondary).toContain('kui-disclosure');
     expect(asHtml(EmptyState({ title: 'Loading', busy: true }))).toContain(
       'kui-loading-spinner',
     );

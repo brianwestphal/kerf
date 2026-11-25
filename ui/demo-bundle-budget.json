@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 164600,
-  "totalJavaScriptGzip": 471300,
-  "measuredLargestJavaScriptGzip": 164547,
-  "measuredTotalJavaScriptGzip": 471292,
+  "totalJavaScriptGzip": 471500,
+  "measuredLargestJavaScriptGzip": 164546,
+  "measuredTotalJavaScriptGzip": 471417,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -7699,6 +7699,22 @@
         "measuredTotalJavaScriptGzip": 471292,
         "largestJavaScriptGzip": 164600,
         "totalJavaScriptGzip": 471300
+      }
+    },
+    {
+      "at": "2026-11-25T22:10:01.698Z",
+      "reason": "KF-GZDZXH adds a documented EmptyState and Disclosure composition to the UX demo",
+      "old": {
+        "measuredLargestJavaScriptGzip": 164547,
+        "measuredTotalJavaScriptGzip": 471292,
+        "largestJavaScriptGzip": 164600,
+        "totalJavaScriptGzip": 471300
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 164546,
+        "measuredTotalJavaScriptGzip": 471417,
+        "largestJavaScriptGzip": 164600,
+        "totalJavaScriptGzip": 471500
       }
     }
   ]

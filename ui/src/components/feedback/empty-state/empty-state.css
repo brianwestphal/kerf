@@ -2,6 +2,7 @@
   --kui-empty-state-foreground: var(--kui-color-neutral-on-quiet);
   --kui-empty-state-title: var(--kui-color-text);
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   width: min(
     calc(100% - (2 * var(--kui-layout-inline-margin, remify(8px)))),
     remify(448px)
@@ -44,4 +45,10 @@
 }
 .kui-empty-state__action {
   margin-block-start: var(--kui-space-xs);
+}
+.kui-empty-state__secondary {
+  justify-self: stretch;
+  min-width: 0;
+  margin-block-start: var(--kui-space-xs);
+  text-align: start;
 }

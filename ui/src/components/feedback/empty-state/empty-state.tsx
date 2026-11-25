@@ -12,6 +12,8 @@ export interface EmptyStateProps {
   detail?: string;
   icon?: SafeHtml;
   action?: KerfUiContent;
+  /** Start-aligned secondary content, such as diagnostic Disclosure details. */
+  secondaryContent?: KerfUiContent;
   busy?: boolean;
   className?: string;
   /** Native named-slot assignment when composed inside a web component. */
@@ -28,6 +30,7 @@ export function EmptyState({
   detail,
   icon,
   action,
+  secondaryContent,
   busy = false,
   className = '',
   slot,
@@ -49,6 +52,9 @@ export function EmptyState({
       <strong>{title}</strong>
       {detail && <span>{detail}</span>}
       {action && <div class="kui-empty-state__action">{action}</div>}
+      {secondaryContent && (
+        <div class="kui-empty-state__secondary">{secondaryContent}</div>
+      )}
     </section>
   );
 }
