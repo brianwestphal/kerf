@@ -1,0 +1,91 @@
+{
+  "sketchVersion": "2026.4",
+  "component": "Text Field / Form",
+  "variants": [
+    {
+      "name": "Default/Light",
+      "state": "Default",
+      "theme": "Light",
+      "originalName": "Text Field / Labeled / Project Name / Light",
+      "symbolId": "C973205A-6E42-491D-8020-42C8FD4FFBBC"
+    },
+    {
+      "name": "Default/Dark",
+      "state": "Default",
+      "theme": "Dark",
+      "originalName": "Text Field / Labeled / Project Name / Dark",
+      "symbolId": "A1265A1E-CF26-42B6-8750-43A236DDCBA3"
+    },
+    {
+      "name": "Error/Light",
+      "state": "Error",
+      "theme": "Light",
+      "originalName": "Text Field / Error / Email Error / Light",
+      "symbolId": "8323C41B-9324-459D-91EA-831BE15AE31C"
+    },
+    {
+      "name": "Error/Dark",
+      "state": "Error",
+      "theme": "Dark",
+      "originalName": "Text Field / Error / Email Error / Dark",
+      "symbolId": "CE23BB24-4801-4220-B707-D3A74729479C"
+    }
+  ],
+  "symbolCount": 328,
+  "swatchCount": 141,
+  "identitiesPreserved": true,
+  "variantSetCreated": true,
+  "properties": [
+    {
+      "name": "State",
+      "values": ["Default", "Error"]
+    },
+    {
+      "name": "Theme",
+      "values": ["Light", "Dark"]
+    }
+  ],
+  "consumer": {
+    "setName": "Text Field / Form",
+    "setCount": 1,
+    "symbolReferenceCount": 325,
+    "entries": [
+      {
+        "name": "Default/Light",
+        "importPath": "Variant Set",
+        "importedIdDiffersFromSource": true,
+        "linked": false,
+        "foreign": false,
+        "setLinked": false,
+        "width": 440,
+        "override": "Prototype override 0",
+        "reopenedIdStable": true,
+        "reopenedWidth": 440,
+        "reopenedOverride": "Prototype override 0"
+      },
+      {
+        "name": "Error/Dark",
+        "importPath": "Variant Set",
+        "importedIdDiffersFromSource": true,
+        "linked": false,
+        "foreign": false,
+        "setLinked": false,
+        "width": 440,
+        "override": "Prototype override 1",
+        "reopenedIdStable": true,
+        "reopenedWidth": 440,
+        "reopenedOverride": "Prototype override 1"
+      }
+    ]
+  },
+  "comparison": {
+    "before": "Four individually importable masters with full Component / Variant / State / Theme names",
+    "after": "One importable Variant Set; masters renamed to State/Theme and selected through two properties",
+    "symbolReferenceCountBefore": 328,
+    "symbolReferenceCountAfter": 325,
+    "variantSetReferenceCount": 1
+  },
+  "linked": false,
+  "sync": "Unavailable: imported Variant Set masters have no foreign library object required by the sync gate",
+  "migrationReady": false
+}
