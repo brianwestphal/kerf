@@ -93,8 +93,8 @@ span.kui-text[data-wrap="truncate"] {
   white-space: nowrap;
 }
 
-/* Middle truncation: the head shrinks to an ellipsis while the kept suffix
-   (the last path segment) stays whole. Pre keeps a space at the split. */
+/* Middle truncation: reserve room for the cut marker, then let the kept suffix
+   yield when both pieces cannot fit. Pre keeps a space at the split. */
 .kui-text__truncate-middle {
   display: flex;
   min-width: 0;
@@ -108,13 +108,16 @@ span.kui-text[data-wrap="truncate"] {
 
 .kui-text__truncate-head {
   flex: 0 1 auto;
-  min-width: 0;
+  min-width: 1em;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
 .kui-text__truncate-tail {
   flex: 0 0 auto;
+  max-width: calc(100% - 1em);
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .kui-text__clamp {

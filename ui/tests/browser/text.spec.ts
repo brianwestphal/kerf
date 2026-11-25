@@ -1,5 +1,7 @@
 import { expect, test } from '@playwright/test';
 
+import { Text } from '../../dist/text.js';
+
 test('Text colors inherit, use foreground tokens, and override tone', async ({
   page,
 }) => {
@@ -400,6 +402,58 @@ test('Text truncates a path in the middle and a branch name at the start', async
       .locator('..')
       .screenshot({ path: testInfo.outputPath(`text-truncate-${width}.png`) });
   }
+});
+
+test('Text keeps a visible middle cut when a long suffix nearly fills a narrow caption', async ({
+  page,
+}, testInfo) => {
+  await page.goto('/?component=text');
+  const html = String(
+    Text({
+      variant: 'span',
+      wrap: 'truncate',
+      truncate: 'middle',
+      truncateKeep: 12,
+      children: 'drafts › Release train: run Q69G5FB0',
+    }),
+  );
+  await page.evaluate((markup) => {
+    const fixture = document.createElement('div');
+    fixture.dataset.testMiddleCaption = '';
+    fixture.style.width = '110px';
+    fixture.style.padding = '8px';
+    fixture.style.background = 'white';
+    fixture.innerHTML = markup;
+    document.body.append(fixture);
+  }, html);
+  const caption = page.locator('[data-test-middle-caption]');
+  const geometry = await caption.evaluate((element) => {
+    const head = element.querySelector<HTMLElement>(
+      '.kui-text__truncate-head',
+    )!;
+    const tail = element.querySelector<HTMLElement>(
+      '.kui-text__truncate-tail',
+    )!;
+    const middle = element.querySelector<HTMLElement>(
+      '.kui-text__truncate-middle',
+    )!;
+    const canvas = document.createElement('canvas');
+    const context = canvas.getContext('2d')!;
+    context.font = window.getComputedStyle(head).font;
+    return {
+      headWidth: head.getBoundingClientRect().width,
+      ellipsisWidth: context.measureText('…').width,
+      headClipped: head.scrollWidth > head.clientWidth,
+      tailEnd: tail.getBoundingClientRect().right,
+      middleEnd: middle.getBoundingClientRect().right,
+    };
+  });
+  expect(geometry.headClipped).toBe(true);
+  expect(geometry.headWidth).toBeGreaterThanOrEqual(geometry.ellipsisWidth);
+  expect(geometry.tailEnd).toBeLessThanOrEqual(geometry.middleEnd + 1);
+  await caption.screenshot({
+    path: testInfo.outputPath('text-middle-cut.png'),
+  });
 });
 
 test('Text font="monospace" resolves to the Kerf code stack with Web Awesome loaded', async ({
