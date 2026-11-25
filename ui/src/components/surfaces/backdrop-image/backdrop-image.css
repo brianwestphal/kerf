@@ -206,3 +206,25 @@
     color: inherit;
   }
 }
+
+:where(:root[data-kui-contrast="more"])
+  .kui-backdrop-image[data-fade="true"]
+  .kui-backdrop-image__backdrop {
+  mask-image: none;
+}
+
+:where(:root[data-kui-contrast="more"])
+  .kui-backdrop-image[data-fade="true"]
+  .kui-backdrop-image__overlay {
+  background-color: var(--_kui-backdrop-image-fade-to);
+}
+
+:where(:root[data-kui-contrast="more"])
+  .kui-backdrop-image[data-fade="true"]:is(
+    [data-scrim="bottom"],
+    [data-scrim="full"]
+  )
+  .kui-backdrop-image__overlay {
+  color-scheme: inherit;
+  color: inherit;
+}

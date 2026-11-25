@@ -348,6 +348,10 @@
   }
 }
 
+:where(:root[data-kui-contrast="more"]) .kui-color-picker__surface {
+  --_kui-color-picker-track-edge: var(--kui-color-text);
+}
+
 @media (forced-colors: active) {
   .kui-color-picker__surface {
     --_kui-color-picker-track-edge: CanvasText;

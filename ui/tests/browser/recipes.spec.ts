@@ -981,7 +981,10 @@ test('preserves reduced-motion and high-contrast semantics', async ({
   const spinner = list.locator('.kui-loading-spinner path');
   await expect(spinner).toHaveCSS('animation-name', 'none');
   await page.locator('[data-action="toggle-contrast"]').click();
-  await expect(page.locator('html')).toHaveClass(/demo-contrast/);
+  await expect(page.locator('html')).toHaveAttribute(
+    'data-kui-contrast',
+    'more',
+  );
   if (browserName === 'chromium') {
     await page.emulateMedia({
       forcedColors: 'active',

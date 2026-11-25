@@ -17,14 +17,6 @@ html.demo-dark {
   color-scheme: dark;
 }
 
-html.demo-contrast {
-  --kui-color-neutral-border-normal: currentColor;
-  --kui-focus-ring: 3px solid currentColor;
-  --wa-color-surface-border: currentColor;
-  --wa-color-neutral-border-normal: currentColor;
-  --wa-focus-ring: 3px solid currentColor;
-}
-
 html.demo-reduced-motion *,
 html.demo-reduced-motion *::before,
 html.demo-reduced-motion *::after {

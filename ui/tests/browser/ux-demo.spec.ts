@@ -218,7 +218,10 @@ test('restores display choices across reloads and keeps them independent', async
   await expect(stage).toHaveAttribute('data-background-style', 'layout-guide');
   await expect(contrast).toHaveAttribute('aria-pressed', 'true');
   await expect(motion).toHaveAttribute('aria-pressed', 'true');
-  await expect(page.locator('html')).toHaveClass(/demo-contrast/);
+  await expect(page.locator('html')).toHaveAttribute(
+    'data-kui-contrast',
+    'more',
+  );
   await expect(page.locator('html')).toHaveClass(/demo-reduced-motion/);
   await expect(page.locator('html')).toHaveClass(/demo-dark/);
   await expect(theme).toHaveAttribute('aria-label', 'Use Light Theme');
@@ -247,9 +250,65 @@ test('restores display choices across reloads and keeps them independent', async
   await expect(stage).toHaveAttribute('data-background-style', 'checkerboard');
   await expect(contrast).toHaveAttribute('aria-pressed', 'false');
   await expect(motion).toHaveAttribute('aria-pressed', 'false');
-  await expect(page.locator('html')).not.toHaveClass(/demo-contrast/);
+  await expect(page.locator('html')).not.toHaveAttribute('data-kui-contrast');
   await expect(page.locator('html')).not.toHaveClass(/demo-reduced-motion/);
   await expect(page.locator('html')).toHaveClass(/demo-light/);
+});
+
+test('increased contrast preview matches OS colors and clears without overriding OS preference', async ({
+  page,
+  browserName,
+}) => {
+  test.skip(
+    browserName !== 'chromium',
+    'contrast media emulation is checked in Chromium',
+  );
+  await page.emulateMedia({ contrast: 'no-preference' });
+  await page.goto('/?component=badge');
+  const contrast = page.locator('[data-action="toggle-contrast"]');
+  const colors = () =>
+    page.evaluate(() => {
+      const root = window.getComputedStyle(document.documentElement);
+      return [
+        '--kui-chrome-material-filter',
+        '--kui-color-pop-fill-loud',
+        '--kui-color-neutral-border-normal',
+        '--kui-focus-ring',
+        '--wa-focus-ring',
+      ].map((name) => root.getPropertyValue(name).trim());
+    });
+  const normal = await colors();
+  await contrast.click();
+  const preview = await colors();
+  expect(preview).not.toEqual(normal);
+  await page.screenshot({ path: 'test-results/catalog-contrast-preview.png' });
+
+  await page.emulateMedia({ contrast: 'more' });
+  await contrast.click();
+  await expect(page.locator('html')).not.toHaveAttribute('data-kui-contrast');
+  expect(await colors()).toEqual(preview);
+
+  await page.emulateMedia({ contrast: 'no-preference' });
+  expect(await colors()).toEqual(normal);
+
+  const clearPaneHeaderBackground = () =>
+    page.evaluate(() => {
+      const pane = document.createElement('div');
+      pane.className = 'kui-pane';
+      pane.setAttribute('data-header-material', 'clear');
+      const header = document.createElement('div');
+      header.className = 'kui-pane__header';
+      pane.append(header);
+      document.body.append(pane);
+      const background = window.getComputedStyle(header).backgroundColor;
+      pane.remove();
+      return background;
+    });
+  await page.emulateMedia({ forcedColors: 'active' });
+  const forcedColorsBackground = await clearPaneHeaderBackground();
+  expect(forcedColorsBackground).not.toBe('rgba(0, 0, 0, 0)');
+  await contrast.click();
+  expect(await clearPaneHeaderBackground()).toBe(forcedColorsBackground);
 });
 
 test('omits the removed command-palette recipe and safely falls back from its stale route', async ({
@@ -5925,7 +5984,10 @@ test('catalog supports its stateful controls', async ({
   await expect(themeButton).toHaveAttribute('aria-label', 'Use Light Theme');
   await expect(page.locator('html')).toHaveClass(/demo-dark/);
   await page.locator('[data-action="toggle-contrast"]').click();
-  await expect(page.locator('html')).toHaveClass(/demo-contrast/);
+  await expect(page.locator('html')).toHaveAttribute(
+    'data-kui-contrast',
+    'more',
+  );
   await page.locator('[data-action="toggle-motion"]').click();
   await expect(page.locator('html')).toHaveClass(/demo-reduced-motion/);
 

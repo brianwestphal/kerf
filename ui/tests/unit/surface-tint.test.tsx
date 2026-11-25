@@ -186,38 +186,43 @@ describe('surface tint', () => {
     expect(selectors).toEqual([':root, [data-kui-tint]']);
 
     const tintRules: string[] = [];
-    foundation.walkRules(/^\[data-kui-tint="(light|dark)"\]$/, (rule) => {
-      const at: string[] = [];
-      for (
-        let node = rule.parent;
-        node && node.type === 'atrule';
-        node = node.parent
-      )
-        at.push((node as postcss.AtRule).params);
-      if (
-        rule.some(
-          (node) => node.type === 'decl' && node.prop.startsWith('--wa-'),
+    foundation.walkRules(
+      /^:root:not\(\[data-kui-contrast="more"\]\) \[data-kui-tint="(light|dark)"\]$/,
+      (rule) => {
+        const at: string[] = [];
+        for (
+          let node = rule.parent;
+          node && node.type === 'atrule';
+          node = node.parent
         )
-      )
-        tintRules.push(`${at.reverse().join(' > ')} ${rule.selector}`);
-    });
+          at.push((node as postcss.AtRule).params);
+        if (
+          rule.some(
+            (node) => node.type === 'decl' && node.prop.startsWith('--wa-'),
+          )
+        )
+          tintRules.push(`${at.reverse().join(' > ')} ${rule.selector}`);
+      },
+    );
     const accentRules: string[] = [];
     foundation.walkRules(
-      /^\[data-kui-tint="(light|dark)"\]\[data-kui-tint-accent\]$/,
+      /^:root:not\(\[data-kui-contrast="more"\]\)\s+\[data-kui-tint="(light|dark)"\]\[data-kui-tint-accent\]$/,
       (rule) => {
         const props = rule.nodes
           .filter((node): node is postcss.Declaration => node.type === 'decl')
           .map((decl) => decl.prop);
-        accentRules.push(`${rule.selector} ${props.join(',')}`);
+        accentRules.push(
+          `${rule.selector.replace(/\s+/g, ' ')} ${props.join(',')}`,
+        );
       },
     );
     expect(accentRules).toEqual([
-      '[data-kui-tint="light"][data-kui-tint-accent] --wa-color-brand-fill-loud,--wa-color-brand-on-loud,--wa-color-brand-on-quiet,--kui-color-brand-on-fill,--wa-color-focus',
-      '[data-kui-tint="dark"][data-kui-tint-accent] --wa-color-brand-fill-loud,--wa-color-brand-on-loud,--wa-color-brand-on-quiet,--kui-color-brand-on-fill,--wa-color-focus',
+      ':root:not([data-kui-contrast="more"]) [data-kui-tint="light"][data-kui-tint-accent] --wa-color-brand-fill-loud,--wa-color-brand-on-loud,--wa-color-brand-on-quiet,--kui-color-brand-on-fill,--wa-color-focus',
+      ':root:not([data-kui-contrast="more"]) [data-kui-tint="dark"][data-kui-tint-accent] --wa-color-brand-fill-loud,--wa-color-brand-on-loud,--wa-color-brand-on-quiet,--kui-color-brand-on-fill,--wa-color-focus',
     ]);
     expect(tintRules).toEqual([
-      '(color: oklch(from red l c h)) > not (prefers-contrast: more) [data-kui-tint="light"]',
-      '(color: oklch(from red l c h)) > not (prefers-contrast: more) [data-kui-tint="dark"]',
+      '(color: oklch(from red l c h)) > not (prefers-contrast: more) :root:not([data-kui-contrast="more"]) [data-kui-tint="light"]',
+      '(color: oklch(from red l c h)) > not (prefers-contrast: more) :root:not([data-kui-contrast="more"]) [data-kui-tint="dark"]',
     ]);
   });
 });

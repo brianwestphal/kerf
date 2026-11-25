@@ -91,6 +91,10 @@
   }
 }
 
+:where(:root[data-kui-contrast="more"]) .kui-paged-view__dots {
+  border-color: var(--kui-color-neutral-border-quiet);
+}
+
 /* Each dot is a 24px target around its 8px mark; the current page's mark is
    a wider pill, so the state never rests on color alone. */
 .kui-paged-view__dot {

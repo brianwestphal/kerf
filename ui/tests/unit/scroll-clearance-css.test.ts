@@ -159,6 +159,9 @@ describe('scroll clearance context', () => {
       '@media (update: slow) :root, [data-kui-tint] --kui-chrome-material:var(--kui-color-surface)',
       '@media (update: slow) :root, [data-kui-tint] --kui-chrome-material-raised:var(--kui-color-surface-raised)',
       '@media (update: slow) :root, [data-kui-tint] --kui-chrome-material-filter:none',
+      ':root[data-kui-contrast="more"], :root[data-kui-contrast="more"] [data-kui-tint] --kui-chrome-material:var(--kui-color-surface)',
+      ':root[data-kui-contrast="more"], :root[data-kui-contrast="more"] [data-kui-tint] --kui-chrome-material-raised:var(--kui-color-surface-raised)',
+      ':root[data-kui-contrast="more"], :root[data-kui-contrast="more"] [data-kui-tint] --kui-chrome-material-filter:none',
     ]);
   });
 

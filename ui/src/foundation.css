@@ -695,7 +695,7 @@
 
 @supports (color: oklch(from red l c h)) {
   @media not (prefers-contrast: more) {
-    [data-kui-tint="light"] {
+    :root:not([data-kui-contrast="more"]) [data-kui-tint="light"] {
       --wa-color-surface-default: oklch(
         from var(--_kui-tint-color) clamp(0.9, l, 0.985) min(c, 0.08) h
       );
@@ -722,7 +722,7 @@
       );
     }
 
-    [data-kui-tint="dark"] {
+    :root:not([data-kui-contrast="more"]) [data-kui-tint="dark"] {
       --wa-color-surface-default: oklch(
         from var(--_kui-tint-color) clamp(0.16, l, 0.3) min(c, 0.1) h
       );
@@ -752,7 +752,8 @@
        scope's between 72% and 85% under near-black text, and brand text at
        most 36% (light) or at least 94% (dark). Dark on-fill text also caps
        chroma so a vivid red stays light after gamut clipping. */
-    [data-kui-tint="light"][data-kui-tint-accent] {
+    :root:not([data-kui-contrast="more"])
+      [data-kui-tint="light"][data-kui-tint-accent] {
       --wa-color-brand-fill-loud: oklch(
         from var(--_kui-tint-accent) min(l, 0.46) c h
       );
@@ -766,7 +767,8 @@
       --wa-color-focus: oklch(from var(--_kui-tint-accent) min(l, 0.46) c h);
     }
 
-    [data-kui-tint="dark"][data-kui-tint-accent] {
+    :root:not([data-kui-contrast="more"])
+      [data-kui-tint="dark"][data-kui-tint-accent] {
       --wa-color-brand-fill-loud: oklch(
         from var(--_kui-tint-accent) clamp(0.72, l, 0.85) c h
       );
@@ -843,4 +845,26 @@
     --kui-color-neutral-border-normal: currentColor;
     --kui-focus-ring: 3px solid currentColor;
   }
+}
+
+/* Catalog preview of the supported increased-contrast palette under an OS
+   setting of no preference. Removing the attribute leaves OS media behavior
+   intact. Keep this in step with the prefers-contrast rule above. */
+:root[data-kui-contrast="more"],
+:root[data-kui-contrast="more"] [data-kui-tint] {
+  --kui-chrome-material: var(--kui-color-surface);
+  --kui-chrome-material-raised: var(--kui-color-surface-raised);
+  --kui-chrome-material-filter: none;
+  --kui-color-pop-fill-quiet: Canvas;
+  --kui-color-pop-fill-normal: Canvas;
+  --kui-color-pop-fill-loud: Highlight;
+  --kui-color-pop-border-quiet: currentColor;
+  --kui-color-pop-border-normal: currentColor;
+  --kui-color-pop-border-loud: currentColor;
+  --kui-color-pop-on-quiet: currentColor;
+  --kui-color-pop-on-normal: currentColor;
+  --kui-color-pop-on-loud: HighlightText;
+  --kui-color-pop-on-fill: currentColor;
+  --kui-color-neutral-border-normal: currentColor;
+  --kui-focus-ring: 3px solid currentColor;
 }

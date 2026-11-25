@@ -555,6 +555,21 @@
   }
 }
 
+:where(:root[data-kui-contrast="more"])
+  .kui-toolbar-control-group[data-material="glass"]:not(
+    [data-appearance="borderless"]
+  ) {
+  --kui-toolbar-control-border: var(--kui-color-neutral-border-normal);
+}
+
+:where(:root[data-kui-contrast="more"])
+  .kui-toolbar-control-group[data-material="glass"][data-tone="dark"]:not(
+    [data-appearance="borderless"]
+  ) {
+  --kui-toolbar-control-background: var(--kui-color-neutral-fill-loud);
+  --kui-toolbar-control-border: var(--kui-toolbar-control-dark-border, #353536);
+}
+
 :root[data-kui-effects="static"]
   .kui-toolbar-control-group[data-material="glass"]:not(
     [data-appearance="borderless"]

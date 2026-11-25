@@ -119,3 +119,7 @@
     animation: none;
   }
 }
+
+:where(:root[data-kui-contrast="more"]) [data-kui-scroll-effect] {
+  animation: none;
+}

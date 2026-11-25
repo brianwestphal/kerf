@@ -437,6 +437,12 @@
   }
 }
 
+:where(:root[data-kui-contrast="more"])
+  .kui-nav-stack[data-chrome-material="clear"]
+  > .kui-nav-stack__chrome {
+  background: var(--kui-chrome-material);
+}
+
 @media (forced-colors: active) {
   .kui-nav-stack[data-chrome-material="clear"] > .kui-nav-stack__chrome {
     background: Canvas;
@@ -520,6 +526,12 @@
     > .kui-nav-stack__bottom {
     background: var(--kui-chrome-material);
   }
+}
+
+:where(:root[data-kui-contrast="more"])
+  .kui-nav-stack[data-bottom-toolbar-material="clear"]
+  > .kui-nav-stack__bottom {
+  background: var(--kui-chrome-material);
 }
 
 @media (forced-colors: active) {

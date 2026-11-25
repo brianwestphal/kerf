@@ -3677,10 +3677,10 @@ export { DEFAULT_BREAKPOINTS, type DeviceBreakpoints, type DeviceClass, type Dev
 ```ts
 import * as kerfjs from 'kerfjs';
 import { SafeHtml } from 'kerfjs';
-import { d as CatalogProps } from './types-CuKf5G87.js';
-export { c as CatalogBackgroundStyle, e as CatalogBrand, a as CatalogEntry, f as CatalogRelated, C as CatalogResource, b as CatalogSecondaryGroup, g as CatalogSection, h as CatalogSettingsConfig, i as CatalogStageRootAttributes, j as CatalogTagFilter, k as CatalogUxReview } from './types-CuKf5G87.js';
+import { d as CatalogProps } from './types-PGGOsJug.js';
+export { c as CatalogBackgroundStyle, e as CatalogBrand, a as CatalogEntry, f as CatalogRelated, C as CatalogResource, b as CatalogSecondaryGroup, g as CatalogSection, h as CatalogSettingsConfig, i as CatalogStageRootAttributes, j as CatalogTagFilter, k as CatalogUxReview } from './types-PGGOsJug.js';
 import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
-export { C as CatalogPackage, a as CatalogPackageEntry, b as CatalogPreview, c as CatalogReference, d as ComposedCatalog, e as catalogEntryId, f as composeCatalog } from './compose-B_GFfFhm.js';
+export { C as CatalogPackage, a as CatalogPackageEntry, b as CatalogPreview, c as CatalogReference, d as ComposedCatalog, e as catalogEntryId, f as composeCatalog } from './compose-Qkitwg3x.js';
 import './toolbar.js';
 import './extension-attributes-CnqvBmj3.js';
 import './sides-BPSWde0A.js';
@@ -3835,10 +3835,10 @@ export { Catalog, CatalogExample, type CatalogExampleAlign, type CatalogExampleP
 ## `@kerfjs/ui/catalog-library`
 
 ```ts
-import { C as CatalogPackage } from './compose-B_GFfFhm.js';
+import { C as CatalogPackage } from './compose-Qkitwg3x.js';
 import './semantic-content-BbzjvSu9.js';
 import 'kerfjs';
-import './types-CuKf5G87.js';
+import './types-PGGOsJug.js';
 import './toolbar.js';
 import './extension-attributes-CnqvBmj3.js';
 import './sides-BPSWde0A.js';
@@ -3866,7 +3866,7 @@ export { kerfCatalogPackage };
 ## `@kerfjs/ui/catalog-resources`
 
 ```ts
-import { C as CatalogResource } from './types-CuKf5G87.js';
+import { C as CatalogResource } from './types-PGGOsJug.js';
 import './toolbar.js';
 import 'kerfjs';
 import './semantic-content-BbzjvSu9.js';
@@ -3924,7 +3924,7 @@ export { type CatalogGuidanceKind, type CatalogResourceKind, type CatalogResourc
 
 ```ts
 import { Signal } from 'kerfjs';
-import { c as CatalogBackgroundStyle } from './types-CuKf5G87.js';
+import { c as CatalogBackgroundStyle } from './types-PGGOsJug.js';
 import './toolbar.js';
 import './semantic-content-BbzjvSu9.js';
 import './extension-attributes-CnqvBmj3.js';

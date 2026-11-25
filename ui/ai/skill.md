@@ -115,6 +115,9 @@ Put its controls in `ToolbarControlGroup material="glass"` groups, and add
 60px) to fade a backing in gradually as content scrolls beneath the bar (it
 stays clear otherwise); give the opening `BackdropImage` `underChrome` so its artwork runs beneath the clear header. A clear bar draws no divider and turns opaque under reduced
 transparency, increased contrast, and forced colors on its own.
+For a catalog preview, set `data-kui-contrast="more"` on the document root
+while its increased-contrast toggle is on, and remove the attribute when off;
+the OS `prefers-contrast: more` behavior remains active independently.
 
 ### Core dialogs as bottom sheets
 

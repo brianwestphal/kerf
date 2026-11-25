@@ -752,6 +752,25 @@
   }
 }
 
+@layer wa-theme-overrides {
+  :root[data-kui-contrast="more"],
+  :root[data-kui-contrast="more"]
+    :is(
+      .wa-theme-default,
+      .wa-light,
+      .wa-dark,
+      .wa-invert,
+      .kui-light,
+      .kui-dark,
+      .kui-invert,
+      [data-kui-scheme]
+    ) {
+    --wa-color-surface-border: currentColor;
+    --wa-color-neutral-border-normal: currentColor;
+    --wa-focus-ring: 3px solid currentColor;
+  }
+}
+
 /*
  * Raw Web Awesome children inside Kerf containers.
  *

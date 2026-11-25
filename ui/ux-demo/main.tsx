@@ -416,10 +416,8 @@ const backgroundStyle = signal<CatalogBackgroundStyle>(
   savedDisplay.backgroundStyle ?? 'checkerboard',
 );
 if (explicitTheme) applyDemoTheme(document.documentElement, explicitTheme);
-document.documentElement.classList.toggle(
-  'demo-contrast',
-  increasedContrast.value,
-);
+if (increasedContrast.value)
+  document.documentElement.setAttribute('data-kui-contrast', 'more');
 document.documentElement.classList.toggle(
   'demo-reduced-motion',
   reducedMotion.value,
@@ -1655,10 +1653,9 @@ const stopCatalog = wireCatalog(app, {
   },
   onToggleContrast: () => {
     increasedContrast.value = !increasedContrast.value;
-    document.documentElement.classList.toggle(
-      'demo-contrast',
-      increasedContrast.value,
-    );
+    if (increasedContrast.value)
+      document.documentElement.setAttribute('data-kui-contrast', 'more');
+    else document.documentElement.removeAttribute('data-kui-contrast');
     saveDisplay();
     actionLog.value = increasedContrast.value
       ? 'Increased contrast on'

@@ -43,6 +43,12 @@ while the `ui` job checks the package. A failing browser job uploads its report
 and per-test evidence for 14 days as
 `ui-browser-failure-<browser>-<run>-<attempt>`.
 
+For a catalog's **Increased contrast** display preview, set
+`data-kui-contrast="more"` on the document root and remove it when the preview
+is off. Kerf's foundation tokens, Web Awesome bridge, and component contrast
+rules then match `prefers-contrast: more` without changing the OS preference.
+The OS preference still applies after the preview attribute is removed.
+
 When authoring a component gallery, follow the single
 [Catalog demo authoring contract](./docs/catalog.md#catalog-demo-authoring-contract)
 for focused-versus-composition modes, helper nesting, specimen selection,

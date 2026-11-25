@@ -153,7 +153,8 @@ export interface CatalogProps {
   content: KerfUiContent;
   collapsed?: boolean;
   theme?: 'light' | 'dark';
-  /** Show the controlled increased-contrast toggle when supplied. The app applies the preference. */
+  /** Show the controlled increased-contrast toggle when supplied. Set
+   * data-kui-contrast="more" on the document root while enabled. */
   increasedContrast?: boolean;
   /** Show the controlled reduced-motion toggle when supplied. The app applies the preference. */
   reducedMotion?: boolean;

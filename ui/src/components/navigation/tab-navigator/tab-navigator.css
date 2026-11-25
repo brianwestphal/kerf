@@ -337,6 +337,12 @@
   }
 }
 
+:where(:root[data-kui-contrast="more"])
+  .kui-tab-scaffold[data-bar-material="clear"]
+  > .kui-tab-scaffold__bar {
+  background: var(--kui-chrome-material);
+}
+
 @media (forced-colors: active) {
   .kui-tab-scaffold[data-bar-material="clear"] > .kui-tab-scaffold__bar {
     background: Canvas;
