@@ -14,8 +14,11 @@ substitutes for editable Symbols.
 
 ## Install and update
 
-The Library was created and verified with **Sketch 2026.3.1**. Kerf UI ships
-it as a Sketch Library, not a document template: documents link its Symbols
+The Library was created with **Sketch 2026.3.1** and its shipped file was
+reverified with **Sketch 2026.4** on 25 November 2026: all 328 Symbols and 12
+linked cross-family consumer instances passed override, resize, and save/reopen
+checks. Both light and dark library-sync fixtures retained their text
+overrides. Kerf UI ships it as a Sketch Library, not a document template: documents link its Symbols
 and Color Variables, so a new release reaches every design that uses them.
 
 To install:
