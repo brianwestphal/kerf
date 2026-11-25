@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 164600,
-  "totalJavaScriptGzip": 470800,
-  "measuredLargestJavaScriptGzip": 164547,
-  "measuredTotalJavaScriptGzip": 470791,
+  "totalJavaScriptGzip": 471000,
+  "measuredLargestJavaScriptGzip": 164546,
+  "measuredTotalJavaScriptGzip": 470920,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -7651,6 +7651,38 @@
         "measuredTotalJavaScriptGzip": 470791,
         "largestJavaScriptGzip": 164600,
         "totalJavaScriptGzip": 470800
+      }
+    },
+    {
+      "at": "2026-11-25T05:01:55.694Z",
+      "reason": "KF-BACCQE handles plain-text SearchField paste",
+      "old": {
+        "measuredLargestJavaScriptGzip": 164547,
+        "measuredTotalJavaScriptGzip": 470791,
+        "largestJavaScriptGzip": 164600,
+        "totalJavaScriptGzip": 470800
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 164547,
+        "measuredTotalJavaScriptGzip": 470890,
+        "largestJavaScriptGzip": 164600,
+        "totalJavaScriptGzip": 470900
+      }
+    },
+    {
+      "at": "2026-11-25T05:07:35.389Z",
+      "reason": "KF-BACCQE inserts one plain-text clipboard edit and input event",
+      "old": {
+        "measuredLargestJavaScriptGzip": 164547,
+        "measuredTotalJavaScriptGzip": 470890,
+        "largestJavaScriptGzip": 164600,
+        "totalJavaScriptGzip": 470900
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 164546,
+        "measuredTotalJavaScriptGzip": 470920,
+        "largestJavaScriptGzip": 164600,
+        "totalJavaScriptGzip": 471000
       }
     }
   ]

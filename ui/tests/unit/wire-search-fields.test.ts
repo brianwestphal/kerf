@@ -31,6 +31,69 @@ function inputEvent(
 }
 
 describe('wireSearchFields', () => {
+  it('pastes only normalized plain text into enabled editors', () => {
+    const root = document.createElement('div');
+    document.body.append(root);
+    root.innerHTML =
+      String(SearchField({ id: 'enabled', label: 'Search' })) +
+      String(
+        SearchField({ id: 'disabled', label: 'Saved Search', disabled: true }),
+      );
+    const onEdit = vi.fn();
+    const stop = wireSearchFields(root, { collapsible: false, onEdit });
+    const editors = root.querySelectorAll<HTMLElement>(
+      '[data-search-field-editor]',
+    );
+    const paste = (target: HTMLElement, plain?: string) => {
+      const event = new Event('paste', { bubbles: true, cancelable: true });
+      if (plain !== undefined)
+        Object.defineProperty(event, 'clipboardData', {
+          value: { getData: () => plain },
+        });
+      target.dispatchEvent(event);
+      return event;
+    };
+    expect(paste(root).defaultPrevented).toBe(false);
+    expect(paste(editors[1]!, 'Rich text').defaultPrevented).toBe(false);
+    expect(paste(editors[0]!, '').defaultPrevented).toBe(true);
+    expect(paste(editors[0]!).defaultPrevented).toBe(true);
+    expect(readSearchField(editors[0]!).query).toBe('');
+    const handled = new Event('paste', { bubbles: true, cancelable: true });
+    handled.preventDefault();
+    editors[0]!.dispatchEvent(handled);
+    expect(onEdit).not.toHaveBeenCalled();
+    document.getSelection()!.removeAllRanges();
+    expect(paste(editors[0]!, 'not inserted').defaultPrevented).toBe(true);
+    const outside = document.createRange();
+    outside.selectNodeContents(root);
+    document.getSelection()!.addRange(outside);
+    expect(paste(editors[0]!, 'also not inserted').defaultPrevented).toBe(true);
+    focusAt(editors[0]!, editors[0]!, editors[0]!.childNodes.length);
+    expect(paste(editors[0]!, 'Release\r\ntrain\nQ69').defaultPrevented).toBe(
+      true,
+    );
+    expect(readSearchField(editors[0]!).query).toBe('Release train Q69');
+    expect(onEdit).toHaveBeenCalledTimes(1);
+    expect(onEdit.mock.calls[0]?.[0].event.inputType).toBe('insertFromPaste');
+    const inserted = [...editors[0]!.childNodes].find(
+      (node) =>
+        node.nodeType === Node.TEXT_NODE &&
+        node.textContent?.includes('Release'),
+    )!;
+    const replace = document.createRange();
+    replace.setStart(inserted, 8);
+    replace.setEnd(inserted, 13);
+    document.getSelection()!.removeAllRanges();
+    document.getSelection()!.addRange(replace);
+    expect(paste(editors[0]!, 'board').defaultPrevented).toBe(true);
+    expect(readSearchField(editors[0]!).query).toBe('Release board Q69');
+    expect(onEdit).toHaveBeenCalledTimes(2);
+    stop();
+    paste(editors[0]!, 'after disposal');
+    expect(readSearchField(editors[0]!).query).toBe('Release board Q69');
+    root.remove();
+  });
+
   it('accepts generic synthetic input events without an inputType', () => {
     const root = document.createElement('div');
     document.body.append(root);

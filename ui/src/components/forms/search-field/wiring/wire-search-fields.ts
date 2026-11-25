@@ -602,8 +602,38 @@ function createDeletionController(
     }
     pending.delete(editorId);
   };
+  const onPaste = (event: ClipboardEvent) => {
+    // TagField can compose this wiring on a root the app already wired.
+    if (event.defaultPrevented) return;
+    const editor = editorFromEvent(root, event);
+    if (!editor || editor.getAttribute('contenteditable') !== 'true') return;
+    event.preventDefault();
+    const text = event.clipboardData
+      ?.getData('text/plain')
+      .replace(/\r\n?|\n/g, ' ');
+    if (!text) return;
+    const selection = editor.ownerDocument.getSelection();
+    if (!selection?.rangeCount) return;
+    const range = selection.getRangeAt(0);
+    if (!editor.contains(range.commonAncestorContainer)) return;
+    range.deleteContents();
+    const inserted = editor.ownerDocument.createTextNode(text);
+    range.insertNode(inserted);
+    range.setStartAfter(inserted);
+    range.collapse(true);
+    selection.removeAllRanges();
+    selection.addRange(range);
+    editor.dispatchEvent(
+      new InputEvent('input', {
+        bubbles: true,
+        data: text,
+        inputType: 'insertFromPaste',
+      }),
+    );
+  };
   root.addEventListener('beforeinput', onBeforeInput, true);
   root.addEventListener('input', onInput, true);
+  root.addEventListener('paste', onPaste, true);
 
   const clearSelectAllIntent = (event: Event) => {
     const editor = editorFromEvent(root, event);
@@ -663,6 +693,7 @@ function createDeletionController(
       for (const stop of deleting.values()) stop();
       root.removeEventListener('beforeinput', onBeforeInput, true);
       root.removeEventListener('input', onInput, true);
+      root.removeEventListener('paste', onPaste, true);
       root.removeEventListener('keydown', trackSelectAllIntent, true);
       root.removeEventListener('pointerdown', clearSelectAllIntent, true);
       root.removeEventListener('focusout', clearSelectAllIntent, true);

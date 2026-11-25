@@ -8,6 +8,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Fixed
 
+- **SearchField pastes plain text from rich pages (KF-BACCQE).** Pasting into its query editor now inserts the clipboard's plain text at the caret, folds line breaks to spaces, and updates the model through the regular input event without importing the source page's HTML styles.
+
 - **Wrapped ListHeader titles stay inside their header (KF-Z7M45B).** A narrow toggle header with a count and overflow action now grows with a multi-line title and keeps those controls aligned with its first line, so the next list item no longer overlaps the title.
 
 ### Added

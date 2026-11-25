@@ -3111,6 +3111,56 @@ test('search-field select-all + Delete empties cleanly without a stray newline',
     .toBe('');
 });
 
+test('pastes plain text into SearchField from a rich clipboard item', async ({
+  page,
+  browserName,
+}) => {
+  test.skip(browserName !== 'chromium', 'Rich clipboard writes need Chromium');
+  await page.context().grantPermissions(['clipboard-read', 'clipboard-write']);
+  await page.goto('/?component=search-field');
+  const demo = page.locator('[data-demo="search-field"]');
+  const editor = demo.getByRole('searchbox', { name: 'Search with Filters' });
+  await editor.focus();
+  await editor.evaluate((element) => {
+    const view = window as Window & { searchPasteInput?: string[] };
+    view.searchPasteInput = [];
+    element.addEventListener('input', (event) => {
+      view.searchPasteInput?.push((event as InputEvent).inputType);
+    });
+  });
+  await page.evaluate(async () => {
+    await window.navigator.clipboard.write([
+      new ClipboardItem({
+        'text/plain': new Blob(['Release\ntrain'], { type: 'text/plain' }),
+        'text/html': new Blob(
+          ['<h1 style="font-size:48px">Release<br>train</h1>'],
+          { type: 'text/html' },
+        ),
+      }),
+    ]);
+  });
+  await editor.press('Meta+V');
+  await expect(editor).toHaveText('Release train');
+  await expect(editor.locator('h1, br')).toHaveCount(0);
+  await expect(editor).toHaveCSS(
+    'font-size',
+    await demo
+      .getByRole('searchbox', { name: 'Search Tickets' })
+      .evaluate((element) => window.getComputedStyle(element).fontSize),
+  );
+  await expect(demo.locator('[data-demo-grammar-result]')).toHaveText(
+    'Release train · 0 filters',
+  );
+  const inputTypes = await page.evaluate(
+    () => (window as Window & { searchPasteInput?: string[] }).searchPasteInput,
+  );
+  expect(inputTypes).toContain('insertFromPaste');
+  await demo
+    .locator('.kui-catalog-example')
+    .filter({ hasText: 'Grammar Assisted Search' })
+    .screenshot({ path: 'test-results/search-field-plain-paste.png' });
+});
+
 test('edits, removes, and clears controlled search field content', async ({
   page,
   browserName,
