@@ -29,11 +29,17 @@
   padding-block: var(--kui-list-header-title-padding-block, remify(4px));
 }
 
-/* Wrapped label lines keep the compact header's 4px block inset off the
-   header edges; a one-line label still centers in the unchanged minimum
-   height. */
+/* A content-sized toggle lets further label lines increase the header's own
+   height; align the count and disclosure with its first line. */
 .kui-list-header[data-wrap="true"] .kui-list-header__title {
-  padding-block: var(--kui-list-header-title-padding-block, remify(4px));
+  padding-block: var(--kui-list-header-title-padding-block, remify(8px));
+  align-items: flex-start;
+  height: max-content;
+}
+
+.kui-list-header[data-wrap="true"] > .kui-list-header__action {
+  align-self: flex-start;
+  margin-block-start: remify(4px);
 }
 
 .kui-list-header[data-divider="before"],

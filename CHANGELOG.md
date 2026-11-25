@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+### Fixed
+
+- **Wrapped ListHeader titles stay inside their header (KF-Z7M45B).** A narrow toggle header with a count and overflow action now grows with a multi-line title and keeps those controls aligned with its first line, so the next list item no longer overlaps the title.
+
 ### Added
 
 - **Switch supports trailing tracks in settings rows (KF-P1HVK0).** Pass `labelPlacement="start"` to align the label and hint at the leading edge and the track at the trailing edge, including in right-to-left layouts.

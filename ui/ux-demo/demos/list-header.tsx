@@ -152,6 +152,31 @@ export function ListHeaderDemo() {
           </List>
         </List>
       </CatalogExample>
+      <CatalogExample
+        label="Wrapped Section with Actions"
+        note="The wrapped title stays inside the header beside its count and actions."
+        align="none"
+        viewport={{ width: 'sidebar', frame: 'solid' }}
+        rootAttributes={{ 'data-demo-list-header-wrapped-overflow': '' }}
+      >
+        <List>
+          <ListHeader
+            label="Platforms: Windows, macOS, Linux"
+            size="m"
+            wrap
+            leadingEdge="summary-row"
+            count={2}
+            countLabel="2 platforms"
+            toggle
+            expanded
+            action="toggle-list-header-group"
+            overflowAction="log-more"
+            overflowLabel="Platform actions"
+            overflowIcon={<LucideIcon icon={Ellipsis} name="ellipsis" />}
+          />
+          <ListItem label="First platform" action="log-more" />
+        </List>
+      </CatalogExample>
       <DemoListPopover
         id="list-header-group-actions-popover"
         label="Group Actions"

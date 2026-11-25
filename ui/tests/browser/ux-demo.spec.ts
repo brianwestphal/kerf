@@ -6074,6 +6074,57 @@ test('renders self-styled Badge variants without app CSS', async ({
     });
 });
 
+test('contains a wrapped ListHeader title beside its count and overflow action at narrow width', async ({
+  page,
+  browserName,
+}) => {
+  await page.setViewportSize({ width: 900, height: 760 });
+  await page.goto('/?component=list-header');
+  const example = page.locator('[data-demo-list-header-wrapped-overflow]');
+  const header = example.locator('.kui-list-header[data-toggle="true"]');
+  await header.evaluate((element) => {
+    element.parentElement!.style.width = '272px';
+  });
+  const geometry = await header.evaluate((element) => {
+    const title = element.querySelector<HTMLElement>('.kui-text')!;
+    const badge = element.querySelector<HTMLElement>(
+      '[data-component="badge"]',
+    )!;
+    const disclosure = element.querySelector<HTMLElement>(
+      '.kui-list-header__action-layer',
+    )!;
+    const overflow = element.querySelector<HTMLElement>(
+      '[data-list-header-overflow]',
+    )!;
+    const headerBounds = element.getBoundingClientRect();
+    const titleBounds = title.getBoundingClientRect();
+    const firstLine = document.createRange();
+    firstLine.setStart(title.firstChild!, 0);
+    firstLine.setEnd(title.firstChild!, 1);
+    const firstLineBounds = firstLine.getBoundingClientRect();
+    const center = (rect: DOMRect) => rect.top + rect.height / 2;
+    return {
+      lineCount: Math.round(titleBounds.height / firstLineBounds.height),
+      titleBottom: titleBounds.bottom - headerBounds.bottom,
+      badgeCenter:
+        center(badge.getBoundingClientRect()) - center(firstLineBounds),
+      disclosureCenter:
+        center(disclosure.getBoundingClientRect()) - center(firstLineBounds),
+      overflowCenter:
+        center(overflow.getBoundingClientRect()) - center(firstLineBounds),
+    };
+  });
+  expect(geometry.lineCount).toBeGreaterThan(1);
+  expect(geometry.titleBottom).toBeLessThanOrEqual(1);
+  expect(Math.abs(geometry.badgeCenter)).toBeLessThanOrEqual(8);
+  expect(Math.abs(geometry.disclosureCenter)).toBeLessThanOrEqual(8);
+  expect(Math.abs(geometry.overflowCenter)).toBeLessThanOrEqual(16);
+  if (browserName === 'chromium')
+    await example.screenshot({
+      path: 'test-results/list-header-wrapped-narrow.png',
+    });
+});
+
 test('renders ListHeader counts as accessible neutral pills across scale and theme', async ({
   page,
   browserName,

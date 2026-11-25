@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 164600,
-  "totalJavaScriptGzip": 470700,
+  "totalJavaScriptGzip": 470800,
   "measuredLargestJavaScriptGzip": 164547,
-  "measuredTotalJavaScriptGzip": 470674,
+  "measuredTotalJavaScriptGzip": 470791,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -7635,6 +7635,22 @@
         "measuredTotalJavaScriptGzip": 470674,
         "largestJavaScriptGzip": 164600,
         "totalJavaScriptGzip": 470700
+      }
+    },
+    {
+      "at": "2026-11-25T04:31:11.483Z",
+      "reason": "KF-Z7M45B adds a narrow wrapped ListHeader regression specimen",
+      "old": {
+        "measuredLargestJavaScriptGzip": 164547,
+        "measuredTotalJavaScriptGzip": 470674,
+        "largestJavaScriptGzip": 164600,
+        "totalJavaScriptGzip": 470700
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 164547,
+        "measuredTotalJavaScriptGzip": 470791,
+        "largestJavaScriptGzip": 164600,
+        "totalJavaScriptGzip": 470800
       }
     }
   ]
