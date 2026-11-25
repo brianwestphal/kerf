@@ -59,8 +59,9 @@ test('EditorFrame keeps one scroll owner below a fixed toolbar in source and pre
     expect(sourceGeometry.surfaceOverflow).toBe('hidden');
     expect(sourceGeometry.fieldOverflow).toBe('auto');
     expect(sourceGeometry.fieldScrollable).toBe(true);
+    // Firefox can round the two adjacent rect edges by a fraction of a pixel.
     expect(sourceGeometry.fieldTop).toBeGreaterThanOrEqual(
-      sourceGeometry.toolbarBottom,
+      sourceGeometry.toolbarBottom - 0.5,
     );
     const toolbarTopBefore = await source
       .locator('.kui-editor-frame__toolbar')
