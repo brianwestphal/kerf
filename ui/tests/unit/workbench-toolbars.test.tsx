@@ -773,7 +773,7 @@ describe('Workbench panel toolbars', () => {
     const base = {
       id: 'studio',
       label: 'Studio',
-      main: raw('<p data-main>main</p>'),
+      main: raw('<div class="app-nested-scroll"><p data-main>main</p></div>'),
       mainToolbar: { label: 'Editor' },
       mainHeader: raw('<p data-header>about</p>'),
       mainFooter: raw('<p data-footer>status</p>'),
@@ -793,6 +793,7 @@ describe('Workbench panel toolbars', () => {
       mainPane: {
         contentElement: 'section',
         contentLabel: 'Document',
+        contentClassName: 'app-main-scroll',
         separators: ['inline-start'],
         safeAreaEdges: ['block-end'],
         chromeDividers: 'always',
@@ -814,6 +815,7 @@ describe('Workbench panel toolbars', () => {
         pane: {
           contentElement: 'nav',
           contentLabel: 'Files',
+          contentClassName: 'app-rail-scroll',
           chromeDividers: 'none',
           appearance: 'sunken',
           scrollClearance: 'block-start',
@@ -834,6 +836,9 @@ describe('Workbench panel toolbars', () => {
     const content = main.querySelector(':scope > .kui-pane__content')!;
     expect(content.tagName).toBe('SECTION');
     expect(content.getAttribute('aria-label')).toBe('Document');
+    expect(content.classList.contains('app-main-scroll')).toBe(true);
+    expect(content.querySelector('.app-nested-scroll')).not.toBeNull();
+    expect(content.closest('.kui-pane__header')).toBeNull();
     expect(main.getAttribute('data-separator-inline-start')).toBe('true');
     expect(main.getAttribute('data-safe-area-block-end')).toBe('true');
     expect(main.getAttribute('data-safe-area-block-start')).toBe('false');
@@ -848,6 +853,7 @@ describe('Workbench panel toolbars', () => {
     const nav = railPane(host).querySelector(':scope > .kui-pane__content')!;
     expect(nav.tagName).toBe('NAV');
     expect(nav.getAttribute('aria-label')).toBe('Files');
+    expect(nav.classList.contains('app-rail-scroll')).toBe(true);
 
     // Omitted and explicitly undefined configuration both keep the defaults,
     // rendering exactly what an unconfigured Workbench renders.

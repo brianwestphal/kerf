@@ -308,12 +308,17 @@ below it. `mainBottomToolbar` also takes a `center`. A panel's
 The `Pane`s and `List`s the Workbench composes around your content are
 configurable the same way:
 
-- `mainPane` (`PaneConfig`: `contentElement`, `contentLabel`, `separators`,
+- `mainPane` (`PaneConfig`: `contentElement`, `contentLabel`, `contentClassName`, `separators`,
   `safeAreaEdges`, `chromeDividers`, `appearance`, `deepInset`,
   `scrollClearance`, `headerPresentation`, `tabIndex`, `outlined`) configures the work area's
   `Pane`, which exists whenever the work area has a toolbar, `mainHeader`, or
   `mainFooter`. Without that chrome, `appearance: "sunken"` paints the main
   region's own scroll surface;
+- `mainPane.contentClassName` names the Pane's scrolling content slot when that
+  Pane exists. Use an app-owned class to find it for scroll restoration, for
+  example `mainPane: { contentClassName: 'review-scroll-region' }`. If the
+  content contains its own nested scroller, name and target that app-owned
+  scroller instead. The Pane's header and footer remain outside its scroll slot;
 - a panel's `pane` configures the `Pane` a `toolbar` panel's `content` renders
   in — for example `{ contentElement: "nav", contentLabel: "Files" }` for a
   navigator rail. Without a toolbar, `appearance: "sunken"` paints the panel

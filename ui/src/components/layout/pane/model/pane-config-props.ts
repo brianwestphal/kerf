@@ -20,6 +20,7 @@ export function paneConfigProps(
   return {
     contentElement: config?.contentElement,
     contentLabel: config?.contentLabel,
+    contentClassName: config?.contentClassName,
     separators: config?.separators,
     safeAreaEdges: config?.safeAreaEdges,
     chromeDividers: config?.chromeDividers,

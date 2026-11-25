@@ -2633,12 +2633,12 @@ interface PaneProps {
     slot?: string;
 }
 /**
- * A pane's configuration, apart from its content and styling hooks: the props a
+ * A pane's configuration, apart from its content and root styling hooks: the props a
  * composite that renders a `Pane` for the app (a Workbench panel or work area,
  * or a CollapsiblePanel) forwards, so the app configures that pane instead of
  * styling it. An omitted or `undefined` field keeps the composite's default.
  */
-type PaneConfig = Pick<PaneProps, 'contentElement' | 'contentLabel' | 'separators' | 'safeAreaEdges' | 'chromeDividers' | 'compactChrome' | 'compactChromeOpen' | 'headerPresentation' | 'scrollEdge' | 'scrollEdgeDistance' | 'appearance' | 'background' | 'tint' | 'deepInset' | 'scrollClearance' | 'tabIndex' | 'outlined' | 'anchorName' | 'scrollAnchoring'>;
+type PaneConfig = Pick<PaneProps, 'contentElement' | 'contentLabel' | 'contentClassName' | 'separators' | 'safeAreaEdges' | 'chromeDividers' | 'compactChrome' | 'compactChromeOpen' | 'headerPresentation' | 'scrollEdge' | 'scrollEdgeDistance' | 'appearance' | 'background' | 'tint' | 'deepInset' | 'scrollClearance' | 'tabIndex' | 'outlined' | 'anchorName' | 'scrollAnchoring'>;
 /**
  * An unpadded application column with optional fixed header/footer slots and one
  * scrolling vertical content owner. Separator lines are independently opt-in on
