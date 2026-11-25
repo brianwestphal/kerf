@@ -2,7 +2,7 @@
 
 The SVG sheets remain the broad, static catalog. The native
 [Kerf UI Sketch Library](sketch/unified/README.md), `Kerf-UI.sketch`, adds
-312 editable Symbols for every template variant, built from production CSS
+328 editable Symbols for every template variant, built from production CSS
 captures and verified through resize, override, linked-consumer sync, and
 save/reopen checks. It ships with the UI package under `docs/design/sketch/`.
 The [native Sketch coverage matrix](sketch/coverage.md) tracks each template

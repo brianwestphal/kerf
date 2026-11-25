@@ -9,6 +9,19 @@ import { COMPONENTS } from '../../build-design-templates.mjs';
 const output = fileURLToPath(
   new URL('../../../docs/design/sketch/coverage.md', import.meta.url),
 );
+const sketchRoot = new URL('../../../docs/design/sketch/', import.meta.url);
+const manifest = JSON.parse(
+  await readFile(new URL('unified/symbol-manifest.json', sketchRoot), 'utf8'),
+);
+const buildReport = JSON.parse(
+  await readFile(new URL('unified/build-report.json', sketchRoot), 'utf8'),
+);
+const symbolCount = Object.keys(manifest.symbols).length;
+assert.equal(
+  buildReport.families.reduce((count, family) => count + family.masters, 0),
+  symbolCount,
+  'The unified manifest must match the family build report',
+);
 
 // Family assignments are intentionally explicit. A new template component must
 // be triaged before this report can pass the offline design-template gate.
@@ -128,6 +141,25 @@ assert.equal(
   'Template variant ids must be unique per component',
 );
 
+async function assertGuideCount(path, pattern, expected) {
+  const match = (await readFile(new URL(path, sketchRoot), 'utf8')).match(
+    pattern,
+  );
+  assert.ok(match, `${path} inventory count phrase is missing`);
+  assert.equal(Number(match[1]), expected, `${path} inventory count is stale`);
+}
+
+await Promise.all([
+  assertGuideCount('../templates.md', /(\d+) editable Symbols/, symbolCount),
+  assertGuideCount(
+    'README.md',
+    /all (\d+) editable light and dark Symbols/,
+    symbolCount,
+  ),
+  assertGuideCount('README.md', /for the (\d+) template variants/, rows.length),
+  assertGuideCount('unified/README.md', /holds (\d+)\s+Symbols/, symbolCount),
+]);
+
 const counts = families.map(
   (family) =>
     `| ${family.name} | ${family.components.length} | ${rows.filter((row) => row.family === family.name).length} | ${family.status} | ${family.ticket} |`,
@@ -152,7 +184,7 @@ variant may be a multi-control showcase; a family ticket must export its actual
 individual component states and retain the sheet only as a catalog page.
 
 Every supported Symbol ships in one Library, [Kerf-UI.sketch](unified/README.md),
-with 328 light/dark Symbols assembled from the family build inputs. The Button
+with ${symbolCount} light/dark Symbols assembled from the family build inputs. The Button
 pilot covers seven source showcase variants with 40 appearance Symbols
 ([Button](button/README.md)). The Form controls batch covers 21 showcase
 variants with 68 individual Symbols ([Forms](forms/README.md)). The Advanced
