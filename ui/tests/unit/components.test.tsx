@@ -2177,9 +2177,7 @@ describe('production UI primitives', () => {
         actionIcon: icon,
       }),
     );
-    expect(titleAction).toMatch(
-      /<h3[^>]*class="kui-list-header__heading"/,
-    );
+    expect(titleAction).toMatch(/<h3[^>]*class="kui-list-header__heading"/);
     expect(titleAction).toMatch(
       /<button[^>]*class="kui-list-header__title-action"[^>]*data-action="toggle-all-shells"[^>]*aria-label="Hide all Demo AI Shells"/,
     );

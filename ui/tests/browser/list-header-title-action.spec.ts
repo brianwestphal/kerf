@@ -18,7 +18,8 @@ test('ListHeader title action controls rows without disclosure semantics', async
     const labelInset = await button.evaluate((element) => {
       const label = element.querySelector('span');
       return label
-        ? label.getBoundingClientRect().left - element.getBoundingClientRect().left
+        ? label.getBoundingClientRect().left -
+            element.getBoundingClientRect().left
         : Infinity;
     });
     expect(labelInset).toBeLessThan(10);
