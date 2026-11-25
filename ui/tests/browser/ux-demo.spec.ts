@@ -6264,7 +6264,7 @@ test('fills ListHeader rows and keeps 18px action visuals at the logical end', a
   await page.goto('/?component=list-header');
   const demo = page.locator('[data-demo="list-header"]');
   const headers = demo.locator(
-    '.kui-list-header[data-inline="false"]:not([data-catalog-example-label])',
+    '.kui-list-header[data-inline="false"]:not([data-catalog-example-label], [data-leading-edge="summary-row"])',
   );
   const attachments = demo.locator('.kui-list-header').filter({
     has: page.getByRole('heading', { name: 'Attachments, 12 attachments' }),
@@ -6400,10 +6400,11 @@ test('fills ListHeader rows and keeps 18px action visuals at the logical end', a
     }
   };
 
-  // KF-X2MRCT: the only toggle header is the collapsible section with
-  // actions; the others are headings or trailing actions.
+  // KF-X2MRCT: this section has one toggle and one independent overflow action.
   await expect(
-    demo.locator('.kui-list-header[data-toggle="true"]'),
+    demo.locator(
+      '[data-demo-list-header-overflow] .kui-list-header[data-toggle="true"]',
+    ),
   ).toHaveCount(1);
 
   await expectLayout(1);
@@ -6713,10 +6714,11 @@ test('preserves menu extension metadata without surrendering native semantics', 
     .poll(() => popover.evaluate((element) => element.matches(':popover-open')))
     .toBe(false);
 
-  // KF-X2MRCT: the only toggle header is the collapsible section with
-  // actions; the others are headings or trailing actions.
+  // KF-X2MRCT: this section has one toggle and one independent overflow action.
   await expect(
-    headerDemo.locator('.kui-list-header[data-toggle="true"]'),
+    headerDemo.locator(
+      '[data-demo-list-header-overflow] .kui-list-header[data-toggle="true"]',
+    ),
   ).toHaveCount(1);
   const disabled = headerDemo.getByRole('button', {
     name: 'Unavailable action',
