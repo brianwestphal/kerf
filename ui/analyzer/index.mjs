@@ -1140,14 +1140,26 @@ async function inspectCss(
   });
 }
 
-function finiteClassStrings(expression, finiteTypeValues) {
+function finiteClassStrings(expression, finiteTypeValues, inTemplate = false) {
   if (!expression) return undefined;
   if (ts.isParenthesizedExpression(expression))
-    return finiteClassStrings(expression.expression, finiteTypeValues);
+    return finiteClassStrings(
+      expression.expression,
+      finiteTypeValues,
+      inTemplate,
+    );
   if (ts.isStringLiteralLike(expression)) return [expression.text];
   if (ts.isConditionalExpression(expression)) {
-    const yes = finiteClassStrings(expression.whenTrue, finiteTypeValues);
-    const no = finiteClassStrings(expression.whenFalse, finiteTypeValues);
+    const yes = finiteClassStrings(
+      expression.whenTrue,
+      finiteTypeValues,
+      inTemplate,
+    );
+    const no = finiteClassStrings(
+      expression.whenFalse,
+      finiteTypeValues,
+      inTemplate,
+    );
     return yes && no && yes.length + no.length <= 32
       ? [...new Set([...yes, ...no])]
       : undefined;
@@ -1161,22 +1173,22 @@ function finiteClassStrings(expression, finiteTypeValues) {
     expression.operatorToken.kind === ts.SyntaxKind.PlusToken
   )
     return combine(
-      finiteClassStrings(expression.left, finiteTypeValues),
-      finiteClassStrings(expression.right, finiteTypeValues),
+      finiteClassStrings(expression.left, finiteTypeValues, inTemplate),
+      finiteClassStrings(expression.right, finiteTypeValues, inTemplate),
     );
   if (ts.isTemplateExpression(expression)) {
     let values = [expression.head.text];
     for (const span of expression.templateSpans) {
       values = combine(
         values,
-        finiteClassStrings(span.expression, finiteTypeValues),
+        finiteClassStrings(span.expression, finiteTypeValues, true),
       );
       values = combine(values, [span.literal.text]);
       if (!values) return undefined;
     }
     return values;
   }
-  return finiteTypeValues?.(expression);
+  return inTemplate ? finiteTypeValues?.(expression) : undefined;
 }
 
 function literalClasses(attribute, finiteTypeValues) {
