@@ -11,6 +11,7 @@ import { requireExistingSketchProcess } from '../check-runner-process.mjs';
 import { runSketchJob } from '../runner.mjs';
 import { pinDocumentId } from '../shared/document-id.mjs';
 import { runSyncGate } from '../shared/sync-gate.mjs';
+import { planVariantSets, representativeVariantSets } from './variant-plan.mjs';
 
 const exec = promisify(execFile);
 const sketchRoot = resolve(import.meta.dirname, '../../../docs/design/sketch');
@@ -159,6 +160,42 @@ async function build() {
       old.id,
       `${name} Color Variable ID`,
     );
+  const variantSets = planVariantSets(
+    report.symbols,
+    families,
+    previous?.variantSets,
+  );
+  const grouped = (
+    await runSketchJob({
+      task: task('variant-group-all'),
+      parameters: { libraryPath: staged, groups: variantSets },
+      timeoutMs: 900_000,
+    })
+  ).result;
+  assert.equal(grouped.setCount, variantSets.length);
+  assert.equal(grouped.before.length, report.symbols.length);
+  assert.equal(grouped.after.length, report.symbols.length);
+  assert.deepEqual(grouped.swatchesAfter, grouped.swatchesBefore);
+  const afterById = new Map(grouped.after.map((item) => [item.symbolId, item]));
+  for (const before of grouped.before) {
+    const after = afterById.get(before.symbolId);
+    assert.ok(after, `${before.name} missing after Variant Set grouping`);
+    assert.equal(after.layerId, before.layerId);
+    assert.deepEqual(after.descendants, before.descendants);
+  }
+  const actualSets = new Map(grouped.grouped.map((item) => [item.name, item]));
+  for (const set of variantSets) {
+    const actual = actualSets.get(set.name);
+    assert.ok(actual, `Variant Set missing: ${set.name}`);
+    if (set.id) assert.equal(actual.id, set.id, `${set.name} ID changed`);
+    set.id = actual.id;
+    for (const variant of set.variants) {
+      variant.originalName = variant.name;
+      variant.name = afterById.get(variant.symbolId).name;
+    }
+  }
+  for (const symbol of Object.values(byFixture))
+    symbol.name = afterById.get(symbol.symbolId).name;
   const libraryDocumentId = await pinDocumentId(staged, previous ?? {}, null);
   await rename(staged, paths.libraryPath);
   const swatches = Object.fromEntries(
@@ -172,6 +209,7 @@ async function build() {
     libraryDocumentId,
     swatches,
     symbols: byFixture,
+    variantSets,
   });
   await formatted(paths.reportPath, {
     sketchPid: status.processId,
@@ -179,6 +217,7 @@ async function build() {
     styles: report.styles,
     styleBoundPaints: report.styleBoundPaints,
     swatches: report.swatches.length,
+    variantSets: variantSets.length,
   });
   console.log(
     `Unified ${report.symbols.length} Symbols and ${report.swatches.length} Color Variables into Kerf-UI.sketch.`,
@@ -188,13 +227,17 @@ async function build() {
 async function verify() {
   const before = requireExistingSketchProcess(await processIds());
   await mkdir(paths.exportsPath, { recursive: true });
+  const manifest = await json(paths.manifestPath);
+  const choices = representativeVariantSets(manifest);
   const status = await runSketchJob({
-    task: task('verify'),
+    task: task('verify-variants'),
     parameters: {
       libraryPath: paths.libraryPath,
       consumerPath: paths.consumerPath,
       exportsPath: paths.exportsPath,
       families: families.map((family) => family.title),
+      variantSets: manifest.variantSets,
+      representatives: choices,
     },
     timeoutMs: 600_000,
   });
@@ -202,11 +245,18 @@ async function verify() {
   assert.deepEqual(await processIds(), before, 'Sketch process list changed');
   const result = status.result;
   assert.equal(result.symbols, 328);
+  assert.equal(result.variantSets, manifest.variantSets.length);
+  assert.equal(result.importableSymbolReferences, manifest.variantSets.length);
   assert.equal(result.instances.length, families.length * 2);
   assert.ok(result.instances.every((instance) => instance.linked));
+  assert.equal(result.foreignVariantSets, families.length);
   assert.deepEqual(
     result.reopened.map((instance) => instance.override),
     result.instances.map((instance) => instance.override),
+  );
+  assert.deepEqual(
+    result.reopened.map((instance) => instance.width),
+    result.instances.map((instance) => instance.width),
   );
   await formatted(paths.verificationPath, result);
   console.log(
@@ -217,7 +267,7 @@ async function verify() {
 async function sync() {
   const manifest = await json(paths.manifestPath);
   const staged = join(output, '.sync-manifest.json');
-  // The gate reads `symbols` keyed by an ID ending in the theme.
+  // The shared gate reads the published manifest for either Library format.
   await writeFile(staged, JSON.stringify(manifest));
   try {
     const report = await runSyncGate({

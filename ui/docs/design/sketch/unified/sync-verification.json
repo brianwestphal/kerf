@@ -1,43 +1,264 @@
 {
   "libraryDocumentId": "9D9EB3A0-A3E8-446B-86FE-181E314BDDFF",
+  "variantSets": 35,
   "names": [
-    "Text Field / Labeled / Project Name / Light",
-    "Text Field / Labeled / Project Name / Dark"
+    "Button",
+    "Text Field",
+    "Select",
+    "List Item",
+    "Chip",
+    "Disclosure"
   ],
   "synced": [
     {
-      "name": "Text Field / Labeled / Project Name / Light",
+      "set": "Button",
       "outOfDateBefore": true,
       "outOfDateAfter": false
     },
     {
-      "name": "Text Field / Labeled / Project Name / Dark",
+      "set": "Text Field",
+      "outOfDateBefore": true,
+      "outOfDateAfter": false
+    },
+    {
+      "set": "Select",
+      "outOfDateBefore": true,
+      "outOfDateAfter": false
+    },
+    {
+      "set": "List Item",
+      "outOfDateBefore": true,
+      "outOfDateAfter": false
+    },
+    {
+      "set": "Chip",
+      "outOfDateBefore": true,
+      "outOfDateAfter": false
+    },
+    {
+      "set": "Disclosure",
       "outOfDateBefore": true,
       "outOfDateAfter": false
     }
   ],
   "after": [
     {
-      "name": "Text Field / Labeled / Project Name / Light",
+      "set": "Button",
+      "state": "Badge Brand",
+      "theme": "Light",
+      "name": "Badge Brand/Light",
       "firstText": "Library sync check",
-      "overrides": ["Kept override 0"]
+      "width": 144,
+      "override": "Linked probe override 0"
     },
     {
-      "name": "Text Field / Labeled / Project Name / Dark",
+      "set": "Button",
+      "state": "Badge Brand",
+      "theme": "Dark",
+      "name": "Badge Brand/Dark",
       "firstText": "Library sync check",
-      "overrides": ["Kept override 1"]
+      "width": 144,
+      "override": "Linked probe override 1"
+    },
+    {
+      "set": "Text Field",
+      "state": "Labeled · Project Name",
+      "theme": "Light",
+      "name": "Labeled · Project Name/Light",
+      "firstText": "Library sync check",
+      "width": 440,
+      "override": "Linked probe override 0"
+    },
+    {
+      "set": "Text Field",
+      "state": "Labeled · Project Name",
+      "theme": "Dark",
+      "name": "Labeled · Project Name/Dark",
+      "firstText": "Library sync check",
+      "width": 440,
+      "override": "Linked probe override 1"
+    },
+    {
+      "set": "Select",
+      "state": "Compact · Control",
+      "theme": "Light",
+      "name": "Compact · Control/Light",
+      "firstText": "Library sync check",
+      "width": 440,
+      "override": "Linked probe override 0"
+    },
+    {
+      "set": "Select",
+      "state": "Compact · Control",
+      "theme": "Dark",
+      "name": "Compact · Control/Dark",
+      "firstText": "Library sync check",
+      "width": 440,
+      "override": "Linked probe override 1"
+    },
+    {
+      "set": "List Item",
+      "state": "Default · Control",
+      "theme": "Light",
+      "name": "Default · Control/Light",
+      "firstText": "Library sync check",
+      "width": 384,
+      "override": "Linked probe override 0"
+    },
+    {
+      "set": "List Item",
+      "state": "Default · Control",
+      "theme": "Dark",
+      "name": "Default · Control/Dark",
+      "firstText": "Library sync check",
+      "width": 384,
+      "override": "Linked probe override 1"
+    },
+    {
+      "set": "Chip",
+      "state": "Tags · Urgent",
+      "theme": "Light",
+      "name": "Tags · Urgent/Light",
+      "firstText": "Library sync check",
+      "width": 163.15625,
+      "override": "Linked probe override 0"
+    },
+    {
+      "set": "Chip",
+      "state": "Tags · Urgent",
+      "theme": "Dark",
+      "name": "Tags · Urgent/Dark",
+      "firstText": "Library sync check",
+      "width": 163.15625,
+      "override": "Linked probe override 1"
+    },
+    {
+      "set": "Disclosure",
+      "state": "Plain · Advanced Settings",
+      "theme": "Light",
+      "name": "Plain · Advanced Settings/Light",
+      "firstText": "Library sync check",
+      "width": 484,
+      "override": "Linked probe override 0"
+    },
+    {
+      "set": "Disclosure",
+      "state": "Plain · Advanced Settings",
+      "theme": "Dark",
+      "name": "Plain · Advanced Settings/Dark",
+      "firstText": "Library sync check",
+      "width": 484,
+      "override": "Linked probe override 1"
     }
   ],
   "reopened": [
     {
-      "name": "Text Field / Labeled / Project Name / Light",
+      "set": "Button",
+      "state": "Badge Brand",
+      "theme": "Light",
+      "name": "Badge Brand/Light",
       "firstText": "Library sync check",
-      "overrides": ["Kept override 0"]
+      "width": 144,
+      "override": "Linked probe override 0"
     },
     {
-      "name": "Text Field / Labeled / Project Name / Dark",
+      "set": "Button",
+      "state": "Badge Brand",
+      "theme": "Dark",
+      "name": "Badge Brand/Dark",
       "firstText": "Library sync check",
-      "overrides": ["Kept override 1"]
+      "width": 144,
+      "override": "Linked probe override 1"
+    },
+    {
+      "set": "Text Field",
+      "state": "Labeled · Project Name",
+      "theme": "Light",
+      "name": "Labeled · Project Name/Light",
+      "firstText": "Library sync check",
+      "width": 440,
+      "override": "Linked probe override 0"
+    },
+    {
+      "set": "Text Field",
+      "state": "Labeled · Project Name",
+      "theme": "Dark",
+      "name": "Labeled · Project Name/Dark",
+      "firstText": "Library sync check",
+      "width": 440,
+      "override": "Linked probe override 1"
+    },
+    {
+      "set": "Select",
+      "state": "Compact · Control",
+      "theme": "Light",
+      "name": "Compact · Control/Light",
+      "firstText": "Library sync check",
+      "width": 440,
+      "override": "Linked probe override 0"
+    },
+    {
+      "set": "Select",
+      "state": "Compact · Control",
+      "theme": "Dark",
+      "name": "Compact · Control/Dark",
+      "firstText": "Library sync check",
+      "width": 440,
+      "override": "Linked probe override 1"
+    },
+    {
+      "set": "List Item",
+      "state": "Default · Control",
+      "theme": "Light",
+      "name": "Default · Control/Light",
+      "firstText": "Library sync check",
+      "width": 384,
+      "override": "Linked probe override 0"
+    },
+    {
+      "set": "List Item",
+      "state": "Default · Control",
+      "theme": "Dark",
+      "name": "Default · Control/Dark",
+      "firstText": "Library sync check",
+      "width": 384,
+      "override": "Linked probe override 1"
+    },
+    {
+      "set": "Chip",
+      "state": "Tags · Urgent",
+      "theme": "Light",
+      "name": "Tags · Urgent/Light",
+      "firstText": "Library sync check",
+      "width": 163.15625,
+      "override": "Linked probe override 0"
+    },
+    {
+      "set": "Chip",
+      "state": "Tags · Urgent",
+      "theme": "Dark",
+      "name": "Tags · Urgent/Dark",
+      "firstText": "Library sync check",
+      "width": 163.15625,
+      "override": "Linked probe override 1"
+    },
+    {
+      "set": "Disclosure",
+      "state": "Plain · Advanced Settings",
+      "theme": "Light",
+      "name": "Plain · Advanced Settings/Light",
+      "firstText": "Library sync check",
+      "width": 484,
+      "override": "Linked probe override 0"
+    },
+    {
+      "set": "Disclosure",
+      "state": "Plain · Advanced Settings",
+      "theme": "Dark",
+      "name": "Plain · Advanced Settings/Dark",
+      "firstText": "Library sync check",
+      "width": 484,
+      "override": "Linked probe override 1"
     }
   ]
 }

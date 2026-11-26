@@ -8,7 +8,7 @@ module.exports.run = function (session, parameters, done) {
     var setRefs =
       library.getImportableVariantSetReferencesForDocument(consumer);
     var setRef = setRefs.filter(function (ref) {
-      return ref.name === 'Text Field / Form';
+      return ref.name === parameters.setName;
     })[0];
     if (!setRef) throw new Error('Variant Set reference missing');
     var sourceIds = parameters.variants.map(function (item) {
@@ -53,6 +53,8 @@ module.exports.run = function (session, parameters, done) {
       })[0];
       if (!override) throw new Error('Text override missing: ' + variant.name);
       override.value = 'Linked probe override ' + index;
+      if (parameters.forceFixedWidth)
+        instance.horizontalSizing = dom.FlexSizing.Fixed;
       instance.frame.width += 80;
       return {
         name: master.name,

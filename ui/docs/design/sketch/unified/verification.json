@@ -8,143 +8,218 @@
     "Content and Feedback"
   ],
   "symbols": 328,
+  "variantSets": 35,
   "swatches": 141,
   "layerStyles": 42,
   "textStyles": 38,
   "instances": [
     {
       "page": "Button",
-      "name": "Button / Primary Brand / Light",
+      "set": "Button",
+      "state": "Badge Brand",
+      "theme": "Light",
+      "name": "Badge Brand/Light",
+      "symbolId": "3C33440A-D7C2-4359-BFDB-4D08CE801BAC",
       "linked": true,
-      "override": "Done",
-      "width": 204
+      "override": "Done 00",
+      "width": 144
     },
     {
       "page": "Button",
-      "name": "Button / Primary Brand / Dark",
+      "set": "Button",
+      "state": "Badge Brand",
+      "theme": "Dark",
+      "name": "Badge Brand/Dark",
+      "symbolId": "A7DD2CF4-557F-441F-BB26-48F0B13CE0B5",
       "linked": true,
-      "override": "Done",
-      "width": 204
+      "override": "Done 01",
+      "width": 144
     },
     {
       "page": "Form Controls",
-      "name": "Split Button / Tones / Deploy / Light",
+      "set": "Text Field",
+      "state": "Labeled · Project Name",
+      "theme": "Light",
+      "name": "Labeled · Project Name/Light",
+      "symbolId": "5190458E-823D-4255-B67E-38D62C47BEC8",
       "linked": true,
-      "override": "Done",
-      "width": 219.65625
+      "override": "Done 10",
+      "width": 440
     },
     {
       "page": "Form Controls",
-      "name": "Split Button / Tones / Deploy / Dark",
+      "set": "Text Field",
+      "state": "Labeled · Project Name",
+      "theme": "Dark",
+      "name": "Labeled · Project Name/Dark",
+      "symbolId": "585286F2-A7A6-41B3-B328-BA789C78B8C8",
       "linked": true,
-      "override": "Done",
-      "width": 219.65625
+      "override": "Done 11",
+      "width": 440
     },
     {
       "page": "Advanced Inputs",
-      "name": "Color Field / Compact / Control / Light",
+      "set": "Select",
+      "state": "Compact · Control",
+      "theme": "Light",
+      "name": "Compact · Control/Light",
+      "symbolId": "E11E124A-AD2D-414C-A3A2-FA9F099A9F46",
       "linked": true,
-      "override": "Done",
-      "width": 500
+      "override": "Done 20",
+      "width": 440
     },
     {
       "page": "Advanced Inputs",
-      "name": "Color Field / Compact / Control / Dark",
+      "set": "Select",
+      "state": "Compact · Control",
+      "theme": "Dark",
+      "name": "Compact · Control/Dark",
+      "symbolId": "E0C0171B-0177-4F8D-9FA4-E4499CDFF47E",
       "linked": true,
-      "override": "Done",
-      "width": 500
+      "override": "Done 21",
+      "width": 440
     },
     {
       "page": "Lists and Data",
-      "name": "List / Stack / Control / Light",
+      "set": "List Item",
+      "state": "Default · Control",
+      "theme": "Light",
+      "name": "Default · Control/Light",
+      "symbolId": "52E847FF-873F-4795-88FA-F35715DA9D02",
       "linked": true,
-      "override": "Done",
-      "width": 420
+      "override": "Done 30",
+      "width": 384
     },
     {
       "page": "Lists and Data",
-      "name": "List / Stack / Control / Dark",
+      "set": "List Item",
+      "state": "Default · Control",
+      "theme": "Dark",
+      "name": "Default · Control/Dark",
+      "symbolId": "AC682494-F867-4C6E-992E-A51AFD62DCA0",
       "linked": true,
-      "override": "Done",
-      "width": 420
+      "override": "Done 31",
+      "width": 384
     },
     {
       "page": "Toolbars and Navigation",
-      "name": "Toolbar Control Group / With Text / Control / Light",
+      "set": "Chip",
+      "state": "Tags · Urgent",
+      "theme": "Light",
+      "name": "Tags · Urgent/Light",
+      "symbolId": "6F8C70AE-108D-415D-8592-9B67C9F70564",
       "linked": true,
-      "override": "Done",
-      "width": 206.234375
+      "override": "Done 40",
+      "width": 163.15625
     },
     {
       "page": "Toolbars and Navigation",
-      "name": "Toolbar Control Group / With Text / Control / Dark",
+      "set": "Chip",
+      "state": "Tags · Urgent",
+      "theme": "Dark",
+      "name": "Tags · Urgent/Dark",
+      "symbolId": "DCAEAA78-C953-4AEA-AFE5-19E458AED8A3",
       "linked": true,
-      "override": "Done",
-      "width": 206.234375
+      "override": "Done 41",
+      "width": 163.15625
     },
     {
       "page": "Content and Feedback",
-      "name": "Disclosure / Plain / Advanced Settings / Light",
+      "set": "Disclosure",
+      "state": "Plain · Advanced Settings",
+      "theme": "Light",
+      "name": "Plain · Advanced Settings/Light",
+      "symbolId": "57781B50-BA04-481C-981C-197168924280",
       "linked": true,
-      "override": "Done",
+      "override": "Done 50",
       "width": 484
     },
     {
       "page": "Content and Feedback",
-      "name": "Disclosure / Plain / Advanced Settings / Dark",
+      "set": "Disclosure",
+      "state": "Plain · Advanced Settings",
+      "theme": "Dark",
+      "name": "Plain · Advanced Settings/Dark",
+      "symbolId": "0F05A006-6E3C-4DA3-AAF7-E933B39175C2",
       "linked": true,
-      "override": "Done",
+      "override": "Done 51",
       "width": 484
     }
   ],
+  "importableSymbolReferences": 35,
+  "foreignVariantSets": 6,
   "reopened": [
     {
-      "name": "Button / Primary Brand / Light",
-      "override": "Done"
+      "symbolId": "3C33440A-D7C2-4359-BFDB-4D08CE801BAC",
+      "name": "Badge Brand/Light",
+      "override": "Done 00",
+      "width": 144
     },
     {
-      "name": "Button / Primary Brand / Dark",
-      "override": "Done"
+      "symbolId": "A7DD2CF4-557F-441F-BB26-48F0B13CE0B5",
+      "name": "Badge Brand/Dark",
+      "override": "Done 01",
+      "width": 144
     },
     {
-      "name": "Split Button / Tones / Deploy / Light",
-      "override": "Done"
+      "symbolId": "5190458E-823D-4255-B67E-38D62C47BEC8",
+      "name": "Labeled · Project Name/Light",
+      "override": "Done 10",
+      "width": 440
     },
     {
-      "name": "Split Button / Tones / Deploy / Dark",
-      "override": "Done"
+      "symbolId": "585286F2-A7A6-41B3-B328-BA789C78B8C8",
+      "name": "Labeled · Project Name/Dark",
+      "override": "Done 11",
+      "width": 440
     },
     {
-      "name": "Color Field / Compact / Control / Light",
-      "override": "Done"
+      "symbolId": "E11E124A-AD2D-414C-A3A2-FA9F099A9F46",
+      "name": "Compact · Control/Light",
+      "override": "Done 20",
+      "width": 440
     },
     {
-      "name": "Color Field / Compact / Control / Dark",
-      "override": "Done"
+      "symbolId": "E0C0171B-0177-4F8D-9FA4-E4499CDFF47E",
+      "name": "Compact · Control/Dark",
+      "override": "Done 21",
+      "width": 440
     },
     {
-      "name": "List / Stack / Control / Light",
-      "override": "Done"
+      "symbolId": "52E847FF-873F-4795-88FA-F35715DA9D02",
+      "name": "Default · Control/Light",
+      "override": "Done 30",
+      "width": 384
     },
     {
-      "name": "List / Stack / Control / Dark",
-      "override": "Done"
+      "symbolId": "AC682494-F867-4C6E-992E-A51AFD62DCA0",
+      "name": "Default · Control/Dark",
+      "override": "Done 31",
+      "width": 384
     },
     {
-      "name": "Toolbar Control Group / With Text / Control / Light",
-      "override": "Done"
+      "symbolId": "6F8C70AE-108D-415D-8592-9B67C9F70564",
+      "name": "Tags · Urgent/Light",
+      "override": "Done 40",
+      "width": 163.15625
     },
     {
-      "name": "Toolbar Control Group / With Text / Control / Dark",
-      "override": "Done"
+      "symbolId": "DCAEAA78-C953-4AEA-AFE5-19E458AED8A3",
+      "name": "Tags · Urgent/Dark",
+      "override": "Done 41",
+      "width": 163.15625
     },
     {
-      "name": "Disclosure / Plain / Advanced Settings / Light",
-      "override": "Done"
+      "symbolId": "57781B50-BA04-481C-981C-197168924280",
+      "name": "Plain · Advanced Settings/Light",
+      "override": "Done 50",
+      "width": 484
     },
     {
-      "name": "Disclosure / Plain / Advanced Settings / Dark",
-      "override": "Done"
+      "symbolId": "0F05A006-6E3C-4DA3-AAF7-E933B39175C2",
+      "name": "Plain · Advanced Settings/Dark",
+      "override": "Done 51",
+      "width": 484
     }
   ]
 }

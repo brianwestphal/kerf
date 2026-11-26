@@ -1,12 +1,13 @@
 # Kerf UI Sketch catalog
 
 [Kerf-UI.sketch](Kerf-UI.sketch) is the one Kerf UI Sketch Library. It holds
-all 328 editable light and dark Symbols for the 115 template variants, on one
+all 328 editable light and dark Symbols in 35 linked Variant Sets for the 115 template variants, on one
 page per family: Button, Form Controls, Advanced Inputs, Lists and Data,
 Toolbars and Navigation, and Content and Feedback. Each page shows its light
 masters beside its dark masters on a dark surface, ordered by Symbol name.
-Symbols are named `Component / Variant / State / Theme` in the component
-browser, and 141 Color Variables are named `Kerf/<Theme>/<Role>`. See the
+The component browser exposes a Variant Set per component; its inspector has
+`State` and `Theme` properties. The 141 Color Variables are named
+`Kerf/<Theme>/<Role>`. See the
 [unified Library guide](unified/README.md) for its identity contract, build,
 and verification. [Coverage](coverage.md) accounts for every source variant.
 Source SVG sheets in [templates](../templates.md) are review material, not
@@ -15,10 +16,11 @@ substitutes for editable Symbols.
 ## Install and update
 
 The Library was created with **Sketch 2026.3.1** and its shipped file was
-reverified with **Sketch 2026.4** on 25 November 2026: all 328 Symbols and 12
-linked cross-family consumer instances passed override, resize, and save/reopen
-checks. Both light and dark library-sync fixtures retained their text
-overrides. Kerf UI ships it as a Sketch Library, not a document template: documents link its Symbols
+reverified with **Sketch 2026.4** on 26 November 2026: all 328 Symbols were
+grouped into 35 Variant Sets, and 12 linked cross-family consumer instances
+passed override, resize, and save/reopen checks. Six representative sets,
+including both themes, retained their text overrides and widths after a Library
+update. Kerf UI ships it as a Sketch Library: documents link its Symbols
 and Color Variables, so a new release reaches every design that uses them.
 
 To install:
@@ -40,15 +42,15 @@ To install:
 4. In Sketch, open **Settings → Libraries**, choose **Add Library…**, and
    select the copy.
 
-To use it, insert a Symbol from the component browser. Symbols are named
-`Component / Variant / State / Theme`, so typing `Button` finds every Button.
+To use it, insert a Variant Set from the component browser, then choose its
+State and Theme in the inspector. Typing `Button` finds the Button set.
 Kerf's Color Variables (`Kerf/<Theme>/<Role>`) appear in the color picker
 under the Library's name.
 
 To update, copy the newly published file over the same installed path. Sketch
 then offers the Library update in any open document that uses it; accept it to
 sync. Linked instances keep their overrides: the Library's document ID, Symbol
-IDs, Text layer IDs, and Color Variable IDs stay the same across releases, and
+IDs, Variant Set IDs, Text layer IDs, and Color Variable IDs stay the same across releases, and
 the build fails if any of them changes. Don't add the new file as a second
 Library alongside the old one. If the native format or supported Sketch version changes, this guide
 and the unified guide must record the new verification result before

@@ -7,6 +7,7 @@ import { fileURLToPath } from 'node:url';
 import prettier from 'prettier';
 
 import { runSketchJob } from '../runner.mjs';
+import { runVariantSetSyncGate } from '../catalog/variant-sync-gate.mjs';
 import { pinDocumentId, readDocumentId } from './document-id.mjs';
 
 const task = (name) => fileURLToPath(new URL(`./${name}.js`, import.meta.url));
@@ -21,6 +22,8 @@ const EDIT = 'Library sync check';
  */
 export async function runSyncGate({ libraryPath, manifestPath, reportPath }) {
   const manifest = JSON.parse(await readFile(manifestPath, 'utf8'));
+  if (manifest.variantSets)
+    return runVariantSetSyncGate({ libraryPath, manifest, reportPath });
   const names = ['light', 'dark'].map((theme) => {
     const entry = Object.entries(manifest.symbols).find(
       ([id, symbol]) => id.endsWith(`-${theme}`) && symbol.text.length >= 2,

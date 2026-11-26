@@ -1,422 +1,264 @@
 {
-  "sketchVersion": "2026.4",
-  "component": "Text Field / Form",
-  "sourceSymbolCount": 328,
-  "sourceSwatchCount": 141,
-  "sourceIdentitiesPreserved": true,
-  "variants": [
+  "libraryDocumentId": "9D9EB3A0-A3E8-446B-86FE-181E314BDDFF",
+  "variantSets": 35,
+  "names": [
+    "Button",
+    "Text Field",
+    "Select",
+    "List Item",
+    "Chip",
+    "Disclosure"
+  ],
+  "synced": [
     {
-      "name": "Default/Light",
-      "state": "Default",
-      "theme": "Light",
-      "originalName": "Text Field / Labeled / Project Name / Light",
-      "symbolId": "C973205A-6E42-491D-8020-42C8FD4FFBBC"
+      "set": "Button",
+      "outOfDateBefore": true,
+      "outOfDateAfter": false
     },
     {
-      "name": "Default/Dark",
-      "state": "Default",
-      "theme": "Dark",
-      "originalName": "Text Field / Labeled / Project Name / Dark",
-      "symbolId": "A1265A1E-CF26-42B6-8750-43A236DDCBA3"
+      "set": "Text Field",
+      "outOfDateBefore": true,
+      "outOfDateAfter": false
     },
     {
-      "name": "Error/Light",
-      "state": "Error",
-      "theme": "Light",
-      "originalName": "Text Field / Error / Email Error / Light",
-      "symbolId": "8323C41B-9324-459D-91EA-831BE15AE31C"
+      "set": "Select",
+      "outOfDateBefore": true,
+      "outOfDateAfter": false
     },
     {
-      "name": "Error/Dark",
-      "state": "Error",
-      "theme": "Dark",
-      "originalName": "Text Field / Error / Email Error / Dark",
-      "symbolId": "CE23BB24-4801-4220-B707-D3A74729479C"
+      "set": "List Item",
+      "outOfDateBefore": true,
+      "outOfDateAfter": false
+    },
+    {
+      "set": "Chip",
+      "outOfDateBefore": true,
+      "outOfDateAfter": false
+    },
+    {
+      "set": "Disclosure",
+      "outOfDateBefore": true,
+      "outOfDateAfter": false
     }
   ],
-  "detached": {
-    "before": {
-      "setReference": {
-        "id": "C8B65DA8-2F50-4703-94F8-F0DE868C652E",
-        "name": "Text Field / Form",
-        "type": "VariantSet",
-        "library": true,
-        "nativeSourceLibrary": true
-      },
-      "set": {
-        "id": "C8B65DA8-2F50-4703-94F8-F0DE868C652E",
-        "parentBefore": null,
-        "parentAfter": null,
-        "setsBefore": 0,
-        "setsAfter": 0,
-        "nativeClass": "MSLayerGroup",
-        "foreignMethod": true,
-        "foreign": true
-      },
-      "symbolReferenceCount": 325,
-      "relatedSymbolReferences": [],
-      "directSymbolImport": null,
-      "entries": [
-        {
-          "name": "Default/Light",
-          "sourceId": "C973205A-6E42-491D-8020-42C8FD4FFBBC",
-          "importedId": "1DE45189-3C07-40F1-A527-4ECF5F43696D",
-          "foreign": false,
-          "library": false,
-          "width": 440,
-          "override": "Linked probe override 0"
-        },
-        {
-          "name": "Error/Dark",
-          "sourceId": "CE23BB24-4801-4220-B707-D3A74729479C",
-          "importedId": "6524A2EF-0CC8-4233-8AA7-A723A5D18F3D",
-          "foreign": false,
-          "library": false,
-          "width": 440,
-          "override": "Linked probe override 1"
-        }
-      ]
+  "after": [
+    {
+      "set": "Button",
+      "state": "Badge Brand",
+      "theme": "Light",
+      "name": "Badge Brand/Light",
+      "firstText": "Library sync check",
+      "width": 144,
+      "override": "Linked probe override 0"
     },
-    "reopened": {
-      "foreignVariantSetCount": 1,
-      "sets": [],
-      "masters": [
-        {
-          "id": "1DE45189-3C07-40F1-A527-4ECF5F43696D",
-          "name": "Default/Light",
-          "foreign": false,
-          "library": false
-        },
-        {
-          "id": "6524A2EF-0CC8-4233-8AA7-A723A5D18F3D",
-          "name": "Error/Dark",
-          "foreign": false,
-          "library": false
-        }
-      ],
-      "instances": [
-        {
-          "id": "1DE45189-3C07-40F1-A527-4ECF5F43696D",
-          "width": 440,
-          "overrides": ["Linked probe override 0"]
-        },
-        {
-          "id": "6524A2EF-0CC8-4233-8AA7-A723A5D18F3D",
-          "width": 440,
-          "overrides": ["Linked probe override 1"]
-        }
-      ]
-    }
-  },
-  "placed": {
-    "before": {
-      "setReference": {
-        "id": "C8B65DA8-2F50-4703-94F8-F0DE868C652E",
-        "name": "Text Field / Form",
-        "type": "VariantSet",
-        "library": true,
-        "nativeSourceLibrary": true
-      },
-      "set": {
-        "id": "C8B65DA8-2F50-4703-94F8-F0DE868C652E",
-        "parentBefore": null,
-        "parentAfter": "Page 1",
-        "setsBefore": 0,
-        "setsAfter": 1,
-        "nativeClass": "MSLayerGroup",
-        "foreignMethod": true,
-        "foreign": false
-      },
-      "symbolReferenceCount": 325,
-      "relatedSymbolReferences": [],
-      "directSymbolImport": null,
-      "entries": [
-        {
-          "name": "Default/Light",
-          "sourceId": "C973205A-6E42-491D-8020-42C8FD4FFBBC",
-          "importedId": "95332896-D81F-4676-A4C8-27F3AC7B5FFA",
-          "foreign": false,
-          "library": false,
-          "width": 440,
-          "override": "Linked probe override 0"
-        },
-        {
-          "name": "Error/Dark",
-          "sourceId": "CE23BB24-4801-4220-B707-D3A74729479C",
-          "importedId": "990D8D7A-83AF-42D0-BCBF-E9A53447AAAD",
-          "foreign": false,
-          "library": false,
-          "width": 440,
-          "override": "Linked probe override 1"
-        }
-      ]
+    {
+      "set": "Button",
+      "state": "Badge Brand",
+      "theme": "Dark",
+      "name": "Badge Brand/Dark",
+      "firstText": "Library sync check",
+      "width": 144,
+      "override": "Linked probe override 1"
     },
-    "reopened": {
-      "foreignVariantSetCount": 1,
-      "sets": [
-        {
-          "id": "C8B65DA8-2F50-4703-94F8-F0DE868C652E",
-          "name": "Text Field / Form"
-        }
-      ],
-      "masters": [
-        {
-          "id": "95332896-D81F-4676-A4C8-27F3AC7B5FFA",
-          "name": "Default/Light",
-          "foreign": false,
-          "library": false
-        },
-        {
-          "id": "990D8D7A-83AF-42D0-BCBF-E9A53447AAAD",
-          "name": "Error/Dark",
-          "foreign": false,
-          "library": false
-        },
-        {
-          "id": "95332896-D81F-4676-A4C8-27F3AC7B5FFA",
-          "name": "Default/Light",
-          "foreign": false,
-          "library": false
-        },
-        {
-          "id": "990D8D7A-83AF-42D0-BCBF-E9A53447AAAD",
-          "name": "Error/Dark",
-          "foreign": false,
-          "library": false
-        }
-      ],
-      "instances": [
-        {
-          "id": "95332896-D81F-4676-A4C8-27F3AC7B5FFA",
-          "width": 440,
-          "overrides": ["Linked probe override 0"]
-        },
-        {
-          "id": "990D8D7A-83AF-42D0-BCBF-E9A53447AAAD",
-          "width": 440,
-          "overrides": ["Linked probe override 1"]
-        }
-      ]
+    {
+      "set": "Text Field",
+      "state": "Labeled · Project Name",
+      "theme": "Light",
+      "name": "Labeled · Project Name/Light",
+      "firstText": "Library sync check",
+      "width": 440,
+      "override": "Linked probe override 0"
+    },
+    {
+      "set": "Text Field",
+      "state": "Labeled · Project Name",
+      "theme": "Dark",
+      "name": "Labeled · Project Name/Dark",
+      "firstText": "Library sync check",
+      "width": 440,
+      "override": "Linked probe override 1"
+    },
+    {
+      "set": "Select",
+      "state": "Compact · Control",
+      "theme": "Light",
+      "name": "Compact · Control/Light",
+      "firstText": "Library sync check",
+      "width": 440,
+      "override": "Linked probe override 0"
+    },
+    {
+      "set": "Select",
+      "state": "Compact · Control",
+      "theme": "Dark",
+      "name": "Compact · Control/Dark",
+      "firstText": "Library sync check",
+      "width": 440,
+      "override": "Linked probe override 1"
+    },
+    {
+      "set": "List Item",
+      "state": "Default · Control",
+      "theme": "Light",
+      "name": "Default · Control/Light",
+      "firstText": "Library sync check",
+      "width": 384,
+      "override": "Linked probe override 0"
+    },
+    {
+      "set": "List Item",
+      "state": "Default · Control",
+      "theme": "Dark",
+      "name": "Default · Control/Dark",
+      "firstText": "Library sync check",
+      "width": 384,
+      "override": "Linked probe override 1"
+    },
+    {
+      "set": "Chip",
+      "state": "Tags · Urgent",
+      "theme": "Light",
+      "name": "Tags · Urgent/Light",
+      "firstText": "Library sync check",
+      "width": 163.15625,
+      "override": "Linked probe override 0"
+    },
+    {
+      "set": "Chip",
+      "state": "Tags · Urgent",
+      "theme": "Dark",
+      "name": "Tags · Urgent/Dark",
+      "firstText": "Library sync check",
+      "width": 163.15625,
+      "override": "Linked probe override 1"
+    },
+    {
+      "set": "Disclosure",
+      "state": "Plain · Advanced Settings",
+      "theme": "Light",
+      "name": "Plain · Advanced Settings/Light",
+      "firstText": "Library sync check",
+      "width": 484,
+      "override": "Linked probe override 0"
+    },
+    {
+      "set": "Disclosure",
+      "state": "Plain · Advanced Settings",
+      "theme": "Dark",
+      "name": "Plain · Advanced Settings/Dark",
+      "firstText": "Library sync check",
+      "width": 484,
+      "override": "Linked probe override 1"
     }
-  },
-  "detachedSync": {
-    "outOfDateBefore": true,
-    "outOfDateAfter": false,
-    "before": [
-      {
-        "name": "Default/Light",
-        "firstText": "PROJECT NAME",
-        "width": 440,
-        "overrides": ["Linked probe override 0"]
-      },
-      {
-        "name": "Error/Dark",
-        "firstText": "EMAIL",
-        "width": 440,
-        "overrides": ["Linked probe override 1"]
-      }
-    ],
-    "after": [
-      {
-        "name": "Default/Light",
-        "firstText": "Variant linked update",
-        "width": 440,
-        "overrides": ["Linked probe override 0"]
-      },
-      {
-        "name": "Error/Dark",
-        "firstText": "Variant linked update",
-        "width": 440,
-        "overrides": ["Linked probe override 1"]
-      }
-    ],
-    "reopened": [
-      {
-        "name": "Default/Light",
-        "firstText": "Variant linked update",
-        "width": 440,
-        "overrides": ["Linked probe override 0"]
-      },
-      {
-        "name": "Error/Dark",
-        "firstText": "Variant linked update",
-        "width": 440,
-        "overrides": ["Linked probe override 1"]
-      }
-    ],
-    "sourcesBefore": [],
-    "sourcesAfter": [],
-    "sourcesReopened": [],
-    "foreignSetCountAfter": 1
-  },
-  "placedSync": {
-    "outOfDateBefore": true,
-    "outOfDateAfter": false,
-    "before": [
-      {
-        "name": "Default/Light",
-        "firstText": "PROJECT NAME",
-        "width": 440,
-        "overrides": ["Linked probe override 0"]
-      },
-      {
-        "name": "Error/Dark",
-        "firstText": "EMAIL",
-        "width": 440,
-        "overrides": ["Linked probe override 1"]
-      }
-    ],
-    "after": [
-      {
-        "name": "Default/Light",
-        "firstText": "PROJECT NAME",
-        "width": 440,
-        "overrides": ["Linked probe override 0"]
-      },
-      {
-        "name": "Error/Dark",
-        "firstText": "EMAIL",
-        "width": 440,
-        "overrides": ["Linked probe override 1"]
-      }
-    ],
-    "reopened": [
-      {
-        "name": "Default/Light",
-        "firstText": "PROJECT NAME",
-        "width": 440,
-        "overrides": ["Linked probe override 0"]
-      },
-      {
-        "name": "Error/Dark",
-        "firstText": "EMAIL",
-        "width": 440,
-        "overrides": ["Linked probe override 1"]
-      }
-    ],
-    "sourcesBefore": [
-      {
-        "name": "Default/Light",
-        "id": "95332896-D81F-4676-A4C8-27F3AC7B5FFA",
-        "firstText": "PROJECT NAME",
-        "variantSet": "Text Field / Form"
-      },
-      {
-        "name": "Default/Dark",
-        "id": "66FF13FA-C30B-458B-9248-F3C33F867C27",
-        "firstText": "PROJECT NAME",
-        "variantSet": "Text Field / Form"
-      },
-      {
-        "name": "Error/Light",
-        "id": "6952B799-109F-456E-A625-1159B3C59F66",
-        "firstText": "EMAIL",
-        "variantSet": "Text Field / Form"
-      },
-      {
-        "name": "Error/Dark",
-        "id": "990D8D7A-83AF-42D0-BCBF-E9A53447AAAD",
-        "firstText": "EMAIL",
-        "variantSet": "Text Field / Form"
-      }
-    ],
-    "sourcesAfter": [
-      {
-        "name": "Default/Light",
-        "id": "95332896-D81F-4676-A4C8-27F3AC7B5FFA",
-        "firstText": "PROJECT NAME",
-        "variantSet": "Text Field / Form"
-      },
-      {
-        "name": "Default/Dark",
-        "id": "66FF13FA-C30B-458B-9248-F3C33F867C27",
-        "firstText": "PROJECT NAME",
-        "variantSet": "Text Field / Form"
-      },
-      {
-        "name": "Error/Light",
-        "id": "6952B799-109F-456E-A625-1159B3C59F66",
-        "firstText": "EMAIL",
-        "variantSet": "Text Field / Form"
-      },
-      {
-        "name": "Error/Dark",
-        "id": "990D8D7A-83AF-42D0-BCBF-E9A53447AAAD",
-        "firstText": "EMAIL",
-        "variantSet": "Text Field / Form"
-      }
-    ],
-    "sourcesReopened": [
-      {
-        "name": "Default/Light",
-        "id": "95332896-D81F-4676-A4C8-27F3AC7B5FFA",
-        "firstText": "PROJECT NAME",
-        "variantSet": "Text Field / Form"
-      },
-      {
-        "name": "Default/Dark",
-        "id": "66FF13FA-C30B-458B-9248-F3C33F867C27",
-        "firstText": "PROJECT NAME",
-        "variantSet": "Text Field / Form"
-      },
-      {
-        "name": "Error/Light",
-        "id": "6952B799-109F-456E-A625-1159B3C59F66",
-        "firstText": "EMAIL",
-        "variantSet": "Text Field / Form"
-      },
-      {
-        "name": "Error/Dark",
-        "id": "990D8D7A-83AF-42D0-BCBF-E9A53447AAAD",
-        "firstText": "EMAIL",
-        "variantSet": "Text Field / Form"
-      }
-    ],
-    "foreignSetCountAfter": 1
-  },
-  "existingLibrarySync": {
-    "names": [
-      "Text Field / Labeled / Project Name / Light",
-      "Text Field / Labeled / Project Name / Dark"
-    ],
-    "synced": [
-      {
-        "name": "Text Field / Labeled / Project Name / Light",
-        "outOfDateBefore": true,
-        "outOfDateAfter": false
-      },
-      {
-        "name": "Text Field / Labeled / Project Name / Dark",
-        "outOfDateBefore": true,
-        "outOfDateAfter": false
-      }
-    ],
-    "after": [
-      {
-        "name": "Text Field / Labeled / Project Name / Light",
-        "firstText": "Library sync check",
-        "overrides": ["Kept override 0"]
-      },
-      {
-        "name": "Text Field / Labeled / Project Name / Dark",
-        "firstText": "Library sync check",
-        "overrides": ["Kept override 1"]
-      }
-    ],
-    "reopened": [
-      {
-        "name": "Text Field / Labeled / Project Name / Light",
-        "firstText": "Library sync check",
-        "overrides": ["Kept override 0"]
-      },
-      {
-        "name": "Text Field / Labeled / Project Name / Dark",
-        "firstText": "Library sync check",
-        "overrides": ["Kept override 1"]
-      }
-    ]
-  },
-  "verifiedImportPath": "Import VariantSetReference; leave the set detached; create instances from selected child masters; sync the document foreignVariantSets record",
-  "variantImportPathVerified": true,
-  "otherFamiliesMigrated": false
+  ],
+  "reopened": [
+    {
+      "set": "Button",
+      "state": "Badge Brand",
+      "theme": "Light",
+      "name": "Badge Brand/Light",
+      "firstText": "Library sync check",
+      "width": 144,
+      "override": "Linked probe override 0"
+    },
+    {
+      "set": "Button",
+      "state": "Badge Brand",
+      "theme": "Dark",
+      "name": "Badge Brand/Dark",
+      "firstText": "Library sync check",
+      "width": 144,
+      "override": "Linked probe override 1"
+    },
+    {
+      "set": "Text Field",
+      "state": "Labeled · Project Name",
+      "theme": "Light",
+      "name": "Labeled · Project Name/Light",
+      "firstText": "Library sync check",
+      "width": 440,
+      "override": "Linked probe override 0"
+    },
+    {
+      "set": "Text Field",
+      "state": "Labeled · Project Name",
+      "theme": "Dark",
+      "name": "Labeled · Project Name/Dark",
+      "firstText": "Library sync check",
+      "width": 440,
+      "override": "Linked probe override 1"
+    },
+    {
+      "set": "Select",
+      "state": "Compact · Control",
+      "theme": "Light",
+      "name": "Compact · Control/Light",
+      "firstText": "Library sync check",
+      "width": 440,
+      "override": "Linked probe override 0"
+    },
+    {
+      "set": "Select",
+      "state": "Compact · Control",
+      "theme": "Dark",
+      "name": "Compact · Control/Dark",
+      "firstText": "Library sync check",
+      "width": 440,
+      "override": "Linked probe override 1"
+    },
+    {
+      "set": "List Item",
+      "state": "Default · Control",
+      "theme": "Light",
+      "name": "Default · Control/Light",
+      "firstText": "Library sync check",
+      "width": 384,
+      "override": "Linked probe override 0"
+    },
+    {
+      "set": "List Item",
+      "state": "Default · Control",
+      "theme": "Dark",
+      "name": "Default · Control/Dark",
+      "firstText": "Library sync check",
+      "width": 384,
+      "override": "Linked probe override 1"
+    },
+    {
+      "set": "Chip",
+      "state": "Tags · Urgent",
+      "theme": "Light",
+      "name": "Tags · Urgent/Light",
+      "firstText": "Library sync check",
+      "width": 163.15625,
+      "override": "Linked probe override 0"
+    },
+    {
+      "set": "Chip",
+      "state": "Tags · Urgent",
+      "theme": "Dark",
+      "name": "Tags · Urgent/Dark",
+      "firstText": "Library sync check",
+      "width": 163.15625,
+      "override": "Linked probe override 1"
+    },
+    {
+      "set": "Disclosure",
+      "state": "Plain · Advanced Settings",
+      "theme": "Light",
+      "name": "Plain · Advanced Settings/Light",
+      "firstText": "Library sync check",
+      "width": 484,
+      "override": "Linked probe override 0"
+    },
+    {
+      "set": "Disclosure",
+      "state": "Plain · Advanced Settings",
+      "theme": "Dark",
+      "name": "Plain · Advanced Settings/Dark",
+      "firstText": "Library sync check",
+      "width": 484,
+      "override": "Linked probe override 1"
+    }
+  ]
 }
