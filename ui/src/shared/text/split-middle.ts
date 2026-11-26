@@ -1,13 +1,16 @@
 /**
- * The suffix a middle truncation always keeps: a number of trailing
+ * The suffix a middle truncation selects: a number of trailing
  * characters, or `segment` for the last path segment with its separator.
  */
 export type MiddleTruncateKeep = number | 'segment';
 
+/** Which part wins when a middle-truncated box is too narrow for both. */
+export type MiddleTruncatePriority = 'head' | 'suffix';
+
 /** Characters a middle truncation keeps when the text has no path separator. */
 const MIDDLE_FALLBACK_KEEP = 10;
 
-/** Split text into the shrinkable head and the always-kept tail. */
+/** Split text into the shrinkable head and selected tail. */
 export function splitMiddle(
   text: string,
   keep: MiddleTruncateKeep,

@@ -14,6 +14,7 @@ export {
 } from '../../forms/field-label/field-label.js';
 import {
   type MiddleTruncateKeep,
+  type MiddleTruncatePriority,
   splitMiddle,
 } from '../../../shared/text/split-middle.js';
 
@@ -41,10 +42,12 @@ export type TextAlign = 'start' | 'center' | 'end';
  */
 export type TextTruncate = 'end' | 'middle' | 'start';
 /**
- * The suffix `truncate="middle"` always keeps: a number of trailing
+ * The suffix `truncate="middle"` selects: a number of trailing
  * characters, or `segment` for the last path segment with its separator.
  */
 export type TextTruncateKeep = MiddleTruncateKeep;
+/** Which part wins in a narrow middle-truncated box; defaults to `head`. */
+export type TextTruncatePriority = MiddleTruncatePriority;
 
 export type TextContent =
   KerfUiContent | string | number | readonly TextContent[];
@@ -111,6 +114,7 @@ export type TextProps = TextCommonProps &
         maxLines?: number;
         truncate?: never;
         truncateKeep?: never;
+        truncatePriority?: never;
       }
     | {
         /** Keep one line without an ellipsis. */
@@ -118,6 +122,7 @@ export type TextProps = TextCommonProps &
         maxLines?: never;
         truncate?: never;
         truncateKeep?: never;
+        truncatePriority?: never;
       }
     | {
         /** Keep one line with an ellipsis. */
@@ -135,6 +140,12 @@ export type TextProps = TextCommonProps &
          * `\\` separator).
          */
         truncateKeep?: TextTruncateKeep;
+        /**
+         * Narrow-box policy for `truncate="middle"`: `head` (default)
+         * reserves a head sliver and ellipsizes the suffix; `suffix` keeps
+         * the suffix whole while the head shrinks to an ellipsis or nothing.
+         */
+        truncatePriority?: TextTruncatePriority;
       }
   );
 
@@ -152,6 +163,7 @@ const textProtectedAttributes = new Set([
   'data-wrap',
   'data-max-lines',
   'data-truncate',
+  'data-truncate-priority',
 ]);
 
 /**
@@ -178,6 +190,7 @@ export function Text({
   maxLines,
   truncate,
   truncateKeep,
+  truncatePriority,
   children,
   class: classValue = '',
   className = '',
@@ -210,6 +223,13 @@ export function Text({
   )
     throw new RangeError(
       'Text truncateKeep requires truncate="middle" and a positive integer or "segment"',
+    );
+  if (
+    truncatePriority !== undefined &&
+    (position !== 'middle' || !['head', 'suffix'].includes(truncatePriority))
+  )
+    throw new RangeError(
+      'Text truncatePriority requires truncate="middle" and one of head or suffix',
     );
   const textValue =
     typeof children === 'string' || typeof children === 'number'
@@ -245,6 +265,11 @@ export function Text({
       data-wrap={wrap === 'normal' ? undefined : wrap}
       data-max-lines={maxLines === undefined ? undefined : String(maxLines)}
       data-truncate={position === 'end' ? undefined : position}
+      data-truncate-priority={
+        position === 'middle' && truncatePriority === 'suffix'
+          ? 'suffix'
+          : undefined
+      }
       title={title}
       style={
         color === undefined
@@ -257,6 +282,7 @@ export function Text({
         children,
         textValue,
         truncateKeep,
+        truncatePriority,
         maxLines,
         weight === 'strong',
       )}
@@ -273,6 +299,7 @@ function textBody(
   children: TextContent,
   textValue: string | undefined,
   truncateKeep: TextTruncateKeep | undefined,
+  truncatePriority: TextTruncatePriority | undefined,
   maxLines: number | undefined,
   strong: boolean,
 ): TextContent {
@@ -295,6 +322,7 @@ function textBody(
         <TruncateMiddle
           parts={splitMiddle(textValue!, truncateKeep ?? 'segment')}
           strong={strong}
+          suffixPriority={truncatePriority === 'suffix'}
         />
       );
     case 'end':
@@ -314,15 +342,30 @@ function textBody(
 function TruncateMiddle({
   parts: [head, tail],
   strong,
+  suffixPriority,
 }: {
   parts: [string, string];
   strong: boolean;
+  suffixPriority: boolean;
 }) {
   // A strong middle truncation keeps its two shrinking parts and marks each.
   const mark = (part: string) => (strong ? <strong>{part}</strong> : part);
   return (
     <span class="kui-text__truncate-middle">
-      <span class="kui-text__truncate-head">{mark(head)}</span>
+      <span class="kui-text__truncate-head">
+        {suffixPriority ? (
+          <>
+            <span class="kui-text__truncate-head-sizer" aria-hidden="true">
+              {mark(head)}
+            </span>
+            <span class="kui-text__truncate-head-clip">
+              <span class="kui-text__truncate-head-content">{mark(head)}</span>
+            </span>
+          </>
+        ) : (
+          mark(head)
+        )}
+      </span>
       {tail ? <span class="kui-text__truncate-tail">{mark(tail)}</span> : ''}
     </span>
   );

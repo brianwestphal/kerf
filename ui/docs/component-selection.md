@@ -467,7 +467,10 @@ instead of the default ellipsis; a visible-name tab wider than its whole strip
 falls back to an ellipsis with the full name as its title. When tabs differ only at the end of their names
 (a run id, a file path), set `nameTruncate="start"` to keep the tail, or
 `nameTruncate="middle"` to keep the start and the last path segment
-(`nameTruncateKeep` sets another suffix length). A `TabBar` owns its
+(`nameTruncateKeep` sets another suffix length). By default a narrow middle
+name keeps a sliver of the head and ellipsizes the suffix; set
+`nameTruncatePriority="suffix"` when the suffix identifies the tab and must
+stay whole. The suffix still needs to fit inside the name box. A `TabBar` owns its
 scrolling strip; its public `--kui-tab-bar-strip-*` tokens configure strip
 height, spacing, border, radius, background, and scroll inset without styling
 its internal classes. `--kui-tab-bar-trailing-flex` controls the trailing zone.

@@ -420,6 +420,7 @@ export {
 export {
   TabBarItem,
   type TabBarItemNameOverflow,
+  type TabBarItemNameTruncatePriority,
   type TabBarItemPresentation,
   type TabBarItemProps,
   type TabBarItemSize,
@@ -523,6 +524,7 @@ export {
   type TextProps,
   type TextSize,
   type TextTone,
+  type TextTruncatePriority,
   type TextVariant,
   type TextWeight,
 } from './components/typography/text/text.js';

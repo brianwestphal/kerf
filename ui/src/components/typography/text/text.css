@@ -113,6 +113,36 @@ span.kui-text[data-wrap="truncate"] {
   text-overflow: ellipsis;
 }
 
+.kui-text[data-truncate-priority="suffix"] .kui-text__truncate-head {
+  position: relative;
+  min-width: 0;
+}
+
+.kui-text__truncate-head-sizer {
+  visibility: hidden;
+}
+
+.kui-text__truncate-head-clip {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: pre;
+  container: kui-text-head / inline-size;
+}
+
+@container kui-text-head (max-width: 0.8em) {
+  .kui-text__truncate-head-content {
+    opacity: 0;
+  }
+}
+
+.kui-text[data-truncate-priority="suffix"] .kui-text__truncate-tail {
+  max-width: none;
+  overflow: visible;
+  text-overflow: clip;
+}
+
 .kui-text__truncate-tail {
   flex: 0 0 auto;
   max-width: calc(100% - 1em);

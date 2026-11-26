@@ -456,6 +456,89 @@ test('Text keeps a visible middle cut when a long suffix nearly fills a narrow c
   });
 });
 
+test('Text can keep a run-id suffix whole in a 109px monospaced box', async ({
+  page,
+}, testInfo) => {
+  await page.goto('/?component=text');
+  const render = (truncatePriority?: 'suffix') =>
+    String(
+      Text({
+        variant: 'span',
+        font: 'monospace',
+        flush: true,
+        wrap: 'truncate',
+        truncate: 'middle',
+        truncateKeep: 12,
+        truncatePriority,
+        style: 'font-size:14px;width:109px',
+        children: 'drafts › Release train: run Q69G5FB0',
+      }),
+    );
+  await page.evaluate(
+    ([headFirst, suffixFirst]) => {
+      const fixture = document.createElement('div');
+      fixture.dataset.testTruncatePriority = '';
+      fixture.style.cssText =
+        'width:max-content;padding:12px;background:white;color:black';
+      fixture.innerHTML = `${headFirst}<br>${suffixFirst}`;
+      document.body.append(fixture);
+    },
+    [render(), render('suffix')],
+  );
+  const pair = page.locator('[data-test-truncate-priority]');
+  const geometry = await pair.evaluate((element) =>
+    [...element.querySelectorAll<HTMLElement>('.kui-text')].map((text) => {
+      const head = text.querySelector<HTMLElement>('.kui-text__truncate-head')!;
+      const tail = text.querySelector<HTMLElement>('.kui-text__truncate-tail')!;
+      const middle = text.querySelector<HTMLElement>(
+        '.kui-text__truncate-middle',
+      )!;
+      return {
+        headWidth: head.getBoundingClientRect().width,
+        headContentOpacity: window.getComputedStyle(
+          head.querySelector<HTMLElement>('.kui-text__truncate-head-content') ??
+            head,
+        ).opacity,
+        tailClipped: tail.scrollWidth > tail.clientWidth + 1,
+        tailOverflow: window.getComputedStyle(tail).textOverflow,
+        tailInside:
+          tail.getBoundingClientRect().right <=
+          middle.getBoundingClientRect().right + 1,
+      };
+    }),
+  );
+  expect(geometry).toHaveLength(2);
+  expect(geometry[0]!.tailClipped).toBe(true);
+  expect(geometry[0]!.tailOverflow).toBe('ellipsis');
+  expect(geometry[1]!.headWidth).toBeLessThan(geometry[0]!.headWidth);
+  expect(geometry[1]!.headContentOpacity).toBe('0');
+  expect(geometry[1]!.tailClipped).toBe(false);
+  expect(geometry[1]!.tailOverflow).toBe('clip');
+  expect(geometry[1]!.tailInside).toBe(true);
+  await pair.screenshot({
+    path: testInfo.outputPath('text-suffix-priority.png'),
+  });
+  const wide = await pair.evaluate(async (element) => {
+    const text = element.querySelector<HTMLElement>(
+      '[data-truncate-priority="suffix"]',
+    )!;
+    text.style.width = '360px';
+    await new Promise<void>((resolve) =>
+      window.requestAnimationFrame(() =>
+        window.requestAnimationFrame(() => resolve()),
+      ),
+    );
+    const head = text.querySelector<HTMLElement>('.kui-text__truncate-head')!;
+    return {
+      opacity: window.getComputedStyle(
+        head.querySelector<HTMLElement>('.kui-text__truncate-head-content')!,
+      ).opacity,
+      clipped: head.scrollWidth > head.clientWidth + 1,
+    };
+  });
+  expect(wide).toEqual({ opacity: '1', clipped: false });
+});
+
 test('Text font="monospace" resolves to the Kerf code stack with Web Awesome loaded', async ({
   page,
   browserName,

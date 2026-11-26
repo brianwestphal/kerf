@@ -792,6 +792,13 @@ none), or a number keeps that many trailing characters. `middle` needs string
 or number children so it can split them. Both positions are for left-to-right
 identifiers and paths, keep the whole value in the DOM in order for assistive
 technology, and show it as the element's `title` unless you pass your own.
+When the box is too narrow for both parts, `truncatePriority="head"` (default)
+keeps a small piece of the head and ellipsizes the suffix. Set
+`truncatePriority="suffix"` for an identity-bearing tail such as a run ID:
+the suffix keeps its natural width while the head reduces to an ellipsis or
+disappears. If the suffix alone exceeds the box, the box still clips it; give
+identity suffixes enough width to fit. The property applies only to
+`truncate="middle"`.
 Never hand-roll these with `direction: rtl` or split spans in app CSS.
 
 ```tsx

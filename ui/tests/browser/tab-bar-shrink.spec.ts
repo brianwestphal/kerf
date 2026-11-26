@@ -1,5 +1,7 @@
 import { expect, type Locator, type Page, test } from '@playwright/test';
 
+import { TabBarItem } from '../../dist/tab-bar-item.js';
+
 // KF-VQ1Z8H: in intrinsic allocation a tab gives up width by ellipsizing its
 // name down to a floor (its chrome plus a few characters) before the strip
 // scrolls. The action zones never shrink, and a wide bar where everything
@@ -251,4 +253,111 @@ test('tail-preserving tab names show their ends and title their full names', asy
     'title',
     'ui/src/components/navigation/tab-bar.tsx',
   );
+});
+
+test('middle-truncated tab can keep its identity suffix whole', async ({
+  page,
+}, testInfo) => {
+  await page.goto('/?component=tab-bar');
+  const render = (nameTruncatePriority?: 'suffix') =>
+    String(
+      TabBarItem({
+        id: nameTruncatePriority ?? 'default',
+        name: 'Release train: run Q69G5FB0',
+        nameTruncate: 'middle',
+        nameTruncateKeep: 12,
+        nameTruncatePriority,
+        closable: false,
+      }),
+    );
+  await page.evaluate(
+    ([headFirst, suffixFirst]) => {
+      const fixture = document.createElement('div');
+      fixture.dataset.testTabSuffixPriority = '';
+      fixture.style.cssText =
+        'display:flex;flex-direction:column;align-items:flex-start;width:max-content;padding:12px;background:white';
+      fixture.innerHTML = `${headFirst}${suffixFirst}`;
+      document.body.append(fixture);
+    },
+    [render(), render('suffix')],
+  );
+  const pair = page.locator('[data-test-tab-suffix-priority]');
+  const nameWidth = await pair.evaluate((element) => {
+    const suffix = element.querySelector<HTMLElement>(
+      '[data-name-truncate-priority="suffix"] .kui-tab-bar-item__name-tail',
+    )!;
+    // Leave less than 1em for the head, but room for the whole tail.
+    const width = Math.ceil(suffix.getBoundingClientRect().width) + 4;
+    for (const item of element.querySelectorAll<HTMLElement>(
+      '.kui-tab-bar-item',
+    ))
+      item.style.setProperty(
+        '--kui-tab-bar-item-label-max-width',
+        `${width}px`,
+      );
+    return width;
+  });
+  expect(nameWidth).toBeLessThan(110);
+  const geometry = await pair.evaluate((element) =>
+    [...element.querySelectorAll<HTMLElement>('.kui-tab-bar-item')].map(
+      (item) => {
+        const head = item.querySelector<HTMLElement>(
+          '.kui-tab-bar-item__name-head',
+        )!;
+        const tail = item.querySelector<HTMLElement>(
+          '.kui-tab-bar-item__name-tail',
+        )!;
+        const name = item.querySelector<HTMLElement>(
+          '.kui-tab-bar-item__name',
+        )!;
+        return {
+          headWidth: head.getBoundingClientRect().width,
+          headContentOpacity: window.getComputedStyle(
+            head.querySelector<HTMLElement>(
+              '.kui-tab-bar-item__name-head-content',
+            ) ?? head,
+          ).opacity,
+          tailClipped: tail.scrollWidth > tail.clientWidth + 1,
+          tailOverflow: window.getComputedStyle(tail).textOverflow,
+          tailInside:
+            tail.getBoundingClientRect().right <=
+            name.getBoundingClientRect().right + 1,
+        };
+      },
+    ),
+  );
+  expect(geometry).toHaveLength(2);
+  expect(geometry[0]!.tailClipped).toBe(true);
+  expect(geometry[1]!.headWidth).toBeLessThan(geometry[0]!.headWidth);
+  expect(geometry[1]!.headContentOpacity).toBe('0');
+  expect(geometry[1]!.tailClipped).toBe(false);
+  expect(geometry[1]!.tailOverflow).toBe('clip');
+  expect(geometry[1]!.tailInside).toBe(true);
+  await pair.scrollIntoViewIfNeeded();
+  await pair.screenshot({
+    path: testInfo.outputPath('tab-suffix-priority.png'),
+  });
+  const wide = await pair.evaluate(async (element) => {
+    const item = element.querySelector<HTMLElement>(
+      '[data-name-truncate-priority="suffix"]',
+    )!;
+    item.style.setProperty('--kui-tab-bar-item-label-max-width', '320px');
+    await new Promise<void>((resolve) =>
+      window.requestAnimationFrame(() =>
+        window.requestAnimationFrame(() => resolve()),
+      ),
+    );
+    const head = item.querySelector<HTMLElement>(
+      '.kui-tab-bar-item__name-head',
+    )!;
+    return {
+      opacity: window.getComputedStyle(
+        head.querySelector<HTMLElement>(
+          '.kui-tab-bar-item__name-head-content',
+        )!,
+      ).opacity,
+      clipped: head.scrollWidth > head.clientWidth + 1,
+    };
+  });
+  expect(wide).toEqual({ opacity: '1', clipped: false });
 });

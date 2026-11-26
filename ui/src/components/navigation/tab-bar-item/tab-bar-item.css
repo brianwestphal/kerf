@@ -183,12 +183,42 @@
 }
 .kui-tab-bar-item__name-head {
   flex: 0 1 auto;
-  min-width: 0;
+  min-width: 1em;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 .kui-tab-bar-item__name-tail {
   flex: 0 0 auto;
+  max-width: calc(100% - 1em);
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.kui-tab-bar-item[data-name-truncate-priority="suffix"]
+  .kui-tab-bar-item__name-head {
+  position: relative;
+  min-width: 0;
+}
+.kui-tab-bar-item__name-head-sizer {
+  visibility: hidden;
+}
+.kui-tab-bar-item__name-head-clip {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: pre;
+  container: kui-tab-name-head / inline-size;
+}
+@container kui-tab-name-head (max-width: 0.8em) {
+  .kui-tab-bar-item__name-head-content {
+    opacity: 0;
+  }
+}
+.kui-tab-bar-item[data-name-truncate-priority="suffix"]
+  .kui-tab-bar-item__name-tail {
+  max-width: none;
+  overflow: visible;
+  text-overflow: clip;
 }
 /* A visible name keeps the tab at its full width with no label cap. A tab
    wider than its whole strip (KF-0M3ZPT) is the exception: it takes the

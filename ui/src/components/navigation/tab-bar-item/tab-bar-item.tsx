@@ -5,6 +5,7 @@ import { filterDataAttributes } from '../../../shared/dom/extension-attributes.j
 import { em } from '../../../shared/styles/css-values.js';
 import {
   type MiddleTruncateKeep,
+  type MiddleTruncatePriority,
   splitMiddle,
 } from '../../../shared/text/split-middle.js';
 import { Skeleton } from '../../feedback/skeleton/skeleton.js';
@@ -20,6 +21,7 @@ const PROTECTED_ROOT_DATA_ATTRIBUTES = new Set([
   'data-drop-target',
   'data-name-overflow',
   'data-name-truncate',
+  'data-name-truncate-priority',
   'data-disabled',
 ]);
 
@@ -35,6 +37,7 @@ type TabBarItemRootAttributes = Readonly<
     'data-drop-target'?: never;
     'data-name-overflow'?: never;
     'data-name-truncate'?: never;
+    'data-name-truncate-priority'?: never;
     'data-disabled'?: never;
   }
 >;
@@ -49,11 +52,13 @@ export type TabBarItemNameOverflow = 'ellipsis' | 'visible';
  */
 export type TabBarItemNameTruncate = 'end' | 'middle' | 'start';
 /**
- * The suffix `nameTruncate="middle"` always keeps: a number of trailing
+ * The suffix `nameTruncate="middle"` selects: a number of trailing
  * characters, or `segment` (default) for the last path segment, or the last
  * 10 characters when the name has no separator.
  */
 export type TabBarItemNameTruncateKeep = MiddleTruncateKeep;
+/** Which part wins in a narrow middle-truncated tab; defaults to `head`. */
+export type TabBarItemNameTruncatePriority = MiddleTruncatePriority;
 
 export interface TabBarItemProps {
   id: string;
@@ -98,6 +103,8 @@ export interface TabBarItemProps {
   nameTruncate?: TabBarItemNameTruncate;
   /** The suffix `nameTruncate="middle"` keeps (default `segment`). */
   nameTruncateKeep?: TabBarItemNameTruncateKeep;
+  /** `head` (default) keeps a head sliver; `suffix` keeps the full suffix. */
+  nameTruncatePriority?: TabBarItemNameTruncatePriority;
   /** Decorative dormant content for the close button. Must not contain interactive descendants. */
   closeIcon?: SafeHtml;
   selectAction?: string;
@@ -156,6 +163,7 @@ export function TabBarItem({
   nameOverflow = 'ellipsis',
   nameTruncate = 'end',
   nameTruncateKeep,
+  nameTruncatePriority,
   closeIcon,
   selectAction = 'select-tab',
   closeAction = 'close-tab',
@@ -187,6 +195,14 @@ export function TabBarItem({
     throw new RangeError(
       'TabBarItem nameTruncate must be end, middle, or start; nameTruncateKeep requires nameTruncate="middle" and a positive integer or "segment"',
     );
+  if (
+    nameTruncatePriority !== undefined &&
+    (nameTruncate !== 'middle' ||
+      !['head', 'suffix'].includes(nameTruncatePriority))
+  )
+    throw new RangeError(
+      'TabBarItem nameTruncatePriority requires nameTruncate="middle" and one of head or suffix',
+    );
   // Start and middle truncation apply only to a visible, ellipsizing name;
   // the button's aria-label then carries the plain full name.
   const truncate = shrinkable ? nameTruncate : 'end';
@@ -213,6 +229,11 @@ export function TabBarItem({
       data-drop-target={dropTarget ? 'true' : undefined}
       data-name-overflow={nameOverflow}
       data-name-truncate={truncate === 'end' ? undefined : truncate}
+      data-name-truncate-priority={
+        truncate === 'middle' && nameTruncatePriority === 'suffix'
+          ? 'suffix'
+          : undefined
+      }
       data-presentation={presentation}
       data-size={size}
       data-placeholder={placeholder ? 'true' : undefined}
@@ -273,7 +294,12 @@ export function TabBarItem({
             {placeholder ? (
               <Skeleton width={em(7)} />
             ) : (
-              truncatedName(name, truncate, nameTruncateKeep)
+              truncatedName(
+                name,
+                truncate,
+                nameTruncateKeep,
+                nameTruncatePriority,
+              )
             )}
           </span>
         </span>
@@ -293,6 +319,7 @@ function truncatedName(
   name: string,
   truncate: TabBarItemNameTruncate,
   keep: TabBarItemNameTruncateKeep | undefined,
+  priority: TabBarItemNameTruncatePriority | undefined,
 ): KerfUiContent | string {
   switch (truncate) {
     case 'start':
@@ -304,7 +331,25 @@ function truncatedName(
       const [head, tail] = splitMiddle(name, keep ?? 'segment');
       return (
         <>
-          <span class="kui-tab-bar-item__name-head">{head}</span>
+          <span class="kui-tab-bar-item__name-head">
+            {priority === 'suffix' ? (
+              <>
+                <span
+                  class="kui-tab-bar-item__name-head-sizer"
+                  aria-hidden="true"
+                >
+                  {head}
+                </span>
+                <span class="kui-tab-bar-item__name-head-clip">
+                  <span class="kui-tab-bar-item__name-head-content">
+                    {head}
+                  </span>
+                </span>
+              </>
+            ) : (
+              head
+            )}
+          </span>
           {tail ? <span class="kui-tab-bar-item__name-tail">{tail}</span> : ''}
         </>
       );

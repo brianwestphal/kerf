@@ -4571,6 +4571,18 @@ describe('TabBarItem nameTruncate', () => {
     expect(run).toContain(
       'name-head">Release train: run </span><span class="kui-tab-bar-item__name-tail">Q69G5FB0</span>',
     );
+    const suffixFirst = asHtml(
+      TabBarItem({
+        id: 'suffix',
+        name: 'Release train: run Q69G5FB0',
+        nameTruncate: 'middle',
+        nameTruncateKeep: 12,
+        nameTruncatePriority: 'suffix',
+      }),
+    );
+    expect(run).not.toContain('data-name-truncate-priority');
+    expect(suffixFirst).toContain('data-name-truncate-priority="suffix"');
+    expect(suffixFirst).toContain('aria-label="Release train: run Q69G5FB0"');
     // A name no longer than the kept suffix has no tail.
     expect(
       asHtml(
@@ -4638,5 +4650,20 @@ describe('TabBarItem nameTruncate', () => {
         nameTruncateKeep: 'segment',
       }),
     ).not.toThrow();
+    expect(() =>
+      TabBarItem({
+        id: 'x',
+        name: 'x',
+        nameTruncatePriority: 'suffix',
+      }),
+    ).toThrow('nameTruncatePriority requires nameTruncate="middle"');
+    expect(() =>
+      TabBarItem({
+        id: 'x',
+        name: 'x',
+        nameTruncate: 'middle',
+        nameTruncatePriority: 'tail' as never,
+      }),
+    ).toThrow('nameTruncatePriority requires nameTruncate="middle"');
   });
 });

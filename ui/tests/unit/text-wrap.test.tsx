@@ -136,6 +136,26 @@ describe('Text truncation position', () => {
     expect(html).not.toContain('title="1234567890"');
   });
 
+  it('offers a suffix-first narrow policy without changing the default', () => {
+    const props = {
+      children: 'drafts › Release train: run Q69G5FB0',
+      wrap: 'truncate',
+      truncate: 'middle',
+      truncateKeep: 12,
+    } as const;
+    const headFirst = String(Text(props));
+    const suffixFirst = String(Text({ ...props, truncatePriority: 'suffix' }));
+    expect(headFirst).not.toContain('data-truncate-priority');
+    expect(suffixFirst).toContain('data-truncate-priority="suffix"');
+    expect(suffixFirst).toContain(
+      `<span class="kui-text__truncate-head-content">${head(headFirst)}</span>`,
+    );
+    expect(tail(suffixFirst)).toBe(tail(headFirst));
+    expect(suffixFirst).toContain(
+      'title="drafts › Release train: run Q69G5FB0"',
+    );
+  });
+
   it('rejects invalid truncation combinations for JavaScript callers', () => {
     const bad = (props: Record<string, unknown>) => () =>
       Text({ children: 'a/b', ...props } as unknown as TextProps);
@@ -143,6 +163,12 @@ describe('Text truncation position', () => {
     expect(bad({ wrap: 'nowrap', truncate: 'start' })).toThrow(RangeError);
     expect(bad({ wrap: 'truncate', truncate: 'center' })).toThrow(RangeError);
     expect(bad({ wrap: 'truncate', truncateKeep: 3 })).toThrow(RangeError);
+    expect(bad({ wrap: 'truncate', truncatePriority: 'suffix' })).toThrow(
+      RangeError,
+    );
+    expect(
+      bad({ wrap: 'truncate', truncate: 'middle', truncatePriority: 'tail' }),
+    ).toThrow(RangeError);
     for (const truncateKeep of [0, -2, 1.5, 'last'])
       expect(
         bad({ wrap: 'truncate', truncate: 'middle', truncateKeep }),

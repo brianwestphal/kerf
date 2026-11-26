@@ -1803,7 +1803,7 @@ export { ValueTable, type ValueTablePresentation, type ValueTableProps, ValueTab
 ```ts
 import { SafeHtml } from 'kerfjs';
 import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
-import { M as MiddleTruncateKeep } from './split-middle-De745N2j.js';
+import { M as MiddleTruncateKeep, a as MiddleTruncatePriority } from './split-middle-BNI0Rni-.js';
 
 type TabBarItemRootAttributes = Readonly<Record<`data-${string}`, string | undefined> & {
     'data-component'?: never;
@@ -1816,6 +1816,7 @@ type TabBarItemRootAttributes = Readonly<Record<`data-${string}`, string | undef
     'data-drop-target'?: never;
     'data-name-overflow'?: never;
     'data-name-truncate'?: never;
+    'data-name-truncate-priority'?: never;
     'data-disabled'?: never;
 }>;
 type TabBarItemPresentation = 'pill' | 'segmented' | 'icon-only';
@@ -1828,11 +1829,13 @@ type TabBarItemNameOverflow = 'ellipsis' | 'visible';
  */
 type TabBarItemNameTruncate = 'end' | 'middle' | 'start';
 /**
- * The suffix `nameTruncate="middle"` always keeps: a number of trailing
+ * The suffix `nameTruncate="middle"` selects: a number of trailing
  * characters, or `segment` (default) for the last path segment, or the last
  * 10 characters when the name has no separator.
  */
 type TabBarItemNameTruncateKeep = MiddleTruncateKeep;
+/** Which part wins in a narrow middle-truncated tab; defaults to `head`. */
+type TabBarItemNameTruncatePriority = MiddleTruncatePriority;
 interface TabBarItemProps {
     id: string;
     name: string;
@@ -1876,6 +1879,8 @@ interface TabBarItemProps {
     nameTruncate?: TabBarItemNameTruncate;
     /** The suffix `nameTruncate="middle"` keeps (default `segment`). */
     nameTruncateKeep?: TabBarItemNameTruncateKeep;
+    /** `head` (default) keeps a head sliver; `suffix` keeps the full suffix. */
+    nameTruncatePriority?: TabBarItemNameTruncatePriority;
     /** Decorative dormant content for the close button. Must not contain interactive descendants. */
     closeIcon?: SafeHtml;
     selectAction?: string;
@@ -1898,9 +1903,9 @@ interface TabBarItemProps {
     /** Native named-slot assignment when composed inside a web component. */
     slot?: string;
 }
-declare function TabBarItem({ id, name, selected, disabled, tabId, panelId, attention, dropTarget, closable, draggable, leading, trailing, presentation, size, labelMaxWidth, nameOverflow, nameTruncate, nameTruncateKeep, closeIcon, selectAction, closeAction, className, placeholder, pending, rootAttributes, slot, }: TabBarItemProps): SafeHtml;
+declare function TabBarItem({ id, name, selected, disabled, tabId, panelId, attention, dropTarget, closable, draggable, leading, trailing, presentation, size, labelMaxWidth, nameOverflow, nameTruncate, nameTruncateKeep, nameTruncatePriority, closeIcon, selectAction, closeAction, className, placeholder, pending, rootAttributes, slot, }: TabBarItemProps): SafeHtml;
 
-export { TabBarItem, type TabBarItemNameOverflow, type TabBarItemNameTruncate, type TabBarItemNameTruncateKeep, type TabBarItemPresentation, type TabBarItemProps, type TabBarItemSize };
+export { TabBarItem, type TabBarItemNameOverflow, type TabBarItemNameTruncate, type TabBarItemNameTruncateKeep, type TabBarItemNameTruncatePriority, type TabBarItemPresentation, type TabBarItemProps, type TabBarItemSize };
 ```
 
 ## `@kerfjs/ui/tab-bar`
@@ -6075,7 +6080,7 @@ import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
 import { R as RootDataAttributes } from './extension-attributes-CnqvBmj3.js';
 import { S as Sides } from './sides-BPSWde0A.js';
 import { CssForegroundColor } from './css-values.js';
-import { M as MiddleTruncateKeep } from './split-middle-De745N2j.js';
+import { M as MiddleTruncateKeep, a as MiddleTruncatePriority } from './split-middle-BNI0Rni-.js';
 
 type FieldLabelProps = Omit<KerfBaseAttrs, 'children' | 'class' | 'className' | 'id'> & {
     children: string;
@@ -6113,10 +6118,12 @@ type TextAlign = 'start' | 'center' | 'end';
  */
 type TextTruncate = 'end' | 'middle' | 'start';
 /**
- * The suffix `truncate="middle"` always keeps: a number of trailing
+ * The suffix `truncate="middle"` selects: a number of trailing
  * characters, or `segment` for the last path segment with its separator.
  */
 type TextTruncateKeep = MiddleTruncateKeep;
+/** Which part wins in a narrow middle-truncated box; defaults to `head`. */
+type TextTruncatePriority = MiddleTruncatePriority;
 type TextContent = KerfUiContent | string | number | readonly TextContent[];
 type TextCommonProps = Omit<KerfBaseAttrs, 'children' | 'class' | 'className' | 'id' | 'lang'> & {
     /**
@@ -6174,12 +6181,14 @@ type TextProps = TextCommonProps & ({
     maxLines?: number;
     truncate?: never;
     truncateKeep?: never;
+    truncatePriority?: never;
 } | {
     /** Keep one line without an ellipsis. */
     wrap: 'nowrap';
     maxLines?: never;
     truncate?: never;
     truncateKeep?: never;
+    truncatePriority?: never;
 } | {
     /** Keep one line with an ellipsis. */
     wrap: 'truncate';
@@ -6196,15 +6205,21 @@ type TextProps = TextCommonProps & ({
      * `\\` separator).
      */
     truncateKeep?: TextTruncateKeep;
+    /**
+     * Narrow-box policy for `truncate="middle"`: `head` (default)
+     * reserves a head sliver and ellipsizes the suffix; `suffix` keeps
+     * the suffix whole while the head shrinks to an ellipsis or nothing.
+     */
+    truncatePriority?: TextTruncatePriority;
 });
 /**
  * Semantic heading, paragraph, or inline text. Block variants use the standard
  * content-item padding; `span` adds no box geometry.
  * All ordinary native heading/paragraph attributes pass through to the element.
  */
-declare function Text({ variant: Variant, tone, weight, color, size, font, border, flush, controlMargins, lineHeight, align, live, ariaLabel, rootAttributes, wrap, maxLines, truncate, truncateKeep, children, class: classValue, className, style, ...attributes }: TextProps): kerfjs.SafeHtml;
+declare function Text({ variant: Variant, tone, weight, color, size, font, border, flush, controlMargins, lineHeight, align, live, ariaLabel, rootAttributes, wrap, maxLines, truncate, truncateKeep, truncatePriority, children, class: classValue, className, style, ...attributes }: TextProps): kerfjs.SafeHtml;
 
-export { FieldLabel, type FieldLabelProps, Sides, Text, type TextAlign, type TextBorder, type TextContent, type TextFont, type TextLineHeight, type TextProps, type TextSize, type TextTone, type TextTruncate, type TextTruncateKeep, type TextVariant, type TextWeight, type TextWrap };
+export { FieldLabel, type FieldLabelProps, Sides, Text, type TextAlign, type TextBorder, type TextContent, type TextFont, type TextLineHeight, type TextProps, type TextSize, type TextTone, type TextTruncate, type TextTruncateKeep, type TextTruncatePriority, type TextVariant, type TextWeight, type TextWrap };
 ```
 
 ## `@kerfjs/ui/editor-frame`
