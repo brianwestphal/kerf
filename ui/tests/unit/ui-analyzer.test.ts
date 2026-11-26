@@ -264,7 +264,10 @@ export const app = [
       ['KUI-P031', 'warning'],
     ]);
     expect(formatUiAnalysisText(full)).toContain('warning KUI-P031');
-    expect(formatUiAnalysisSarif(full).runs[0].results).toEqual(
+    expect(
+      (formatUiAnalysisSarif(full) as { runs: Array<{ results: unknown[] }> })
+        .runs[0].results,
+    ).toEqual(
       expect.arrayContaining([
         expect.objectContaining({ ruleId: 'KUI-P032', level: 'warning' }),
       ]),

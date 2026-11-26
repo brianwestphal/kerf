@@ -415,7 +415,7 @@ describe('Kerf UI doctor', () => {
       }),
     );
     const config = {
-      schemaVersion: 1,
+      schemaVersion: 1 as const,
       stages: { ...disabled, analyzer: true },
     };
     const errors = await runUiDoctor({
