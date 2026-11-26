@@ -245,9 +245,9 @@ function diagnostic(ruleId, at, message, evidence, chain, adoption = false) {
   };
 }
 
-function isSuppressed(item, profile, root) {
+function suppressingException(item, profile, root) {
   const target = relative(root, item.location.file).replaceAll('\\', '/');
-  return (profile?.exceptions ?? []).some(
+  return (profile?.exceptions ?? []).find(
     (exception) =>
       exception.rules?.includes(item.ruleId) && exception.target === target,
   );
@@ -2446,12 +2446,24 @@ function recordDiagnosticDecisions(
       suppressed: false,
       activeConsumers: new Set(),
       suppressedConsumers: new Set(),
+      suppressedMatches: new Map(),
     };
     const consumer =
       relative(root, context.startDirectory).replaceAll('\\', '/') || '.';
-    if (isSuppressed(item, context.profileResult.profile, workspaceRoot)) {
+    const exception = suppressingException(
+      item,
+      context.profileResult.profile,
+      workspaceRoot,
+    );
+    if (exception) {
       decision.suppressed = true;
       decision.suppressedConsumers.add(consumer);
+      const source =
+        context.profileResult.provenance[`$exceptions.${exception.id}`];
+      decision.suppressedMatches.set(
+        JSON.stringify([source, exception.id, consumer]),
+        { item, exceptionId: exception.id, consumer, source },
+      );
     } else {
       decision.active = true;
       decision.activeConsumers.add(consumer);
@@ -2602,13 +2614,23 @@ function resolveDiagnosticDecisions(diagnosticDecisions) {
   const suppressed = [...diagnosticDecisions.values()].filter(
     (decision) => !decision.active && decision.suppressed,
   ).length;
+  const suppressedEntries = [...diagnosticDecisions.values()]
+    .flatMap((decision) => [...decision.suppressedMatches.values()])
+    .sort(
+      (a, b) =>
+        a.item.location.file.localeCompare(b.item.location.file) ||
+        a.item.location.line - b.item.location.line ||
+        a.item.ruleId.localeCompare(b.item.ruleId) ||
+        a.exceptionId.localeCompare(b.exceptionId) ||
+        a.consumer.localeCompare(b.consumer),
+    );
   active.sort(
     (a, b) =>
       a.location.file.localeCompare(b.location.file) ||
       a.location.line - b.location.line ||
       a.ruleId.localeCompare(b.ruleId),
   );
-  return { active, suppressed };
+  return { active, suppressed, suppressedEntries };
 }
 
 // Phase 7 (reporting): the portable report — project-relative paths, the
@@ -2616,10 +2638,12 @@ function resolveDiagnosticDecisions(diagnosticDecisions) {
 // diagnostics, and the summary counts.
 async function buildAnalysisReport({
   root,
+  workspaceRoot,
   files,
   profileContexts,
   active,
   suppressed,
+  suppressedEntries,
 }) {
   const portablePath = (file) => {
     if (!file || !isAbsolute(file)) return file;
@@ -2637,22 +2661,66 @@ async function buildAnalysisReport({
     ),
   ];
   const profilePackageRoot = dirname(profileFiles[0] ?? root);
+  const usedExceptions = new Set(
+    suppressedEntries.map(({ source, exceptionId }) =>
+      JSON.stringify([source, exceptionId]),
+    ),
+  );
+  const analyzedFiles = new Set(files);
+  const exceptionWarnings = [];
+  const visitedExceptions = new Set();
+  for (const { profileResult } of resolvedContexts)
+    for (const [index, exception] of (
+      profileResult.profile?.exceptions ?? []
+    ).entries()) {
+      if (!exception?.id || typeof exception.target !== 'string') continue;
+      const source = profileResult.provenance[`$exceptions.${exception.id}`];
+      const key = JSON.stringify([source, exception.id]);
+      if (visitedExceptions.has(key)) continue;
+      visitedExceptions.add(key);
+      const target = resolve(workspaceRoot, exception.target);
+      const relativeTarget = relative(workspaceRoot, target);
+      if (relativeTarget === '..' || relativeTarget.startsWith('../')) continue;
+      const exists = await stat(target).then(
+        (details) => details.isFile(),
+        () => false,
+      );
+      if (!exists)
+        exceptionWarnings.push({
+          code: 'KUI-P031',
+          severity: 'warning',
+          source,
+          path: `$.exceptions[${index}].target`,
+          message: `Exception ${exception.id} names missing target ${exception.target}.`,
+        });
+      else if (analyzedFiles.has(target) && !usedExceptions.has(key))
+        exceptionWarnings.push({
+          code: 'KUI-P032',
+          severity: 'warning',
+          source,
+          path: `$.exceptions[${index}]`,
+          message: `Exception ${exception.id} suppressed no diagnostic in ${exception.target}.`,
+        });
+    }
   const portableMessage = (message) =>
     String(message)
       .replaceAll(root, '<repo-root>')
       .replaceAll(profilePackageRoot, '<package-root>');
   const profileDiagnostics = [
     ...new Map(
-      resolvedContexts
-        .flatMap(({ profileResult }) => profileResult.diagnostics ?? [])
-        .map((item) => [
-          JSON.stringify([item.code, item.source, item.path, item.message]),
-          {
-            ...item,
-            source: portablePath(item.source),
-            message: portableMessage(item.message),
-          },
-        ]),
+      [
+        ...resolvedContexts.flatMap(
+          ({ profileResult }) => profileResult.diagnostics ?? [],
+        ),
+        ...exceptionWarnings,
+      ].map((item) => [
+        JSON.stringify([item.code, item.source, item.path, item.message]),
+        {
+          ...item,
+          source: portablePath(item.source),
+          message: portableMessage(item.message),
+        },
+      ]),
     ).values(),
   ];
   return {
@@ -2679,10 +2747,18 @@ async function buildAnalysisReport({
           }
         : {}),
     })),
+    suppressed: suppressedEntries.map(({ item, exceptionId, consumer }) => ({
+      ruleId: item.ruleId,
+      location: { ...item.location, file: portablePath(item.location.file) },
+      exceptionId,
+      consumer,
+    })),
     summary: {
       errors:
         active.filter((item) => item.severity === 'error').length +
-        profileDiagnostics.length,
+        profileDiagnostics.filter((item) => item.severity !== 'warning').length,
+      warnings: profileDiagnostics.filter((item) => item.severity === 'warning')
+        .length,
       review: active.filter((item) => item.severity === 'review').length,
       suppressed,
     },
@@ -2769,21 +2845,23 @@ export async function analyzeUiProject({
     ownership,
     ownershipContext,
   });
-  const { active, suppressed } =
+  const { active, suppressed, suppressedEntries } =
     resolveDiagnosticDecisions(diagnosticDecisions);
   return buildAnalysisReport({
     root,
+    workspaceRoot,
     files,
     profileContexts,
     active,
     suppressed,
+    suppressedEntries,
   });
 }
 
 export function formatUiAnalysisText(report) {
   const lines = report.profile.diagnostics.map(
     (item) =>
-      `${item.source ?? '<profile>'}:1:1 error ${item.code} ${item.message}`,
+      `${item.source ?? '<profile>'}:1:1 ${item.severity ?? 'error'} ${item.code} ${item.message}`,
   );
   lines.push(
     ...report.diagnostics.map(
@@ -2792,7 +2870,7 @@ export function formatUiAnalysisText(report) {
     ),
   );
   lines.push(
-    `Kerf UI analysis: ${report.summary.errors} error(s), ${report.summary.review} review finding(s), ${report.summary.suppressed} suppressed.`,
+    `Kerf UI analysis: ${report.summary.errors} error(s), ${report.summary.warnings} warning(s), ${report.summary.review} review finding(s), ${report.summary.suppressed} suppressed.`,
   );
   return lines.join('\n');
 }
@@ -2816,7 +2894,7 @@ export function formatUiAnalysisSarif(report) {
         results: [
           ...report.profile.diagnostics.map((item) => ({
             ruleId: item.code,
-            level: 'error',
+            level: item.severity === 'warning' ? 'warning' : 'error',
             message: { text: item.message },
             locations: [
               {

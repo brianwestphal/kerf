@@ -11,9 +11,17 @@ export interface UiAnalysisDiagnostic {
 
 export interface UiAnalysisProfileDiagnostic {
   code: `KUI-P${string}`;
+  severity?: 'error' | 'warning';
   source?: string;
   path: string;
   message: string;
+}
+
+export interface UiAnalysisSuppressedDiagnostic {
+  ruleId: `KUI-L${string}`;
+  location: { file: string; line: number; column: number };
+  exceptionId: string;
+  consumer: string;
 }
 
 export interface UiAnalysisReport {
@@ -26,7 +34,13 @@ export interface UiAnalysisReport {
     diagnostics: UiAnalysisProfileDiagnostic[];
   };
   diagnostics: UiAnalysisDiagnostic[];
-  summary: { errors: number; review: number; suppressed: number };
+  suppressed: UiAnalysisSuppressedDiagnostic[];
+  summary: {
+    errors: number;
+    warnings: number;
+    review: number;
+    suppressed: number;
+  };
 }
 
 export const UI_ANALYSIS_SCHEMA_VERSION: 1;

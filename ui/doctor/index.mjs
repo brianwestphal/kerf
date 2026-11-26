@@ -656,7 +656,7 @@ function normalizeAnalyzer(report) {
     ...report.profile.diagnostics.map((item) =>
       normalizedDiagnostic({
         id: item.code,
-        severity: 'error',
+        severity: item.severity ?? 'error',
         stage: 'analyzer',
         message: item.message,
         location: { file: item.source, line: 1, column: 1, path: item.path },

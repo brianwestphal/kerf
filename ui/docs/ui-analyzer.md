@@ -440,8 +440,14 @@ The JSON report schema is exported as
 `@kerfjs/ui/analyzer/report.schema.json`.
 
 Profile discovery, parsing, catalog-loading, and validation diagnostics retain
-their stable `KUI-P###` ids in every output format and count as errors. The
-analyzer therefore cannot silently pass with stale or unreadable policy input.
+their stable `KUI-P###` ids in every output format and count as errors. A
+profile exception naming a missing target (`KUI-P031`) or suppressing no
+finding in an analyzed target (`KUI-P032`) is a warning. The doctor gates these
+with `failOn: "warning"`; a partial scan does not judge exceptions for files it
+did not analyze. JSON reports also list each suppressed finding in
+`suppressed[]` with its exception id, source location, and consumer. The
+`summary.suppressed` count retains its meaning: findings suppressed for every
+consumer.
 
 The analyzer classifies conditional and template class expressions when every
 possible value is a finite set of application-owned class names. A template

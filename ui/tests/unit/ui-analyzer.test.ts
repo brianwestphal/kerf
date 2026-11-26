@@ -208,6 +208,79 @@ export const app = [
     expect(first.summary.suppressed).toBe(1);
   });
 
+  it('identifies suppressed findings and warns only for missing or analyzed unused exceptions', async () => {
+    const root = await mkdtemp(join(tmpdir(), 'kerf-ui-analyzer-exceptions-'));
+    await mkdir(join(root, 'src'));
+    await writeFile(join(root, 'src/app.css'), '.app { padding: 7px; }');
+    await writeFile(
+      join(root, 'src/app.tsx'),
+      'export const App = () => <div />;',
+    );
+    await writeFile(
+      join(root, '.kerf-ui-profile.json'),
+      JSON.stringify({
+        schemaVersion: 1,
+        scope: 'workspace',
+        exceptions: [
+          {
+            id: 'used',
+            rules: ['KUI-L006'],
+            target: 'src/app.css',
+            rationale: 'Reviewed legacy spacing.',
+          },
+          {
+            id: 'unused',
+            rules: ['KUI-L006'],
+            target: 'src/app.tsx',
+            rationale: 'Reviewed legacy spacing.',
+          },
+          {
+            id: 'missing',
+            rules: ['KUI-L006'],
+            target: 'src/gone.css',
+            rationale: 'Reviewed legacy spacing.',
+          },
+        ],
+      }),
+    );
+    const full = await analyzeUiProject({ root });
+    expect(full.suppressed).toEqual([
+      expect.objectContaining({
+        ruleId: 'KUI-L006',
+        exceptionId: 'used',
+        consumer: 'src',
+        location: expect.objectContaining({ file: 'src/app.css' }),
+      }),
+    ]);
+    expect(full.summary).toMatchObject({
+      errors: 0,
+      warnings: 2,
+      suppressed: 1,
+    });
+    expect(
+      full.profile.diagnostics.map(({ code, severity }) => [code, severity]),
+    ).toEqual([
+      ['KUI-P032', 'warning'],
+      ['KUI-P031', 'warning'],
+    ]);
+    expect(formatUiAnalysisText(full)).toContain('warning KUI-P031');
+    expect(formatUiAnalysisSarif(full).runs[0].results).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ ruleId: 'KUI-P032', level: 'warning' }),
+      ]),
+    );
+
+    const partial = await analyzeUiProject({ root, paths: ['src/app.tsx'] });
+    expect(partial.profile.diagnostics.map(({ code }) => code)).toEqual([
+      'KUI-P032',
+      'KUI-P031',
+    ]);
+    const cssOnly = await analyzeUiProject({ root, paths: ['src/app.css'] });
+    expect(cssOnly.profile.diagnostics.map(({ code }) => code)).toEqual([
+      'KUI-P031',
+    ]);
+  });
+
   it('classifies finite app class branches and keeps unconstrained values under review', async () => {
     const root = await mkdtemp(join(tmpdir(), 'kerf-ui-analyzer-classes-'));
     await mkdir(join(root, 'src'));
@@ -939,6 +1012,14 @@ export const App = () => <StateBanner title="Ready" />;`,
       report.diagnostics.filter(({ ruleId }) => ruleId === 'KUI-L007'),
     ).toHaveLength(0);
     expect(report.summary.suppressed).toBe(0);
+    expect(report.suppressed).toEqual([
+      expect.objectContaining({
+        ruleId: 'KUI-L006',
+        exceptionId: 'package-a-spacing',
+        consumer: 'packages/a/src',
+        location: expect.objectContaining({ file: 'shared/shared.css' }),
+      }),
+    ]);
     expect(report.files).toContain('packages/b/src/child.css');
     expect(report.profile.files).toContain('packages/a/.kerf-ui-profile.json');
   });

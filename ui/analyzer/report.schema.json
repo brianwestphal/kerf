@@ -10,6 +10,7 @@
     "files",
     "profile",
     "diagnostics",
+    "suppressed",
     "summary"
   ],
   "properties": {
@@ -51,11 +52,35 @@
         "additionalProperties": false
       }
     },
+    "suppressed": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["ruleId", "location", "exceptionId", "consumer"],
+        "properties": {
+          "ruleId": { "pattern": "^KUI-L[0-9]{3}$" },
+          "location": {
+            "type": "object",
+            "required": ["file", "line", "column"],
+            "properties": {
+              "file": { "type": "string" },
+              "line": { "type": "integer", "minimum": 1 },
+              "column": { "type": "integer", "minimum": 1 }
+            },
+            "additionalProperties": false
+          },
+          "exceptionId": { "type": "string" },
+          "consumer": { "type": "string" }
+        },
+        "additionalProperties": false
+      }
+    },
     "summary": {
       "type": "object",
-      "required": ["errors", "review", "suppressed"],
+      "required": ["errors", "warnings", "review", "suppressed"],
       "properties": {
         "errors": { "type": "integer", "minimum": 0 },
+        "warnings": { "type": "integer", "minimum": 0 },
         "review": { "type": "integer", "minimum": 0 },
         "suppressed": { "type": "integer", "minimum": 0 }
       },

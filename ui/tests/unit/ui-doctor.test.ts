@@ -397,6 +397,48 @@ describe('Kerf UI doctor', () => {
     expect((await warningRun('warning')).exitCode).toBe(1);
   });
 
+  it('gates stale application profile exceptions at warning level', async () => {
+    const root = await fixture();
+    await writeFile(
+      resolve(root, '.kerf-ui-profile.json'),
+      JSON.stringify({
+        schemaVersion: 1,
+        scope: 'workspace',
+        exceptions: [
+          {
+            id: 'missing-target',
+            rules: ['KUI-L006'],
+            target: 'src/removed.css',
+            rationale: 'Previously reviewed spacing exception.',
+          },
+        ],
+      }),
+    );
+    const config = {
+      schemaVersion: 1,
+      stages: { ...disabled, analyzer: true },
+    };
+    const errors = await runUiDoctor({
+      root,
+      cache: false,
+      config,
+      failOn: 'error',
+    });
+    const warnings = await runUiDoctor({
+      root,
+      cache: false,
+      config,
+      failOn: 'warning',
+    });
+    expect(errors.exitCode).toBe(0);
+    expect(warnings.exitCode).toBe(1);
+    expect(warnings.diagnostics).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ id: 'KUI-P031', severity: 'warning' }),
+      ]),
+    );
+  });
+
   it('merges identical findings, retains conflicts, and makes exits deterministic', async () => {
     const root = await fixture();
     const report = await runUiDoctor({
