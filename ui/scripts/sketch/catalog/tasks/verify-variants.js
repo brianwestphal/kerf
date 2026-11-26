@@ -50,9 +50,11 @@ module.exports.run = function (session, parameters, done) {
           instance.parent = consumer.selectedPage;
           instance.frame.x = themeIndex * 600;
           instance.frame.y = groupIndex * 200;
-          var override = instance.overrides.filter(function (item) {
+          var textOverrides = instance.overrides.filter(function (item) {
             return item.property === 'stringValue';
-          })[0];
+          });
+          // Button's first Text override is the compact badge, not its label.
+          var override = textOverrides[choice.setName === 'Button' ? 1 : 0];
           if (!override)
             throw new Error('Text override missing: ' + choice.setName);
           override.value = 'Done ' + groupIndex + themeIndex;

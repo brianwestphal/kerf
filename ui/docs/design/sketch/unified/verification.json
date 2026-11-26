@@ -19,7 +19,7 @@
       "state": "Badge Brand",
       "theme": "Light",
       "name": "Badge Brand/Light",
-      "symbolId": "3C33440A-D7C2-4359-BFDB-4D08CE801BAC",
+      "symbolId": "A118F9EF-F0AE-41F3-A624-6316AC1BBE49",
       "linked": true,
       "override": "Done 00",
       "width": 144
@@ -30,7 +30,7 @@
       "state": "Badge Brand",
       "theme": "Dark",
       "name": "Badge Brand/Dark",
-      "symbolId": "A7DD2CF4-557F-441F-BB26-48F0B13CE0B5",
+      "symbolId": "A5CAEEB0-BEA6-4053-95AC-271AA3B39957",
       "linked": true,
       "override": "Done 01",
       "width": 144
@@ -41,7 +41,7 @@
       "state": "Labeled · Project Name",
       "theme": "Light",
       "name": "Labeled · Project Name/Light",
-      "symbolId": "5190458E-823D-4255-B67E-38D62C47BEC8",
+      "symbolId": "3DFA8B48-6C91-45C6-9CCA-DF525BBD6E7A",
       "linked": true,
       "override": "Done 10",
       "width": 440
@@ -52,7 +52,7 @@
       "state": "Labeled · Project Name",
       "theme": "Dark",
       "name": "Labeled · Project Name/Dark",
-      "symbolId": "585286F2-A7A6-41B3-B328-BA789C78B8C8",
+      "symbolId": "6447022A-91C0-43E0-88CE-376F487DD83F",
       "linked": true,
       "override": "Done 11",
       "width": 440
@@ -63,7 +63,7 @@
       "state": "Compact · Control",
       "theme": "Light",
       "name": "Compact · Control/Light",
-      "symbolId": "E11E124A-AD2D-414C-A3A2-FA9F099A9F46",
+      "symbolId": "755936D0-1F9A-4430-9A20-51528811F8E7",
       "linked": true,
       "override": "Done 20",
       "width": 440
@@ -74,7 +74,7 @@
       "state": "Compact · Control",
       "theme": "Dark",
       "name": "Compact · Control/Dark",
-      "symbolId": "E0C0171B-0177-4F8D-9FA4-E4499CDFF47E",
+      "symbolId": "61A4F4C4-4523-43FE-9DA1-93353DC20757",
       "linked": true,
       "override": "Done 21",
       "width": 440
@@ -85,7 +85,7 @@
       "state": "Default · Control",
       "theme": "Light",
       "name": "Default · Control/Light",
-      "symbolId": "52E847FF-873F-4795-88FA-F35715DA9D02",
+      "symbolId": "D9D4CFC7-1770-45E5-9B23-BF1050476180",
       "linked": true,
       "override": "Done 30",
       "width": 384
@@ -96,7 +96,7 @@
       "state": "Default · Control",
       "theme": "Dark",
       "name": "Default · Control/Dark",
-      "symbolId": "AC682494-F867-4C6E-992E-A51AFD62DCA0",
+      "symbolId": "E536EB97-1532-4EEA-AB10-5A9588B47C3F",
       "linked": true,
       "override": "Done 31",
       "width": 384
@@ -107,7 +107,7 @@
       "state": "Tags · Urgent",
       "theme": "Light",
       "name": "Tags · Urgent/Light",
-      "symbolId": "6F8C70AE-108D-415D-8592-9B67C9F70564",
+      "symbolId": "0B9F68B0-176F-4788-A201-F649268AFF1F",
       "linked": true,
       "override": "Done 40",
       "width": 163.15625
@@ -118,7 +118,7 @@
       "state": "Tags · Urgent",
       "theme": "Dark",
       "name": "Tags · Urgent/Dark",
-      "symbolId": "DCAEAA78-C953-4AEA-AFE5-19E458AED8A3",
+      "symbolId": "B4615ED7-A361-465A-85C7-21C9FF80C645",
       "linked": true,
       "override": "Done 41",
       "width": 163.15625
@@ -129,7 +129,7 @@
       "state": "Plain · Advanced Settings",
       "theme": "Light",
       "name": "Plain · Advanced Settings/Light",
-      "symbolId": "57781B50-BA04-481C-981C-197168924280",
+      "symbolId": "F52578B1-9228-4FBD-B851-4876E4C3714E",
       "linked": true,
       "override": "Done 50",
       "width": 484
@@ -140,7 +140,7 @@
       "state": "Plain · Advanced Settings",
       "theme": "Dark",
       "name": "Plain · Advanced Settings/Dark",
-      "symbolId": "0F05A006-6E3C-4DA3-AAF7-E933B39175C2",
+      "symbolId": "CDA69FDF-6DD4-472E-BAF7-3D175CED8027",
       "linked": true,
       "override": "Done 51",
       "width": 484
@@ -150,73 +150,73 @@
   "foreignVariantSets": 6,
   "reopened": [
     {
-      "symbolId": "3C33440A-D7C2-4359-BFDB-4D08CE801BAC",
+      "symbolId": "A118F9EF-F0AE-41F3-A624-6316AC1BBE49",
       "name": "Badge Brand/Light",
       "override": "Done 00",
       "width": 144
     },
     {
-      "symbolId": "A7DD2CF4-557F-441F-BB26-48F0B13CE0B5",
+      "symbolId": "A5CAEEB0-BEA6-4053-95AC-271AA3B39957",
       "name": "Badge Brand/Dark",
       "override": "Done 01",
       "width": 144
     },
     {
-      "symbolId": "5190458E-823D-4255-B67E-38D62C47BEC8",
+      "symbolId": "3DFA8B48-6C91-45C6-9CCA-DF525BBD6E7A",
       "name": "Labeled · Project Name/Light",
       "override": "Done 10",
       "width": 440
     },
     {
-      "symbolId": "585286F2-A7A6-41B3-B328-BA789C78B8C8",
+      "symbolId": "6447022A-91C0-43E0-88CE-376F487DD83F",
       "name": "Labeled · Project Name/Dark",
       "override": "Done 11",
       "width": 440
     },
     {
-      "symbolId": "E11E124A-AD2D-414C-A3A2-FA9F099A9F46",
+      "symbolId": "755936D0-1F9A-4430-9A20-51528811F8E7",
       "name": "Compact · Control/Light",
       "override": "Done 20",
       "width": 440
     },
     {
-      "symbolId": "E0C0171B-0177-4F8D-9FA4-E4499CDFF47E",
+      "symbolId": "61A4F4C4-4523-43FE-9DA1-93353DC20757",
       "name": "Compact · Control/Dark",
       "override": "Done 21",
       "width": 440
     },
     {
-      "symbolId": "52E847FF-873F-4795-88FA-F35715DA9D02",
+      "symbolId": "D9D4CFC7-1770-45E5-9B23-BF1050476180",
       "name": "Default · Control/Light",
       "override": "Done 30",
       "width": 384
     },
     {
-      "symbolId": "AC682494-F867-4C6E-992E-A51AFD62DCA0",
+      "symbolId": "E536EB97-1532-4EEA-AB10-5A9588B47C3F",
       "name": "Default · Control/Dark",
       "override": "Done 31",
       "width": 384
     },
     {
-      "symbolId": "6F8C70AE-108D-415D-8592-9B67C9F70564",
+      "symbolId": "0B9F68B0-176F-4788-A201-F649268AFF1F",
       "name": "Tags · Urgent/Light",
       "override": "Done 40",
       "width": 163.15625
     },
     {
-      "symbolId": "DCAEAA78-C953-4AEA-AFE5-19E458AED8A3",
+      "symbolId": "B4615ED7-A361-465A-85C7-21C9FF80C645",
       "name": "Tags · Urgent/Dark",
       "override": "Done 41",
       "width": 163.15625
     },
     {
-      "symbolId": "57781B50-BA04-481C-981C-197168924280",
+      "symbolId": "F52578B1-9228-4FBD-B851-4876E4C3714E",
       "name": "Plain · Advanced Settings/Light",
       "override": "Done 50",
       "width": 484
     },
     {
-      "symbolId": "0F05A006-6E3C-4DA3-AAF7-E933B39175C2",
+      "symbolId": "CDA69FDF-6DD4-472E-BAF7-3D175CED8027",
       "name": "Plain · Advanced Settings/Dark",
       "override": "Done 51",
       "width": 484

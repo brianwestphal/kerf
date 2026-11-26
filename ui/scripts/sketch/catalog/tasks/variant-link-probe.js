@@ -48,9 +48,11 @@ module.exports.run = function (session, parameters, done) {
       var instance = master.createNewInstance();
       instance.parent = consumer.selectedPage;
       instance.frame.y = index * 180;
-      var override = instance.overrides.filter(function (item) {
+      var textOverrides = instance.overrides.filter(function (item) {
         return item.property === 'stringValue';
-      })[0];
+      });
+      // Button's first Text override is the compact badge, not its label.
+      var override = textOverrides[parameters.setName === 'Button' ? 1 : 0];
       if (!override) throw new Error('Text override missing: ' + variant.name);
       override.value = 'Linked probe override ' + index;
       if (parameters.forceFixedWidth)
