@@ -266,6 +266,85 @@ export const App = () => <>
     expect(JSON.stringify(nested)).not.toContain('alternate');
   });
 
+  it('distinguishes nested inset surfaces from repeated padding', async () => {
+    const root = await mkdtemp(join(tmpdir(), 'kerf-ui-analyzer-surfaces-'));
+    await mkdir(join(root, 'src'));
+    await writeFile(
+      join(root, 'component-composition.json'),
+      JSON.stringify({
+        schemaVersion: 1,
+        package: '@acme/ui',
+        entries: [
+          {
+            key: '@acme/ui:preview',
+            package: '@acme/ui',
+            id: 'preview',
+            name: 'Preview',
+            boundaries: {
+              rootClass: 'declared-surface',
+              publicClasses: ['declared-surface'],
+            },
+            layout: {
+              roles: ['content'],
+              geometry: {
+                margin: 'none',
+                border: 'none',
+                padding: 'self',
+                role: 'surface',
+              },
+            },
+          },
+        ],
+      }),
+    );
+    await writeFile(
+      join(root, '.kerf-ui-profile.json'),
+      JSON.stringify({
+        schemaVersion: 1,
+        scope: 'workspace',
+        catalogs: [
+          {
+            package: '@acme/ui',
+            composition: {
+              path: './component-composition.json',
+              schemaVersion: 1,
+            },
+          },
+        ],
+      }),
+    );
+    await writeFile(
+      join(root, 'src/app.css'),
+      `.outer, .plain, .background, .border, .zero-border, .transparent, .outline, .field, .declared-surface { padding: 8px; }
+.background { background: #fff; }
+.border { border: 1px solid black; }
+.zero-border { border: 0; }
+.transparent { background: transparent; }
+.outline { outline: 1px solid black; }
+`,
+    );
+    await writeFile(
+      join(root, 'src/app.tsx'),
+      `import './app.css';
+export const App = () => <div class="outer">
+  <div class="plain" /><div class="background" /><div class="border" />
+  <div class="zero-border" /><div class="transparent" /><div class="outline" />
+  <textarea class="field" /><div class="declared-surface" />
+</div>;
+`,
+    );
+    const report = await analyzeUiProject({ root });
+    const repeated = report.diagnostics.filter(
+      ({ ruleId }) => ruleId === 'KUI-L004',
+    );
+    expect(report.profile.diagnostics).toEqual([]);
+    expect(repeated.map(({ evidence }) => evidence.classes)).toEqual([
+      ['plain'],
+      ['zero-border'],
+      ['transparent'],
+    ]);
+  });
+
   it('supports staged adoption and cataloged shadow-part extension points', async () => {
     const root = await mkdtemp(join(tmpdir(), 'kerf-ui-analyzer-parts-'));
     await mkdir(join(root, 'src'));

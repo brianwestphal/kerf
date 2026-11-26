@@ -128,6 +128,12 @@ if (report.summary.errors) process.exitCode = 1;
 For `KUI-L004` and `KUI-L007`, scroll and inset declarations belong to the
 subject of each CSS selector. An ancestor class used only to qualify a
 descendant selector is not treated as a scroll owner or inset source.
+`KUI-L004` treats an inner element with its own nontransparent background,
+nonzero border, or outline as a separate inset surface. Native input, select,
+and textarea elements also own their inset. If CSS cannot express that boundary,
+an application composition entry can declare `layout.geometry.role: "surface"`
+for the inner class; zero borders and transparent backgrounds do not establish
+a surface.
 
 Errors are provable contract violations and make the command exit 1. Review
 findings are deliberately heuristic and do not fail by default; pass

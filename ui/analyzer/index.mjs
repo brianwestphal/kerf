@@ -303,9 +303,14 @@ function reachableStyleFacts(file, imports, styleFacts) {
   const result = new Map();
   for (const style of reachableStyleFiles(file, imports, styleFacts)) {
     for (const [className, facts] of styleFacts.get(style)) {
-      const current = result.get(className) ?? { scroll: false, inset: false };
+      const current = result.get(className) ?? {
+        scroll: false,
+        inset: false,
+        surface: false,
+      };
       current.scroll ||= facts.scroll;
       current.inset ||= facts.inset;
+      current.surface ||= facts.surface;
       current.styled ??= facts.styled;
       result.set(className, current);
     }
@@ -981,6 +986,7 @@ async function inspectCss(
         const record = cssFacts.get(className) ?? {
           scroll: false,
           inset: false,
+          surface: false,
         };
         record.styled ??= {
           stylesheet: file,
@@ -1110,6 +1116,7 @@ async function inspectCss(
         const record = cssFacts.get(className) ?? {
           scroll: false,
           inset: false,
+          surface: false,
         };
         if (
           /^overflow(?:-|$)/.test(decl.prop) &&
@@ -1118,6 +1125,15 @@ async function inspectCss(
           record.scroll = true;
         if (/^padding(?:-|$)/.test(decl.prop) && decl.value !== '0')
           record.inset = true;
+        if (
+          /^(?:background(?:-color|-image)?|border(?:-(?:top|right|bottom|left))?|outline)$/.test(
+            decl.prop,
+          ) &&
+          !/^(?:0(?:px|rem|em)?(?:\s|$)|none\b|transparent\b|initial\b|inherit\b|unset\b|revert\b)/i.test(
+            decl.value.trim(),
+          )
+        )
+          record.surface = true;
         cssFacts.set(className, record);
       }
     });
@@ -1955,6 +1971,15 @@ function inspectTsx(
       const inset = classes.values.some(
         (className) => cssFacts.get(className)?.inset,
       );
+      const surface =
+        ['input', 'select', 'textarea'].includes(tag) ||
+        classes.values.some(
+          (className) =>
+            cssFacts.get(className)?.surface ||
+            facts.classEntries
+              .get(className)
+              ?.some((owner) => owner.layout?.geometry?.role === 'surface'),
+        );
       const parent = stack.at(-1);
       if (scroll && parent?.scroll)
         diagnostics.push(
@@ -1966,7 +1991,7 @@ function inspectTsx(
             [parent.label, entry?.key ?? tag],
           ),
         );
-      if (inset && parent?.inset)
+      if (inset && parent?.inset && !surface)
         diagnostics.push(
           diagnostic(
             'KUI-L004',
