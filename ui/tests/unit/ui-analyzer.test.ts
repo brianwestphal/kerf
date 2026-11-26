@@ -414,11 +414,11 @@ export const App = () => <div class="outer">
       ({ ruleId }) => ruleId === 'KUI-L004',
     );
     expect(report.profile.diagnostics).toEqual([]);
-    expect(repeated.map(({ evidence }) => evidence.classes)).toEqual([
-      ['plain'],
-      ['zero-border'],
-      ['transparent'],
-    ]);
+    expect(
+      repeated.map(
+        ({ evidence }) => (evidence as { classes: string[] }).classes,
+      ),
+    ).toEqual([['plain'], ['zero-border'], ['transparent']]);
   });
 
   it('supports staged adoption and cataloged shadow-part extension points', async () => {
