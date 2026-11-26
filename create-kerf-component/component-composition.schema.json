@@ -456,6 +456,10 @@
                     "composed"
                   ]
                 },
+                "role": {
+                  "description": "Declare that this class starts an independent inset surface when CSS alone does not establish one.",
+                  "enum": ["surface"]
+                },
                 "notes": {
                   "$ref": "#/$defs/stringList"
                 }
