@@ -1,3 +1,4 @@
+import type { SafeHtml } from 'kerfjs';
 import type { KerfBaseAttrs } from 'kerfjs/jsx-runtime';
 
 import type { KerfUiContent } from '../../../shared/content/semantic-content.js';
@@ -372,3 +373,23 @@ function TruncateMiddle({
 }
 
 export type { Sides } from '../../../shared/layout/sides.js';
+
+export interface MarkProps {
+  /** Matched content; inherits the surrounding font, including code typography. */
+  children: SafeHtml | string | number;
+  /** Emphasize the active result among otherwise quiet matches. */
+  current?: boolean;
+}
+
+/** A native text highlight for find-in-content results. */
+export function Mark({ children, current = false }: MarkProps) {
+  return (
+    <mark
+      class="kui-text__mark"
+      data-current={current ? 'true' : undefined}
+      aria-current={current ? 'true' : undefined}
+    >
+      {children}
+    </mark>
+  );
+}

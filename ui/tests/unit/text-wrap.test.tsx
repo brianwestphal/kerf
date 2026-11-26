@@ -3,6 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { FieldLabel } from '../../src/components/forms/field-label/field-label.js';
 import {
   FieldLabel as TextFieldLabel,
+  Mark,
   Text,
   type TextProps,
 } from '../../src/components/typography/text/text.js';
@@ -24,6 +25,17 @@ describe('FieldLabel', () => {
     expect(html).toContain('data-component="field-label"');
     expect(html).toContain('>Needed By</div>');
     expect(html).not.toContain('<label');
+  });
+});
+
+describe('Mark', () => {
+  it('uses native inline markup and marks only the active match as current', () => {
+    const quiet = String(Mark({ children: 'signal' }));
+    expect(quiet).toContain('<mark class="kui-text__mark"');
+    expect(quiet).not.toContain('aria-current');
+    const current = String(Mark({ children: 'signal', current: true }));
+    expect(current).toContain('data-current="true"');
+    expect(current).toContain('aria-current="true"');
   });
 });
 

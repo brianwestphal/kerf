@@ -2740,6 +2740,11 @@
           "id": "FieldLabel copy, preview/edit state, and aria-labelledby association",
           "owner": "application",
           "required": false
+        },
+        {
+          "id": "match ranges, active match, and find navigation",
+          "owner": "application",
+          "required": false
         }
       ],
       "wiring": {
@@ -2767,6 +2772,7 @@
           "Ordinary global, data, and ARIA attributes pass through to the native element.",
           "Choose tone, size, and font independently of the heading level so appearance does not distort the document outline.",
           "FieldLabel is plain text, not a native label; give it an id and associate the preview group with aria-labelledby.",
+          "Mark uses the native mark element and aria-current on the active result; search status and navigation announcements remain the application's responsibility.",
           "Start and middle truncation clip visually only: the whole value stays in the DOM in reading order, and Text shows it as the element's title unless the app supplies one."
         ]
       },
@@ -2780,6 +2786,11 @@
         "publicTokens": [
           "--kui-color-danger-on-quiet",
           "--kui-color-text-quiet",
+          "--kui-color-warning-border-loud",
+          "--kui-color-warning-fill-loud",
+          "--kui-color-warning-fill-quiet",
+          "--kui-color-warning-on-fill",
+          "--kui-color-warning-on-loud",
           "--kui-font-2xl",
           "--kui-font-l",
           "--kui-font-mono",

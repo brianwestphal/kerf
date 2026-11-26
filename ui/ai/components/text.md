@@ -4,7 +4,7 @@
 
 `@kerfjs/ui:text` · Kerf UI · component · Structure
 
-Semantic native text plus a FieldLabel heading for read-only field previews that matches themed Web Awesome form labels.
+Semantic native text, a native Mark for find-in-content matches, and a FieldLabel heading for read-only field previews that matches themed Web Awesome form labels.
 
 ## When to use
 
@@ -12,6 +12,7 @@ Render paragraph semantics by default, h1 through h6 when selected, or geometry-
 
 - Render ordinary application headings or paragraphs with native document semantics, or inline secondary text inside rows, labels, and table cells.
 - Render FieldLabel over a read-only or click-to-edit preview that replaces a Web Awesome form control.
+- Wrap find-in-content matches in Mark; set current on the active result. It inherits surrounding typography, including monospaced code.
 - Set weight="strong" for a title or key phrase that matters more than its neighbors, such as a card or row title; it renders a \<strong> element, so never hand-write \<strong> inside Text.
 
 **Not when:**
@@ -26,7 +27,7 @@ Render paragraph semantics by default, h1 through h6 when selected, or geometry-
 
 ## Imports
 
-- JavaScript: `@kerfjs/ui/text` — exports `Text`, `FieldLabel`.
+- JavaScript: `@kerfjs/ui/text` — exports `Text`, `FieldLabel`, `Mark`.
 - CSS: the browser build of `@kerfjs/ui/text` pulls its CSS automatically; import `@kerfjs/ui/text.css` manually only without the `browser` export condition.
 - Declared side effects: browser-condition-css.
 
@@ -45,6 +46,7 @@ Exact prop names and types: [`@kerfjs/ui/text`](../public-api-signatures-v1.md#k
 - controlMargins selects exterior 8px gutters with canonical physical Sides
 - wrap normal, anywhere, nowrap, or truncate; truncate places its ellipsis at the end, the start (keeping the tail), or the middle (keeping the last path segment or a character suffix)
 - size="medium" for a 16px heading, such as an in-list group title that wraps a long name
+- Mark quiet match and current match
 
 ## Composition
 
@@ -54,7 +56,7 @@ Exact prop names and types: [`@kerfjs/ui/text`](../public-api-signatures-v1.md#k
 
 ## State and wiring
 
-**The app owns:** semantic variant; tone; size; font; copy; document heading hierarchy; FieldLabel copy, preview/edit state, and aria-labelledby association.
+**The app owns:** semantic variant; tone; size; font; copy; document heading hierarchy; FieldLabel copy, preview/edit state, and aria-labelledby association; match ranges, active match, and find navigation.
 
 No wiring helper.
 
@@ -73,6 +75,7 @@ Inset-free (no margin, border, or padding) when `flush` or `variant="span"`: the
 - Ordinary global, data, and ARIA attributes pass through to the native element.
 - Choose tone, size, and font independently of the heading level so appearance does not distort the document outline.
 - FieldLabel is plain text, not a native label; give it an id and associate the preview group with aria-labelledby.
+- Mark uses the native mark element and aria-current on the active result; search status and navigation announcements remain the application's responsibility.
 - Start and middle truncation clip visually only: the whole value stays in the DOM in reading order, and Text shows it as the element's title unless the app supplies one.
 
 `FieldLabel` renders a native control or link as its root, so it cannot sit in another such component's zones, and its own zones cannot hold a control, a link, or a component that renders one. (`KUI-V014`)
@@ -85,7 +88,7 @@ Public class hooks (select for layout placement only, never to change the compon
 
 Never put `kui-text`, `kui-text__field-label` on an element you write; render `Text` instead (`KUI-L103`).
 
-Public tokens it reads: `--kui-color-danger-on-quiet`, `--kui-color-text-quiet`, `--kui-font-2xl`, `--kui-font-l`, `--kui-font-mono`, `--kui-font-xs`, `--kui-layout-item-padding`. Set a token only where its public contract allows; prefer a prop.
+Public tokens it reads: `--kui-color-danger-on-quiet`, `--kui-color-text-quiet`, `--kui-color-warning-border-loud`, `--kui-color-warning-fill-loud`, `--kui-color-warning-fill-quiet`, `--kui-color-warning-on-fill`, `--kui-color-warning-on-loud`, `--kui-font-2xl`, `--kui-font-l`, `--kui-font-mono`, `--kui-font-xs`, `--kui-layout-item-padding`. Set a token only where its public contract allows; prefer a prop.
 
 Everything else is internal: `kerf-ui-analyze` reports private or unknown `.kui-*` selectors (`KUI-L001`, `KUI-L010`), unknown or private tokens (`KUI-L002`, `KUI-L012`), and any application rule that restyles the component, forced dimensions included (`KUI-L019`).
 

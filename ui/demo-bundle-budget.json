@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 164600,
-  "totalJavaScriptGzip": 471700,
-  "measuredLargestJavaScriptGzip": 164546,
-  "measuredTotalJavaScriptGzip": 471670,
+  "totalJavaScriptGzip": 471900,
+  "measuredLargestJavaScriptGzip": 164545,
+  "measuredTotalJavaScriptGzip": 471861,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -7731,6 +7731,22 @@
         "measuredTotalJavaScriptGzip": 471670,
         "largestJavaScriptGzip": 164600,
         "totalJavaScriptGzip": 471700
+      }
+    },
+    {
+      "at": "2026-11-26T07:25:30.989Z",
+      "reason": "Added native Mark primitive and catalog examples for find-in-content matches",
+      "old": {
+        "measuredLargestJavaScriptGzip": 164546,
+        "measuredTotalJavaScriptGzip": 471670,
+        "largestJavaScriptGzip": 164600,
+        "totalJavaScriptGzip": 471700
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 164545,
+        "measuredTotalJavaScriptGzip": 471861,
+        "largestJavaScriptGzip": 164600,
+        "totalJavaScriptGzip": 471900
       }
     }
   ]

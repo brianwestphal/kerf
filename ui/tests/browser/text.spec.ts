@@ -2,6 +2,75 @@ import { expect, test } from '@playwright/test';
 
 import { Text } from '../../dist/text.js';
 
+test('Mark keeps match and current result readable in prose and code', async ({
+  page,
+}, testInfo) => {
+  await page.goto('/?component=text');
+  const section = page.locator('[data-demo-section="find-matches"]');
+  const marks = section.locator('mark.kui-text__mark');
+  await expect(marks).toHaveCount(4);
+  await expect(marks.nth(1)).toHaveAttribute('aria-current', 'true');
+  await expect(marks.nth(3)).toHaveAttribute('aria-current', 'true');
+  await expect(marks.nth(0)).not.toHaveAttribute('aria-current');
+
+  const contrast = async () =>
+    marks.evaluateAll((elements) => {
+      const channels = (color: string) => {
+        const values = (color.match(/[\d.]+/g) ?? []).slice(0, 3).map(Number);
+        return color.startsWith('color(srgb ')
+          ? values.map((v) => v * 255)
+          : values;
+      };
+      const luminance = (color: string) => {
+        const values = channels(color).map((channel) => {
+          const normalized = channel / 255;
+          return normalized <= 0.04045
+            ? normalized / 12.92
+            : ((normalized + 0.055) / 1.055) ** 2.4;
+        });
+        return values[0]! * 0.2126 + values[1]! * 0.7152 + values[2]! * 0.0722;
+      };
+      return elements.map((element) => {
+        const style = window.getComputedStyle(element);
+        const foreground = luminance(style.color);
+        const background = luminance(style.backgroundColor);
+        return {
+          ratio:
+            (Math.max(foreground, background) + 0.05) /
+            (Math.min(foreground, background) + 0.05),
+          background: style.backgroundColor,
+          font: style.fontFamily,
+          parentFont: window.getComputedStyle(element.parentElement!)
+            .fontFamily,
+        };
+      });
+    });
+
+  for (const colorScheme of ['light', 'dark'] as const) {
+    await page.emulateMedia({ colorScheme });
+    const results = await contrast();
+    for (const result of results) {
+      expect(result.ratio).toBeGreaterThanOrEqual(4.5);
+      expect(result.font).toBe(result.parentFont);
+    }
+    expect(results[0]!.background).not.toBe(results[1]!.background);
+    await section.screenshot({
+      path: testInfo.outputPath(`mark-${colorScheme}.png`),
+    });
+  }
+
+  if (testInfo.project.name === 'chromium') {
+    await page.emulateMedia({ colorScheme: 'light', forcedColors: 'active' });
+    const results = await contrast();
+    for (const result of results)
+      expect(result.ratio).toBeGreaterThanOrEqual(4.5);
+    expect(results[0]!.background).not.toBe(results[1]!.background);
+    await section.screenshot({
+      path: testInfo.outputPath('mark-forced-colors.png'),
+    });
+  }
+});
+
 test('Text colors inherit, use foreground tokens, and override tone', async ({
   page,
 }) => {

@@ -438,6 +438,10 @@ resets native margins. Center short status copy with `Text align="center"`
 (`end` aligns a trailing value) instead of setting `text-align` on `.kui-text`. `ValueTable density="compact"` reduces row padding and
 gap. Its `--kui-value-table-row-columns`, `--kui-value-table-row-padding-block`,
 and `--kui-value-table-row-gap` tokens support a specific metadata layout.
+For find-in-content, wrap each matched span in `Mark` from `@kerfjs/ui/text`
+and set `current` on the active result. It renders native `<mark>` with quiet
+and stronger states, including inside monospaced `Text` or `<code>`; the app
+still owns match ranges, navigation, and the result count announcement.
 Use `ToolbarText size="xsmall"` for a dense rail heading. Use
 `size="xlarge-fixed"` for a toolbar heading at the fixed 20px step; `xlarge`
 retains the responsive page-title clamp. Pass `headingLevel` when the text is

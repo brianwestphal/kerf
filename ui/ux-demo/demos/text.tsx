@@ -4,7 +4,7 @@ import { foregroundColor, uiColor } from '@kerfjs/ui/css-values';
 import { List } from '@kerfjs/ui/list';
 import { ListInsetControl } from '@kerfjs/ui/list-inset-control';
 import { Row } from '@kerfjs/ui/row';
-import { FieldLabel, Text } from '@kerfjs/ui/text';
+import { FieldLabel, Mark, Text } from '@kerfjs/ui/text';
 import { TextField } from '@kerfjs/ui/text-field';
 
 export function TextDemo() {
@@ -92,6 +92,19 @@ export function TextDemo() {
         </Text>
         <Text size="large">Large body copy</Text>
         <Text size="xlarge">Extra large body copy</Text>
+      </CatalogExample>
+      <CatalogExample
+        label="Find Matches"
+        note="Native Mark gives every match a quiet highlight and the active result a stronger fill. It inherits code typography without app CSS."
+        align="inline-control"
+        rootAttributes={{ 'data-demo-section': 'find-matches' }}
+      >
+        <Text variant="span">
+          Find <Mark>signal</Mark> and <Mark current>signal</Mark> in this line.
+        </Text>
+        <Text variant="span" font="monospace">
+          const <Mark>signal</Mark> = <Mark current>signal</Mark>(0)
+        </Text>
       </CatalogExample>
       <CatalogExample
         label="Read-Only Field Preview"

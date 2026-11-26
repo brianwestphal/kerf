@@ -7,6 +7,35 @@
   overflow-wrap: normal;
 }
 
+/* Mark keeps native inline flow and inherits the surrounding font, so matches
+   in code occupy the same glyph cells as unmarked text. */
+.kui-text__mark {
+  color: var(--kui-color-warning-on-fill);
+  background: var(--kui-color-warning-fill-quiet);
+  border-radius: 2px;
+  box-decoration-break: clone;
+}
+
+.kui-text__mark[data-current="true"] {
+  color: var(--kui-color-warning-on-loud);
+  background: var(--kui-color-warning-fill-loud);
+  outline: 1px solid var(--kui-color-warning-border-loud);
+}
+
+@media (forced-colors: active) {
+  .kui-text__mark {
+    color: CanvasText;
+    background: Canvas;
+    outline: 1px solid Highlight;
+  }
+
+  .kui-text__mark[data-current="true"] {
+    color: HighlightText;
+    background: Highlight;
+    outline-color: Highlight;
+  }
+}
+
 /* Native heading and paragraph typography belongs to Text. Web Awesome's
    native.css supplies these rules when installed, but Text also works without
    that optional stylesheet. Size props below still override the tag defaults. */

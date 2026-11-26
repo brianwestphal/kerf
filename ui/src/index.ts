@@ -528,6 +528,7 @@ export {
   type TextVariant,
   type TextWeight,
 } from './components/typography/text/text.js';
+export { Mark, type MarkProps } from './components/typography/text/text.js';
 export { type KerfUiContent } from './shared/content/semantic-content.js';
 export {
   applySelection,

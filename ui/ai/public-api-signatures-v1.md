@@ -6075,6 +6075,7 @@ export { WorkbenchDialog, type WorkbenchDialogProps, type WorkbenchDialogRootAtt
 
 ```ts
 import * as kerfjs from 'kerfjs';
+import { SafeHtml } from 'kerfjs';
 import { KerfBaseAttrs } from 'kerfjs/jsx-runtime';
 import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
 import { R as RootDataAttributes } from './extension-attributes-CnqvBmj3.js';
@@ -6217,9 +6218,18 @@ type TextProps = TextCommonProps & ({
  * content-item padding; `span` adds no box geometry.
  * All ordinary native heading/paragraph attributes pass through to the element.
  */
-declare function Text({ variant: Variant, tone, weight, color, size, font, border, flush, controlMargins, lineHeight, align, live, ariaLabel, rootAttributes, wrap, maxLines, truncate, truncateKeep, truncatePriority, children, class: classValue, className, style, ...attributes }: TextProps): kerfjs.SafeHtml;
+declare function Text({ variant: Variant, tone, weight, color, size, font, border, flush, controlMargins, lineHeight, align, live, ariaLabel, rootAttributes, wrap, maxLines, truncate, truncateKeep, truncatePriority, children, class: classValue, className, style, ...attributes }: TextProps): SafeHtml;
 
-export { FieldLabel, type FieldLabelProps, Sides, Text, type TextAlign, type TextBorder, type TextContent, type TextFont, type TextLineHeight, type TextProps, type TextSize, type TextTone, type TextTruncate, type TextTruncateKeep, type TextTruncatePriority, type TextVariant, type TextWeight, type TextWrap };
+interface MarkProps {
+    /** Matched content; inherits the surrounding font, including code typography. */
+    children: SafeHtml | string | number;
+    /** Emphasize the active result among otherwise quiet matches. */
+    current?: boolean;
+}
+/** A native text highlight for find-in-content results. */
+declare function Mark({ children, current }: MarkProps): SafeHtml;
+
+export { FieldLabel, type FieldLabelProps, Mark, type MarkProps, Sides, Text, type TextAlign, type TextBorder, type TextContent, type TextFont, type TextLineHeight, type TextProps, type TextSize, type TextTone, type TextTruncate, type TextTruncateKeep, type TextTruncatePriority, type TextVariant, type TextWeight, type TextWrap };
 ```
 
 ## `@kerfjs/ui/editor-frame`
