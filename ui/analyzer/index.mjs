@@ -1124,7 +1124,46 @@ async function inspectCss(
   });
 }
 
-function literalClasses(attribute) {
+function finiteClassStrings(expression, finiteTypeValues) {
+  if (!expression) return undefined;
+  if (ts.isParenthesizedExpression(expression))
+    return finiteClassStrings(expression.expression, finiteTypeValues);
+  if (ts.isStringLiteralLike(expression)) return [expression.text];
+  if (ts.isConditionalExpression(expression)) {
+    const yes = finiteClassStrings(expression.whenTrue, finiteTypeValues);
+    const no = finiteClassStrings(expression.whenFalse, finiteTypeValues);
+    return yes && no && yes.length + no.length <= 32
+      ? [...new Set([...yes, ...no])]
+      : undefined;
+  }
+  const combine = (left, right) =>
+    left && right && left.length * right.length <= 32
+      ? [...new Set(left.flatMap((a) => right.map((b) => a + b)))]
+      : undefined;
+  if (
+    ts.isBinaryExpression(expression) &&
+    expression.operatorToken.kind === ts.SyntaxKind.PlusToken
+  )
+    return combine(
+      finiteClassStrings(expression.left, finiteTypeValues),
+      finiteClassStrings(expression.right, finiteTypeValues),
+    );
+  if (ts.isTemplateExpression(expression)) {
+    let values = [expression.head.text];
+    for (const span of expression.templateSpans) {
+      values = combine(
+        values,
+        finiteClassStrings(span.expression, finiteTypeValues),
+      );
+      values = combine(values, [span.literal.text]);
+      if (!values) return undefined;
+    }
+    return values;
+  }
+  return finiteTypeValues?.(expression);
+}
+
+function literalClasses(attribute, finiteTypeValues) {
   if (!attribute?.initializer) return { values: [], dynamic: false };
   const value = attribute.initializer;
   if (ts.isStringLiteral(value))
@@ -1138,6 +1177,20 @@ function literalClasses(attribute) {
       values: value.expression.text.split(/\s+/).filter(Boolean),
       dynamic: false,
     };
+  if (ts.isJsxExpression(value) && value.expression) {
+    const strings = finiteClassStrings(value.expression, finiteTypeValues);
+    if (strings) {
+      const values = [
+        ...new Set(
+          strings.flatMap((item) => item.split(/\s+/).filter(Boolean)),
+        ),
+      ];
+      return {
+        values,
+        dynamic: values.some((className) => /^(?:kui-|wa-)/.test(className)),
+      };
+    }
+  }
   return { values: [], dynamic: true };
 }
 
@@ -1622,6 +1675,42 @@ function inspectTsx(
     true,
     ts.ScriptKind.TSX,
   );
+  let typedSource;
+  let typeChecker;
+  const finiteTypeValues = (expression) => {
+    if (!typeChecker) {
+      const program = ts.createProgram({
+        rootNames: [file],
+        options: { ...compilerOptions, noEmit: true, skipLibCheck: true },
+      });
+      typedSource = program.getSourceFile(file);
+      typeChecker = program.getTypeChecker();
+    }
+    if (!typedSource) return undefined;
+    const start = expression.getStart(source);
+    const end = expression.getEnd();
+    let typedNode;
+    const find = (node) => {
+      if (node.getStart(typedSource) === start && node.getEnd() === end) {
+        typedNode = node;
+        return;
+      }
+      ts.forEachChild(node, (child) => {
+        if (!typedNode && child.pos <= start && child.end >= end) find(child);
+      });
+    };
+    find(typedSource);
+    if (!typedNode) return undefined;
+    const type = typeChecker.getTypeAtLocation(typedNode);
+    const members = type.isUnion() ? type.types : [type];
+    if (members.length > 32) return undefined;
+    const values = members.map((member) =>
+      member.flags & ts.TypeFlags.StringLiteral ? member.value : undefined,
+    );
+    return values.every((value) => typeof value === 'string')
+      ? values
+      : undefined;
+  };
   const imports = new Map();
   const helperImports = new Map();
   const namespaces = new Map();
@@ -1782,7 +1871,7 @@ function inspectTsx(
           ts.isJsxAttribute(item) &&
           ['class', 'className'].includes(item.name.getText(source)),
       );
-      const classes = literalClasses(classAttribute);
+      const classes = literalClasses(classAttribute, finiteTypeValues);
       const at = location(file, opening, source);
       if ((!entry && /^[a-z]/.test(tag)) || (componentMode && entry))
         borrowedValues(

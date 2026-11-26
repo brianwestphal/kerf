@@ -208,6 +208,28 @@ export const app = [
     expect(first.summary.suppressed).toBe(1);
   });
 
+  it('classifies finite app class branches and keeps unconstrained values under review', async () => {
+    const root = await mkdtemp(join(tmpdir(), 'kerf-ui-analyzer-classes-'));
+    await mkdir(join(root, 'src'));
+    await writeFile(
+      join(root, 'src/app.tsx'),
+      `type Role = 'user' | 'assistant';
+export const App = ({ role, editing, unknown }: { role: Role; editing: boolean; unknown: string }) => <>
+  <div class={editing ? 'note-card note-card--editing' : 'note-card'} />
+  <div class={\`note-card\${editing ? ' note-card--editing' : ''}\`} />
+  <div class={\`message message--\${role}\`} />
+  <div class={\`message message--\${unknown}\`} />
+  <div class={unknown} />
+  <div class={editing ? 'note-card' : 'kui-toolbar'} />
+</>;
+`,
+    );
+    const report = await analyzeUiProject({ root });
+    expect(
+      report.diagnostics.filter(({ ruleId }) => ruleId === 'KUI-L008'),
+    ).toHaveLength(3);
+  });
+
   it('attributes scroll and inset declarations only to selector subjects', async () => {
     const root = await mkdtemp(join(tmpdir(), 'kerf-ui-analyzer-subjects-'));
     await mkdir(join(root, 'src'));

@@ -437,9 +437,12 @@ Profile discovery, parsing, catalog-loading, and validation diagnostics retain
 their stable `KUI-P###` ids in every output format and count as errors. The
 analyzer therefore cannot silently pass with stale or unreadable policy input.
 
-The analyzer is conservative about dynamic class expressions: it emits one
-review finding and does not guess which selectors, tokens, or owners the value
-might contain. CSS values expressed through public variables or `calc()` are
+The analyzer classifies conditional and template class expressions when every
+possible value is a finite set of application-owned class names. A template
+substitution can use a string-literal union type, such as `'user' | 'assistant'`
+for `message--${role}`. Unconstrained strings and expressions that can produce
+Kerf or Web Awesome classes still receive a review finding. CSS values
+expressed through public variables or `calc()` are
 also left to their owning token contract rather than reverse-engineered.
 
 ## Narrow exceptions
