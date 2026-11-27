@@ -61,6 +61,7 @@
 
 .kui-progress-bar__track {
   display: block;
+  box-sizing: border-box;
   width: 100%;
   height: var(--_kui-progress-bar-height);
   margin: 0;
@@ -89,21 +90,35 @@
   background: var(--_kui-progress-bar-fill);
 }
 
-/* Indeterminate: a band sweeps across the track. */
-.kui-progress-bar__track:indeterminate {
-  background:
-    linear-gradient(
-        90deg,
-        transparent 0%,
-        var(--_kui-progress-bar-fill) 35%,
-        var(--_kui-progress-bar-fill) 65%,
-        transparent 100%
-      )
-      no-repeat,
-    var(--_kui-progress-bar-track);
-  background-size:
-    40% 100%,
-    auto;
+/* The determinate track stays the flex item. The indeterminate band moves
+   on its own layer inside a clip at the native track's dimensions. */
+.kui-progress-bar__track-frame {
+  display: contents;
+}
+
+.kui-progress-bar__track-frame:has(> .kui-progress-bar__track:indeterminate) {
+  display: block;
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--kui-radius-pill);
+}
+
+.kui-progress-bar__track-frame:has(
+    > .kui-progress-bar__track:indeterminate
+  )::after {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 40%;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    var(--_kui-progress-bar-fill) 35%,
+    var(--_kui-progress-bar-fill) 65%,
+    transparent 100%
+  );
+  pointer-events: none;
+  transform: translateX(75%);
   animation: kui-progress-bar-sweep 1.4s ease-in-out infinite;
 }
 
@@ -116,25 +131,22 @@
 }
 
 @keyframes kui-progress-bar-sweep {
+  /* Match the original -60% to 160% offset through the unfilled 60% of
+     the track, expressed relative to the 40%-wide band. */
   from {
-    background-position:
-      -60% 0,
-      0 0;
+    transform: translateX(-90%);
   }
 
   to {
-    background-position:
-      160% 0,
-      0 0;
+    transform: translateX(240%);
   }
 }
 
 /* Without motion the indeterminate band holds still in the middle. */
 @media (prefers-reduced-motion: reduce) {
-  .kui-progress-bar__track:indeterminate {
-    background-position:
-      50% 0,
-      0 0;
+  .kui-progress-bar__track-frame:has(
+      > .kui-progress-bar__track:indeterminate
+    )::after {
     animation: none;
   }
 
@@ -143,26 +155,40 @@
   }
 }
 
-:root[data-kui-effects="static"] .kui-progress-bar__track:indeterminate {
-  background-position:
-    50% 0,
-    0 0;
+:root[data-kui-effects="static"]
+  .kui-progress-bar__track-frame:has(
+    > .kui-progress-bar__track:indeterminate
+  )::after {
   animation: none;
 }
 
 @media (forced-colors: active) {
-  .kui-progress-bar__track {
-    border: 1px solid CanvasText;
-    background: Canvas;
+  .kui-progress-bar__track-frame {
+    --_kui-progress-bar-fill: Highlight;
+    --_kui-progress-bar-track: Canvas;
   }
 
-  .kui-progress-bar__track::-webkit-progress-value,
-  .kui-progress-bar__track::-moz-progress-bar {
+  .kui-progress-bar__track {
+    border: 1px solid CanvasText;
+    forced-color-adjust: none;
+  }
+
+  /* Clip the moving solid band inside the high-contrast border. */
+  .kui-progress-bar__track-frame:has(> .kui-progress-bar__track:indeterminate) {
+    box-sizing: border-box;
+    height: var(--_kui-progress-bar-height);
+    border: 1px solid CanvasText;
+  }
+
+  .kui-progress-bar__track-frame:has(
+      > .kui-progress-bar__track:indeterminate
+    )::after {
     background: Highlight;
+    forced-color-adjust: none;
   }
 
   .kui-progress-bar__track:indeterminate {
-    background: linear-gradient(90deg, Highlight, Highlight) no-repeat 50% 0 /
-      40% 100%;
+    height: 100%;
+    border: 0;
   }
 }

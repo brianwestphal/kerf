@@ -114,14 +114,16 @@ export function ProgressBar({
           ) : null}
         </div>
       )}
-      <progress
-        class="kui-progress-bar__track"
-        value={clamped}
-        max={max}
-        aria-label={labelId === undefined ? (label ?? ariaLabel) : undefined}
-        aria-labelledby={labelId}
-        aria-valuetext={valueText}
-      />
+      <div class="kui-progress-bar__track-frame">
+        <progress
+          class="kui-progress-bar__track"
+          value={clamped}
+          max={max}
+          aria-label={labelId === undefined ? (label ?? ariaLabel) : undefined}
+          aria-labelledby={labelId}
+          aria-valuetext={valueText}
+        />
+      </div>
     </div>
   );
 }
