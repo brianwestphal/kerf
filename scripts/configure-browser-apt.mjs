@@ -1,4 +1,4 @@
-// GitHub-hosted Ubuntu browser dependencies: prefer HTTPS without changing repos.
+// GitHub-hosted Ubuntu browser dependencies: bound HTTPS and skip the unused Microsoft feed.
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
@@ -7,6 +7,7 @@ const sourcePaths = [
   'etc/apt/apt-mirrors.txt',
   'etc/apt/sources.list',
   'etc/apt/sources.list.d/ubuntu.sources',
+  'etc/apt/sources.list.d/microsoft-prod.list',
 ];
 const settingsPath = 'etc/apt/apt.conf.d/zzzz-kerf-browser-downloads';
 const settings =
@@ -16,6 +17,10 @@ const settings =
 // install step's bound; it gets the same HTTPS archive as the Azure mirror.
 const ubuntuUrl =
   /https?:\/\/(?:(?:azure\.|[a-z0-9-]+\.ec2\.)?archive|security)\.ubuntu\.com\/ubuntu(?=[/\s]|$)/g;
+// Playwright needs Ubuntu packages only. An outage on this optional runner
+// feed can still abort apt-get update before any Ubuntu package is installed.
+const microsoftNobleEntry =
+  /^[\t ]*deb(?:-src)?[\t ]+(?:\[[^\]\r\n]*\][\t ]+)?https?:\/\/packages\.microsoft\.com\/ubuntu\/24\.04\/prod\/?[\t ]+noble(?=[\t \r\n]|$)[^\r\n]*/gm;
 const activeUbuntuUrls = (content) =>
   content
     .split('\n')
@@ -34,7 +39,7 @@ export function configureBrowserApt(root = '/') {
   const sources = sourcePaths.flatMap((path) => {
     const before = readOptional(join(root, path));
     if (before === undefined) return [];
-    const content = before
+    const https = before
       .replaceAll(
         /https?:\/\/(?:azure\.|[a-z0-9-]+\.ec2\.)?archive\.ubuntu\.com\/ubuntu(?=[/\s]|$)/g,
         'https://archive.ubuntu.com/ubuntu',
@@ -43,6 +48,9 @@ export function configureBrowserApt(root = '/') {
         /http:\/\/security\.ubuntu\.com\/ubuntu(?=[/\s]|$)/g,
         'https://security.ubuntu.com/ubuntu',
       );
+    const content = path.endsWith('.list')
+      ? https.replaceAll(microsoftNobleEntry, '# $&')
+      : https;
     return [{ path, content, changed: content !== before }];
   });
   if (!sources.some(({ content }) => activeUbuntuUrls(content).length))

@@ -84,19 +84,45 @@ describe('browser dependency APT setup', () => {
   it('handles direct and deb822 URLs without changing suites, signing keys or unrelated repositories', () => {
     const root = fixture({
       'etc/apt/sources.list':
-        'deb http://archive.ubuntu.com/ubuntu noble main\ndeb http://security.ubuntu.com/ubuntu noble-security main\ndeb https://packages.microsoft.com/ubuntu/24.04/prod noble main\n',
+        'deb http://archive.ubuntu.com/ubuntu noble main\ndeb http://security.ubuntu.com/ubuntu noble-security main\ndeb https://packages.microsoft.com/ubuntu/24.04/prod noble main\ndeb https://packages.microsoft.com/repos/edge stable main\n',
       'etc/apt/sources.list.d/ubuntu.sources':
         'Types: deb\nURIs: http://azure.archive.ubuntu.com/ubuntu/\nSuites: noble noble-updates\nSigned-By: /usr/share/keyrings/ubuntu-archive-keyring.gpg\n',
     });
     configureBrowserApt(root);
     expect(readFileSync(join(root, 'etc/apt/sources.list'), 'utf8')).toBe(
-      'deb https://archive.ubuntu.com/ubuntu noble main\ndeb https://security.ubuntu.com/ubuntu noble-security main\ndeb https://packages.microsoft.com/ubuntu/24.04/prod noble main\n',
+      'deb https://archive.ubuntu.com/ubuntu noble main\ndeb https://security.ubuntu.com/ubuntu noble-security main\n# deb https://packages.microsoft.com/ubuntu/24.04/prod noble main\ndeb https://packages.microsoft.com/repos/edge stable main\n',
     );
     expect(
       readFileSync(join(root, 'etc/apt/sources.list.d/ubuntu.sources'), 'utf8'),
     ).toBe(
       'Types: deb\nURIs: https://archive.ubuntu.com/ubuntu/\nSuites: noble noble-updates\nSigned-By: /usr/share/keyrings/ubuntu-archive-keyring.gpg\n',
     );
+  });
+
+  it('disables the runner Microsoft Noble feed idempotently, leaving other lines intact', () => {
+    const path = 'etc/apt/sources.list.d/microsoft-prod.list';
+    const noble =
+      'deb [arch=amd64,arm64 signed-by=/usr/share/keyrings/microsoft-prod.gpg] https://packages.microsoft.com/ubuntu/24.04/prod/ noble main';
+    const other = [
+      'deb https://packages.microsoft.com/ubuntu/22.04/prod jammy main',
+      'deb https://packages.microsoft.com/ubuntu/24.04/prod-preview noble main',
+      'deb https://packages.microsoft.com.example/ubuntu/24.04/prod noble main',
+    ];
+    const root = fixture({
+      'etc/apt/sources.list.d/ubuntu.sources':
+        'Types: deb\nURIs: https://archive.ubuntu.com/ubuntu\nSuites: noble\nSigned-By: /usr/share/keyrings/ubuntu-archive-keyring.gpg\n',
+      [path]: [noble, `# ${noble}`, ...other, ''].join('\n'),
+    });
+    const first = configureBrowserApt(root);
+    expect(readFileSync(join(root, path), 'utf8')).toBe(
+      [`# ${noble}`, `# ${noble}`, ...other, ''].join('\n'),
+    );
+    expect(first.sources.find((source) => source.path === path)?.changed).toBe(
+      true,
+    );
+    expect(
+      configureBrowserApt(root).sources.every(({ changed }) => !changed),
+    ).toBe(true);
   });
 
   // KF-914KN1: a runner image's regional EC2 mirror over plain HTTP crawled
