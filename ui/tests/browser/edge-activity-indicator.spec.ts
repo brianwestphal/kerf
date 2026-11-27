@@ -44,6 +44,7 @@ for (const mode of ['normal', 'reduced', 'static'] as const) {
         '.kui-edge-activity-indicator__strip',
       )!;
       const style = window.getComputedStyle(element);
+      const wave = window.getComputedStyle(element, '::before');
       const box = element.getBoundingClientRect();
       return {
         top: box.top,
@@ -52,6 +53,8 @@ for (const mode of ['normal', 'reduced', 'static'] as const) {
         pointer: window.getComputedStyle(node).pointerEvents,
         animation: style.animationName,
         mask: style.maskImage,
+        waveDisplay: wave.display,
+        waveRunning: wave.animationPlayState === 'running',
         hit: document
           .elementFromPoint(box.left + 10, 1)
           ?.closest('.kui-edge-activity-indicator'),
@@ -62,12 +65,42 @@ for (const mode of ['normal', 'reduced', 'static'] as const) {
     expect(strip.hidden).toBe('true');
     expect(strip.pointer).toBe('none');
     expect(strip.hit).toBeFalsy();
+    expect(strip.animation).toBe('none');
+    expect(strip.mask).toContain('repeating-linear-gradient');
     if (mode === 'normal') {
-      expect(strip.animation).toBe('kui-edge-activity-indicator-wave');
-      expect(strip.mask).not.toBe('none');
+      expect(strip.waveDisplay).toBe('block');
+      expect(strip.waveRunning).toBe(true);
+      const phases = await host
+        .locator('.kui-edge-activity-indicator__strip')
+        .evaluate(async (element) => {
+          const wave = document
+            .getAnimations()
+            .find(
+              (animation): animation is CSSAnimation =>
+                animation instanceof CSSAnimation &&
+                animation.animationName === 'kui-edge-activity-indicator-wave',
+            )!;
+          wave.pause();
+          await wave.ready;
+          return [225, 475].map((time) => {
+            wave.currentTime = time;
+            return {
+              bars: window.getComputedStyle(element).maskPosition,
+              wave: window.getComputedStyle(element, '::before').transform,
+            };
+          });
+        });
+      expect(phases[0].bars).toBe(phases[1].bars);
+      expect(phases[0].wave).not.toBe(phases[1].wave);
+      for (const width of [1100, 390]) {
+        await page.setViewportSize({ width, height: 700 });
+        await page.screenshot({
+          clip: { x: 0, y: 0, width, height: 88 },
+          path: testInfo.outputPath(`edge-wave-${width}.png`),
+        });
+      }
     } else {
-      expect(strip.animation).toBe('none');
-      expect(strip.mask).toBe('none');
+      expect(strip.waveDisplay).toBe('none');
     }
     if (mode === 'static') {
       const children = host.locator(':scope > *');
@@ -84,5 +117,18 @@ for (const mode of ['normal', 'reduced', 'static'] as const) {
     }
     await page.getByRole('button', { name: 'Stop Activity' }).click();
     await expect(host).toHaveAttribute('data-busy', 'false');
+    if (mode === 'normal') {
+      await expect
+        .poll(() =>
+          host.evaluate((node) => {
+            const strip = node.querySelector(
+              '.kui-edge-activity-indicator__strip',
+            )!;
+            return window.getComputedStyle(strip, '::before')
+              .animationPlayState;
+          }),
+        )
+        .toBe('paused');
+    }
   });
 }
