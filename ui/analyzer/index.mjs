@@ -310,6 +310,7 @@ function reachableStyleFacts(file, imports, styleFacts) {
       };
       current.scroll ||= facts.scroll;
       current.inset ||= facts.inset;
+      current.outOfFlow ||= facts.outOfFlow;
       current.surface ||= facts.surface;
       current.styled ??= facts.styled;
       result.set(className, current);
@@ -1125,6 +1126,11 @@ async function inspectCss(
           record.scroll = true;
         if (/^padding(?:-|$)/.test(decl.prop) && decl.value !== '0')
           record.inset = true;
+        if (
+          decl.prop === 'position' &&
+          /^(?:absolute|fixed)$/i.test(decl.value.trim())
+        )
+          record.outOfFlow = true;
         if (
           /^(?:background(?:-color|-image)?|border(?:-(?:top|right|bottom|left))?|outline)$/.test(
             decl.prop,
@@ -1993,6 +1999,9 @@ function inspectTsx(
               ?.some((owner) => owner.layout?.geometry?.role === 'surface'),
         );
       const parent = stack.at(-1);
+      const inheritedInset =
+        parent?.inset &&
+        !classes.values.some((className) => cssFacts.get(className)?.outOfFlow);
       if (scroll && parent?.scroll)
         diagnostics.push(
           diagnostic(
@@ -2003,7 +2012,7 @@ function inspectTsx(
             [parent.label, entry?.key ?? tag],
           ),
         );
-      if (inset && parent?.inset && !surface)
+      if (inset && inheritedInset && !surface)
         diagnostics.push(
           diagnostic(
             'KUI-L004',
@@ -2015,7 +2024,7 @@ function inspectTsx(
         );
       stack.push({
         scroll: scroll || parent?.scroll,
-        inset: inset || parent?.inset,
+        inset: inset || inheritedInset,
         label: entry?.key ?? tag,
       });
       // JSX supplied through a prop (for example Toolbar.leading) is still

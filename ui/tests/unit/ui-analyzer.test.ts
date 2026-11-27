@@ -342,6 +342,37 @@ export const App = () => <>
     expect(JSON.stringify(nested)).not.toContain('alternate');
   });
 
+  it('restarts the inset chain at absolute and fixed children', async () => {
+    const root = await mkdtemp(join(tmpdir(), 'kerf-ui-analyzer-position-'));
+    await mkdir(join(root, 'src'));
+    await writeFile(
+      join(root, 'src/app.css'),
+      `.frame, .abs, .fixed, .inner, .sticky { padding: 8px; }
+.frame { position: relative; }
+.frame > .abs { position: absolute; }
+.fixed { position: Fixed; }
+.plain-layer { position: absolute; }
+.sticky { position: sticky; }
+`,
+    );
+    await writeFile(
+      join(root, 'src/app.tsx'),
+      `import './app.css';
+export const App = () => <div class="frame">
+  <div class="abs"><div class="inner" /></div>
+  <div class="fixed"><div class="inner" /></div>
+  <div class="plain-layer"><div class="inner" /></div>
+  <div class="sticky" />
+</div>;`,
+    );
+    const report = await analyzeUiProject({ root });
+    expect(
+      report.diagnostics
+        .filter(({ ruleId }) => ruleId === 'KUI-L004')
+        .map(({ evidence }) => (evidence as { classes: string[] }).classes),
+    ).toEqual([['inner'], ['inner'], ['sticky']]);
+  });
+
   it('distinguishes nested inset surfaces from repeated padding', async () => {
     const root = await mkdtemp(join(tmpdir(), 'kerf-ui-analyzer-surfaces-'));
     await mkdir(join(root, 'src'));
