@@ -456,7 +456,6 @@ export function Select<Value extends string>(props: SelectProps<Value>) {
         ) : null}
         {caret ? <Caret /> : null}
       </button>
-      {supportingText}
       <div class="kui-select__popup" popover="manual" tabindex={-1}>
         <div
           class="kui-select__listbox"
@@ -511,6 +510,8 @@ export function Select<Value extends string>(props: SelectProps<Value>) {
           </div>
         ) : null}
       </div>
+      {/* Keep the focused listbox in place when validation text changes. */}
+      {supportingText}
     </kui-select>
   );
 }

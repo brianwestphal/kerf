@@ -33,15 +33,34 @@ test('Select presents and describes its validation error until a choice is made'
       path: testInfo.outputPath(`select-validation-${width}.png`),
     });
   }
-  await trigger.click();
-  await example.getByRole('option', { name: 'Release' }).click();
+  await trigger.press('Enter');
+  await page.keyboard.press('End');
+  const release = example.getByRole('option', { name: 'Release' });
+  await expect(release).toBeFocused();
+  await release.press('Enter');
   await expect(trigger).toBeFocused();
+  await expect(trigger).toHaveText('Release');
   await expect(error).toHaveCount(0);
   await expect(trigger).not.toHaveAttribute('aria-invalid');
   await expect(trigger).not.toHaveAttribute('aria-describedby');
   await expect(trigger).toHaveAccessibleDescription(
     'The project owns this step.',
   );
+});
+
+test('choosing with the pointer clears validation and returns focus to Select', async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 390, height: 860 });
+  await page.goto('/?component=select');
+  const select = page.locator('kui-select[name="validation-project"]');
+  const trigger = select.getByRole('combobox');
+  await expect(trigger).toHaveAttribute('aria-invalid', 'true');
+  await trigger.click();
+  await select.getByRole('option', { name: 'Release' }).click();
+  await expect(trigger).toHaveText('Release');
+  await expect(trigger).toBeFocused();
+  await expect(trigger).not.toHaveAttribute('aria-invalid');
 });
 
 test('names plain and custom Select comboboxes without adding visible label geometry', async ({
