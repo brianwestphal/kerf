@@ -125,3 +125,17 @@
     transform: translateX(50%);
   }
 }
+
+/* Static effects keep the same busy cues without an entrance or a wave. */
+:root[data-kui-effects="static"]
+  :is(
+    .kui-edge-activity-indicator__strip,
+    .kui-edge-activity-indicator__message
+  ) {
+  transition: none;
+}
+
+:root[data-kui-effects="static"] .kui-edge-activity-indicator__strip {
+  mask: none;
+  animation: none;
+}

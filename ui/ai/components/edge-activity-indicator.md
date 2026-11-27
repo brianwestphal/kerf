@@ -60,7 +60,7 @@ Margin: none · border: none · padding: none (layout role: feedback). `self` me
 
 ## Accessibility
 
-- The strip is aria-hidden and pointer-inert; the optional pill is a polite live region that holds text only while it shows. Under reduced motion the wave and scale stop and the strip and pill only fade.
+- The strip is aria-hidden and pointer-inert; the optional pill is a polite live region that holds text only while it shows. Under reduced motion the wave and scale stop and the strip and pill only fade. With static effects the busy strip and pill appear immediately and stay still.
 
 ## Styling boundary
 

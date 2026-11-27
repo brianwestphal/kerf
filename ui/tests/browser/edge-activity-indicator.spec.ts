@@ -2,13 +2,19 @@ import { expect, test } from '@playwright/test';
 
 // A layout-free, pointer-inert edge strip: starting activity reveals the wave
 // and the status pill without moving the page; reduced motion only fades.
-for (const reducedMotion of ['no-preference', 'reduce'] as const) {
-  test(`EdgeActivityIndicator shows activity without layout (${reducedMotion})`, async ({
+for (const mode of ['normal', 'reduced', 'static'] as const) {
+  test(`EdgeActivityIndicator shows activity without layout (${mode})`, async ({
     page,
-  }) => {
-    await page.emulateMedia({ reducedMotion });
+  }, testInfo) => {
+    await page.emulateMedia({
+      reducedMotion: mode === 'reduced' ? 'reduce' : 'no-preference',
+    });
     await page.setViewportSize({ width: 1100, height: 700 });
     await page.goto('/?component=edge-activity-indicator');
+    if (mode === 'static')
+      await page.evaluate(() => {
+        document.documentElement.dataset.kuiEffects = 'static';
+      });
     const start = page.getByRole('button', { name: 'Start Activity' });
     const before = await start.boundingBox();
     await start.click();
@@ -56,12 +62,25 @@ for (const reducedMotion of ['no-preference', 'reduce'] as const) {
     expect(strip.hidden).toBe('true');
     expect(strip.pointer).toBe('none');
     expect(strip.hit).toBeFalsy();
-    if (reducedMotion === 'reduce') {
-      expect(strip.animation).toBe('none');
-      expect(strip.mask).toBe('none');
-    } else {
+    if (mode === 'normal') {
       expect(strip.animation).toBe('kui-edge-activity-indicator-wave');
       expect(strip.mask).not.toBe('none');
+    } else {
+      expect(strip.animation).toBe('none');
+      expect(strip.mask).toBe('none');
+    }
+    if (mode === 'static') {
+      const children = host.locator(':scope > *');
+      for (const width of [1100, 390]) {
+        await page.setViewportSize({ width, height: 700 });
+        for (const child of await children.all()) {
+          await expect(child).toHaveCSS('transition-duration', '0s');
+          await expect(child).toHaveCSS('opacity', '1');
+        }
+        await page.screenshot({
+          path: testInfo.outputPath(`edge-static-${width}.png`),
+        });
+      }
     }
     await page.getByRole('button', { name: 'Stop Activity' }).click();
     await expect(host).toHaveAttribute('data-busy', 'false');
