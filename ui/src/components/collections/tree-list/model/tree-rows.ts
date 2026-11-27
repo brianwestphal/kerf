@@ -4,6 +4,7 @@ import type { SafeHtml } from 'kerfjs';
 
 import type { KerfUiContent } from '../../../../shared/content/semantic-content.js';
 import type { RootDataAttributes } from '../../../../shared/dom/extension-attributes.js';
+import type { ListActionRowTrailingMenu } from '../../list-action-row/list-action-row.js';
 
 /** One node of a hierarchy the application owns. */
 export interface TreeListNode {
@@ -15,6 +16,8 @@ export interface TreeListNode {
   readonly icon?: SafeHtml;
   /** Trailing content, such as a count Badge. */
   readonly trailing?: KerfUiContent;
+  /** Optional TreeList overflow menu. Import `@kerfjs/ui/popup-menu/register` once. */
+  readonly trailingMenu?: ListActionRowTrailingMenu;
   readonly disabled?: boolean;
   /** Drags with `wireTreeList`'s `onMove` (KF-WXP6AB). */
   readonly draggable?: boolean;

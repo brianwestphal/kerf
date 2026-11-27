@@ -59,6 +59,73 @@ test('TreeList opens, navigates, and chooses with the pointer and keyboard', asy
   await expect(row('src')).toHaveAttribute('tabindex', '-1');
 });
 
+test('TreeList row actions share one menu across pointer and keyboard input', async ({
+  page,
+}) => {
+  await page.goto('/?component=tree-list');
+  const tree = page.getByRole('tree', { name: 'Projects' });
+  const core = tree.getByRole('treeitem', {
+    name: 'Core workspace',
+    exact: true,
+  });
+  const library = tree.getByRole('treeitem', {
+    name: 'Design library',
+    exact: true,
+  });
+  const libraryTrigger = library.getByRole('button', {
+    name: 'Actions for Design library',
+  });
+  const libraryMenu = page.getByRole('menu', {
+    name: 'Actions for Design library',
+  });
+  await expect(core).toHaveAttribute('aria-selected', 'true');
+  await expect(tree.locator('[tabindex="0"]')).toHaveCount(1);
+  await expect(libraryTrigger).toHaveAttribute('tabindex', '-1');
+  await expect(
+    tree.getByRole('button', { name: 'Actions for Shared archive' }),
+  ).toBeDisabled();
+
+  await library.focus();
+  await page.keyboard.press('Shift+F10');
+  await expect(
+    libraryMenu.getByRole('menuitem', { name: 'Show project' }),
+  ).toBeFocused();
+  await page.keyboard.press('Escape');
+  await expect(libraryMenu).toBeHidden();
+  await expect(library).toBeFocused();
+  await expect(core).toHaveAttribute('aria-selected', 'true');
+
+  await page.keyboard.press('ContextMenu');
+  await expect(libraryMenu).toBeVisible();
+  await page.keyboard.press('Escape');
+  await expect(library).toBeFocused();
+
+  await library.getByText('Design library', { exact: true }).click({
+    button: 'right',
+  });
+  await expect(libraryMenu).toBeVisible();
+  await page.keyboard.press('Escape');
+  await expect(library).toBeFocused();
+
+  await libraryTrigger.click();
+  await libraryMenu.getByRole('menuitem', { name: 'Show project' }).click();
+  await expect(page.locator('[data-tree-list-demo-command]')).toHaveText(
+    'Opened Design library',
+  );
+  await expect(core).toHaveAttribute('aria-selected', 'true');
+
+  await library.focus();
+  await page.keyboard.press('Enter');
+  await expect(library).toHaveAttribute('aria-selected', 'true');
+  await expect(libraryTrigger).toHaveCSS('opacity', '1');
+  await expect(tree.locator('[tabindex="0"]')).toHaveCount(1);
+  await core.getByText('Core workspace', { exact: true }).click();
+  await expect(core).toHaveAttribute('aria-selected', 'true');
+  await expect(
+    core.getByRole('button', { name: 'Actions for Core workspace' }),
+  ).toHaveAttribute('aria-expanded', 'false');
+});
+
 // KF-1XBJDT: flow layout must preserve real variable row heights and native
 // focus scrolling; the large-project benchmark must not assume fixed rows.
 test('TreeList preserves variable heights, density and focus scrolling', async ({

@@ -476,14 +476,14 @@
   padding: 0;
 }
 
-/* As a ListActionRow's trailing menu, the PopupMenu styles its trigger in the
-   row's context like the row's trailing button: a full-height 44px pill (36px
-   in a compact row) on the row's trailing-hover fill, with a 16px icon. */
-.kui-list-action-row > .kui-popup-menu {
+/* A row's trailing menu uses a full-height pill with a 16px icon. */
+:is(.kui-list-action-row, [data-kui-tree-menu-row]) > .kui-popup-menu {
   display: flex;
   flex: none;
 }
-.kui-list-action-row > .kui-popup-menu > .kui-popup-menu__trigger {
+:is(.kui-list-action-row, [data-kui-tree-menu-row])
+  > .kui-popup-menu
+  > .kui-popup-menu__trigger {
   width: remify(44px);
   min-width: remify(44px);
   height: auto;
@@ -499,21 +499,40 @@
   > .kui-popup-menu__trigger {
   min-height: remify(36px);
 }
-.kui-list-action-row
+:is(.kui-list-action-row, [data-kui-tree-menu-row])
   > .kui-popup-menu
   > .kui-popup-menu__trigger:not(:disabled):hover {
-  background: var(--kui-list-action-row-trailing-hover-background);
+  background: var(
+    --kui-list-action-row-trailing-hover-background,
+    var(--kui-color-neutral-fill-normal)
+  );
 }
-.kui-list-action-row
+:is(.kui-list-action-row, [data-kui-tree-menu-row])
   > .kui-popup-menu
   > .kui-popup-menu__trigger:focus-visible {
   outline: var(--kui-focus-ring);
   outline-offset: -2px;
 }
-.kui-list-action-row > .kui-popup-menu > .kui-popup-menu__trigger > svg {
+:is(.kui-list-action-row, [data-kui-tree-menu-row])
+  > .kui-popup-menu
+  > .kui-popup-menu__trigger
+  > svg {
   display: block;
   width: remify(16px);
   height: remify(16px);
+}
+[data-kui-tree-menu-row] > .kui-popup-menu {
+  align-self: stretch;
+}
+[data-kui-tree-menu-row] > .kui-popup-menu > .kui-popup-menu__trigger {
+  min-height: 0;
+}
+@media (hover: hover) {
+  [data-kui-tree-menu-row]:not([aria-selected="true"], :hover, :focus-within)
+    > .kui-popup-menu
+    > .kui-popup-menu__trigger[aria-expanded="false"] {
+    opacity: 0;
+  }
 }
 /* The row's interaction visibility reveals the trigger on hover or focus, and
    keeps it visible while its menu is open. A placeholder row reveals nothing. */

@@ -16,12 +16,13 @@ import {
 } from '@kerfjs/ui/wire-tree-list';
 import { signal } from 'kerfjs';
 import { delegateActions } from 'kerfjs/actions';
-import { File, FileCode, Folder, Plus } from 'lucide';
+import { Ellipsis, File, FileCode, Folder, Plus } from 'lucide';
 
 const PICK = 'tree-list-demo-pick';
 /** The source id the "New node" drag carries. */
 const NEW_NODE = 'tree-list-demo-new';
 const TOGGLE = 'tree-list-demo-toggle';
+const SHOW_PROJECT = 'tree-list-demo-show-project';
 
 const folder = <LucideIcon icon={Folder} name="folder" />;
 const code = <LucideIcon icon={FileCode} name="file-code" />;
@@ -38,14 +39,17 @@ const LAZY: Record<string, readonly TreeListNode[]> = {
 const INITIAL_EXPANDED: Record<string, readonly string[]> = {
   files: ['src', 'components'],
   outline: ['pane', 'toolbar', 'folders'],
+  projects: ['core'],
 };
 const expanded = signal<Record<string, ReadonlySet<string>>>(
   Object.fromEntries(
     Object.entries(INITIAL_EXPANDED).map(([id, ids]) => [id, new Set(ids)]),
   ),
 );
-const selected = signal<Record<string, string>>({ files: 'button' });
+const INITIAL_SELECTED = { files: 'button', projects: 'core' };
+const selected = signal<Record<string, string>>(INITIAL_SELECTED);
 const loaded = signal<ReadonlySet<string>>(new Set());
+const projectResult = signal('');
 /** How many nodes the outline's "New node" source has added. */
 const added = signal(0);
 
@@ -64,8 +68,9 @@ export function resetTreeListDemo(): void {
   expanded.value = Object.fromEntries(
     Object.entries(INITIAL_EXPANDED).map(([id, ids]) => [id, new Set(ids)]),
   );
-  selected.value = { files: 'button' };
+  selected.value = INITIAL_SELECTED;
   loaded.value = new Set();
+  projectResult.value = '';
   outline.value = OUTLINE;
   added.value = 0;
 }
@@ -87,6 +92,9 @@ export function wireTreeListDemo(canvas: HTMLElement): () => void {
         ...selected.value,
         [treeOf(target)]: target.dataset.itemId!,
       };
+    },
+    [SHOW_PROJECT]: (_event, target) => {
+      projectResult.value = `Opened ${target.dataset.projectName}`;
     },
     [TOGGLE]: (_event, target) => {
       const tree = treeOf(target);
@@ -267,6 +275,40 @@ const OUTLINE: TreeListNode[] = [
 ];
 const outline = signal<readonly TreeListNode[]>(OUTLINE);
 
+const projectMenu = (name: string, disabled = false) => ({
+  label: `Actions for ${name}`,
+  icon: <LucideIcon icon={Ellipsis} name="ellipsis" />,
+  items: [
+    {
+      label: 'Show project',
+      action: SHOW_PROJECT,
+      attributes: { 'data-project-name': name },
+    },
+  ],
+  disabled,
+});
+const PROJECTS: readonly TreeListNode[] = [
+  {
+    id: 'core',
+    label: 'Core workspace',
+    icon: folder,
+    trailingMenu: projectMenu('Core workspace'),
+    children: [{ id: 'home', label: 'Home site' }],
+  },
+  {
+    id: 'library',
+    label: 'Design library',
+    icon: folder,
+    trailingMenu: projectMenu('Design library'),
+  },
+  {
+    id: 'archive',
+    label: 'Shared archive',
+    icon: folder,
+    trailingMenu: projectMenu('Shared archive', true),
+  },
+];
+
 export function TreeListDemo() {
   const open = expanded.value;
   const chosen = selected.value;
@@ -315,6 +357,23 @@ export function TreeListDemo() {
           toggleAction={TOGGLE}
           density="compact"
         />
+      </CatalogExample>
+      <CatalogExample
+        label="Project Actions"
+        note="Open a row’s actions with its trailing button, a right-click, or Shift+F10. The menu leaves the tree’s selection in place."
+        viewport={{ width: 'compact' }}
+      >
+        <TreeList
+          keyedRows
+          id="projects"
+          label="Projects"
+          nodes={PROJECTS}
+          expanded={open.projects ?? new Set()}
+          selected={chosen.projects}
+          action={PICK}
+          toggleAction={TOGGLE}
+        />
+        <output data-tree-list-demo-command="">{projectResult.value}</output>
       </CatalogExample>
     </CatalogExampleStack>
   );

@@ -10,7 +10,9 @@ import {
   type RootDataAttributes,
 } from '../../../../shared/dom/extension-attributes.js';
 import { remify } from '../../../../shared/styles/css-values.js';
+import { renderPopupMenu } from '../../../actions/popup-menu/popup-menu.js';
 import { DisclosureArrow } from '../../../navigation/disclosure-arrow/disclosure-arrow.js';
+import type { ListActionRowTrailingMenu } from '../../list-action-row/list-action-row.js';
 import { listItemContent } from '../internal/list-item-content.js';
 
 export interface ListTreeItemProps {
@@ -19,6 +21,7 @@ export interface ListTreeItemProps {
   readonly description?: string | SafeHtml;
   readonly icon?: SafeHtml;
   readonly trailing?: KerfUiContent;
+  readonly menu?: ListActionRowTrailingMenu & { readonly primaryId: string };
   readonly level: number;
   readonly position: number;
   readonly setSize: number;
@@ -48,6 +51,7 @@ export function ListTreeItem({
   description,
   icon,
   trailing,
+  menu,
   level,
   position,
   setSize,
@@ -62,35 +66,41 @@ export function ListTreeItem({
   action,
   toggleAction,
 }: ListTreeItemProps) {
-  return (
-    <button
-      {...filterDataAttributes(
-        rootAttributes,
-        new Set(['data-component', 'data-key', 'data-action', 'data-item-id']),
-      )}
-      type="button"
-      role="treeitem"
-      class="kui-list-item"
-      style={`--_kui-list-item-tree-level:${level}`}
-      tabindex={focusable ? 0 : -1}
-      data-component="list-item"
-      data-key={itemId}
-      data-action={disabled ? undefined : action}
-      data-item-id={itemId}
-      data-has-icon={String(Boolean(icon))}
-      data-has-description={String(Boolean(description))}
-      data-density={density === 'standard' ? 'default' : density}
-      data-divider="none"
-      data-kui-tree-row=""
-      data-kui-disabled={disabled ? 'true' : undefined}
-      draggable={draggable && !disabled ? 'true' : undefined}
-      aria-level={String(level)}
-      aria-posinset={String(position)}
-      aria-setsize={String(setSize)}
-      aria-expanded={expandable ? String(expanded) : undefined}
-      aria-selected={String(selected)}
-      aria-disabled={disabled ? 'true' : undefined}
-    >
+  const row = {
+    ...filterDataAttributes(
+      rootAttributes,
+      new Set([
+        'data-component',
+        'data-key',
+        'data-action',
+        'data-item-id',
+        'data-kui-tree-menu-row',
+      ]),
+    ),
+    role: 'treeitem',
+    class: 'kui-list-item',
+    style: `--_kui-list-item-tree-level:${level}`,
+    tabindex: focusable ? 0 : -1,
+    'data-component': 'list-item',
+    'data-key': itemId,
+    'data-item-id': itemId,
+    'data-has-icon': String(Boolean(icon)),
+    'data-has-description': String(Boolean(description)),
+    'data-density': density === 'standard' ? 'default' : density,
+    'data-divider': 'none',
+    'data-kui-tree-row': '',
+    'data-kui-disabled': disabled ? 'true' : undefined,
+    draggable: draggable && !disabled ? ('true' as const) : undefined,
+    'aria-level': String(level),
+    'aria-posinset': String(position),
+    'aria-setsize': String(setSize),
+    'aria-expanded': expandable ? String(expanded) : undefined,
+    'aria-selected': String(selected),
+    'aria-disabled': disabled ? 'true' : undefined,
+  };
+  const primaryAction = disabled ? undefined : action;
+  const content = (
+    <>
       <span
         class="kui-list-item__disclosure"
         aria-hidden="true"
@@ -102,6 +112,44 @@ export function ListTreeItem({
         ) : null}
       </span>
       {listItemContent({ label, description, icon, trailing, tile: null })}
-    </button>
+    </>
+  );
+  if (!menu)
+    return (
+      <button {...row} type="button" data-action={primaryAction}>
+        {content}
+      </button>
+    );
+
+  const menuDisabled = disabled || Boolean(menu.disabled);
+  return (
+    <div
+      {...row}
+      data-kui-tree-menu-row=""
+      aria-labelledby={menu.primaryId}
+      aria-haspopup={menuDisabled ? undefined : 'menu'}
+      aria-keyshortcuts={menuDisabled ? undefined : 'Shift+F10 ContextMenu'}
+    >
+      <div
+        id={menu.primaryId}
+        class="kui-list-item__tree-primary"
+        data-action={primaryAction}
+        data-item-id={itemId}
+      >
+        {content}
+      </div>
+      {renderPopupMenu(
+        {
+          label: menu.label,
+          icon: menu.icon,
+          items: menu.items,
+          placement: menu.placement ?? 'bottom-end',
+          caret: false,
+          disabled: menuDisabled,
+          rootAttributes: { 'data-kui-tree-row-menu': '' },
+        },
+        -1,
+      )}
+    </div>
   );
 }

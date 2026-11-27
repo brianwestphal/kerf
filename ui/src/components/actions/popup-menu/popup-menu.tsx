@@ -421,6 +421,7 @@ interface PopupMenuContentProps {
   disabled: boolean;
   items: readonly PopupMenuEntry[];
   popupNote: string | undefined;
+  triggerTabIndex: -1 | undefined;
 }
 
 /** The trigger and the menu: everything inside the root. */
@@ -434,6 +435,7 @@ function renderContent({
   disabled,
   items,
   popupNote,
+  triggerTabIndex,
 }: PopupMenuContentProps): SafeHtml {
   return (
     <>
@@ -451,6 +453,7 @@ function renderContent({
           aria-haspopup="menu"
           aria-expanded="false"
           disabled={disabled}
+          tabindex={triggerTabIndex}
         >
           {icon}
           {triggerContent === undefined ? null : (
@@ -486,23 +489,31 @@ function renderContent({
  * submenus appear above or below their parent menu so their rows do not cover
  * the parent list.
  */
-export function PopupMenu({
-  text,
-  label,
-  icon,
-  triggerContent,
-  items,
-  placement = 'bottom-start',
-  caret = triggerContent === undefined,
-  disabled = false,
-  emphasis = 'plain',
-  size = 'default',
-  rootAttributes = {},
-  slot,
-  context = false,
-  anchor,
-  popupNote,
-}: PopupMenuProps) {
+export function PopupMenu(props: PopupMenuProps): SafeHtml {
+  return renderPopupMenu(props);
+}
+
+/** Internal entry for a menu embedded in a composite with roving focus. */
+export function renderPopupMenu(
+  {
+    text,
+    label,
+    icon,
+    triggerContent,
+    items,
+    placement = 'bottom-start',
+    caret = triggerContent === undefined,
+    disabled = false,
+    emphasis = 'plain',
+    size = 'default',
+    rootAttributes = {},
+    slot,
+    context = false,
+    anchor,
+    popupNote,
+  }: PopupMenuProps,
+  triggerTabIndex?: -1,
+): SafeHtml {
   if (
     anchor !== undefined &&
     (!context || !Number.isFinite(anchor.x) || !Number.isFinite(anchor.y))
@@ -526,6 +537,7 @@ export function PopupMenu({
       ...(triggerContent === undefined ? [] : [String(triggerContent)]),
       // Only a note adds a part, so other menus keep their keys.
       ...(popupNote === undefined ? [] : [`note:${popupNote}`]),
+      ...(triggerTabIndex === undefined ? [] : [String(triggerTabIndex)]),
     ],
     items,
   );
@@ -541,6 +553,7 @@ export function PopupMenu({
       disabled,
       items,
       popupNote,
+      triggerTabIndex,
     });
     cachePopupMenuContent(cacheKey, content);
   }

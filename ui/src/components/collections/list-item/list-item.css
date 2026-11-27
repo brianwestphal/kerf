@@ -7,15 +7,20 @@
     --kui-list-item-icon-size,
     var(--kui-list-row-icon-size, remify(18px))
   );
+  --_kui-list-item-layout-columns: var(
+    --kui-list-item-columns,
+    minmax(0, 1fr) auto
+  );
+  --_kui-list-item-block-padding: var(
+    --kui-list-item-padding-block,
+    var(--kui-layout-item-padding, remify(8px))
+  );
   display: grid;
   width: calc(100% - (2 * var(--kui-layout-inline-margin, remify(8px))));
   min-height: var(--kui-list-item-min-height, remify(44px));
   overflow: hidden;
   margin-inline: var(--kui-layout-inline-margin, remify(8px));
-  padding-block: var(
-    --kui-list-item-padding-block,
-    var(--kui-layout-item-padding, remify(8px))
-  );
+  padding-block: var(--_kui-list-item-block-padding);
   padding-inline: var(
     --kui-list-item-padding-inline,
     var(
@@ -33,7 +38,7 @@
   color: var(--kui-list-item-color, var(--kui-color-neutral-on-normal));
   background: var(--kui-list-item-background, transparent);
   cursor: pointer;
-  grid-template-columns: var(--kui-list-item-columns, minmax(0, 1fr) auto);
+  grid-template-columns: var(--_kui-list-item-layout-columns);
   align-items: var(--kui-list-item-align-items, center);
   column-gap: var(--kui-list-item-gap, var(--kui-layout-item-gap, remify(8px)));
   font: inherit;
@@ -42,13 +47,19 @@
 }
 
 .kui-list-item[data-density="compact"] {
+  --_kui-list-item-block-padding: var(
+    --kui-list-item-padding-block,
+    remify(4px)
+  );
   min-height: var(--kui-list-item-min-height, remify(36px));
-  padding-block: var(--kui-list-item-padding-block, remify(4px));
 }
 
 .kui-list-item[data-density="spacious"] {
+  --_kui-list-item-block-padding: var(
+    --kui-list-item-padding-block,
+    remify(12px)
+  );
   min-height: var(--kui-list-item-min-height, remify(52px));
-  padding-block: var(--kui-list-item-padding-block, remify(12px));
 }
 
 .kui-list-item[data-has-description="true"] {
@@ -99,7 +110,7 @@
 }
 
 .kui-list-item[data-has-icon="true"] {
-  grid-template-columns: var(
+  --_kui-list-item-layout-columns: var(
     --kui-list-item-columns,
     var(--_kui-list-item-icon-size) minmax(0, 1fr) auto
   );
@@ -506,6 +517,20 @@
     var(--_kui-list-item-tree-start) + remify(16px) +
       var(--kui-space-2xs, remify(4px))
   );
+}
+.kui-list-item[data-kui-tree-menu-row] {
+  grid-template-columns: minmax(0, 1fr) auto;
+  padding-block: 0;
+  padding-inline-end: 0;
+}
+.kui-list-item__tree-primary {
+  display: grid;
+  grid-template-columns: var(--_kui-list-item-layout-columns);
+  min-inline-size: 0;
+  padding-block: var(--_kui-list-item-block-padding);
+  align-self: stretch;
+  align-items: inherit;
+  column-gap: inherit;
 }
 /* KF-WXP6AB: a before/after drop line starts at the target's label edge,
    so it shows the level the dragged row lands at. */

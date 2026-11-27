@@ -4,6 +4,12 @@
 import { delegate } from 'kerfjs';
 
 import {
+  closedPopupMenuRoot,
+  isPopupMenuOpen,
+  openPopupMenu,
+  openPopupMenuAt,
+} from '../../../actions/popup-menu/popup-menu.js';
+import {
   type TreeListDragOptions,
   wireTreeListDrag,
 } from './tree-list-drag.js';
@@ -17,6 +23,7 @@ export type {
 export { treeListExternalDrop } from './tree-list-drag.js';
 
 const ROW = '.kui-tree-list > [role="treeitem"]';
+const MENU = '[data-kui-tree-row-menu]';
 const TYPEAHEAD_RESET_MS = 500;
 
 const rowsOf = (row: HTMLElement) =>
@@ -49,7 +56,8 @@ function toggle(row: HTMLElement) {
  *   last.
  * - Right expands a collapsed row, or moves into an expanded one's first
  *   child; Left collapses an expanded row, or moves to its parent.
- * - Enter and Space choose the row (its native button click sends `action`).
+ * - Enter and Space choose the row through its primary action.
+ * - Shift+F10 and the context-menu key open a row's trailing menu when present.
  * - Typing letters moves to the next row whose label starts with them.
  * Focus keeps one Tab stop in the tree (roving tabindex). With `onMove`,
  * `draggable` rows also drag before, after, or inside other rows of their
@@ -62,12 +70,70 @@ export function wireTreeList(
 ): () => void {
   let typed = '';
   let typedAt = 0;
+  const menuOrigins = new WeakMap<HTMLElement, HTMLElement>();
+  const showRowMenu = (
+    row: HTMLElement,
+    point?: { x: number; y: number },
+  ): boolean => {
+    const menu = row.querySelector<HTMLElement>(`:scope > ${MENU}`);
+    if (!menu?.querySelector(':scope > button:not(:disabled)')) return false;
+    if (point) openPopupMenuAt(menu, point.x, point.y);
+    else openPopupMenu(menu);
+    if (!isPopupMenuOpen(menu)) return false;
+    menuOrigins.set(menu, row);
+    return true;
+  };
+  const stopContext = delegate<HTMLElement>(
+    root,
+    'contextmenu',
+    ROW,
+    (event, row) => {
+      if (
+        event.defaultPrevented ||
+        (event.target instanceof Element && event.target.closest(MENU))
+      )
+        return;
+      const { clientX: x, clientY: y } = event as MouseEvent;
+      if (showRowMenu(row, x || y ? { x, y } : undefined))
+        event.preventDefault();
+    },
+  );
+  const restoreMenuFocus = (event: Event) => {
+    const menu = closedPopupMenuRoot(event);
+    if (!menu) return;
+    const row = menuOrigins.get(menu);
+    menuOrigins.delete(menu);
+    const trigger = menu.querySelector(':scope > button');
+    if (row?.isConnected && root.ownerDocument.activeElement === trigger)
+      row.focus({ preventScroll: true });
+  };
+  root.addEventListener('toggle', restoreMenuFocus, true);
   const stopFocus = delegate<HTMLElement>(root, 'focusin', ROW, (_e, row) => {
     for (const other of rowsOf(row)) other.tabIndex = other === row ? 0 : -1;
   });
   const stopKeys = delegate<HTMLElement>(root, 'keydown', ROW, (event, row) => {
     const key = event as KeyboardEvent;
-    if (key.ctrlKey || key.metaKey || key.altKey) return;
+    if (key.target !== row || key.ctrlKey || key.metaKey || key.altKey) return;
+    if (
+      (key.key === 'ContextMenu' || (key.shiftKey && key.key === 'F10')) &&
+      showRowMenu(row)
+    ) {
+      key.preventDefault();
+      return;
+    }
+    if (
+      (key.key === 'Enter' || key.key === ' ') &&
+      row.hasAttribute('data-kui-tree-menu-row')
+    ) {
+      if (!key.repeat)
+        row
+          .querySelector<HTMLElement>(
+            ':scope > .kui-list-item__tree-primary[data-action]',
+          )
+          ?.click();
+      key.preventDefault();
+      return;
+    }
     const rows = rowsOf(row);
     const index = rows.indexOf(row);
     const expanded = row.getAttribute('aria-expanded');
@@ -143,6 +209,8 @@ export function wireTreeList(
   return () => {
     stopFocus();
     stopKeys();
+    stopContext();
+    root.removeEventListener('toggle', restoreMenuFocus, true);
     stopDrag();
   };
 }

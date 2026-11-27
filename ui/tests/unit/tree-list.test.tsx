@@ -4,6 +4,7 @@ import { each, mount, signal } from 'kerfjs';
 import { delegateActions } from 'kerfjs/actions';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
+import { POPUP_MENU_OPEN_EVENT } from '../../src/components/actions/popup-menu/internal/popup-menu-events.js';
 import { ListTreeItem } from '../../src/components/collections/list-item/parts/tree-item.js';
 import {
   moveTreeListNode,
@@ -243,6 +244,31 @@ describe('TreeList markup', () => {
     return host.firstElementChild as HTMLElement;
   };
 
+  it('gives a row menu a separate trigger while keeping the treeitem name and focus', () => {
+    const tree = render({
+      nodes: [
+        {
+          id: 'some:project',
+          label: 'Platform',
+          trailingMenu: {
+            label: 'Actions for Platform',
+            icon: <span>…</span>,
+            items: [{ label: 'Show project', action: 'show-project' }],
+          },
+        },
+      ],
+    });
+    const row = tree.firstElementChild!;
+    const primary = row.querySelector('[data-action="pick"]')!;
+    const trigger = row.querySelector('[aria-haspopup="menu"]')!;
+    expect(row.getAttribute('aria-labelledby')).toBe(primary.id);
+    expect(primary.textContent).toBe('Platform');
+    expect(row.getAttribute('tabindex')).toBe('0');
+    expect(trigger.getAttribute('tabindex')).toBe('-1');
+    expect(primary.contains(trigger)).toBe(false);
+    expect(row.hasAttribute('data-action')).toBe(false);
+  });
+
   it('owns its divider-free tree-row marker over caller attributes', () => {
     const host = document.createElement('div');
     host.innerHTML = String(
@@ -375,7 +401,10 @@ describe('wireTreeList', () => {
     document.body.replaceChildren();
   });
 
-  function open(initial: readonly string[] = []) {
+  function open(
+    initial: readonly string[] = [],
+    treeNodes: readonly TreeListNode[] = nodes,
+  ) {
     const root = document.createElement('div');
     document.body.append(root);
     const expanded = signal<ReadonlySet<string>>(new Set(initial));
@@ -385,7 +414,7 @@ describe('wireTreeList', () => {
       <TreeList
         id="files"
         label="Files"
-        nodes={nodes}
+        nodes={treeNodes}
         expanded={expanded.value}
         selected={selected.value}
         action="pick"
@@ -429,6 +458,105 @@ describe('wireTreeList', () => {
       (document.activeElement as HTMLElement).dataset.itemId;
     return { root, row, press, focused, expanded, picks };
   }
+
+  function openMenuTree() {
+    const trailingMenu = {
+      label: 'Actions for Platform',
+      icon: <span>…</span>,
+      items: [{ label: 'Show project', action: 'show-project' }],
+    };
+    const tree = open(
+      [],
+      [
+        { id: 'project', label: 'Platform', trailingMenu },
+        {
+          id: 'disabled',
+          label: 'Locked project',
+          disabled: true,
+          trailingMenu: { ...trailingMenu, placement: 'top-end' },
+        },
+        { id: 'plain', label: 'Plain row' },
+      ],
+    );
+    const project = tree.row('project');
+    const menu = project.querySelector<HTMLElement>(
+      '[data-kui-tree-row-menu]',
+    )!;
+    const trigger = menu.querySelector('button')!;
+    const panel = menu.querySelector('[role="menu"]')!;
+    const opened = vi.fn((event: Event) => {
+      trigger.setAttribute('aria-expanded', 'true');
+      return (event as CustomEvent).detail;
+    });
+    const toggleMenu = (state: 'open' | 'closed') => {
+      if (state === 'closed') trigger.setAttribute('aria-expanded', 'false');
+      const event = new Event('toggle');
+      Object.defineProperty(event, 'newState', { value: state });
+      panel.dispatchEvent(event);
+    };
+    return { ...tree, project, menu, trigger, opened, toggleMenu };
+  }
+
+  it('opens the active row menu by keyboard and restores row focus on close', () => {
+    const { project, menu, trigger, opened, press, toggleMenu, picks } =
+      openMenuTree();
+    project.focus();
+    // An unregistered menu leaves the platform context behavior available.
+    expect(press('ContextMenu').defaultPrevented).toBe(false);
+    trigger.focus();
+    toggleMenu('closed');
+    expect(document.activeElement).toBe(trigger);
+    project.focus();
+    menu.addEventListener(POPUP_MENU_OPEN_EVENT, opened);
+    expect(press('F10', { shiftKey: true }).defaultPrevented).toBe(true);
+    expect(opened).toHaveReturnedWith({});
+    toggleMenu('open');
+    trigger.focus();
+    toggleMenu('closed');
+    expect(document.activeElement).toBe(project);
+    expect(picks).toEqual([]);
+  });
+
+  it('shares the menu with context clicks and preserves focus moved elsewhere', () => {
+    const { project, menu, trigger, opened, row, toggleMenu } = openMenuTree();
+    menu.addEventListener(POPUP_MENU_OPEN_EVENT, opened);
+    const context = (target: HTMLElement, x = 0, y = 0, consumed = false) => {
+      const event = new MouseEvent('contextmenu', {
+        bubbles: true,
+        cancelable: true,
+        clientX: x,
+        clientY: y,
+      });
+      if (consumed) event.preventDefault();
+      target.dispatchEvent(event);
+      return event.defaultPrevented;
+    };
+    expect(context(trigger)).toBe(false);
+    expect(context(row('disabled'))).toBe(false);
+    expect(context(project, 20, 40, true)).toBe(true);
+    expect(opened).not.toHaveBeenCalled();
+    expect(context(project, 20, 40)).toBe(true);
+    expect(opened).toHaveReturnedWith({ point: { x: 20, y: 40 } });
+    row('plain').focus();
+    toggleMenu('closed');
+    expect(document.activeElement).toBe(row('plain'));
+    expect(context(project)).toBe(true);
+    expect(opened).toHaveLastReturnedWith({});
+  });
+
+  it('keeps row activation separate from the menu trigger and ignores a repeated key', () => {
+    const { project, row, trigger, press, picks } = openMenuTree();
+    trigger.focus();
+    expect(press('ArrowDown').defaultPrevented).toBe(false);
+    expect(document.activeElement).toBe(trigger);
+    project.focus();
+    expect(press('Enter').defaultPrevented).toBe(true);
+    expect(press(' ', { repeat: true }).defaultPrevented).toBe(true);
+    expect(press(' ').defaultPrevented).toBe(true);
+    row('disabled').focus();
+    expect(press('Enter').defaultPrevented).toBe(true);
+    expect(picks).toEqual(['project', 'project']);
+  });
 
   it('moves between rows and keeps one Tab stop', () => {
     const { row, press, focused } = open(['src']);

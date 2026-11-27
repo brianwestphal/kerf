@@ -813,7 +813,7 @@ declare function closedPopupMenuRoot(event: Event): PopupMenuElement | undefined
  * submenus appear above or below their parent menu so their rows do not cover
  * the parent list.
  */
-declare function PopupMenu({ text, label, icon, triggerContent, items, placement, caret, disabled, emphasis, size, rootAttributes, slot, context, anchor, popupNote, }: PopupMenuProps): SafeHtml;
+declare function PopupMenu(props: PopupMenuProps): SafeHtml;
 
 export { PopupMenu, type PopupMenuAnchor, type PopupMenuDivider, type PopupMenuElement, type PopupMenuEmphasis, type PopupMenuEntry, type PopupMenuHeading, type PopupMenuItem, type PopupMenuPlacement, type PopupMenuProps, type PopupMenuSize, closePopupMenu, closedPopupMenuRoot, isPopupMenuOpen, openPopupMenu, openPopupMenuAt };
 ```
@@ -6365,9 +6365,13 @@ export { FramedList, type FramedListProps, FramedListRow, type FramedListRowProp
 ```ts
 import * as kerfjs from 'kerfjs';
 import { R as RootDataAttributes } from './extension-attributes-CnqvBmj3.js';
-import { T as TreeListNode } from './tree-rows-BXChApji.js';
-export { a as TreeListRow, i as isExpandable, m as moveTreeListNode, t as treeListPath, b as treeListRows } from './tree-rows-BXChApji.js';
+import { T as TreeListNode } from './tree-rows-DIQgpe2N.js';
+export { a as TreeListRow, i as isExpandable, m as moveTreeListNode, t as treeListPath, b as treeListRows } from './tree-rows-DIQgpe2N.js';
 import './semantic-content-BbzjvSu9.js';
+import './list-action-row.js';
+import './list-icon-tile-B8dr97OW.js';
+import './css-values.js';
+import './popup-menu.js';
 
 interface TreeListProps {
     /** Identifies the tree for `wireTreeList` and in tests. */
@@ -6419,8 +6423,11 @@ export { TreeList, TreeListNode, type TreeListProps };
 import { SafeHtml } from 'kerfjs';
 import { R as RootDataAttributes } from './extension-attributes-CnqvBmj3.js';
 import { CssLength } from './css-values.js';
-import { T as TreeListNode } from './tree-rows-BXChApji.js';
+import { T as TreeListNode } from './tree-rows-DIQgpe2N.js';
 import './semantic-content-BbzjvSu9.js';
+import './list-action-row.js';
+import './list-icon-tile-B8dr97OW.js';
+import './popup-menu.js';
 
 /** One column: the children of the node chosen in the column before it. */
 interface ExplorerColumn {

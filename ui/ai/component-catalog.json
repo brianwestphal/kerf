@@ -3641,7 +3641,8 @@
       "description": "A hierarchical list of ListItem rows indented by depth, with a disclosure arrow on each row that has children, keyboard tree navigation, and selection; an ARIA tree whose nodes, expansion, and selection the application owns.",
       "uses": [
         "list-item",
-        "disclosure-arrow"
+        "disclosure-arrow",
+        "popup-menu"
       ],
       "purpose": "Show and navigate a hierarchy (a file tree, a document outline, nested categories) as expandable, selectable rows that look like the app's lists.",
       "publicExports": [
@@ -3655,7 +3656,8 @@
       ],
       "useWhen": [
         "People browse or pick from nested items: render TreeList with nodes, expanded, and selected; handle action (choose) and toggleAction (open or close) with delegateActions and re-render; wire wireTreeList for the keyboard.",
-        "Children load on demand: mark the node hasChildren and load them when toggleAction expands it."
+        "Children load on demand: mark the node hasChildren and load them when toggleAction expands it.",
+        "A node has secondary actions: set trailingMenu and import @kerfjs/ui/popup-menu/register once. The button, right-click, and Shift+F10 open the same menu, and choosing its command preserves the tree selection."
       ],
       "avoidWhen": [
         "Do not indent ListItem rows or draw disclosure arrows yourself; use TreeList.",
@@ -3682,18 +3684,20 @@
       ],
       "appOwns": [
         "the nodes and loading their children",
-        "which nodes are expanded (flip the id in toggleAction) and which is selected (set it in action)"
+        "which nodes are expanded (flip the id in toggleAction) and which is selected (set it in action)",
+        "each trailing menu command and any row identity carried in its item attributes"
       ],
       "variants": [
         "standard density",
         "compact density",
-        "rows with icons, descriptions, and trailing content",
+        "rows with icons, descriptions, trailing content, and optional overflow menus",
         "disabled rows",
         "lazy children (hasChildren)"
       ],
       "accessibility": [
-        "The tree is role=tree named by label; each row is a treeitem button with aria-level, aria-posinset, aria-setsize, aria-expanded on rows that expand, and aria-selected. A disabled row is aria-disabled and stays reachable.",
-        "With wireTreeList: one Tab stop in the tree; Down and Up move, Home and End jump, Right opens a row or enters its first child, Left closes it or returns to its parent, Enter and Space choose, and typing a label's first letters finds the next match."
+        "The tree is role=tree named by label. Each treeitem has aria-level, aria-posinset, aria-setsize, aria-expanded on rows that expand, and aria-selected. A disabled row is aria-disabled and stays reachable.",
+        "With wireTreeList: one Tab stop in the tree; Down and Up move, Home and End jump, Right opens a row or enters its first child, Left closes it or returns to its parent, Enter and Space choose, and typing a label's first letters finds the next match.",
+        "A row with a trailing menu names a distinct menu button and advertises Shift+F10 and ContextMenu on its treeitem. Escape returns focus to the treeitem when the shortcut opened the menu."
       ],
       "content": {
         "interactive": [

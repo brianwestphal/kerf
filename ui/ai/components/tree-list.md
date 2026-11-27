@@ -12,6 +12,7 @@ Show and navigate a hierarchy (a file tree, a document outline, nested categorie
 
 - People browse or pick from nested items: render TreeList with nodes, expanded, and selected; handle action (choose) and toggleAction (open or close) with delegateActions and re-render; wire wireTreeList for the keyboard.
 - Children load on demand: mark the node hasChildren and load them when toggleAction expands it.
+- A node has secondary actions: set trailingMenu and import @kerfjs/ui/popup-menu/register once. The button, right-click, and Shift+F10 open the same menu, and choosing its command preserves the tree selection.
 
 **Not when:**
 
@@ -41,7 +42,7 @@ Exact prop names and types: [`@kerfjs/ui/tree-list`](../public-api-signatures-v1
 
 - standard density
 - compact density
-- rows with icons, descriptions, and trailing content
+- rows with icons, descriptions, trailing content, and optional overflow menus
 - disabled rows
 - lazy children (hasChildren)
 
@@ -50,11 +51,11 @@ Exact prop names and types: [`@kerfjs/ui/tree-list`](../public-api-signatures-v1
 - Parents: any.
 - Contexts: `application-ui`.
 - Children: unrestricted.
-- Built from: [ListItem](./list-item.md), [DisclosureArrow](./disclosure-arrow.md).
+- Built from: [ListItem](./list-item.md), [DisclosureArrow](./disclosure-arrow.md), [PopupMenu](./popup-menu.md).
 
 ## State and wiring
 
-**The app owns:** the nodes and loading their children; which nodes are expanded (flip the id in toggleAction) and which is selected (set it in action).
+**The app owns:** the nodes and loading their children; which nodes are expanded (flip the id in toggleAction) and which is selected (set it in action); each trailing menu command and any row identity carried in its item attributes.
 
 **Wiring:** `wireTreeList` is required.
 
@@ -73,8 +74,9 @@ Margin: child · border: child · padding: child (layout role: structure). `self
 
 ## Accessibility
 
-- The tree is role=tree named by label; each row is a treeitem button with aria-level, aria-posinset, aria-setsize, aria-expanded on rows that expand, and aria-selected. A disabled row is aria-disabled and stays reachable.
+- The tree is role=tree named by label. Each treeitem has aria-level, aria-posinset, aria-setsize, aria-expanded on rows that expand, and aria-selected. A disabled row is aria-disabled and stays reachable.
 - With wireTreeList: one Tab stop in the tree; Down and Up move, Home and End jump, Right opens a row or enters its first child, Left closes it or returns to its parent, Enter and Space choose, and typing a label's first letters finds the next match.
+- A row with a trailing menu names a distinct menu button and advertises Shift+F10 and ContextMenu on its treeitem. Escape returns focus to the treeitem when the shortcut opened the menu.
 
 The component renders controls inside it, so it cannot sit in the zones of a component whose root is a control or link. (`KUI-V014`)
 
@@ -90,6 +92,6 @@ Everything else is internal: `kerf-ui-analyze` reports private or unknown `.kui-
 
 ## Related
 
-- Components: [ListItem](./list-item.md), [DisclosureArrow](./disclosure-arrow.md), [Disclosure](./disclosure.md), [ColumnExplorer](./column-explorer.md).
+- Components: [ListItem](./list-item.md), [DisclosureArrow](./disclosure-arrow.md), [PopupMenu](./popup-menu.md), [Disclosure](./disclosure.md), [ColumnExplorer](./column-explorer.md).
 - Docs: [`docs/tree-list.md`](../../docs/tree-list.md), [`docs/component-selection.md#problem-to-component-matrix`](../../docs/component-selection.md#problem-to-component-matrix).
 - UX catalog route: `?component=tree-list`.

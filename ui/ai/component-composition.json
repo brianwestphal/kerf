@@ -3123,6 +3123,11 @@
           "id": "which nodes are expanded (flip the id in toggleAction) and which is selected (set it in action)",
           "owner": "application",
           "required": false
+        },
+        {
+          "id": "each trailing menu command and any row identity carried in its item attributes",
+          "owner": "application",
+          "required": false
         }
       ],
       "wiring": {
@@ -3158,8 +3163,9 @@
       },
       "accessibility": {
         "obligations": [
-          "The tree is role=tree named by label; each row is a treeitem button with aria-level, aria-posinset, aria-setsize, aria-expanded on rows that expand, and aria-selected. A disabled row is aria-disabled and stays reachable.",
-          "With wireTreeList: one Tab stop in the tree; Down and Up move, Home and End jump, Right opens a row or enters its first child, Left closes it or returns to its parent, Enter and Space choose, and typing a label's first letters finds the next match."
+          "The tree is role=tree named by label. Each treeitem has aria-level, aria-posinset, aria-setsize, aria-expanded on rows that expand, and aria-selected. A disabled row is aria-disabled and stays reachable.",
+          "With wireTreeList: one Tab stop in the tree; Down and Up move, Home and End jump, Right opens a row or enters its first child, Left closes it or returns to its parent, Enter and Space choose, and typing a label's first letters finds the next match.",
+          "A row with a trailing menu names a distinct menu button and advertises Shift+F10 and ContextMenu on its treeitem. Escape returns focus to the treeitem when the shortcut opened the menu."
         ]
       },
       "content": { "interactive": [{ "kind": "contains" }] },

@@ -21,6 +21,10 @@ export {
 } from './model/tree-rows.js';
 
 const TREE_LIST_PROTECTED = new Set(['data-component', 'data-tree-list-id']);
+const domToken = (id: string) =>
+  Array.from(id, (character) => character.codePointAt(0)!.toString(16)).join(
+    '_',
+  );
 
 export interface TreeListProps {
   /** Identifies the tree for `wireTreeList` and in tests. */
@@ -77,6 +81,7 @@ export function TreeList({
   slot,
 }: TreeListProps) {
   const rows = treeListRows(nodes, expanded);
+  const treeKey = domToken(id);
   const visible = new Set(rows.map((row) => row.node.id));
   // The Tab stop: the selected row, or the nearest visible ancestor of a
   // selection inside a collapsed node, or else the first row.
@@ -93,6 +98,12 @@ export function TreeList({
       description={row.node.description}
       icon={row.node.icon}
       trailing={row.node.trailing}
+      menu={
+        row.node.trailingMenu && {
+          ...row.node.trailingMenu,
+          primaryId: `kui-tree-row:${treeKey}:${domToken(row.node.id)}`,
+        }
+      }
       level={row.level}
       position={row.position}
       setSize={row.setSize}
@@ -125,7 +136,7 @@ export function TreeList({
             rows.map((row) => row.node),
             (node) => renderRow(byNode.get(node)!),
             {
-              key: `tree-list:${Array.from(id, (character) => character.codePointAt(0)!.toString(16)).join('_')}`,
+              key: `tree-list:${treeKey}`,
               cacheKey: (node) => {
                 const row = byNode.get(node)!;
                 return JSON.stringify([

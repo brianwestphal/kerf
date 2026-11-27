@@ -412,7 +412,8 @@ export const generatedKerfCatalog = [
     "description": "Show and navigate a hierarchy (a file tree, a document outline, nested categories) as expandable, selectable rows that look like the app's lists.",
     "uses": [
       "list-item",
-      "disclosure-arrow"
+      "disclosure-arrow",
+      "popup-menu"
     ],
     "demoSource": "ui/ux-demo/demos/tree-list.tsx",
     "componentSource": "ui/src/components/collections/tree-list/tree-list.tsx",

@@ -53,6 +53,47 @@ Do not enable `keyedRows` inside an enclosing `each()` row; render its default
 markup so the outer row owns updates. HTML ids retain their normal unrestricted
 character set in either mode; keyed list identities are encoded internally.
 
+## Row actions
+
+Use `trailingMenu` for secondary row commands. Its shape matches the
+`ListActionRow` trailing menu. Register `@kerfjs/ui/popup-menu/register` once
+and keep `wireTreeList(root)` installed.
+When loading styles manually, include `@kerfjs/ui/popup-menu.css` for the menu.
+
+```tsx
+import "@kerfjs/ui/popup-menu/register";
+import { LucideIcon } from "@kerfjs/ui/lucide-icon";
+import { Ellipsis } from "lucide";
+
+const project: TreeListNode = {
+  id: "platform",
+  label: "Platform rollout",
+  trailingMenu: {
+    label: "Actions for Platform rollout",
+    icon: <LucideIcon icon={Ellipsis} name="ellipsis" />,
+    items: [
+      {
+        label: "Show project",
+        action: "show-project",
+        attributes: { "data-project-id": "platform" },
+      },
+    ],
+  },
+};
+```
+
+The trailing button opens the menu without choosing the row. A right-click
+on the row opens the same commands at the pointer. Shift+F10 or the Context
+Menu key opens them from the focused treeitem. Escape returns focus to the
+treeitem when it opened the menu. The tree keeps one Tab stop. Menu actions
+are dispatched through their own `data-action` values, and each item can carry
+the row identity through its `attributes`.
+
+The trigger appears on the selected row and on hover or focus. It stays
+visible while open and on devices without hover. A disabled node also disables
+its menu. Set `trailingMenu.disabled` to keep primary selection available while
+disabling the menu.
+
 ## Props
 
 - `id` and `label` (required): the tree's identity and accessible name.
@@ -78,6 +119,7 @@ neither action.
   row's disclosure arrow, so `toggleAction` stays the one place that changes
   `expanded`.
 - Enter and Space choose the row.
+- Shift+F10 and the Context Menu key open a row’s trailing menu when available.
 - Typing finds the next row whose label starts with the typed letters.
 
 ## Drag and drop
