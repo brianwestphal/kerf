@@ -114,7 +114,7 @@ export function ProgressBar({
           ) : null}
         </div>
       )}
-      <div class="kui-progress-bar__track-frame">
+      <div data-kui-progress-clip="">
         <progress
           class="kui-progress-bar__track"
           value={clamped}

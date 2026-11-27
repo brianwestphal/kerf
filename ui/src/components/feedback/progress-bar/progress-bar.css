@@ -6,6 +6,7 @@
   --_kui-progress-bar-fill: var(--kui-color-brand-fill-loud);
   --_kui-progress-bar-track: var(--kui-color-neutral-fill-normal);
   --_kui-progress-bar-height: remify(6px);
+  --_kui-progress-bar-sweep: kui-progress-bar-sweep 1.4s ease-in-out infinite;
 
   display: flex;
   width: 100%;
@@ -92,18 +93,20 @@
 
 /* The determinate track stays the flex item. The indeterminate band moves
    on its own layer inside a clip at the native track's dimensions. */
-.kui-progress-bar__track-frame {
+.kui-progress-bar > [data-kui-progress-clip] {
   display: contents;
 }
 
-.kui-progress-bar__track-frame:has(> .kui-progress-bar__track:indeterminate) {
+.kui-progress-bar
+  > [data-kui-progress-clip]:has(> .kui-progress-bar__track:indeterminate) {
   display: block;
   position: relative;
   overflow: hidden;
   border-radius: var(--kui-radius-pill);
 }
 
-.kui-progress-bar__track-frame:has(
+.kui-progress-bar
+  > [data-kui-progress-clip]:has(
     > .kui-progress-bar__track:indeterminate
   )::after {
   content: "";
@@ -119,7 +122,7 @@
   );
   pointer-events: none;
   transform: translateX(75%);
-  animation: kui-progress-bar-sweep 1.4s ease-in-out infinite;
+  animation: var(--_kui-progress-bar-sweep);
 }
 
 .kui-progress-bar__track:indeterminate::-webkit-progress-bar {
@@ -144,10 +147,8 @@
 
 /* Without motion the indeterminate band holds still in the middle. */
 @media (prefers-reduced-motion: reduce) {
-  .kui-progress-bar__track-frame:has(
-      > .kui-progress-bar__track:indeterminate
-    )::after {
-    animation: none;
+  .kui-progress-bar {
+    --_kui-progress-bar-sweep: none;
   }
 
   .kui-progress-bar__track::-webkit-progress-value {
@@ -155,15 +156,12 @@
   }
 }
 
-:root[data-kui-effects="static"]
-  .kui-progress-bar__track-frame:has(
-    > .kui-progress-bar__track:indeterminate
-  )::after {
-  animation: none;
+:root[data-kui-effects="static"] .kui-progress-bar {
+  --_kui-progress-bar-sweep: none;
 }
 
 @media (forced-colors: active) {
-  .kui-progress-bar__track-frame {
+  .kui-progress-bar[data-tone] {
     --_kui-progress-bar-fill: Highlight;
     --_kui-progress-bar-track: Canvas;
   }
@@ -174,13 +172,15 @@
   }
 
   /* Clip the moving solid band inside the high-contrast border. */
-  .kui-progress-bar__track-frame:has(> .kui-progress-bar__track:indeterminate) {
+  .kui-progress-bar
+    > [data-kui-progress-clip]:has(> .kui-progress-bar__track:indeterminate) {
     box-sizing: border-box;
     height: var(--_kui-progress-bar-height);
     border: 1px solid CanvasText;
   }
 
-  .kui-progress-bar__track-frame:has(
+  .kui-progress-bar
+    > [data-kui-progress-clip]:has(
       > .kui-progress-bar__track:indeterminate
     )::after {
     background: Highlight;
