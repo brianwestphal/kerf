@@ -11,20 +11,23 @@ test('LoadingSpinner sizes match the icon scale at wide and narrow widths', asyn
   expect(await defaults.count()).toBe(2);
   expect(
     await defaults.evaluateAll((spinners) =>
-      spinners.every(
-        (spinner) =>
-          spinner.getBoundingClientRect().width ===
-          Number.parseFloat(window.getComputedStyle(spinner).fontSize),
-      ),
+      spinners.every((spinner) => {
+        const { width, fontSize } = window.getComputedStyle(spinner);
+        return width === fontSize;
+      }),
     ),
   ).toBe(true);
   const inspect = async () =>
     sizes.locator('svg').evaluateAll((spinners) =>
-      spinners.map((spinner) => ({
-        size: spinner.getAttribute('data-size'),
-        width: spinner.getBoundingClientRect().width,
-        height: spinner.getBoundingClientRect().height,
-      })),
+      spinners.map((spinner) => {
+        // A rotating SVG has a larger axis-aligned bounding box at an angle.
+        const { width, height } = window.getComputedStyle(spinner);
+        return {
+          size: spinner.getAttribute('data-size'),
+          width: Number.parseFloat(width),
+          height: Number.parseFloat(height),
+        };
+      }),
     );
 
   expect(await inspect()).toEqual([
@@ -67,6 +70,20 @@ test('LoadingSpinner sizes match the icon scale at wide and narrow widths', asyn
     await page.screenshot({
       path: 'test-results/loading-spinner-page-narrow.png',
     });
+});
+
+test('LoadingSpinner rotates the outer SVG and respects reduced motion', async ({
+  page,
+}) => {
+  await page.goto('/?component=loading-spinner');
+  const spinner = page.locator('[data-demo-spinner-sizes] svg').first();
+  await expect(spinner).toHaveCSS(
+    'animation-name',
+    'kui-loading-spinner-rotate',
+  );
+  await expect(spinner.locator('path')).toHaveCSS('animation-name', 'none');
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await expect(spinner).toHaveCSS('animation-name', 'none');
 });
 
 test('LoadingSpinner colors inherit or paint the SVG inline', async ({

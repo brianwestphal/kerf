@@ -68,11 +68,25 @@ test('ProgressRing reports its value as a named progressbar and spins when indet
   expect(sizes).toEqual([16, 24, 40]);
 
   const connecting = demo.getByRole('progressbar', { name: 'Connecting' });
+  const svg = connecting.locator('svg');
   await expect(connecting).not.toHaveAttribute('aria-valuenow');
-  await expect(connecting.locator('svg')).toHaveCSS(
-    'animation-name',
-    'kui-progress-ring-spin',
-  );
+  await expect(svg).toHaveCSS('animation-name', 'kui-progress-ring-spin');
+  expect(
+    await svg.evaluate((element) =>
+      (element.getAnimations()[0]?.effect as KeyframeEffect)
+        .getKeyframes()
+        .at(-1),
+    ),
+  ).toMatchObject({ transform: 'rotate(270deg)' });
+  await expect(svg).toHaveCSS('rotate', 'none');
   await page.emulateMedia({ reducedMotion: 'reduce' });
-  await expect(connecting.locator('svg')).toHaveCSS('animation-name', 'none');
+  await expect(svg).toHaveCSS('animation-name', 'none');
+  expect(
+    await svg.evaluate((element) => {
+      const matrix = new DOMMatrixReadOnly(
+        window.getComputedStyle(element).transform,
+      );
+      return [matrix.a, matrix.b, matrix.c, matrix.d];
+    }),
+  ).toEqual([0, -1, 1, 0].map((value) => expect.closeTo(value, 5)));
 });

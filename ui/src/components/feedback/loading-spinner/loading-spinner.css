@@ -4,14 +4,12 @@
   height: 1em;
   overflow: visible;
   fill: currentColor;
+  /* The outer SVG can rotate without repainting the path on each frame. */
+  animation: kui-loading-spinner-rotate 0.85s linear infinite;
 }
 .kui-loading-spinner[data-size] {
   width: var(--_kui-loading-spinner-size);
   height: var(--_kui-loading-spinner-size);
-}
-.kui-loading-spinner path {
-  transform-origin: 12px 12px;
-  animation: kui-loading-spinner-rotate 0.85s linear infinite;
 }
 @keyframes kui-loading-spinner-rotate {
   to {
@@ -19,7 +17,7 @@
   }
 }
 @media (prefers-reduced-motion: reduce) {
-  .kui-loading-spinner path {
+  .kui-loading-spinner {
     animation: none;
   }
 }
