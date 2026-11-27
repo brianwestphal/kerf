@@ -133,7 +133,8 @@ nonzero border, or outline as a separate inset surface. Native input, select,
 and textarea elements also own their inset. If CSS cannot express that boundary,
 an application composition entry can declare `layout.geometry.role: "surface"`
 for the inner class; zero borders and transparent backgrounds do not establish
-a surface.
+a surface. An absolute or fixed child starts a new inset chain. Its padding
+can still compound with padding on its in-flow descendants.
 
 `KUI-L008` classifies a forwarded identifier, property access, or nullish
 fallback when TypeScript can enumerate its string literals. Optional and
