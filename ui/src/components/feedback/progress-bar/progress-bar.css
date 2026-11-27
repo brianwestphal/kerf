@@ -91,15 +91,9 @@
   background: var(--_kui-progress-bar-fill);
 }
 
-/* The determinate track stays the flex item. The indeterminate band moves
-   on its own layer inside a clip at the native track's dimensions. */
-.kui-progress-bar > [data-kui-progress-clip] {
-  display: contents;
-}
-
+/* The indeterminate band moves inside a clip at the native track dimensions. */
 .kui-progress-bar
   > [data-kui-progress-clip]:has(> .kui-progress-bar__track:indeterminate) {
-  display: block;
   position: relative;
   overflow: hidden;
   border-radius: var(--kui-radius-pill);
@@ -123,6 +117,12 @@
   pointer-events: none;
   transform: translateX(75%);
   animation: var(--_kui-progress-bar-sweep);
+}
+
+.kui-progress-bar__track:indeterminate {
+  /* The Web Awesome native progress theme animates the element's padding. */
+  padding: 0;
+  animation: none;
 }
 
 .kui-progress-bar__track:indeterminate::-webkit-progress-bar {
