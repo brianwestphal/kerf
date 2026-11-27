@@ -1212,7 +1212,15 @@ function literalClasses(attribute, finiteTypeValues) {
       dynamic: false,
     };
   if (ts.isJsxExpression(value) && value.expression) {
-    const strings = finiteClassStrings(value.expression, finiteTypeValues);
+    const expression = ts.skipParentheses(value.expression);
+    const forwarded =
+      ts.isIdentifier(expression) ||
+      ts.isPropertyAccessExpression(expression) ||
+      (ts.isBinaryExpression(expression) &&
+        expression.operatorToken.kind === ts.SyntaxKind.QuestionQuestionToken);
+    const strings =
+      finiteClassStrings(expression, finiteTypeValues) ??
+      (forwarded ? finiteTypeValues(expression, true) : undefined);
     if (strings) {
       const values = [
         ...new Set(
@@ -1711,7 +1719,7 @@ function inspectTsx(
   );
   let typedSource;
   let typeChecker;
-  const finiteTypeValues = (expression) => {
+  const finiteTypeValues = (expression, omitNullish = false) => {
     if (!typeChecker) {
       const program = ts.createProgram({
         rootNames: [file],
@@ -1738,9 +1746,15 @@ function inspectTsx(
     const type = typeChecker.getTypeAtLocation(typedNode);
     const members = type.isUnion() ? type.types : [type];
     if (members.length > 32) return undefined;
-    const values = members.map((member) =>
-      member.flags & ts.TypeFlags.StringLiteral ? member.value : undefined,
-    );
+    const values = members.map((member) => {
+      if (member.flags & ts.TypeFlags.StringLiteral) return member.value;
+      if (
+        omitNullish &&
+        member.flags & (ts.TypeFlags.Null | ts.TypeFlags.Undefined)
+      )
+        return '';
+      return undefined;
+    });
     return values.every((value) => typeof value === 'string')
       ? values
       : undefined;

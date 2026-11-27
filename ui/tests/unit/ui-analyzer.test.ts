@@ -306,6 +306,38 @@ export const App = ({ role, editing, unknown }: { role: Role; editing: boolean; 
     ).toHaveLength(3);
   });
 
+  it('classifies forwarded literal unions and nullish fallbacks under strict null checks', async () => {
+    const root = await mkdtemp(join(tmpdir(), 'kerf-ui-analyzer-forwarded-'));
+    await mkdir(join(root, 'src'));
+    await writeFile(
+      join(root, 'tsconfig.json'),
+      JSON.stringify({ compilerOptions: { strict: true, jsx: 'preserve' } }),
+    );
+    await writeFile(
+      join(root, 'src/app.tsx'),
+      `import { Pane } from '@kerfjs/ui/pane';
+type RootClass = 'alpha-panel' | 'beta-panel';
+export function Wrapper({ className }: { className?: RootClass }) {
+  return <Pane className={className} />;
+}
+export function Examples(props: { name?: RootClass | null; mixed: RootClass | number; unknown?: string }) {
+  return <>
+    <Pane className={(props.name)} />
+    <Pane className={props.name ?? 'fallback-panel'} />
+    <Pane className={props.mixed} />
+    <Pane className={props.unknown} />
+  </>;
+}
+`,
+    );
+    const report = await analyzeUiProject({ root });
+    expect(
+      report.diagnostics
+        .filter(({ ruleId }) => ruleId === 'KUI-L008')
+        .map(({ location }) => location.line),
+    ).toEqual([10, 11]);
+  });
+
   it('attributes scroll and inset declarations only to selector subjects', async () => {
     const root = await mkdtemp(join(tmpdir(), 'kerf-ui-analyzer-subjects-'));
     await mkdir(join(root, 'src'));

@@ -135,6 +135,11 @@ an application composition entry can declare `layout.geometry.role: "surface"`
 for the inner class; zero borders and transparent backgrounds do not establish
 a surface.
 
+`KUI-L008` classifies a forwarded identifier, property access, or nullish
+fallback when TypeScript can enumerate its string literals. Optional and
+nullable values contribute no class. A union containing a broad string or
+another value type still receives a review finding.
+
 Errors are provable contract violations and make the command exit 1. Review
 findings are deliberately heuristic and do not fail by default; pass
 `--fail-on-review` when a project has reviewed its baseline and wants them to
