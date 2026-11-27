@@ -101,6 +101,14 @@
   background: transparent;
 }
 
+/* Small neutral text needs a stronger foreground on the light quiet fill. */
+.kui-badge[data-tone="neutral"][data-appearance="quiet"] {
+  color: light-dark(
+    var(--kui-color-neutral-on-normal),
+    var(--_kui-badge-on-quiet)
+  );
+}
+
 .kui-badge[data-shape="rounded"] {
   border-radius: var(--kui-radius-s);
 }

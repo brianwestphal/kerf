@@ -162,7 +162,7 @@ export function BadgeDemo() {
         </Badge>
       </CatalogExample>
       <CatalogExample label="Neutral Metadata" align="inline-control">
-        <Badge>Draft</Badge>
+        <Badge size="compact">Draft</Badge>
       </CatalogExample>
     </CatalogExampleStack>
   );

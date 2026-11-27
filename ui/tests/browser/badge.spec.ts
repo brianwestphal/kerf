@@ -1,5 +1,34 @@
 import { expect, test } from '@playwright/test';
 
+import { minPaintedTextContrast } from './painted-contrast.js';
+
+for (const colorScheme of ['light', 'dark'] as const) {
+  test(`compact neutral Badge text meets 4.5:1 contrast (${colorScheme})`, async ({
+    page,
+  }, testInfo) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.emulateMedia({ colorScheme });
+    await page.goto('/?component=badge');
+
+    const example = page
+      .locator('[data-demo="badge"] [data-catalog-example]')
+      .filter({ hasText: 'Neutral Metadata' });
+    const badge = example.getByText('Draft', { exact: true });
+    await expect(badge).toHaveAttribute('data-size', 'compact');
+    await expect(badge).toHaveAttribute('data-tone', 'neutral');
+    await expect(badge).toHaveAttribute('data-appearance', 'quiet');
+
+    for (const width of [1440, 390]) {
+      await page.setViewportSize({ width, height: 900 });
+      await expect(badge).toBeVisible();
+      expect(await minPaintedTextContrast(badge)).toBeGreaterThanOrEqual(4.5);
+      await example.screenshot({
+        path: testInfo.outputPath(`badge-neutral-${colorScheme}-${width}.png`),
+      });
+    }
+  });
+}
+
 test('Badge maxWidth truncates long text with an ellipsis and a title', async ({
   page,
 }) => {
