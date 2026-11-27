@@ -87,21 +87,49 @@ describe('AI-first setup planner', () => {
       },
     );
     const root = join(repo, 'clients/web');
-    const plan = await planKerfSetup({
+    await applyKerfSetup(await planKerfSetup({ root, version: '4.4.1' }), {
+      install: false,
+    });
+    const options = {
       root,
       version: '4.4.1',
       guidanceSource: '../../AGENTS.md',
+    };
+    const appSkill = '.claude/skills/kerf-app/SKILL.md';
+    const uiSkill = '.claude/skills/kerf-ui/SKILL.md';
+    const conflicts = await planKerfSetup(options);
+    expect(conflicts.conflicts.map(({ id }) => id)).toEqual([
+      appSkill,
+      uiSkill,
+    ]);
+    expect(formatSetupPlan(conflicts)).toContain(
+      'Choose keep to retain the existing file, which lint can still report',
+    );
+    const keep = await planKerfSetup({
+      ...options,
+      resolutions: { [appSkill]: 'keep', [uiSkill]: 'keep' },
+    });
+    expect(keep.conflicts).toEqual([]);
+    expect(keep.actions.map(({ path }) => path)).not.toContain(appSkill);
+    expect(keep.actions.map(({ path }) => path)).not.toContain(uiSkill);
+    const plan = await planKerfSetup({
+      ...options,
+      resolutions: { [appSkill]: 'kerf', [uiSkill]: 'kerf' },
     });
     expect(plan.conflicts).toEqual([]);
     const paths = plan.actions.map(({ path }) => path);
     // The repository root's .prettierrc.json applies; no shadowing config.
     expect(paths).not.toContain('prettier.config.mjs');
     expect(plan.proposalIds).not.toContain('prettier.config.mjs');
-    expect(paths).toContain('.kerf-ui-profile.json');
+    expect(paths).toContain(appSkill);
+    expect(paths).toContain(uiSkill);
     await applyKerfSetup(plan, { install: false });
-    expect(
-      await readFile(join(root, '.claude/skills/kerf-app/SKILL.md'), 'utf8'),
-    ).toContain('@../../../../../AGENTS.md\n');
+    expect(await readFile(join(root, appSkill), 'utf8')).toContain(
+      '@../../../../../AGENTS.md\n',
+    );
+    expect(await readFile(join(root, uiSkill), 'utf8')).toContain(
+      '@../../../../../AGENTS.md\n',
+    );
 
     // The project's formatter rewrites JSON layout without changing values.
     for (const name of [

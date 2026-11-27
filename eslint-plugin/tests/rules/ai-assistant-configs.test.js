@@ -345,6 +345,40 @@ test('workspace package lint checks shared guidance at the workspace root', () =
   }
 });
 
+test('configured shared imports in a nested setup can use repository guidance', () => {
+  const { root, manifest } = setupProject({ withClaude: true, withUi: true });
+  try {
+    const nested = join(root, 'clients/web');
+    const bundleDir = join(root, 'node_modules/kerfjs/ai');
+    writeFileSync(join(root, '.git'), 'gitdir: elsewhere\n');
+    mkdirSync(nested, { recursive: true });
+    writeFileSync(
+      join(root, 'AGENTS.md'),
+      'Use Kerf UI and run npm run check.\n',
+    );
+    writeFileSync(
+      join(nested, '.kerf-ai-setup.json'),
+      JSON.stringify({
+        packages: { '.': { mode: 'ui', guidanceSource: '../../AGENTS.md' } },
+      }),
+    );
+    for (const file of manifest.files.filter(({ name }) =>
+      name.endsWith('skill'),
+    )) {
+      applyFix(file, bundleDir, nested, '');
+    }
+    const results = () => runCheck(nested).results.map(({ result }) => result);
+    assert.deepEqual(
+      results().map(({ state }) => state),
+      ['ok', 'ok'],
+    );
+    rmSync(join(root, '.git'));
+    assert.ok(results().every(({ reason }) => reason.includes('escapes')));
+  } finally {
+    cleanup(root);
+  }
+});
+
 async function lintProject(root, fix) {
   const eslint = new ESLint({
     cwd: root,

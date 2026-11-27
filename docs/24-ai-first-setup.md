@@ -27,6 +27,11 @@ git repository for a nested package of a repository that is not a workspace
 (`--guidance-source ../../AGENTS.md` from `clients/web`, KF-G54HNG), and mention Kerf and either
 `kerf:check` or the project's `npm run check` gate. The choice persists across setup runs. The lint rule
 checks the import and its source; the shared document remains project-owned.
+If an existing skill differs, use the full path shown in the conflict as the
+resolution ID, for example
+`--resolve .claude/skills/kerf-app/SKILL.md=kerf`. Choose `kerf` to install
+the configured import and satisfy `kerfjs/ai-assistant-configs`. Choosing
+`keep` preserves the existing file, which lint can still report.
 In UI mode, setup also installs `.claude/skills/kerf-ui/SKILL.md`. It directs
 contributors to read the installed `node_modules/@kerfjs/ui/llms.txt` first,
 then `node_modules/@kerfjs/ui/ai/skill.md` and the referenced component

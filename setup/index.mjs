@@ -530,22 +530,18 @@ async function planAiFiles(plan, aiManifest, guidanceSource) {
           : `---\nname: kerf-app\ndescription: Use the shared workspace guidance for Kerf application work.\n---\n\n@${importPath}\n`;
       const current = await readText(destination);
       plan.knownResolutionIds.add(file.dest);
-      if (current !== null && current !== shared && !resolutions[file.dest]) {
+      if (current !== null && current !== shared) {
         plan.activeConflictIds.add(file.dest);
-        plan.conflicts.push({
-          id: file.dest,
-          message: 'shared guidance import differs from existing skill',
-        });
-      } else if (
-        current === null ||
-        current === shared ||
-        resolutions[file.dest] === 'kerf'
-      ) {
-        await plan.addAction(destination, shared, 'canonical');
-        managedAfter[file.dest] = { sha256: sha256(shared) };
-      } else {
-        plan.activeConflictIds.add(file.dest);
+        if (!resolutions[file.dest])
+          plan.conflicts.push({
+            id: file.dest,
+            message:
+              'shared guidance import differs from existing skill. Choose kerf to install the configured import and satisfy kerfjs/ai-assistant-configs. Choose keep to retain the existing file, which lint can still report',
+          });
+        if (resolutions[file.dest] !== 'kerf') continue;
       }
+      await plan.addAction(destination, shared, 'canonical');
+      managedAfter[file.dest] = { sha256: sha256(shared) };
       continue;
     }
     const merged = mergeCanonical(

@@ -22,7 +22,7 @@ import {
   writeFileSync,
 } from 'node:fs';
 import { createRequire } from 'node:module';
-import { dirname, join, resolve, relative } from 'node:path';
+import { dirname, isAbsolute, join, resolve, relative, sep } from 'node:path';
 
 const MARKER = '<!-- KERF-APP-CANONICAL-END · your customizations below -->';
 const VERSION_RE = /kerf-skill-version:\s*(\d+\.\d+\.\d+(?:-[\w.]+)?)/;
@@ -58,6 +58,21 @@ function guidanceRoot(cwd) {
     if (parent === current) return cwd;
     current = parent;
   }
+}
+
+function repositoryBoundary(root) {
+  let current = root;
+  while (true) {
+    if (existsSync(join(current, '.git'))) return current;
+    const parent = dirname(current);
+    if (parent === current) return root;
+    current = parent;
+  }
+}
+
+function escapes(root, path) {
+  const offset = relative(root, path);
+  return offset === '..' || offset.startsWith(`..${sep}`) || isAbsolute(offset);
 }
 
 function sharedSkill(file, cwd, source) {
@@ -166,7 +181,7 @@ function canonicalEndOffset(text) {
  *
  * Exported for tests.
  */
-export function classifyFile(file, bundleDir, cwd) {
+export function classifyFile(file, bundleDir, cwd, sharedSource) {
   const destAbs = join(cwd, file.dest);
   let consumer;
   try {
@@ -190,19 +205,19 @@ export function classifyFile(file, bundleDir, cwd) {
     if (!match)
       return { state: 'forked', reason: 'malformed shared guidance import' };
     const sourcePath = resolve(dirname(destAbs), match[1]);
-    const sourceRelative = relative(cwd, sourcePath);
-    if (sourceRelative === '..' || sourceRelative.startsWith('../'))
+    // Setup permits a configured source elsewhere in the same repository.
+    const boundary =
+      sharedSource && sourcePath === resolve(cwd, sharedSource)
+        ? repositoryBoundary(cwd)
+        : cwd;
+    if (escapes(boundary, sourcePath))
       return {
         state: 'forked',
         reason: 'shared guidance import escapes the workspace',
       };
     let source;
     try {
-      const actualRelative = relative(
-        realpathSync(cwd),
-        realpathSync(sourcePath),
-      );
-      if (actualRelative === '..' || actualRelative.startsWith('../'))
+      if (escapes(realpathSync(boundary), realpathSync(sourcePath)))
         return {
           state: 'forked',
           reason: 'shared guidance import escapes the workspace',
@@ -308,7 +323,7 @@ export function runCheck(cwd) {
   const sharedSource = sharedGuidanceSource(root);
   for (const file of bundle.manifest.files) {
     if (!isTriggered(file.name, root)) continue;
-    let result = classifyFile(file, bundle.bundleDir, root);
+    let result = classifyFile(file, bundle.bundleDir, root, sharedSource);
     if (
       (file.name === 'skill' || file.name === 'ui-skill') &&
       sharedSource &&
