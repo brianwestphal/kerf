@@ -25,6 +25,8 @@ export interface PopupMenuOpenDetail {
    * `placement` prop.
    */
   placement?: PopupMenuPlacement;
+  /** Element to receive focus when this opening is dismissed from inside. */
+  opener?: HTMLElement;
 }
 
 export interface PopupMenuSelectDetail {

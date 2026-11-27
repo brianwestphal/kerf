@@ -2385,17 +2385,14 @@ const stopPopupMenuContextDemo = delegate(
   app,
   'contextmenu',
   '[data-popup-menu-context-target]',
-  (event) => {
+  (event, element) => {
     event.preventDefault();
     const menu = app.querySelector<PopupMenuElement>(
       '[data-popup-context-menu]',
     );
     if (!menu) return;
-    popupContextAnchor.value = {
-      x: (event as MouseEvent).clientX,
-      y: (event as MouseEvent).clientY,
-    };
-    openPopupMenu(menu);
+    const { clientX, clientY } = event as MouseEvent;
+    openPopupMenuAt(menu, clientX, clientY, { opener: element as HTMLElement });
   },
 );
 const stopAnchoredSurfaceDemo = delegate(

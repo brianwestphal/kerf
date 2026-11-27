@@ -47,6 +47,53 @@ async function expectOpen(root: Locator, open = true) {
   else await expect(panelOf(root)).toBeHidden();
 }
 
+test('context PopupMenu returns focus to its row opener only on inside dismissal', async ({
+  page,
+}, testInfo) => {
+  await page.goto('/?component=popup-menu');
+  const demo = page.locator('[data-demo="popup-menu"]');
+  const menu = demo.locator('[data-popup-context-menu]');
+  const row = demo.getByRole('button', { name: 'Demand draft' });
+  const choice = menu.getByRole('menuitem', { name: 'Open' });
+  const open = async () => {
+    await row.click({ button: 'right', position: { x: 24, y: 12 } });
+    await expectOpen(menu);
+    await expect(choice).toBeFocused();
+  };
+  for (const width of [1140, 390]) {
+    await page.setViewportSize({ width, height: 860 });
+    await open();
+    await settled(panelOf(menu));
+    await page.screenshot({
+      path: testInfo.outputPath(`popup-context-opener-${width}.png`),
+    });
+    await page.keyboard.press('Escape');
+    await expectOpen(menu, false);
+    await expect(row).toBeFocused();
+  }
+
+  await page.evaluate(() => {
+    const target = document.createElement('input');
+    target.setAttribute('aria-label', 'Outside the menu');
+    target.style.cssText =
+      'position: fixed; inset: 3px 3px auto auto; z-index: 9999';
+    document.body.append(target);
+  });
+  await open();
+  const outside = page.getByRole('textbox', { name: 'Outside the menu' });
+  await outside.click();
+  await expectOpen(menu, false);
+  await expect(outside).toBeFocused();
+
+  await open();
+  await row.evaluate((opener) => opener.remove());
+  await page.keyboard.press('Escape');
+  await expectOpen(menu, false);
+  await expect(openerOf(menu)).not.toBeFocused();
+  await outside.click();
+  await expect(outside).toBeFocused();
+});
+
 /** The "Nested Decisions" demo menu, its trigger, submenu item, and submenu. */
 function nestedMenu(page: Page) {
   const root = page

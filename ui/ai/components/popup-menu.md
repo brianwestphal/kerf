@@ -156,10 +156,15 @@ Keep the row's visible disabled action separate from the context menu anchor. Fi
 row.addEventListener('contextmenu', (event) => {
   event.preventDefault();
   const menu = row.querySelector('[data-demand-menu]') as PopupMenuElement;
-  openPopupMenuAt(menu, event.clientX, event.clientY);
+  openPopupMenuAt(menu, event.clientX, event.clientY, { opener: row });
 });
 // Call closePopupMenu(menu) when the app needs to dismiss it.
 ```
+
+Pass the focusable control that opened a context menu as `opener` to return
+focus there on Escape or when choosing a command. Without an explicit opener,
+a context menu uses the control that had focus when it opened. An outside
+press can focus its target normally, and a removed opener is skipped.
 
 ## Styling boundary
 

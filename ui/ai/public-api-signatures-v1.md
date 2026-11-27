@@ -777,11 +777,14 @@ type PopupMenuElement = HTMLElement;
  * like a context menu, for this opening only; its next opening returns to its
  * trigger and placement. `options.placement` sets the placement at the point
  * for this opening instead (`top-start` sits above it, say), for either kind
- * of menu; flipping, shifting, and the height cap still apply. Needs the
- * `/register` entry.
+ * of menu; flipping, shifting, and the height cap still apply.
+ * `options.opener` sets the focus return target for this opening. Context
+ * menus default to the currently focused control, while button menus use
+ * their trigger. An outside press moves focus normally. Needs `/register`.
  */
 declare function openPopupMenuAt(menu: PopupMenuElement, x: number, y: number, options?: {
     placement?: PopupMenuPlacement;
+    opener?: HTMLElement;
 }): void;
 /**
  * Open a PopupMenu from its trigger, or a context PopupMenu at the `anchor`

@@ -852,9 +852,12 @@ transformed or otherwise fixed-containing ancestor (an app-height catalog
 frame), so pass `clientX`/`clientY` as they are; never convert them into an
 ancestor's coordinates. `openPopupMenuAt` still opens a menu rendered without `anchor` at a given
 point, at its `placement` unless the call names one for that opening
-(`openPopupMenuAt(menu, x, y, { placement: 'top-start' })`). Call `closePopupMenu` for programmatic dismissal. A pointer-anchored menu
-keeps the same collision placement, focus management, submenu keyboard
-navigation, and outside/Escape dismissal as a trigger-anchored one.
+(`openPopupMenuAt(menu, x, y, { placement: 'top-start' })`). Pass a focusable
+`opener` in those options to return focus there when dismissal starts inside
+the menu. A context menu otherwise uses the previously focused control, and a
+button menu uses its trigger. Outside presses focus their targets normally.
+If the opener is removed while the menu is open, dismissal skips focus return
+to that element. Call `closePopupMenu` for programmatic dismissal.
 
 Read a rendered root's state with `isPopupMenuOpen` (`root`). To observe root
 dismissal, capture native `toggle` events on an ancestor and pass each event

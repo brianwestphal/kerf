@@ -155,6 +155,7 @@ export function installPopupMenus(doc: Document = document): void {
   const typeahead = createTypeahead(win);
   // Open root menus, for dismissal by a press outside them.
   const openRoots = new Set<HTMLElement>();
+  const rootFocusTargets = new WeakMap<HTMLElement, HTMLElement | null>();
   // A cancelled nested choice may synchronously replace the content-keyed root.
   const keptChoices = new WeakMap<HTMLElement, HTMLElement>();
   // Menus closing without returning focus (a press outside moves it).
@@ -162,6 +163,14 @@ export function installPopupMenus(doc: Document = document): void {
   // Each menu's toggle count, so a deferred focus return from an earlier
   // close never acts after the menu has opened or closed again.
   const toggles = new WeakMap<HTMLElement, number>();
+
+  const focusReturnTarget = (menu: HTMLElement) =>
+    rootFocusTargets.has(menu) ? rootFocusTargets.get(menu) : openerOf(menu);
+
+  const returnFocus = (target: HTMLElement | null | undefined) => {
+    if (target?.isConnected && target.ownerDocument === doc)
+      target.focus({ preventScroll: true });
+  };
 
   const follow = (
     menu: HTMLElement,
@@ -265,6 +274,15 @@ export function installPopupMenus(doc: Document = document): void {
     if (opener instanceof HTMLButtonElement && opener.disabled) return;
     if (isOpen(menu)) closeMenu(menu, false);
     const context = root.getAttribute('data-trigger') === 'context';
+    const active = doc.activeElement;
+    const previousFocus =
+      active instanceof HTMLElement &&
+      active !== doc.body &&
+      active !== doc.documentElement &&
+      !root.contains(active)
+        ? active
+        : null;
+    const focusTarget = detail.opener ?? (context ? previousFocus : opener);
     // A button-triggered menu opened at a pointer point (openPopupMenuAt)
     // opens at the point for that opening only, `bottom-start` unless the
     // call names a placement: its own placement describes where it sits
@@ -288,6 +306,7 @@ export function installPopupMenus(doc: Document = document): void {
       return;
     }
     openRoots.add(menu);
+    rootFocusTargets.set(menu, focusTarget);
     opener.setAttribute('aria-expanded', 'true');
     follow(menu, anchor, () => positionPopup(anchor, menu, { placement }));
     focusItem(menu, focus);
@@ -328,10 +347,15 @@ export function installPopupMenus(doc: Document = document): void {
       if (isOpen(menu)) closeMenu(menu, false, true);
       stopFollowing(menu);
       openRoots.delete(menu);
+      rootFocusTargets.delete(menu);
       opener.setAttribute('aria-expanded', 'false');
       quiet.delete(menu);
       if (!focusWithin || !replacement) return;
-      openRoot(replacement, { ...detail, focus: 'none' });
+      openRoot(replacement, {
+        ...detail,
+        opener: context ? (focusTarget ?? undefined) : detail.opener,
+        focus: 'none',
+      });
       let next = rootMenuOf(replacement);
       if (!next || !isOpen(next)) return;
       let target = choice ?? focusedItem;
@@ -394,7 +418,7 @@ export function installPopupMenus(doc: Document = document): void {
     silent = false,
   ) => {
     if (!isOpen(menu)) return;
-    const opener = openerOf(menu);
+    const focusTarget = focusReturnTarget(menu);
     const focusInside = menu.contains(doc.activeElement);
     if (silent) quiet.add(menu);
     try {
@@ -403,7 +427,7 @@ export function installPopupMenus(doc: Document = document): void {
       quiet.delete(menu);
       return;
     }
-    if (restoreFocus && focusInside) opener?.focus({ preventScroll: true });
+    if (restoreFocus && focusInside) returnFocus(focusTarget);
   };
 
   const closeRoot = (root: Element, restoreFocus: boolean) => {
@@ -577,9 +601,8 @@ export function installPopupMenus(doc: Document = document): void {
           closeMenu(menu, true);
           return;
         case 'Tab':
-          // Tab leaves the menu: close it and continue from the trigger.
-          closeRoot(root, false);
-          rootOpenerOf(root)?.focus({ preventScroll: true });
+          // Tab leaves the menu and continues from its focus return target.
+          closeRoot(root, true);
           return;
         case forward: {
           const submenu = current && submenuOf(current);
@@ -700,6 +723,8 @@ export function installPopupMenus(doc: Document = document): void {
       openRoots.delete(menu);
       menu.removeAttribute(POINTER_OPENED);
       const opener = openerOf(menu);
+      const focusTarget = focusReturnTarget(menu);
+      rootFocusTargets.delete(menu);
       opener?.setAttribute('aria-expanded', 'false');
       // Menus are manual popovers, so a closing menu hides the submenus it
       // shows itself; their focus is this menu's to return.
@@ -716,7 +741,7 @@ export function installPopupMenus(doc: Document = document): void {
         // Toggled again in the meantime, or focus has moved on: leave it.
         if (toggles.get(menu) !== toggle) return;
         if (!active || active === doc.body || menu.contains(active))
-          opener?.focus({ preventScroll: true });
+          returnFocus(focusTarget);
       });
     },
     true,
@@ -727,9 +752,8 @@ export function installPopupMenus(doc: Document = document): void {
     (event) => {
       const root = event.target;
       if (!(root instanceof HTMLElement) || !root.matches(ROOT)) return;
-      const { point, placement } = (event as CustomEvent<PopupMenuOpenDetail>)
-        .detail;
-      openRoot(root, { point, placement, focus: 'first' });
+      const { detail } = event as CustomEvent<PopupMenuOpenDetail>;
+      openRoot(root, { ...detail, focus: 'first' });
     },
     true,
   );

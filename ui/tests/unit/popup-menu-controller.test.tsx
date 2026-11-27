@@ -143,6 +143,46 @@ const pointer = (target: Element, type: string, init: PointerEventInit = {}) =>
   );
 
 describe('PopupMenu register: opening and closing', () => {
+  it('returns context-menu focus to the explicit opener, or to the previously focused control', () => {
+    const { root, item } = setup({ context: true, label: 'Context' });
+    const opener = document.createElement('button');
+    const other = document.createElement('input');
+    document.body.append(opener, other);
+    other.focus();
+
+    openPopupMenuAt(root, 25, 35, { opener });
+    expect(document.activeElement).toBe(item('Copy'));
+    key(item('Copy'), 'Escape');
+    expect(document.activeElement).toBe(opener);
+
+    openPopupMenuAt(root, 40, 50);
+    key(item('Copy'), 'Escape');
+    expect(document.activeElement).toBe(opener);
+  });
+
+  it('leaves outside focus alone and skips a detached context opener', async () => {
+    const { root, item } = setup({ context: true, label: 'Context' });
+    const opener = document.createElement('button');
+    const outside = document.createElement('input');
+    document.body.append(opener, outside);
+    const restore = vi.spyOn(opener, 'focus');
+
+    openPopupMenuAt(root, 25, 35, { opener });
+    pointer(outside, 'pointerdown');
+    outside.focus();
+    await flush();
+    expect(isPopupMenuOpen(root)).toBe(false);
+    expect(document.activeElement).toBe(outside);
+    expect(restore).not.toHaveBeenCalled();
+
+    openPopupMenuAt(root, 25, 35, { opener });
+    opener.remove();
+    key(item('Copy'), 'Escape');
+    await flush();
+    expect(isPopupMenuOpen(root)).toBe(false);
+    expect(restore).not.toHaveBeenCalled();
+  });
+
   it('reports root state and closed root toggles without counting submenu closure', async () => {
     const { root, menu, submenu } = setup();
     const closed: HTMLElement[] = [];

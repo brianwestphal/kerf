@@ -344,23 +344,20 @@ function requestOpen(menu: PopupMenuElement, detail: PopupMenuOpenDetail) {
  * like a context menu, for this opening only; its next opening returns to its
  * trigger and placement. `options.placement` sets the placement at the point
  * for this opening instead (`top-start` sits above it, say), for either kind
- * of menu; flipping, shifting, and the height cap still apply. Needs the
- * `/register` entry.
+ * of menu; flipping, shifting, and the height cap still apply.
+ * `options.opener` sets the focus return target for this opening. Context
+ * menus default to the currently focused control, while button menus use
+ * their trigger. An outside press moves focus normally. Needs `/register`.
  */
 export function openPopupMenuAt(
   menu: PopupMenuElement,
   x: number,
   y: number,
-  options: { placement?: PopupMenuPlacement } = {},
+  options: { placement?: PopupMenuPlacement; opener?: HTMLElement } = {},
 ): void {
   menu.style.setProperty('--kui-popup-menu-context-x', `${x}px`);
   menu.style.setProperty('--kui-popup-menu-context-y', `${y}px`);
-  requestOpen(
-    menu,
-    options.placement === undefined
-      ? { point: { x, y } }
-      : { point: { x, y }, placement: options.placement },
-  );
+  requestOpen(menu, { ...options, point: { x, y } });
 }
 
 /**
