@@ -8,7 +8,11 @@ import {
 } from '../../../shared/dom/extension-attributes.js';
 import { ensureSunkenTexture } from '../../../shared/styles/sunken-texture.js';
 import type { ListConfig } from '../../collections/list/list.js';
-import type { NavStackProps } from '../../navigation/nav-stack/nav-stack.js';
+import {
+  NavStack,
+  type NavStackProps,
+  type NavStackView,
+} from '../../navigation/nav-stack/nav-stack.js';
 import type { PaneConfig } from '../pane/pane.js';
 import { ResizeGrip } from '../resizable-region/parts/resize-grip.js';
 import {
@@ -25,6 +29,7 @@ import {
   floatingRestore,
   mainBody,
   panelBody,
+  panelNavigationView,
   type WorkbenchChromePlacement,
   type WorkbenchMainBottomToolbar,
   type WorkbenchMainToolbar,
@@ -176,6 +181,27 @@ export interface WorkbenchNavigationPanel extends WorkbenchPanelBase {
 /** A collapsible Workbench side rail or bottom drawer. */
 export type WorkbenchPanel = WorkbenchStaticPanel | WorkbenchNavigationPanel;
 
+/** A pushed view, with optional reuse of a static panel's content and chrome. */
+export type WorkbenchCompactNavigationView =
+  | NavStackView
+  | {
+      key: string;
+      panel: WorkbenchStaticPanel;
+      /** Use a centered stack title in place of the panel's title markup. */
+      title?: string;
+    };
+
+/** Controlled compact presentation of the work area. */
+export interface WorkbenchCompactNavigation extends Pick<
+  NavStackProps,
+  'backLabel' | 'backIcon' | 'backText' | 'toolbarConfig'
+> {
+  /** Render the signal set by wireWorkbench, or supply your own state. */
+  active: boolean;
+  /** Views above the built-in main view, oldest first, with unique keys. */
+  views: readonly WorkbenchCompactNavigationView[];
+}
+
 export interface WorkbenchProps {
   /**
    * The Workbench's `id`. Each panel's `id` derives from it —
@@ -245,6 +271,8 @@ export interface WorkbenchProps {
   leftRail?: WorkbenchPanel;
   rightRail?: WorkbenchPanel;
   bottomDrawer?: WorkbenchPanel;
+  /** Replace the right rail with pushed views at the compact breakpoint. */
+  compactNavigation?: WorkbenchCompactNavigation;
   /**
    * Minimum width, in px, the work area keeps beside the inline rails, fixed
    * or `resizable` (default 320; `0` turns it off). Resizing a rail stops
@@ -414,10 +442,12 @@ function Rail({
   id,
   side,
   panel,
+  navigationOverlay,
 }: {
   id: string;
   side: 'left' | 'right';
   panel: WorkbenchPanel;
+  navigationOverlay?: boolean;
 }) {
   const key: WorkbenchPanelKey = side === 'left' ? 'leftRail' : 'rightRail';
   const resize = resolveResize(id, key, panel);
@@ -426,6 +456,7 @@ function Rail({
       id={workbenchRegionId(id, key)}
       class={`kui-workbench__rail kui-workbench__rail--${side}`}
       data-workbench-rail={side}
+      data-compact-navigation-overlay={navigationOverlay ? '' : undefined}
       data-appearance={
         !panel.toolbar && panel.pane?.appearance === 'sunken'
           ? 'sunken'
@@ -556,6 +587,8 @@ const WORKBENCH_PROTECTED = new Set([
   'data-collapse-motion',
   'data-collapsed',
   'data-compact-overlay',
+  'data-compact-navigation-active',
+  'data-compact-navigation-overlay',
   'data-component',
   'data-content-overflow',
   'data-drawer-inline-expanded',
@@ -600,10 +633,11 @@ export function Workbench({
   id,
   label,
   main,
-  leftRail,
-  rightRail,
+  leftRail: configuredLeftRail,
+  rightRail: configuredRightRail,
   bottomDrawer,
-  mainToolbar,
+  compactNavigation,
+  mainToolbar: configuredMainToolbar,
   mainHeader,
   mainFooter,
   mainBottomToolbar,
@@ -622,6 +656,50 @@ export function Workbench({
   slot,
   rootAttributes = {},
 }: WorkbenchProps) {
+  const compact = compactNavigation?.active === true;
+  const rightRail = compact ? undefined : configuredRightRail;
+  const forceLeftOverlay = compact && inline(configuredLeftRail);
+  const leftRail =
+    forceLeftOverlay && configuredLeftRail
+      ? { ...configuredLeftRail, presentation: 'overlay' as const }
+      : configuredLeftRail;
+  const mainToolbar =
+    configuredMainToolbar ??
+    (compactNavigation && leftRail?.toolbar
+      ? { label: mainLabel ?? label }
+      : undefined);
+  const workArea = mainBody({
+    workbenchId: id,
+    main,
+    mainToolbar,
+    showMainToolbar:
+      configuredMainToolbar !== undefined ||
+      Boolean(leftRail?.collapsed || rightRail?.collapsed),
+    mainHeader,
+    mainFooter,
+    mainBottomToolbar,
+    mainHeaderPlacement,
+    mainFooterPlacement,
+    mainPane,
+    mainHeaderList,
+    mainFooterList,
+    leftRail,
+    rightRail,
+    bottomDrawer,
+  });
+  const pushedViews =
+    compact && compactNavigation
+      ? compactNavigation.views.map((view) =>
+          'panel' in view
+            ? panelNavigationView(view.key, view.panel, view.title)
+            : view,
+        )
+      : [];
+  const compactRootKey = `${id}-workbench-main`;
+  if (pushedViews.some(({ key }) => key === compactRootKey))
+    throw new RangeError(
+      `Workbench reserves the navigation view key "${compactRootKey}".`,
+    );
   // Each work-area minimum applies only on an axis a panel shares with it:
   // the width beside a rail, the height above the drawer.
   const px = (value: number) => Math.max(0, Math.round(value));
@@ -649,6 +727,7 @@ export function Workbench({
       class={`kui-workbench ${className}`.trim()}
       id={id}
       data-component="workbench"
+      data-compact-navigation-active={compact ? 'true' : undefined}
       data-main-min-size={mainMin === undefined ? undefined : String(mainMin)}
       data-main-min-height={
         mainMinBlock === undefined ? undefined : String(mainMinBlock)
@@ -703,7 +782,14 @@ export function Workbench({
       aria-label={label}
       slot={slot}
     >
-      {leftRail && <Rail id={id} side="left" panel={leftRail} />}
+      {leftRail && (
+        <Rail
+          id={id}
+          side="left"
+          panel={leftRail}
+          navigationOverlay={forceLeftOverlay}
+        />
+      )}
       {restore(
         leftRail,
         'left',
@@ -717,7 +803,7 @@ export function Workbench({
           data-outlined={mainOutlined ? 'true' : undefined}
           role={mainLabel ? 'region' : undefined}
           aria-label={mainLabel}
-          tabindex={mainTabIndex}
+          tabindex={mainTabIndex ?? (compactNavigation ? -1 : undefined)}
           data-drawer-inline-expanded={
             inline(bottomDrawer) && expanded(bottomDrawer) ? 'true' : undefined
           }
@@ -734,22 +820,34 @@ export function Workbench({
               : undefined
           }
         >
-          {mainBody({
-            workbenchId: id,
-            main,
-            mainToolbar,
-            mainHeader,
-            mainFooter,
-            mainBottomToolbar,
-            mainHeaderPlacement,
-            mainFooterPlacement,
-            mainPane,
-            mainHeaderList,
-            mainFooterList,
-            leftRail,
-            rightRail,
-            bottomDrawer,
-          })}
+          {compactNavigation ? (
+            <NavStack
+              id={`${id}-compact-navigation`}
+              label={mainLabel ?? label}
+              backLabel={compactNavigation.backLabel}
+              backIcon={compactNavigation.backIcon}
+              backText={compactNavigation.backText}
+              toolbarConfig={compactNavigation.toolbarConfig}
+              hideToolbar={pushedViews.length === 0}
+              views={[
+                {
+                  key: compactRootKey,
+                  content: workArea,
+                  pane:
+                    mainPane &&
+                    !mainToolbar &&
+                    !mainHeader &&
+                    !mainFooter &&
+                    !mainBottomToolbar
+                      ? mainPane
+                      : undefined,
+                },
+                ...pushedViews,
+              ]}
+            />
+          ) : (
+            workArea
+          )}
         </div>
         {bottomDrawer && <Drawer id={id} panel={bottomDrawer} />}
         {restore(

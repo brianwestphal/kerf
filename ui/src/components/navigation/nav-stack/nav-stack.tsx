@@ -423,7 +423,11 @@ export function NavStack({
           />
         </div>
       )}
-      <div class="kui-nav-stack__viewport" data-nav-stack-viewport>
+      <div
+        class="kui-nav-stack__viewport"
+        data-key={`${id}-nav-stack-viewport`}
+        data-nav-stack-viewport
+      >
         {views.map((view, index) => (
           <article
             class="kui-nav-stack__view"

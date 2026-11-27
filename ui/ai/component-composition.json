@@ -1309,7 +1309,7 @@
         { "id": "collapsed state", "owner": "application", "required": false },
         { "id": "panel sizes", "owner": "application", "required": false },
         {
-          "id": "navigation panel view stack and push/pop actions when navStack is supplied",
+          "id": "panel or compact work-area view stacks and push/pop actions",
           "owner": "application",
           "required": false
         },

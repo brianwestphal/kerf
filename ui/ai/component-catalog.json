@@ -1373,6 +1373,8 @@
       "publicExports": [
         "Workbench",
         "WorkbenchChromePlacement",
+        "WorkbenchCompactNavigation",
+        "WorkbenchCompactNavigationView",
         "WorkbenchCompactOverlay",
         "WorkbenchMainBottomToolbar",
         "WorkbenchMainToolbar",
@@ -1406,7 +1408,7 @@
         "optional accessible name for the central region (mainLabel)",
         "collapsed state",
         "panel sizes",
-        "navigation panel view stack and push/pop actions when navStack is supplied",
+        "panel or compact work-area view stacks and push/pop actions",
         "responsive replacement below desktop",
         "collapse controls and focus policy",
         "optional main and panel focus stops and persistent outlines"
@@ -1419,6 +1421,7 @@
         "all panels",
         "independently collapsed panels",
         "navigation panel with per-screen toolbar, fixed header, and one scroll owner; standard toggle remains last and relocates while collapsed",
+        "compact work-area navigation keeps the main view mounted, pushes inspector views, overlays the left rail, and leaves an inline drawer docked below the stack",
         "opt-in drag and keyboard resizable panels with min/max limits",
         "resizable rails that leave the work area a minimum width and shrink in proportion when the Workbench narrows",
         "rails or a drawer that present as overlays below a narrow or compact Workbench container breakpoint",

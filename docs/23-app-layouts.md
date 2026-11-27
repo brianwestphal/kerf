@@ -425,6 +425,13 @@ vocabulary, and avoids the PWA-loaded "app shell" term.
   Workbench an overlay rail fills the Workbench less a 44px dismiss strip
   (`--kui-workbench-overlay-dismiss-margin`) on the side away from its edge;
   `compactOverlay: "full"` makes a rail fill it (per rail).
+- **Compact main navigation.** Use Workbench's `compactNavigation` when a
+  right-rail inspector should push views over the work area on phones. The
+  app owns the stack. Workbench keeps the main view and its toolbar mounted,
+  presents the left rail as an overlay, and leaves an inline drawer docked
+  below the stack. `wireWorkbench` measures the container and wires Back and
+  focus restoration through NavStack. See the
+  [Workbench guide](../ui/docs/workbench.md#compact-work-area-navigation).
 - **Panel toolbars follow the panel (KF-6GVPW7: toggles were hand-placed, so
   the catalog showed each rail toggle twice while the rails were open and
   put toggles where the guidance does not).** A panel may take a `toolbar`

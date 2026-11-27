@@ -6,6 +6,10 @@ import {
   wireResizeHandles,
 } from '../../resizable-region/wiring/resize-wiring.js';
 import {
+  type WireWorkbenchCompactNavigation,
+  wireWorkbenchCompactNavigation,
+} from '../internal/workbench-compact-navigation.js';
+import {
   wireWorkbenchOverlays,
   type WorkbenchOverlayPanel,
 } from '../internal/workbench-overlays.js';
@@ -15,6 +19,7 @@ import {
 } from '../model/workbench-resize.js';
 
 export type { WorkbenchPanelKey };
+export type { WireWorkbenchCompactNavigation };
 
 /** Minimal `localStorage`-shaped store, so the persistence hook is testable. */
 export interface WorkbenchStorage {
@@ -85,6 +90,8 @@ export interface WireWorkbenchOptions {
    * `collapsed` signal with `collapsed={panel.collapsed.value}`.
    */
   panels: Partial<Record<WorkbenchPanelKey, WireWorkbenchPanel>>;
+  /** Measure and wire the controlled compact main stack. */
+  compactNavigation?: WireWorkbenchCompactNavigation;
   /**
    * When provided, resizing is suspended while `deviceClass.compact` is true —
    * the classes where rails become overlay drawers or are replaced.
@@ -219,6 +226,7 @@ export function wireWorkbench(
   {
     id,
     panels,
+    compactNavigation,
     deviceClass,
     storage = defaultStorage(),
     step,
@@ -228,6 +236,11 @@ export function wireWorkbench(
     exclusiveOverlays = true,
   }: WireWorkbenchOptions,
 ): () => void {
+  const at = compactNavigation?.at;
+  if (typeof at === 'number' && (!Number.isFinite(at) || at <= 0))
+    throw new RangeError(
+      'Workbench compact navigation requires a positive breakpoint.',
+    );
   const keys = Object.keys(panels) as WorkbenchPanelKey[];
   const entries = keys.flatMap((key) => {
     const size = panels[key]?.size;
@@ -244,6 +257,11 @@ export function wireWorkbench(
   });
   const byRegion = new Map(entries.map((entry) => [entry.regionId, entry]));
   const disposers: Array<() => void> = [];
+  const workbenchSelector = `[data-component="workbench"][id=${quoted(id)}]`;
+  const findWorkbench = () =>
+    root.matches(workbenchSelector)
+      ? root
+      : root.querySelector<HTMLElement>(workbenchSelector);
 
   // Seed from storage before any effect runs, so the first render after
   // wire-up already has the remembered size; then mirror every size change.
@@ -313,19 +331,19 @@ export function wireWorkbench(
       : [];
   });
   if (dismissOverlays && overlayPanels.length > 0) {
-    const selector = `[data-component="workbench"][id=${quoted(id)}]`;
     disposers.push(
       wireWorkbenchOverlays(
         root,
-        () =>
-          root.matches(selector)
-            ? root
-            : root.querySelector<HTMLElement>(selector),
+        findWorkbench,
         overlayPanels,
         exclusiveOverlays,
       ),
     );
   }
+  if (compactNavigation)
+    disposers.push(
+      wireWorkbenchCompactNavigation(root, findWorkbench, compactNavigation),
+    );
 
   return () => {
     stopResize?.();

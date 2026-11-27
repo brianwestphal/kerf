@@ -93,6 +93,147 @@ afterEach(() => {
   vi.unstubAllGlobals();
 });
 
+describe('compact work-area navigation wiring', () => {
+  it('wires a late-mounted stack, focuses the main area on rail removal, and restores the rail state', async () => {
+    const root = document.createElement('div');
+    document.body.append(root);
+    roots.push(root);
+    const active = signal(false);
+    const left = signal(false);
+    const right = signal(false);
+    const rightOverlay = signal(false);
+    const pushed = signal(false);
+    const onBack = vi.fn(() => {
+      pushed.value = false;
+    });
+    const dispose = wireWorkbench(root, {
+      id: 'studio',
+      panels: {
+        leftRail: { collapsed: left },
+        rightRail: { collapsed: right, overlay: rightOverlay },
+      },
+      compactNavigation: { at: 500, active, duration: 0, onBack },
+    });
+    disposers.push(dispose);
+    const navigationObserver = observers.at(-1)!;
+    workbenchWidth = 0;
+    disposers.push(
+      mount(root, () =>
+        Workbench({
+          id: 'studio',
+          label: 'Studio',
+          main: raw('<button>List</button>'),
+          leftRail: {
+            collapsed: left.value,
+            responsiveOverlayAt: 'never',
+            content: raw('<button>Projects</button>'),
+          },
+          rightRail: {
+            collapsed: right.value,
+            responsiveOverlayAt: 'never',
+            content: raw('<button>Inspector</button>'),
+          },
+          compactNavigation: {
+            active: active.value,
+            views: pushed.value
+              ? [{ key: 'detail', content: raw('<button>Detail</button>') }]
+              : [],
+          },
+        }),
+      ),
+    );
+    await flush();
+    workbenchWidth = 520;
+    navigationObserver.fire();
+    expect(active.value).toBe(false);
+    root.querySelector<HTMLButtonElement>('#studio-right-rail button')!.focus();
+    rightOverlay.value = true;
+    workbenchWidth = 500;
+    navigationObserver.fire();
+    await flush();
+
+    expect(active.value).toBe(true);
+    expect(root.querySelector('#studio-right-rail')).toBeNull();
+    expect(document.activeElement).toBe(
+      root.querySelector('[data-workbench-main]'),
+    );
+    expect(rightOverlay.value).toBe(false);
+    expect(left.value).toBe(true);
+    pushed.value = true;
+    await flush();
+    root.querySelector<HTMLButtonElement>('[data-nav-back]')!.click();
+    expect(onBack).toHaveBeenCalledOnce();
+    expect(pushed.value).toBe(false);
+
+    workbenchWidth = 501;
+    navigationObserver.fire();
+    await flush();
+    expect(active.value).toBe(false);
+    expect(left.value).toBe(false);
+    expect(
+      root.querySelector('#studio-right-rail')?.getAttribute('data-collapsed'),
+    ).toBe('false');
+    dispose();
+    expect(navigationObserver.targets.size).toBe(0);
+  });
+
+  it('updates the named breakpoint when the root font changes and unbinds a removed Workbench', async () => {
+    const root = document.createElement('div');
+    document.body.append(root);
+    roots.push(root);
+    const active = signal(false);
+    const shown = signal(true);
+    disposers.push(
+      mount(root, () =>
+        shown.value
+          ? Workbench({
+              id: 'studio',
+              label: 'Studio',
+              main: raw('<button>List</button>'),
+              compactNavigation: { active: active.value, views: [] },
+            })
+          : null,
+      ),
+    );
+
+    const html = document.documentElement;
+    const originalFontSize = html.style.fontSize;
+    try {
+      html.style.fontSize = '16px';
+      workbenchWidth = 500;
+      expect(() =>
+        wireWorkbench(root, {
+          id: 'studio',
+          panels: {},
+          compactNavigation: { active, at: 0 },
+        }),
+      ).toThrow(RangeError);
+      const observerIndex = observers.length;
+      disposers.push(
+        wireWorkbench(root, {
+          id: 'studio',
+          panels: {},
+          compactNavigation: { active },
+        }),
+      );
+      const observer = observers[observerIndex];
+      expect(active.value).toBe(false);
+      html.style.fontSize = '18px';
+      observer.fire();
+      expect(active.value).toBe(true);
+      const workbench = root.querySelector('#studio')!;
+      shown.value = false;
+      await flush();
+      expect(observer.targets.has(workbench)).toBe(false);
+      expect(observer.targets.size).toBe(1);
+      observer.fire();
+      expect(active.value).toBe(true);
+    } finally {
+      html.style.fontSize = originalFontSize;
+    }
+  });
+});
+
 interface StudioOptions {
   at?: WorkbenchResponsiveOverlayAt;
   rightAt?: WorkbenchResponsiveOverlayAt;

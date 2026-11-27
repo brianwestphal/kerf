@@ -2713,7 +2713,7 @@ export { Pane, type PaneAppearance, type PaneChromeDividers, type PaneChromePlac
 
 ```ts
 import { SafeHtml } from 'kerfjs';
-import { b as NavPane, N as NavStackProps } from './nav-stack-IKSMxo2A.js';
+import { b as NavPane, N as NavStackProps, a as NavStackView } from './nav-stack-IKSMxo2A.js';
 import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
 import { R as RootDataAttributes } from './extension-attributes-CnqvBmj3.js';
 import { ListConfig } from './list.js';
@@ -2896,6 +2896,20 @@ interface WorkbenchNavigationPanel extends WorkbenchPanelBase {
 }
 /** A collapsible Workbench side rail or bottom drawer. */
 type WorkbenchPanel = WorkbenchStaticPanel | WorkbenchNavigationPanel;
+/** A pushed view, with optional reuse of a static panel's content and chrome. */
+type WorkbenchCompactNavigationView = NavStackView | {
+    key: string;
+    panel: WorkbenchStaticPanel;
+    /** Use a centered stack title in place of the panel's title markup. */
+    title?: string;
+};
+/** Controlled compact presentation of the work area. */
+interface WorkbenchCompactNavigation extends Pick<NavStackProps, 'backLabel' | 'backIcon' | 'backText' | 'toolbarConfig'> {
+    /** Render the signal set by wireWorkbench, or supply your own state. */
+    active: boolean;
+    /** Views above the built-in main view, oldest first, with unique keys. */
+    views: readonly WorkbenchCompactNavigationView[];
+}
 interface WorkbenchProps {
     /**
      * The Workbench's `id`. Each panel's `id` derives from it —
@@ -2965,6 +2979,8 @@ interface WorkbenchProps {
     leftRail?: WorkbenchPanel;
     rightRail?: WorkbenchPanel;
     bottomDrawer?: WorkbenchPanel;
+    /** Replace the right rail with pushed views at the compact breakpoint. */
+    compactNavigation?: WorkbenchCompactNavigation;
     /**
      * Minimum width, in px, the work area keeps beside the inline rails, fixed
      * or `resizable` (default 320; `0` turns it off). Resizing a rail stops
@@ -3003,9 +3019,9 @@ interface WorkbenchProps {
  * lives outside it and stays reachable). A panel may opt in to drag and keyboard resizing with
  * `resizable`, which `wireWorkbench` drives. See `docs/23-app-layouts.md` §3.3.
  */
-declare function Workbench({ id, label, main, leftRail, rightRail, bottomDrawer, mainToolbar, mainHeader, mainFooter, mainBottomToolbar, mainHeaderPlacement, mainFooterPlacement, mainPane, mainLabel, mainTabIndex, mainOutlined, mainHeaderList, mainFooterList, mainMinSize, mainMinHeight, overlayBackdrop, className, slot, rootAttributes, }: WorkbenchProps): SafeHtml;
+declare function Workbench({ id, label, main, leftRail: configuredLeftRail, rightRail: configuredRightRail, bottomDrawer, compactNavigation, mainToolbar: configuredMainToolbar, mainHeader, mainFooter, mainBottomToolbar, mainHeaderPlacement, mainFooterPlacement, mainPane, mainLabel, mainTabIndex, mainOutlined, mainHeaderList, mainFooterList, mainMinSize, mainMinHeight, overlayBackdrop, className, slot, rootAttributes, }: WorkbenchProps): SafeHtml;
 
-export { Workbench, type WorkbenchChromePlacement, type WorkbenchCompactOverlay, type WorkbenchMainBottomToolbar, type WorkbenchMainToolbar, type WorkbenchNavigationPanel, type WorkbenchPanel, type WorkbenchPanelBottomToolbar, type WorkbenchPanelResizable, type WorkbenchPanelToggle, type WorkbenchPanelToolbar, type WorkbenchProps, type WorkbenchResponsiveOverlayAt, type WorkbenchStaticPanel };
+export { Workbench, type WorkbenchChromePlacement, type WorkbenchCompactNavigation, type WorkbenchCompactNavigationView, type WorkbenchCompactOverlay, type WorkbenchMainBottomToolbar, type WorkbenchMainToolbar, type WorkbenchNavigationPanel, type WorkbenchPanel, type WorkbenchPanelBottomToolbar, type WorkbenchPanelResizable, type WorkbenchPanelToggle, type WorkbenchPanelToolbar, type WorkbenchProps, type WorkbenchResponsiveOverlayAt, type WorkbenchStaticPanel };
 ```
 
 ## `@kerfjs/ui/wire-workbench`
@@ -3013,9 +3029,17 @@ export { Workbench, type WorkbenchChromePlacement, type WorkbenchCompactOverlay,
 ```ts
 import { Signal, ReadonlySignal } from 'kerfjs';
 import { DeviceClass } from './device-class.js';
+import { WireNavStackOptions } from './wire-nav-stack.js';
 
 /** A Workbench panel slot, named after its `WorkbenchProps` prop. */
 type WorkbenchPanelKey = 'leftRail' | 'rightRail' | 'bottomDrawer';
+
+interface WireWorkbenchCompactNavigation extends WireNavStackOptions {
+    /** Container width, inclusive. Named breakpoints scale with the root font. */
+    at?: 'compact' | 'narrow' | number;
+    /** App-owned state rendered as Workbench's compactNavigation.active. */
+    active: Signal<boolean>;
+}
 
 /** Minimal `localStorage`-shaped store, so the persistence hook is testable. */
 interface WorkbenchStorage {
@@ -3083,6 +3107,8 @@ interface WireWorkbenchOptions {
      * `collapsed` signal with `collapsed={panel.collapsed.value}`.
      */
     panels: Partial<Record<WorkbenchPanelKey, WireWorkbenchPanel>>;
+    /** Measure and wire the controlled compact main stack. */
+    compactNavigation?: WireWorkbenchCompactNavigation;
     /**
      * When provided, resizing is suspended while `deviceClass.compact` is true —
      * the classes where rails become overlay drawers or are replaced.
@@ -3140,9 +3166,9 @@ interface WireWorkbenchOptions {
  * on Escape or an outside press, and
  * opening one overlay closes the others (`exclusiveOverlays`). Returns a disposer. See `docs/23-app-layouts.md` §3.3.
  */
-declare function wireWorkbench(root: HTMLElement, { id, panels, deviceClass, storage, step, largeStep, onResize, dismissOverlays, exclusiveOverlays, }: WireWorkbenchOptions): () => void;
+declare function wireWorkbench(root: HTMLElement, { id, panels, compactNavigation, deviceClass, storage, step, largeStep, onResize, dismissOverlays, exclusiveOverlays, }: WireWorkbenchOptions): () => void;
 
-export { type WireWorkbenchOptions, type WireWorkbenchPanel, type WorkbenchPanelKey, type WorkbenchResize, type WorkbenchStorage, wireWorkbench };
+export { type WireWorkbenchCompactNavigation, type WireWorkbenchOptions, type WireWorkbenchPanel, type WorkbenchPanelKey, type WorkbenchResize, type WorkbenchStorage, wireWorkbench };
 ```
 
 ## `@kerfjs/ui/collapsible-panel`

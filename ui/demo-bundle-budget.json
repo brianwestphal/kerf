@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 164600,
-  "totalJavaScriptGzip": 473600,
-  "measuredLargestJavaScriptGzip": 164546,
-  "measuredTotalJavaScriptGzip": 473527,
+  "totalJavaScriptGzip": 474300,
+  "measuredLargestJavaScriptGzip": 164547,
+  "measuredTotalJavaScriptGzip": 474251,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -7779,6 +7779,22 @@
         "measuredTotalJavaScriptGzip": 473527,
         "largestJavaScriptGzip": 164600,
         "totalJavaScriptGzip": 473600
+      }
+    },
+    {
+      "at": "2026-11-27T12:53:19.141Z",
+      "reason": "KF-CD05D5 adds the compact Workbench stack, container measurement, and responsive focus wiring",
+      "old": {
+        "measuredLargestJavaScriptGzip": 164546,
+        "measuredTotalJavaScriptGzip": 473527,
+        "largestJavaScriptGzip": 164600,
+        "totalJavaScriptGzip": 473600
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 164547,
+        "measuredTotalJavaScriptGzip": 474251,
+        "largestJavaScriptGzip": 164600,
+        "totalJavaScriptGzip": 474300
       }
     }
   ]

@@ -449,6 +449,28 @@ describe('wireNavStack', () => {
     dispose();
   });
 
+  it('keeps an inner stack Back within that stack', () => {
+    const root = mountStack([view('home', 'Home'), view('detail', 'Detail')]);
+    const outerBack = vi.fn();
+    const innerBack = vi.fn();
+    const page = root.querySelector<HTMLElement>('[data-nav-active="true"]')!;
+    page.innerHTML = String(
+      NavStack({
+        id: 'inner',
+        label: 'Inner stack',
+        views: [view('list', 'List'), view('entry', 'Entry')],
+      }),
+    );
+    const inner = page.querySelector<HTMLElement>('#inner')!;
+    const disposeOuter = wireNavStack(root, { onBack: outerBack });
+    const disposeInner = wireNavStack(inner, { onBack: innerBack });
+    inner.querySelector<HTMLButtonElement>('[data-nav-back]')!.click();
+    expect(innerBack).toHaveBeenCalledOnce();
+    expect(outerBack).not.toHaveBeenCalled();
+    disposeInner();
+    disposeOuter();
+  });
+
   it('slides a pushed view in (animated path)', async () => {
     const root = mountStack([view('home', 'Home')]);
     const dispose = wireNavStack(root, { duration: 10 });

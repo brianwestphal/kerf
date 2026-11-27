@@ -25,7 +25,7 @@ Arrange a complex tool or editor as a stable central work area with optional per
 
 ## Imports
 
-- JavaScript: `@kerfjs/ui/workbench` — exports `Workbench`, `WorkbenchChromePlacement`, `WorkbenchCompactOverlay`, `WorkbenchMainBottomToolbar`, `WorkbenchMainToolbar`, `WorkbenchPanel`, `WorkbenchStaticPanel`, `WorkbenchNavigationPanel`, `WorkbenchPanelResizable`, `WorkbenchPanelToggle`, `WorkbenchPanelToolbar`, `WorkbenchProps`, `WorkbenchResponsiveOverlayAt`.
+- JavaScript: `@kerfjs/ui/workbench` — exports `Workbench`, `WorkbenchChromePlacement`, `WorkbenchCompactNavigation`, `WorkbenchCompactNavigationView`, `WorkbenchCompactOverlay`, `WorkbenchMainBottomToolbar`, `WorkbenchMainToolbar`, `WorkbenchPanel`, `WorkbenchStaticPanel`, `WorkbenchNavigationPanel`, `WorkbenchPanelResizable`, `WorkbenchPanelToggle`, `WorkbenchPanelToolbar`, `WorkbenchProps`, `WorkbenchResponsiveOverlayAt`.
 - CSS: the browser build of `@kerfjs/ui/workbench` pulls its CSS automatically; import `@kerfjs/ui/workbench.css` manually only without the `browser` export condition.
 - Wiring: `wireWorkbench` from `@kerfjs/ui/wire-workbench` (optional).
 - Wiring: `wireScrollDividers` from `@kerfjs/ui/wire-scroll-dividers` (optional).
@@ -44,6 +44,7 @@ Exact prop names and types: [`@kerfjs/ui/workbench`](../public-api-signatures-v1
 - all panels
 - independently collapsed panels
 - navigation panel with per-screen toolbar, fixed header, and one scroll owner; standard toggle remains last and relocates while collapsed
+- compact work-area navigation keeps the main view mounted, pushes inspector views, overlays the left rail, and leaves an inline drawer docked below the stack
 - opt-in drag and keyboard resizable panels with min/max limits
 - resizable rails that leave the work area a minimum width and shrink in proportion when the Workbench narrows
 - rails or a drawer that present as overlays below a narrow or compact Workbench container breakpoint
@@ -72,7 +73,7 @@ Zones (a zone is bound to JSX only through its listed prop; never assume the zon
 
 ## State and wiring
 
-**The app owns:** panel presence and content; optional accessible name for the central region (mainLabel); collapsed state; panel sizes; navigation panel view stack and push/pop actions when navStack is supplied; responsive replacement below desktop; collapse controls and focus policy; optional main and panel focus stops and persistent outlines.
+**The app owns:** panel presence and content; optional accessible name for the central region (mainLabel); collapsed state; panel sizes; panel or compact work-area view stacks and push/pop actions; responsive replacement below desktop; collapse controls and focus policy; optional main and panel focus stops and persistent outlines.
 
 **Wiring:** `wireWorkbench`, `wireScrollDividers` is optional.
 

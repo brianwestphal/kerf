@@ -341,6 +341,66 @@ opening it from there focuses the panel's own toggle. A panel's optional
 `footer` renders below its content, for a sidebar's bottom toolbar. Without a
 `toolbar` or `mainToolbar`, `content` and `main` render exactly as given.
 
+## Compact work-area navigation
+
+Use `compactNavigation` when the right rail becomes a sequence of screens at
+phone widths. The app owns the pushed views and the compact flag. Give that flag
+to `wireWorkbench` to measure the Workbench itself. The default breakpoint is
+`"compact"` (28rem). Choose `"narrow"` (44rem) or an inclusive pixel width to
+match your UI. Import `@kerfjs/ui/nav-stack.css` alongside Workbench's CSS when
+loading styles manually.
+
+```tsx
+const compact = signal(false);
+const details = signal<WorkbenchCompactNavigationView[]>([]);
+
+// In the Workbench render
+<Workbench
+  id="tickets"
+  label="Tickets"
+  main={ticketList()}
+  mainToolbar={ticketTools()}
+  leftRail={projects()}
+  rightRail={inspector()}
+  bottomDrawer={terminal()}
+  compactNavigation={{ active: compact.value, views: details.value }}
+/>;
+
+// Wire once, then dispose with the app.
+const disposeWorkbench = wireWorkbench(root, {
+  id: 'tickets',
+  panels: { leftRail: { collapsed: projectsCollapsed } },
+  compactNavigation: {
+    at: 500,
+    active: compact,
+    onBack: () => { details.value = details.peek().slice(0, -1); },
+  },
+});
+
+// App actions push a NavStackView or reuse a static rail panel's parts.
+details.value = [
+  ...details.peek(),
+  { key: ticket.id, title: ticket.id, panel: inspector(ticket) },
+];
+```
+
+The main view keeps its content, header, footer, Pane, and toolbar across
+pushes and breakpoint changes. Its toolbar takes the left rail's relocated
+toggle. Workbench supplies a toolbar for that toggle when `mainToolbar` is
+omitted and the left rail has a toolbar. In compact mode the left rail opens
+as an overlay and an inline bottom drawer stays docked below the stack. Pass
+the left rail's `collapsed` signal to enable transient overlay behavior and
+restore its previous inline preference on widening.
+
+The compact stack renders pushed views above the main view and uses Back to
+call the app's `onBack`. Use unique view keys and reserve
+`<workbench-id>-workbench-main` for the root. A panel view uses the panel's
+content, header, footer, Pane configuration, and toolbar groups. An optional
+`title` gives the screen a centered stack title. Back uses the standard
+NavStack focus restoration. Widening reveals the main view and restores the
+right rail with the app's preferred collapsed state. The app can retain its
+view history to resume a detail on the next compact visit.
+
 ## Resizable panels
 
 Resizing is **opt-in per panel**. Give a panel `resizable` — `true` for the

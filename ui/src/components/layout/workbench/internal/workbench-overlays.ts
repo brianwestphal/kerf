@@ -269,7 +269,15 @@ export function wireWorkbenchOverlays(
     let width: number | undefined;
     for (const panel of panels) {
       const element = panelElement(panel);
-      if (!element) continue;
+      if (!element) {
+        if (
+          panel.key === 'rightRail' &&
+          workbench?.hasAttribute('data-compact-navigation-active') &&
+          panel.overlay?.peek()
+        )
+          panel.overlay.value = false;
+        continue;
+      }
       // CSS container queries cannot take a runtime pixel value. For a
       // numeric threshold the same measured Workbench width drives the CSS
       // presentation hook and the collapsed-state transition below.
@@ -289,7 +297,9 @@ export function wireWorkbenchOverlays(
         element.removeAttribute('data-responsive-overlay-active');
         outOfFlow.delete(element);
       }
-      const active = responsive(element);
+      const active =
+        responsive(element) ||
+        element.hasAttribute('data-compact-navigation-overlay');
       if (active && !inlineState.has(panel)) {
         inlineState.set(panel, panel.collapsed.peek());
         // A panel that opts in and holds focus (the user is working in it)
@@ -410,6 +420,7 @@ export function wireWorkbenchOverlays(
     attributes: true,
     attributeFilter: [
       'data-presentation',
+      'data-compact-navigation-overlay',
       'data-responsive-overlay-at',
       'data-responsive-overlay-active',
       'data-collapsed',

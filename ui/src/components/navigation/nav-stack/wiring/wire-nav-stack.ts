@@ -118,7 +118,7 @@ export function wireNavStack(
   const section = root.matches('[data-component="nav-stack"]')
     ? root
     : root.querySelector('[data-component="nav-stack"]');
-  const viewport = section?.querySelector('[data-nav-stack-viewport]');
+  const viewport = section?.querySelector(':scope > [data-nav-stack-viewport]');
   if (!(section instanceof HTMLElement) || !viewport) return () => {};
 
   const view = section.ownerDocument.defaultView ?? window;
@@ -130,8 +130,14 @@ export function wireNavStack(
     '--kui-nav-stack-transition-duration',
     `${Math.max(0, duration)}ms`,
   );
-  const disposeBack = delegate(section, 'click', '[data-nav-back]', () =>
-    options.onBack?.(),
+  const disposeBack = delegate(
+    section,
+    'click',
+    '[data-nav-back]',
+    (_event, button) => {
+      if (button.closest('[data-component="nav-stack"]') === section)
+        options.onBack?.();
+    },
   );
 
   let activeKey = topView(viewport)?.dataset.navKey;

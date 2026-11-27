@@ -20,6 +20,91 @@ describe('Workbench', () => {
     expect(html).not.toContain('data-workbench-drawer');
   });
 
+  it('gives compact navigation a root toolbar for an otherwise floating rail toggle', () => {
+    const host = document.createElement('div');
+    host.innerHTML = String(
+      Workbench({
+        id: 'wb',
+        label: 'Studio',
+        main,
+        leftRail: {
+          content: panel('Files'),
+          collapsed: true,
+          toolbar: {
+            label: 'Files',
+            toggle: { name: 'Files', action: 'files' },
+          },
+        },
+        rightRail: { content: panel('Inspector') },
+        compactNavigation: { active: true, views: [] },
+      }),
+    );
+    const nav = host.querySelector('#wb-compact-navigation');
+    const toggle = nav?.querySelector('[data-workbench-toggle="left"]');
+    expect(nav?.getAttribute('data-depth')).toBe('1');
+    expect(toggle?.getAttribute('aria-controls')).toBe('wb-left-rail');
+    expect(toggle?.getAttribute('aria-expanded')).toBe('false');
+    expect(host.querySelector('#wb-right-rail')).toBeNull();
+    expect(host.querySelector('.kui-workbench__restore')).toBeNull();
+  });
+
+  it('composes static panel views and keeps the configured root Pane without chrome', () => {
+    const host = document.createElement('div');
+    host.innerHTML = String(
+      Workbench({
+        id: 'wb',
+        label: 'Studio',
+        main,
+        mainPane: { contentLabel: 'Editor' },
+        bottomDrawer: {
+          content: panel('Terminal'),
+          pane: { appearance: 'sunken' },
+        },
+        compactNavigation: {
+          active: true,
+          views: [
+            {
+              key: 'detail',
+              panel: {
+                content: panel('Inspector'),
+                header: panel('Ticket'),
+                toolbar: { label: 'Actions', title: panel('Inspect') },
+              },
+            },
+          ],
+        },
+      }),
+    );
+    expect(
+      host.querySelector(
+        '[data-nav-key="wb-workbench-main"] [aria-label="Editor"]',
+      ),
+    ).not.toBeNull();
+    expect(
+      host.querySelector('[data-nav-stack-chrome]')?.textContent,
+    ).toContain('Inspect');
+    expect(
+      host.querySelector('[data-nav-key="detail"] [data-nav-stack-header]')
+        ?.textContent,
+    ).toContain('Ticket');
+    expect(
+      host
+        .querySelector('[data-workbench-drawer]')
+        ?.getAttribute('data-appearance'),
+    ).toBe('sunken');
+    expect(() =>
+      Workbench({
+        id: 'wb',
+        label: 'Studio',
+        main,
+        compactNavigation: {
+          active: true,
+          views: [{ key: 'wb-workbench-main', content: panel('Duplicate') }],
+        },
+      }),
+    ).toThrow(RangeError);
+  });
+
   it('focuses and outlines requested regions while collapsed panels leave tab order', () => {
     const render = (collapsed: boolean, presentation: 'inline' | 'hidden') => {
       const host = document.createElement('div');

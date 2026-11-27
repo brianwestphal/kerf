@@ -132,6 +132,8 @@ describe('UX catalog metadata', () => {
       publicExports: [
         'Workbench',
         'WorkbenchChromePlacement',
+        'WorkbenchCompactNavigation',
+        'WorkbenchCompactNavigationView',
         'WorkbenchCompactOverlay',
         'WorkbenchMainBottomToolbar',
         'WorkbenchMainToolbar',
@@ -214,6 +216,8 @@ describe('UX catalog metadata', () => {
         exports: [
           'Workbench',
           'WorkbenchChromePlacement',
+          'WorkbenchCompactNavigation',
+          'WorkbenchCompactNavigationView',
           'WorkbenchCompactOverlay',
           'WorkbenchMainBottomToolbar',
           'WorkbenchMainToolbar',

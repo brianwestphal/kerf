@@ -23,6 +23,7 @@ import { List, type ListConfig } from '../../../collections/list/list.js';
 import {
   NavStack,
   type NavStackProps,
+  type NavStackView,
 } from '../../../navigation/nav-stack/nav-stack.js';
 import { paneConfigProps } from '../../pane/model/pane-config-props.js';
 import { Pane, type PaneConfig } from '../../pane/pane.js';
@@ -30,6 +31,46 @@ import {
   type WorkbenchPanelKey,
   workbenchRegionId,
 } from '../model/workbench-resize.js';
+
+/** A rail view uses the stack's Back control and its own content and chrome. */
+export function panelNavigationView(
+  key: string,
+  {
+    content,
+    header,
+    headerList,
+    footer,
+    footerList,
+    pane,
+    bottomToolbar,
+    toolbar,
+  }: WorkbenchToolbarPanel & { content: KerfUiContent },
+  title?: string,
+): NavStackView {
+  return {
+    key,
+    content,
+    header,
+    headerList,
+    footer,
+    footerList,
+    pane,
+    bottomToolbar,
+    toolbar:
+      toolbar || title !== undefined
+        ? {
+            ...toolbar,
+            title,
+            leading: (
+              <>
+                {title === undefined ? toolbar?.title : undefined}
+                {toolbar?.leading}
+              </>
+            ),
+          }
+        : undefined,
+  };
+}
 
 /** The standard toggle a Workbench renders for a panel (see {@link PanelToggle}). */
 export type WorkbenchPanelToggle = PanelToggle;
@@ -255,6 +296,7 @@ export function mainBody({
   workbenchId,
   main,
   mainToolbar,
+  showMainToolbar = true,
   mainHeader,
   mainFooter,
   mainBottomToolbar,
@@ -270,6 +312,7 @@ export function mainBody({
   workbenchId: string;
   main: KerfUiContent;
   mainToolbar?: WorkbenchMainToolbar;
+  showMainToolbar?: boolean;
   mainHeader?: KerfUiContent;
   mainFooter?: KerfUiContent;
   mainBottomToolbar?: WorkbenchMainBottomToolbar;
@@ -309,7 +352,7 @@ export function mainBody({
   const header =
     !mainToolbar && !mainHeader ? undefined : (
       <>
-        {mainToolbar ? (
+        {mainToolbar && showMainToolbar ? (
           <Toolbar
             label={mainToolbar.label}
             density={mainToolbar.density}
