@@ -132,7 +132,7 @@ body { margin: 0; padding: 20px; background: ${theme.pageBackground}; font-famil
 // A running animation would be captured at whatever frame the capture lands
 // on, so a busy spinner's angle drifted on every rebuild; the template shows
 // the spinner's own reduced-motion presentation instead (loading-spinner.css).
-export const captureCss = `:root { --kui-font-mono: "Courier New", monospace; } button { appearance: none; } .kui-loading-spinner path { animation: none; }`;
+export const captureCss = `:root { --kui-font-mono: "Courier New", monospace; } button { appearance: none; } .kui-loading-spinner { animation: none; }`;
 
 const escapeHtml = (value) =>
   String(value)

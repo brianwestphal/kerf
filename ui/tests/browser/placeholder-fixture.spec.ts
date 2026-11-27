@@ -139,11 +139,14 @@ async function mountFixture(page: Page, { webAwesome = true } = {}) {
   );
   // The fixture resolves package CSS from source, so apply the pixel-first
   // remify() authoring transform the package build performs.
+  // Pause the spinners before mounting so both fingerprints measure the
+  // same frame rather than comparing differently rotated bounding boxes.
   await page.addStyleTag({
-    content: css.text.replace(
-      /remify\(([\d.]+)px\)/g,
-      (_, pixels: string) => `${String(Number(pixels) / 16)}rem`,
-    ),
+    content:
+      css.text.replace(
+        /remify\(([\d.]+)px\)/g,
+        (_, pixels: string) => `${String(Number(pixels) / 16)}rem`,
+      ) + '\n.kui-loading-spinner { animation-play-state: paused; }',
   });
   await page.addScriptTag({ content: javascript.text });
   await page.evaluate(async () => {
