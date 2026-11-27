@@ -44,7 +44,7 @@ function tsAttributes(ts, opening) {
 
 // ESLint's cross-file pass has source text only. Parse JSX syntax rather
 // than guessing where a JSX opening ends around nested expressions.
-function choiceUses(source, name) {
+function jsxUses(source, name, matchesAttributes) {
   const ts = require('typescript');
   const file = ts.createSourceFile(
     'use.tsx',
@@ -57,7 +57,7 @@ function choiceUses(source, name) {
     if (
       (ts.isJsxOpeningElement(node) || ts.isJsxSelfClosingElement(node)) &&
       node.tagName.getText(file) === name &&
-      choiceMode(tsAttributes(ts, node)).required !== false
+      matchesAttributes(tsAttributes(ts, node))
     )
       return true;
     return ts.forEachChild(node, visit);
@@ -65,4 +65,12 @@ function choiceUses(source, name) {
   return Boolean(visit(file));
 }
 
-module.exports = { choiceMode, tsAttributes, choiceUses };
+function choiceUses(source, name) {
+  return jsxUses(
+    source,
+    name,
+    (attributes) => choiceMode(attributes).required !== false,
+  );
+}
+
+module.exports = { choiceMode, tsAttributes, choiceUses, jsxUses };

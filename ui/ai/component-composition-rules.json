@@ -444,6 +444,17 @@
       }
     ]
   },
+  "@kerfjs/ui:surface-scaffold": {
+    "_source": "docs/surface-scaffold.md",
+    "wiring": {
+      "required": true,
+      "helpers": ["wirePinnablePopover"],
+      "obligations": [
+        "Use wirePinnablePopover for PinnablePopoverSurface in its default overlay presentation. Embedded previews and other surface scaffold exports have no wiring requirement.",
+        "Use wireOverlaySheets to opt into resizing for bottom sheets opened through kerfjs/overlay."
+      ]
+    }
+  },
   "@kerfjs/ui:resize": {
     "_source": "docs/accessibility.md#resizableregion",
     "contexts": ["adjustable-pane-boundary"],

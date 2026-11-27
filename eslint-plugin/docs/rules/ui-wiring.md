@@ -2,6 +2,12 @@
 
 Checks wiring obligations published by the versioned composition catalog. `KUI-L401` reports a used component whose required helper or side-effect registration import is absent. `KUI-L402` reports a disposer-returning helper call whose disposer is discarded.
 
+For surface scaffolds, `PinnablePopoverSurface` in its default overlay
+presentation requires `wirePinnablePopover`. Embedded pinnable previews,
+`DialogSurface` (including its built-in resizable bottom sheet), and the
+other scaffold exports have no required helper. Use `wireOverlaySheets` when
+opting into resizing for bottom sheets opened through `kerfjs/overlay`.
+
 Declare application entry modules in the application UI profile to check root wiring once per entry:
 
 ```json

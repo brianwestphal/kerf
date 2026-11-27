@@ -2154,8 +2154,11 @@
       ],
       "wiring": {
         "required": true,
-        "helpers": ["wireOverlaySheets", "wirePinnablePopover"],
-        "obligations": ["Use wirePinnablePopover as documented."],
+        "helpers": ["wirePinnablePopover"],
+        "obligations": [
+          "Use wirePinnablePopover for PinnablePopoverSurface in its default overlay presentation. Embedded previews and other surface scaffold exports have no wiring requirement.",
+          "Use wireOverlaySheets to opt into resizing for bottom sheets opened through kerfjs/overlay."
+        ],
         "stateAttributes": [
           {
             "name": "data-pinned",
@@ -2320,7 +2323,7 @@
       "diagnostics": [],
       "provenance": {
         "selection": "ai/component-catalog.json",
-        "composition": "generated-permissive-default"
+        "composition": "docs/surface-scaffold.md"
       }
     },
     {

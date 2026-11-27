@@ -34,6 +34,18 @@ const serverPage = join(wiringRoot, 'server-page.tsx');
 const serverPageTwo = join(wiringRoot, 'server-page-two.tsx');
 const browserEntry = join(wiringRoot, 'browser-entry.ts');
 const otherBrowserEntry = join(wiringRoot, 'other-browser-entry.ts');
+const surfaceEntry = join(wiringRoot, 'surface-entry.tsx');
+const passiveSurfaceCode =
+  "import { DialogSurface as Dialog, PinnablePopoverSurface } from '@kerfjs/ui/surface-scaffold'; export const View = () => <><Dialog /><Dialog presentation='bottom-sheet' resizable /><PinnablePopoverSurface presentation={'embedded'} /></>;";
+const floatingSurfaceCode =
+  "import * as surfaces from '@kerfjs/ui/surface-scaffold'; export const View = () => <surfaces.PinnablePopoverSurface />;";
+writeFileSync(join(wiringRoot, 'passive-surface.tsx'), passiveSurfaceCode);
+writeFileSync(join(wiringRoot, 'floating-surface.tsx'), floatingSurfaceCode);
+const surfaceEntrySettings = uiSettings({
+  ...shippedUiSettings.kerfjs.ui,
+  workspaceRoot: wiringRoot,
+  profile: { ...profile, wiring: { entries: ['surface-entry.tsx'] } },
+});
 writeFileSync(
   wiringEntry,
   "import './leaf'; import '@kerfjs/ui/select/register'; import { wireSearchFields } from '@kerfjs/ui/wire-search-fields'; const dispose = wireSearchFields(root);\n",
@@ -249,6 +261,16 @@ const wiringExceptionSettings = uiSettings({
 
 tester.run('ui-wiring', wiring, {
   valid: [
+    { code: passiveSurfaceCode, settings: shippedUiSettings },
+    {
+      code: "import './passive-surface.js';",
+      filename: surfaceEntry,
+      settings: surfaceEntrySettings,
+    },
+    {
+      code: "import { PinnablePopoverSurface as Panel, wirePinnablePopover } from '@kerfjs/ui/surface-scaffold'; const dispose = wirePinnablePopover(surface); <Panel />;",
+      settings: shippedUiSettings,
+    },
     {
       code: "import './picker.js'; import './excepted-split.js'; import './init.js';",
       filename: join(wiringExceptionRoot, 'excepted-entry.tsx'),
@@ -405,6 +427,38 @@ tester.run('ui-wiring', wiring, {
     },
   ],
   invalid: [
+    {
+      code: "import { wireOverlaySheets } from '@kerfjs/ui/wire-overlay-sheets'; wireOverlaySheets();",
+      settings: shippedUiSettings,
+      errors: [{ messageId: 'cleanup', data: { helper: 'wireOverlaySheets' } }],
+    },
+    {
+      code: floatingSurfaceCode,
+      settings: shippedUiSettings,
+      errors: [
+        {
+          messageId: 'missing',
+          data: {
+            component: '@kerfjs/ui:surface-scaffold',
+            helper: 'wirePinnablePopover',
+          },
+        },
+      ],
+    },
+    {
+      code: "import './passive-surface.js'; import './floating-surface.js';",
+      filename: surfaceEntry,
+      settings: surfaceEntrySettings,
+      errors: [
+        {
+          messageId: 'missing',
+          data: {
+            component: '@kerfjs/ui:surface-scaffold',
+            helper: 'wirePinnablePopover',
+          },
+        },
+      ],
+    },
     {
       code: "import './picker.js'; import './excepted-split.js'; import './plain-split.js'; import './init.js';",
       filename: join(wiringExceptionRoot, 'plain-entry.tsx'),

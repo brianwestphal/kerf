@@ -5,6 +5,7 @@ import {
   helperCall,
   importRegistry,
   isExcepted,
+  jsxExportName,
   jsxKey,
   loadUiContract,
   relativeImportCandidates,
@@ -14,6 +15,8 @@ import {
 
 const MISSING_CODE = 'KUI-L401';
 const CLEANUP_CODE = 'KUI-L402';
+const SURFACE_SCAFFOLD = '@kerfjs/ui:surface-scaffold';
+const PINNABLE_POPOVER = 'PinnablePopoverSurface';
 
 const retained = (call) => call.parent?.type !== 'ExpressionStatement';
 
@@ -130,6 +133,26 @@ function literalAttributes(attributes) {
   });
 }
 
+function needsPopoverWiring(attributes) {
+  let presentation;
+  for (const [name, value] of attributes)
+    if (name === 'presentation' || name === '...') presentation = value;
+  return presentation !== 'embedded';
+}
+
+function importedTagUses(source, tag, key, exported, contract) {
+  if (!key || !new RegExp(`<${escapeRegExp(tag)}(?=[\\s/>])`).test(source))
+    return false;
+  if (key === '@kerfjs/ui:choice-chips')
+    return contract.choiceWiring.choiceUses(source, tag);
+  if (key === SURFACE_SCAFFOLD)
+    return (
+      exported === PINNABLE_POPOVER &&
+      (contract.choiceWiring.jsxUses?.(source, tag, needsPopoverWiring) ?? true)
+    );
+  return true;
+}
+
 // The entry graph is read from disk because ESLint visits one source file at a
 // time. Match only imported JSX names; an unrelated local tag cannot satisfy a
 // catalog obligation. The current entry's in-memory text covers editor linting.
@@ -156,12 +179,7 @@ function moduleUses(source, file, contract) {
         if (!match) continue;
         const [, imported, local = imported] = match;
         const key = keyFor(imported);
-        if (
-          key &&
-          new RegExp(`<${local}(?=[\\s/>])`).test(source) &&
-          (key !== '@kerfjs/ui:choice-chips' ||
-            contract.choiceWiring.choiceUses(source, local))
-        )
+        if (importedTagUses(source, local, key, imported, contract))
           uses.add(key);
       }
     const namespace = bindings.match(/\*\s+as\s+(\w+)/)?.[1];
@@ -173,10 +191,7 @@ function moduleUses(source, file, contract) {
       for (const name of names) {
         const key = keyFor(name);
         if (
-          key &&
-          new RegExp(`<${namespace}\\.${name}(?=[\\s/>])`).test(source) &&
-          (key !== '@kerfjs/ui:choice-chips' ||
-            contract.choiceWiring.choiceUses(source, `${namespace}.${name}`))
+          importedTagUses(source, `${namespace}.${name}`, key, name, contract)
         )
           uses.add(key);
       }
@@ -185,7 +200,7 @@ function moduleUses(source, file, contract) {
     if (
       direct &&
       defaultName &&
-      new RegExp(`<${defaultName}(?=[\\s/>])`).test(source)
+      importedTagUses(source, defaultName, direct, 'default', contract)
     )
       uses.add(direct);
   }
@@ -333,6 +348,12 @@ export default {
         if (!registry) return;
         const key = jsxKey(node.name, registry, contract);
         if (
+          key === SURFACE_SCAFFOLD &&
+          (jsxExportName(node.name, registry) !== PINNABLE_POPOVER ||
+            !needsPopoverWiring(literalAttributes(node.attributes)))
+        )
+          return;
+        if (
           key &&
           !used.has(key) &&
           (key !== '@kerfjs/ui:choice-chips' ||
@@ -412,6 +433,10 @@ export default {
                 data: { component: key, action },
               });
           for (const helper of entry.wiring.helpers) {
+            // Older surface catalogs group the optional core sheet helper
+            // with the pinnable popover requirement.
+            if (key === SURFACE_SCAFFOLD && helper === 'wireOverlaySheets')
+              continue;
             if (helper.startsWith('@')) {
               if (
                 !(
@@ -447,6 +472,9 @@ export default {
               .flatMap((entry) => entry.wiring.helpers)
               .filter((helper) => !helper.startsWith('@')),
           );
+          // Opt-in core sheet wiring still returns a disposer.
+          if (contract.entries.has(SURFACE_SCAFFOLD))
+            disposerHelpers.add('wireOverlaySheets');
           for (const [helper, helperCalls] of calls)
             if (disposerHelpers.has(helper))
               for (const { node: call, returnsDisposer } of helperCalls)

@@ -86,9 +86,10 @@ Exact prop names and types: [`@kerfjs/ui/surface-scaffold`](../public-api-signat
 
 **The app owns:** open state (openDialog and closeDialog); whether a close request may proceed (cancel kui-request-close to keep the dialog open; the panel pulses); dismissal policy (lightDismiss); content, heading, header actions, and footer; outer placement; whether core kerfjs/overlay dialogs presented as bottom sheets take this package's geometry and slide (import @kerfjs/ui/overlay-sheet.css; exitClass 'kui-overlay-sheet-exit' for the slide out; the kui-overlay-sheet-resizable class plus wireOverlaySheets for a resize grabber); pinned state and placement storage for a PinnablePopoverSurface (wirePinnablePopover's onChange reports them; its pinned and placement options restore them).
 
-**Wiring:** `wireOverlaySheets`, `wirePinnablePopover` is required.
+**Wiring:** `wirePinnablePopover` is required.
 
-- Use wirePinnablePopover as documented.
+- Use wirePinnablePopover for PinnablePopoverSurface in its default overlay presentation. Embedded previews and other surface scaffold exports have no wiring requirement.
+- Use wireOverlaySheets to opt into resizing for bottom sheets opened through kerfjs/overlay.
 
 **Wiring-owned state attributes** — never render, remove, or branch on these as app state:
 
