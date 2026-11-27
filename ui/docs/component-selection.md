@@ -856,6 +856,11 @@ point, at its `placement` unless the call names one for that opening
 `opener` in those options to return focus there when dismissal starts inside
 the menu. A context menu otherwise uses the previously focused control, and a
 button menu uses its trigger. Outside presses focus their targets normally.
+For a shared menu opened from an overflow button, use
+`openPopupMenuAt(menu, x, y, { opener: button, anchorTo: 'opener' })`. The
+menu follows the connected button's box. It flips to the opposite edge of
+the box and scrolls within the available space when neither side fits. The
+supplied viewport point is the fallback if the opener is unavailable.
 If the opener is removed while the menu is open, dismissal skips focus return
 to that element. Call `closePopupMenu` for programmatic dismissal.
 

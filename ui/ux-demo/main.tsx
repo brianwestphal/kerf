@@ -27,11 +27,7 @@ import {
 import { catalogResources } from '@kerfjs/ui/catalog-resources';
 import { LoadingSpinner } from '@kerfjs/ui/loading-spinner';
 import { LucideIcon } from '@kerfjs/ui/lucide-icon';
-import {
-  openPopupMenu,
-  openPopupMenuAt,
-  type PopupMenuElement,
-} from '@kerfjs/ui/popup-menu';
+import { openPopupMenuAt, type PopupMenuElement } from '@kerfjs/ui/popup-menu';
 import { readSearchField } from '@kerfjs/ui/search-field';
 import { applySelection, selectionGesture } from '@kerfjs/ui/selection';
 import { closeDialog, openDialog } from '@kerfjs/ui/surface-scaffold';
@@ -245,7 +241,6 @@ import {
   menuActionCurrent,
   menuActionPressed,
   menuToolsOpen,
-  popupContextAnchor,
   popupSortChoice,
   radioDensity,
   radioTheme,
@@ -1462,15 +1457,16 @@ const stopActions = delegateActions(app, 'click', {
   'log-context-open': () => {
     actionLog.value = 'Context demand opened';
   },
-  'open-demand-actions': (_event, element) => {
+  'open-demand-actions': (event, element) => {
     const menu = app.querySelector<PopupMenuElement>(
       '[data-popup-context-menu]',
     );
     if (!menu) return;
-    const anchor = element.getBoundingClientRect();
-    // The menu renders its anchor, so a re-render keeps the point.
-    popupContextAnchor.value = { x: anchor.left, y: anchor.bottom };
-    openPopupMenu(menu);
+    const { clientX, clientY } = event as MouseEvent;
+    openPopupMenuAt(menu, clientX, clientY, {
+      opener: element as HTMLElement,
+      anchorTo: 'opener',
+    });
   },
   'log-pin': () => {
     actionLog.value = 'Pin requested';

@@ -141,9 +141,6 @@ export const iconTileCurrent = signal('tile-run-tests');
 export const inspectorSection = signal<'summary' | 'activity' | 'files'>(
   'summary',
 );
-/** Where the PopupMenu entry's context menu opens: the last right-click or button. */
-export const popupContextAnchor = signal({ x: 0, y: 0 });
-
 export const displayDensity = signal<'compact' | 'comfortable' | 'roomy'>(
   'comfortable',
 );

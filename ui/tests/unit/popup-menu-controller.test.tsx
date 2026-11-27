@@ -401,6 +401,38 @@ describe('PopupMenu register: opening and closing', () => {
     });
   });
 
+  it('uses the explicit opener as the anchor for this opening only', async () => {
+    const { root, trigger } = setup();
+    const opener = document.createElement('button');
+    document.body.append(opener);
+    openPopupMenuAt(root, 12, 24, {
+      opener,
+      anchorTo: 'opener',
+      placement: 'top-end',
+    });
+    await flush();
+    expect(floating.positions.at(-1)).toMatchObject({
+      anchor: opener,
+      placement: 'top-end',
+    });
+    closePopupMenu(root);
+    openPopupMenu(root);
+    await flush();
+    expect(floating.positions.at(-1)?.anchor).toBe(trigger);
+    closePopupMenu(root);
+
+    opener.remove();
+    openPopupMenuAt(root, 12, 24, { opener, anchorTo: 'opener' });
+    await flush();
+    expect(
+      (
+        floating.positions.at(-1)?.anchor as {
+          getBoundingClientRect(): DOMRect;
+        }
+      ).getBoundingClientRect(),
+    ).toMatchObject({ x: 12, y: 24, width: 0, height: 0 });
+  });
+
   it('opens a context menu at a point with an explicit placement over its own', async () => {
     const { root, trigger } = setup({
       context: true,

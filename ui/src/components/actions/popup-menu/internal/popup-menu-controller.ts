@@ -267,7 +267,7 @@ export function installPopupMenus(doc: Document = document): void {
     root: HTMLElement,
     detail: PopupMenuOpenDetail & { focus: Focus },
   ) => {
-    const { point, placement: pointPlacement, focus } = detail;
+    const { point, placement: pointPlacement, focus, anchorElement } = detail;
     const opener = rootOpenerOf(root);
     const menu = rootMenuOf(root);
     if (!opener || !menu) return;
@@ -286,15 +286,19 @@ export function installPopupMenus(doc: Document = document): void {
     // A button-triggered menu opened at a pointer point (openPopupMenuAt)
     // opens at the point for that opening only, `bottom-start` unless the
     // call names a placement: its own placement describes where it sits
-    // against its trigger. A context menu's anchor is always its point, so
+    // against its trigger. A context menu normally opens at its point, so
     // its placement (top-start above the point, say) applies there, unless
     // the call names one for this opening.
     const pointOpened = point !== undefined && !context;
-    const anchor: PopupAnchor = pointOpened
+    const pointOrTrigger: PopupAnchor = pointOpened
       ? pointAnchor(point.x, point.y)
       : context
         ? contextPoint(root, point)
         : opener;
+    const anchor =
+      anchorElement?.isConnected && anchorElement.ownerDocument === doc
+        ? anchorElement
+        : pointOrTrigger;
     const placement = ((point !== undefined ? pointPlacement : undefined) ??
       (pointOpened
         ? 'bottom-start'

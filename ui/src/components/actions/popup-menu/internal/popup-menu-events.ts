@@ -27,6 +27,8 @@ export interface PopupMenuOpenDetail {
   placement?: PopupMenuPlacement;
   /** Element to receive focus when this opening is dismissed from inside. */
   opener?: HTMLElement;
+  /** Optional real anchor for a point-opened menu. */
+  anchorElement?: HTMLElement;
 }
 
 export interface PopupMenuSelectDetail {

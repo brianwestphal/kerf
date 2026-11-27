@@ -347,17 +347,33 @@ function requestOpen(menu: PopupMenuElement, detail: PopupMenuOpenDetail) {
  * of menu; flipping, shifting, and the height cap still apply.
  * `options.opener` sets the focus return target for this opening. Context
  * menus default to the currently focused control, while button menus use
- * their trigger. An outside press moves focus normally. Needs `/register`.
+ * their trigger. With `anchorTo: 'opener'`, the connected opener's box sets
+ * the placement edges. The menu flips around the box and scrolls on the
+ * chosen side. If the opener is unavailable, the point applies.
+ * An outside press moves focus normally. Needs `/register`.
  */
 export function openPopupMenuAt(
   menu: PopupMenuElement,
   x: number,
   y: number,
-  options: { placement?: PopupMenuPlacement; opener?: HTMLElement } = {},
+  {
+    placement,
+    opener,
+    anchorTo,
+  }: {
+    placement?: PopupMenuPlacement;
+    opener?: HTMLElement;
+    anchorTo?: 'opener';
+  } = {},
 ): void {
   menu.style.setProperty('--kui-popup-menu-context-x', `${x}px`);
   menu.style.setProperty('--kui-popup-menu-context-y', `${y}px`);
-  requestOpen(menu, { ...options, point: { x, y } });
+  requestOpen(menu, {
+    point: { x, y },
+    placement,
+    opener,
+    anchorElement: anchorTo === 'opener' ? opener : undefined,
+  });
 }
 
 /**

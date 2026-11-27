@@ -780,11 +780,15 @@ type PopupMenuElement = HTMLElement;
  * of menu; flipping, shifting, and the height cap still apply.
  * `options.opener` sets the focus return target for this opening. Context
  * menus default to the currently focused control, while button menus use
- * their trigger. An outside press moves focus normally. Needs `/register`.
+ * their trigger. With `anchorTo: 'opener'`, the connected opener's box sets
+ * the placement edges. The menu flips around the box and scrolls on the
+ * chosen side. If the opener is unavailable, the point applies.
+ * An outside press moves focus normally. Needs `/register`.
  */
-declare function openPopupMenuAt(menu: PopupMenuElement, x: number, y: number, options?: {
+declare function openPopupMenuAt(menu: PopupMenuElement, x: number, y: number, { placement, opener, anchorTo, }?: {
     placement?: PopupMenuPlacement;
     opener?: HTMLElement;
+    anchorTo?: 'opener';
 }): void;
 /**
  * Open a PopupMenu from its trigger, or a context PopupMenu at the `anchor`

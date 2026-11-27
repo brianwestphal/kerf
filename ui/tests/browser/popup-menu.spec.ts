@@ -486,12 +486,16 @@ test('nested checked choices, disabled commands, and context opening work', asyn
 
   await contextButton.click();
   await expectOpen(context);
-  const buttonBox = await contextButton.boundingBox();
-  const buttonAnchorBox = await openerOf(context).boundingBox();
-  expect(Math.abs(buttonAnchorBox!.x - buttonBox!.x)).toBeLessThanOrEqual(2);
-  expect(
-    Math.abs(buttonAnchorBox!.y - (buttonBox!.y + buttonBox!.height)),
-  ).toBeLessThanOrEqual(2);
+  await expect
+    .poll(async () => {
+      const button = (await contextButton.boundingBox())!;
+      const panel = (await panelOf(context).boundingBox())!;
+      return (
+        panel.y + panel.height <= button.y + 1 ||
+        panel.y >= button.y + button.height - 1
+      );
+    })
+    .toBe(true);
   if (browserName === 'chromium')
     await page.screenshot({ path: 'test-results/popup-menu-button-wide.png' });
   await page.keyboard.press('Escape');
@@ -877,7 +881,7 @@ test('context menu and nested commands stay within each viewport corner', async 
   }
 });
 
-test('a context PopupMenu renders its anchor point and takes no layout space', async ({
+test('a context PopupMenu records the pointer point and takes no layout space', async ({
   page,
 }) => {
   await page.setViewportSize({ width: 1100, height: 800 });
@@ -898,8 +902,7 @@ test('a context PopupMenu renders its anchor point and takes no layout space', a
   await row.click({ button: 'right', position: { x: 30, y: 10 } });
   await expectOpen(context);
   const rowBox = (await row.boundingBox())!;
-  // The point lives in the rendered template, not only in imperative style,
-  // so a re-render or replacement of the menu keeps it.
+  // Pointer openings record the viewport point on the menu root.
   const style = await context.getAttribute('style');
   const [x, y] = [
     /--kui-popup-menu-context-x:\s*([\d.]+)px/.exec(style ?? '')?.[1],
