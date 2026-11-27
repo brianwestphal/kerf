@@ -7753,6 +7753,7 @@
         "grouped",
         "custom selected content",
         "hint text",
+        "error text below the hint, with an invalid border",
         "placeholder (loading)",
         "form, toolbar-borderless, or navigation presentation",
         "default or compact size",
@@ -7773,6 +7774,7 @@
         "Verify the live value, standard events, focus, and rendered output.",
         "The trigger is a native button with role=\"combobox\", aria-haspopup=\"listbox\", and aria-expanded. A nonempty label names it (the visible label is aria-hidden text beside it); otherwise ariaLabel names it without adding control height, including custom selected content.",
         "Hint text is visible below the control and is the trigger's aria-description; placeholderText remains the empty value inside the closed control.",
+        "A nonempty error sets aria-invalid on the combobox. The registered Select references the visible hint and error together through aria-describedby. Its initial markup includes the same copy in aria-description.",
         "popupNote is quiet text at the bottom of the open popup, below the choices (and a multiple Select's actions), and the listbox's aria-description; the visible line is aria-hidden, never an option, and wraps to the choices' width. Use it, not hint, for what the choices leave out in a toolbar Select, which has no room below its trigger.",
         "Import select/register once: it defines the form-associated kui-select root (value, name, form submission, and form reset) and wires every Select in the document. The listbox opens below the trigger in the top layer, flipping above when short and capped at the viewport edges. Do not add consumer popup timing or position repairs.",
         "Keyboard: Enter, Space, ArrowDown, or ArrowUp on the trigger opens on the chosen option (Home/End on the first/last), and typing opens on a matching label; in the listbox the arrows move and wrap, Home/End jump, typing a label's first letters moves to it, Enter or Space chooses, Escape closes and returns focus to the trigger, and Tab closes and continues from the trigger.",
@@ -8816,13 +8818,14 @@
         },
         {
           "title": "Pointer anchored context menu",
-          "description": "Keep the row's visible disabled action separate from the context menu anchor. Find the menu root with a stable data attribute.",
-          "code": "<PopupMenu\n  context\n  label=\"Demand Actions\"\n  rootAttributes={{ 'data-demand-menu': '' }}\n  items={[{ label: 'Open', action: 'open-demand' }]}\n/>\n// In the app's row wiring:\nrow.addEventListener('contextmenu', (event) => {\n  event.preventDefault();\n  const menu = row.querySelector('[data-demand-menu]') as PopupMenuElement;\n  openPopupMenuAt(menu, event.clientX, event.clientY);\n});\n// Call closePopupMenu(menu) when the app needs to dismiss it."
+          "description": "Find the menu root with a stable data attribute and pass the focusable row control as the opener.",
+          "code": "<PopupMenu\n  context\n  label=\"Demand Actions\"\n  rootAttributes={{ 'data-demand-menu': '' }}\n  items={[{ label: 'Open', action: 'open-demand' }]}\n/>\n// In the app's row wiring:\nrow.addEventListener('contextmenu', (event) => {\n  event.preventDefault();\n  const menu = row.querySelector('[data-demand-menu]') as PopupMenuElement;\n  openPopupMenuAt(menu, event.clientX, event.clientY, { opener: row });\n});\n// Call closePopupMenu(menu) when the app needs to dismiss it."
         }
       ],
       "accessibility": [
         "The trigger is a native button with aria-haspopup=\"menu\" and aria-expanded; an icon-only trigger requires label, rendered as visually hidden text inside the button, and a trigger with visible text is named by that text. The context anchor stays out of the accessibility tree. The open menu (role=\"menu\") takes the trigger's name, each submenu takes its parent item's label, and a heading names the role=\"group\" that holds its items, so a screen reader announces named menus and getByRole('menu', { name }) finds them. Items are menuitem or menuitemcheckbox buttons with aria-checked and aria-disabled.",
         "Keyboard: Enter, Space, or ArrowDown on the trigger opens on the first item (ArrowUp on the last); ArrowUp/ArrowDown move and wrap past disabled items, Home/End jump, and typing a label's first letters moves to it; Enter or Space chooses; ArrowRight opens a submenu on its first item and ArrowLeft returns to the parent item (mirrored right to left); Escape closes the current level and returns focus to its opener; Tab closes the menu and continues from the trigger.",
+        "For a context menu, openPopupMenuAt can receive the focusable opener. The previously focused control is the default. Dismissal from inside returns focus to a connected opener, while an outside press can focus its own target.",
         "Once registered, an icon-only trigger shows its label as an aria-hidden help tag after a 500ms hover and at once on keyboard focus; it hides while the menu is open, on a press, and on Escape, and never joins aria-labelledby. Do not add a title or another tooltip.",
         "popupNote is quiet text at the bottom of the open top-level menu, below its items, and the menu's aria-description; the visible line is aria-hidden, never a menuitem, and wraps to the items' width. Submenus don't show it. Select draws the same note from the shared popup contract."
       ],

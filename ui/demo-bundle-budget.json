@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 164600,
-  "totalJavaScriptGzip": 473000,
+  "totalJavaScriptGzip": 473600,
   "measuredLargestJavaScriptGzip": 164546,
-  "measuredTotalJavaScriptGzip": 472961,
+  "measuredTotalJavaScriptGzip": 473527,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -7763,6 +7763,22 @@
         "measuredTotalJavaScriptGzip": 472961,
         "largestJavaScriptGzip": 164600,
         "totalJavaScriptGzip": 473000
+      }
+    },
+    {
+      "at": "2026-11-27T06:44:03.440Z",
+      "reason": "KF-H4APEQ adds Select validation and its catalog example; KF-7CY9Y1 restores PopupMenu focus to its opener",
+      "old": {
+        "measuredLargestJavaScriptGzip": 164546,
+        "measuredTotalJavaScriptGzip": 472961,
+        "largestJavaScriptGzip": 164600,
+        "totalJavaScriptGzip": 473000
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 164546,
+        "measuredTotalJavaScriptGzip": 473527,
+        "largestJavaScriptGzip": 164600,
+        "totalJavaScriptGzip": 473600
       }
     }
   ]
