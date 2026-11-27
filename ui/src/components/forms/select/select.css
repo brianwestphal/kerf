@@ -137,13 +137,30 @@
   rotate: var(--_kui-popup-caret-open-rotation);
 }
 
-.kui-select__hint {
+.kui-select__hint,
+.kui-select__error {
   display: block;
   margin-block-start: remify(7px);
   padding-inline: calc(1px + var(--kui-layout-item-padding, remify(8px)));
   color: var(--kui-color-text-quiet);
   font-size: var(--kui-font-s);
   line-height: 1.6;
+}
+
+.kui-select__description {
+  display: flow-root;
+}
+
+.kui-select__error {
+  color: var(--kui-color-danger-on-quiet);
+}
+
+.kui-select[data-size="compact"] .kui-select__error {
+  font-size: var(--kui-font-xs);
+}
+
+.kui-select__hint + .kui-select__error {
+  margin-block-start: 0;
 }
 
 /* Presentations. */
@@ -567,6 +584,11 @@
   padding: 0;
   border-width: 0;
   background: transparent;
+}
+
+.kui-select[data-invalid]
+  > :is(.kui-select__trigger, .kui-select__placeholder-box) {
+  border-color: var(--kui-color-danger-border-loud);
 }
 
 /* Explicit width policy applies to both the live control and its loading

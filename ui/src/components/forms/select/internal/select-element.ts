@@ -115,9 +115,11 @@ interface FormInternals {
  */
 export class KuiSelectElement extends HTMLElement {
   static formAssociated = true;
+  static #nextDescriptionId = 0;
 
   #internals: FormInternals | undefined;
   #observer: MutationObserver | undefined;
+  #descriptionId = '';
 
   constructor() {
     super();
@@ -154,17 +156,26 @@ export class KuiSelectElement extends HTMLElement {
 
   connectedCallback(): void {
     this.syncFormValue();
+    this.#syncErrorDescription();
     // A re-render that changes which options are chosen (the application's
     // controlled value) is the new form value too, as are options the parser
     // adds after the element connects (a page parsed with it already defined).
-    this.#observer ??= new (realmOf(this).MutationObserver)(() =>
-      this.syncFormValue(),
-    );
+    this.#observer ??= new (realmOf(this).MutationObserver)((records) => {
+      if (
+        records.some(
+          (record) =>
+            record.type === 'childList' ||
+            record.attributeName === 'aria-selected',
+        )
+      )
+        this.syncFormValue();
+      this.#syncErrorDescription();
+    });
     this.#observer.observe(this, {
       subtree: true,
       childList: true,
       attributes: true,
-      attributeFilter: ['aria-selected'],
+      attributeFilter: ['aria-selected', 'aria-describedby', 'id'],
     });
   }
 
@@ -181,6 +192,33 @@ export class KuiSelectElement extends HTMLElement {
         .map(optionValue),
     );
     this.syncFormValue();
+  }
+
+  // The string render supplies aria-description. Link the actual error and
+  // hint after connecting so repeated field names can have distinct IDs.
+  #syncErrorDescription(): void {
+    const trigger = this.querySelector(':scope > .kui-select__trigger');
+    if (!trigger) return;
+    const description = this.querySelector<HTMLElement>(
+      ':scope > .kui-select__description',
+    );
+    const describedBy = trigger.getAttribute('aria-describedby');
+    if (!description) {
+      if (this.#descriptionId && describedBy === this.#descriptionId)
+        trigger.removeAttribute('aria-describedby');
+      return;
+    }
+    const tree = this.getRootNode() as Document | ShadowRoot;
+    const owner = tree.getElementById(this.#descriptionId);
+    if (!this.#descriptionId || (owner && owner !== description)) {
+      do {
+        this.#descriptionId = `kui-select-description-${++KuiSelectElement.#nextDescriptionId}`;
+      } while (tree.getElementById(this.#descriptionId));
+    }
+    if (description.id !== this.#descriptionId)
+      description.id = this.#descriptionId;
+    if (describedBy !== this.#descriptionId)
+      trigger.setAttribute('aria-describedby', this.#descriptionId);
   }
 
   /** Publish the current choice as the form value. */

@@ -4487,6 +4487,8 @@ interface SelectBaseProps<Value extends string = string> {
     placeholderText?: string;
     /** Supporting text shown below the control and announced as its description. */
     hint?: string;
+    /** Validation message shown below the control and announced when it is invalid. */
+    error?: string;
     /**
      * Quiet text at the bottom of the open popup, below the choices, announced
      * as the listbox's description: what the choices leave out, for instance.

@@ -50,12 +50,15 @@ also select the card.
 
 Supply a visible `label`, or `ariaLabel` when the surrounding interface already
 provides visual context. A nonempty `label` takes precedence when both are
-supplied. Kerf forwards that name through Web Awesome's internal label contract;
-an `aria-label` on the custom-element host alone cannot name its shadow
-combobox. With `ariaLabel` alone, Kerf visually hides the internal label without
-adding height or spacing. This also applies to `renderSelected`: selected content
-stays separate from the control's stable accessible name. Applications do not
-need shadow-DOM patches or extra label styling.
+supplied. The native button with `role="combobox"` carries that name. With
+`ariaLabel` alone, the trigger has no visible label above it. `renderSelected`
+customizes the value while preserving the control's name.
+
+Pass `error` for an invalid value. Select marks the combobox `aria-invalid`,
+draws the invalid border, and shows the message beneath the control and its
+optional `hint`. The registered combobox uses `aria-describedby` to associate
+both lines. Clear `error` when validation succeeds to remove the invalid state
+and keep the hint.
 
 Set `multiple` (with an array `value`) to let the person choose any number
 of choices. The popup stays open while they toggle choices with the pointer,

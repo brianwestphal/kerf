@@ -58,11 +58,17 @@ const deviceChoices = [
   { value: 'tablet', label: 'Tablet', group: 'Handheld' },
   { value: 'laptop', label: 'Laptop', group: 'Desktop' },
 ];
+const validationProject = signal('');
+const projectChoices = [
+  { value: 'design', label: 'Design' },
+  { value: 'release', label: 'Release' },
+];
 
 /** Return the Popup Note example to its documented state. */
 export function resetSelectDemo(): void {
   selectPopupNote.value = POPUP_NOTE_INITIAL;
   popupNoteDevice.value = POPUP_DEVICE_INITIAL;
+  validationProject.value = '';
 }
 
 /**
@@ -82,6 +88,11 @@ export function applySelectSetting(
   if (name === 'popup-note-device') {
     if (!deviceChoices.some((choice) => choice.value === value)) return false;
     popupNoteDevice.value = value;
+    return true;
+  }
+  if (name === 'validation-project') {
+    if (!projectChoices.some((choice) => choice.value === value)) return false;
+    validationProject.value = value;
     return true;
   }
   return false;
@@ -162,6 +173,21 @@ export function SelectDemo() {
             <strong data-select-value>{selectedChoice.value}</strong>
           </Text>
         </List>
+      </CatalogExample>
+      <CatalogExample label="Validation" align="inline-control">
+        <Select<string>
+          name="validation-project"
+          value={validationProject.value}
+          label="Project"
+          choices={projectChoices}
+          placeholderText="Choose a project"
+          hint="The project owns this step."
+          error={
+            validationProject.value
+              ? undefined
+              : 'Choose a project to continue.'
+          }
+        />
       </CatalogExample>
       <CatalogExample
         label="Multiple Selection"

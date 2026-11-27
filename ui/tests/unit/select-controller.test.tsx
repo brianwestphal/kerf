@@ -137,6 +137,55 @@ const press = (target: Element) =>
   target.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true }));
 
 describe('Select register: the kui-select element', () => {
+  it('links validation descriptions independently for repeated field names and refreshes them after a morph', async () => {
+    const first = setup({ hint: 'A short hint.', error: 'Choose a value.' });
+    const second = setup({ error: 'Choose another value.' });
+    const firstId = first.trigger.getAttribute('aria-describedby')!;
+    const secondId = second.trigger.getAttribute('aria-describedby')!;
+    expect(firstId).toBeTruthy();
+    expect(secondId).toBeTruthy();
+    expect(firstId).not.toBe(secondId);
+    const description = first.root.querySelector('.kui-select__description')!;
+    expect(document.getElementById(firstId)).toBe(description);
+    expect(description.querySelector('.kui-select__hint')!.textContent).toBe(
+      'A short hint.',
+    );
+    expect(description.querySelector('.kui-select__error')!.textContent).toBe(
+      'Choose a value.',
+    );
+    expect(document.getElementById(secondId)?.textContent).toBe(
+      'Choose another value.',
+    );
+
+    const update = (error?: string) =>
+      morph(
+        first.host,
+        Select({
+          name: 'speed',
+          label: 'Speed',
+          value: 'balanced',
+          choices: CHOICES,
+          hint: 'A short hint.',
+          error,
+        }),
+      );
+    update('This choice is unavailable.');
+    await flush();
+    expect(first.trigger.getAttribute('aria-describedby')).toBe(firstId);
+    expect(document.getElementById(firstId)?.textContent).toContain(
+      'This choice is unavailable.',
+    );
+
+    update();
+    await flush();
+    expect(first.trigger.hasAttribute('aria-describedby')).toBe(false);
+    expect(first.trigger.hasAttribute('aria-invalid')).toBe(false);
+    expect(first.trigger.getAttribute('aria-description')).toBe(
+      'A short hint.',
+    );
+    expect(second.trigger.getAttribute('aria-describedby')).toBe(secondId);
+  });
+
   it('reports its name and single value, and sets a value', () => {
     const { root, trigger } = setup();
     expect(root).toBeInstanceOf(customElements.get('kui-select')!);

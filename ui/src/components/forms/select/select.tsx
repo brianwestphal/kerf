@@ -84,6 +84,8 @@ interface SelectBaseProps<Value extends string = string> {
   placeholderText?: string;
   /** Supporting text shown below the control and announced as its description. */
   hint?: string;
+  /** Validation message shown below the control and announced when it is invalid. */
+  error?: string;
   /**
    * Quiet text at the bottom of the open popup, below the choices, announced
    * as the listbox's description: what the choices leave out, for instance.
@@ -226,6 +228,7 @@ const SELECT_PROTECTED = new Set([
   'data-default-selected',
   'data-focus-ring-inset',
   'data-focus-ring-owner',
+  'data-invalid',
   'data-placeholder',
   'data-placeholder-text',
   'data-presentation',
@@ -247,6 +250,7 @@ export function Select<Value extends string>(props: SelectProps<Value>) {
     className = '',
     placeholderText,
     hint,
+    error,
     popupNote,
     disabled = false,
     fitMenu = false,
@@ -299,7 +303,28 @@ export function Select<Value extends string>(props: SelectProps<Value>) {
     'data-selected-presentation': selectedPresentation,
     'data-focus-ring-owner': focusRingOwner,
     'data-focus-ring-inset': focusRingInset ? 'true' : undefined,
+    'data-invalid': error ? '' : undefined,
   } as const;
+  const hintText = hint ? (
+    <span
+      class="kui-select__hint"
+      aria-hidden={placeholder || error ? undefined : 'true'}
+    >
+      {hint}
+    </span>
+  ) : null;
+  const supportingText = error ? (
+    <div
+      class="kui-select__description"
+      data-key="select-description"
+      aria-hidden={placeholder ? undefined : 'true'}
+    >
+      {hintText}
+      <span class="kui-select__error">{error}</span>
+    </div>
+  ) : (
+    hintText
+  );
   if (placeholder) {
     return (
       <div
@@ -319,7 +344,7 @@ export function Select<Value extends string>(props: SelectProps<Value>) {
           <Skeleton width={em(10)} />
           {caret ? <Caret /> : null}
         </span>
-        {hint && <span class="kui-select__hint">{hint}</span>}
+        {supportingText}
       </div>
     );
   }
@@ -400,7 +425,8 @@ export function Select<Value extends string>(props: SelectProps<Value>) {
         aria-haspopup="listbox"
         aria-expanded="false"
         aria-label={triggerName}
-        aria-description={hint}
+        aria-description={error && hint ? `${hint} ${error}` : error || hint}
+        aria-invalid={error ? 'true' : undefined}
         disabled={disabled}
       >
         {iconTrigger ? (
@@ -430,11 +456,7 @@ export function Select<Value extends string>(props: SelectProps<Value>) {
         ) : null}
         {caret ? <Caret /> : null}
       </button>
-      {hint ? (
-        <span class="kui-select__hint" aria-hidden="true">
-          {hint}
-        </span>
-      ) : null}
+      {supportingText}
       <div class="kui-select__popup" popover="manual" tabindex={-1}>
         <div
           class="kui-select__listbox"

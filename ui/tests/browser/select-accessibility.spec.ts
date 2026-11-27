@@ -1,5 +1,49 @@
 import { expect, test } from '@playwright/test';
 
+test('Select presents and describes its validation error until a choice is made', async ({
+  page,
+}, testInfo) => {
+  await page.goto('/?component=select');
+  const example = page
+    .locator('[data-demo="select"] [data-catalog-example]')
+    .filter({ hasText: 'Validation' });
+  const trigger = example.getByRole('combobox', { name: 'Project' });
+  const error = example.getByText('Choose a project to continue.');
+  for (const width of [1140, 390]) {
+    await page.setViewportSize({ width, height: 860 });
+    await expect(error).toBeVisible();
+    await expect(trigger).toHaveAttribute('aria-invalid', 'true');
+    await expect(trigger).toHaveAttribute(
+      'aria-describedby',
+      /kui-select-description-/,
+    );
+    await expect(trigger).toHaveAccessibleDescription(
+      'The project owns this step. Choose a project to continue.',
+    );
+    expect(
+      await error.evaluate((message) => {
+        const button = message.closest('kui-select')!.querySelector('button')!;
+        return (
+          message.getBoundingClientRect().top >=
+          button.getBoundingClientRect().bottom
+        );
+      }),
+    ).toBe(true);
+    await example.screenshot({
+      path: testInfo.outputPath(`select-validation-${width}.png`),
+    });
+  }
+  await trigger.click();
+  await example.getByRole('option', { name: 'Release' }).click();
+  await expect(trigger).toBeFocused();
+  await expect(error).toHaveCount(0);
+  await expect(trigger).not.toHaveAttribute('aria-invalid');
+  await expect(trigger).not.toHaveAttribute('aria-describedby');
+  await expect(trigger).toHaveAccessibleDescription(
+    'The project owns this step.',
+  );
+});
+
 test('names plain and custom Select comboboxes without adding visible label geometry', async ({
   page,
 }, testInfo) => {

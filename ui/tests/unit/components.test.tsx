@@ -3599,6 +3599,24 @@ describe('production UI primitives', () => {
     );
     expect(plain).toContain('<kui-select class="kui-select"');
     expect(plain).toMatch(/ disabled><button/);
+    const invalid = asHtml(
+      Select({
+        name: 'project',
+        label: 'Project',
+        value: '',
+        choices: [],
+        hint: 'Optional until published.',
+        error: 'Choose a project.',
+      }),
+    );
+    expect(invalid).toContain('data-invalid=""');
+    expect(invalid).toContain('aria-invalid="true"');
+    expect(invalid).toContain(
+      'aria-description="Optional until published. Choose a project."',
+    );
+    expect(invalid).toContain(
+      'class="kui-select__error">Choose a project.</span>',
+    );
     const title = asHtml(
       Select({
         name: 'view',
