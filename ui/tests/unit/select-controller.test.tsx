@@ -184,6 +184,10 @@ describe('Select register: the kui-select element', () => {
       'A short hint.',
     );
     expect(second.trigger.getAttribute('aria-describedby')).toBe(secondId);
+
+    document.getElementById(secondId)!.remove();
+    await flush();
+    expect(second.trigger.hasAttribute('aria-describedby')).toBe(false);
   });
 
   it('reports its name and single value, and sets a value', () => {
