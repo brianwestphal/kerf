@@ -116,6 +116,46 @@ describe('wireSearchFields', () => {
     stop();
   });
 
+  it('delegates an active paste to the native edit command', () => {
+    const root = document.createElement('div');
+    document.body.append(root);
+    root.innerHTML = String(SearchField({ id: 'search', label: 'Search' }));
+    const editor = root.querySelector<HTMLElement>(
+      '[data-search-field-editor]',
+    )!;
+    const edit = vi.fn(() => {
+      editor.querySelector('[data-search-field-text]')!.textContent =
+        'Release train';
+      editor.dispatchEvent(
+        new InputEvent('input', { bubbles: true, inputType: 'insertText' }),
+      );
+      return true;
+    });
+    const before = Object.getOwnPropertyDescriptor(document, 'execCommand');
+    Object.defineProperty(document, 'execCommand', {
+      configurable: true,
+      value: edit,
+    });
+    const onEdit = vi.fn();
+    const stop = wireSearchFields(root, { collapsible: false, onEdit });
+    try {
+      focusAt(editor, editor, 0);
+      const paste = new Event('paste', { bubbles: true, cancelable: true });
+      Object.defineProperty(paste, 'clipboardData', {
+        value: { getData: () => 'Release\ntrain' },
+      });
+      editor.dispatchEvent(paste);
+      expect(edit).toHaveBeenCalledWith('insertText', false, 'Release train');
+      expect(readSearchField(editor).query).toBe('Release train');
+      expect(onEdit).toHaveBeenCalledOnce();
+    } finally {
+      stop();
+      root.remove();
+      if (before) Object.defineProperty(document, 'execCommand', before);
+      else Reflect.deleteProperty(document, 'execCommand');
+    }
+  });
+
   it('hands focus and caret to an editor the app replaces from onEdit', async () => {
     const root = document.createElement('div');
     document.body.append(root);

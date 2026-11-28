@@ -612,12 +612,19 @@ function createDeletionController(
       ?.getData('text/plain')
       .replace(/\r\n?|\n/g, ' ');
     if (!text) return;
-    const selection = editor.ownerDocument.getSelection();
+    const document = editor.ownerDocument;
+    const selection = document.getSelection();
     if (!selection?.rangeCount) return;
     const range = selection.getRangeAt(0);
     if (!editor.contains(range.commonAncestorContainer)) return;
+    // The native edit joins contenteditable's undo history and emits input.
+    if (
+      document.activeElement === editor &&
+      document.execCommand?.('insertText', false, text)
+    )
+      return;
     range.deleteContents();
-    const inserted = editor.ownerDocument.createTextNode(text);
+    const inserted = document.createTextNode(text);
     range.insertNode(inserted);
     range.setStartAfter(inserted);
     range.collapse(true);

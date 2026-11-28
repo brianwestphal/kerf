@@ -3210,7 +3210,7 @@ test('search-field select-all + Delete empties cleanly without a stray newline',
     .toBe('');
 });
 
-test('pastes plain text into SearchField from a rich clipboard item', async ({
+test('pastes plain text into SearchField from a rich clipboard item and undoes it', async ({
   page,
   browserName,
 }) => {
@@ -3220,6 +3220,7 @@ test('pastes plain text into SearchField from a rich clipboard item', async ({
   const demo = page.locator('[data-demo="search-field"]');
   const editor = demo.getByRole('searchbox', { name: 'Search with Filters' });
   await editor.focus();
+  await editor.pressSequentially('ab');
   await editor.evaluate((element) => {
     const view = window as Window & { searchPasteInput?: string[] };
     view.searchPasteInput = [];
@@ -3239,7 +3240,7 @@ test('pastes plain text into SearchField from a rich clipboard item', async ({
     ]);
   });
   await editor.press('ControlOrMeta+V');
-  await expect(editor).toHaveText('Release train');
+  await expect(editor).toHaveText('abRelease train');
   await expect(editor.locator('h1, br')).toHaveCount(0);
   await expect(editor).toHaveCSS(
     'font-size',
@@ -3248,16 +3249,21 @@ test('pastes plain text into SearchField from a rich clipboard item', async ({
       .evaluate((element) => window.getComputedStyle(element).fontSize),
   );
   await expect(demo.locator('[data-demo-grammar-result]')).toHaveText(
-    'Release train · 0 filters',
+    'abRelease train · 0 filters',
   );
   const inputTypes = await page.evaluate(
     () => (window as Window & { searchPasteInput?: string[] }).searchPasteInput,
   );
-  expect(inputTypes).toContain('insertFromPaste');
+  expect(inputTypes).toEqual(['insertText']);
   await demo
     .locator('.kui-catalog-example')
     .filter({ hasText: 'Grammar Assisted Search' })
     .screenshot({ path: 'test-results/search-field-plain-paste.png' });
+  await editor.press('ControlOrMeta+Z');
+  await expect(editor).toHaveText('ab');
+  await expect(demo.locator('[data-demo-grammar-result]')).toHaveText(
+    'ab · 0 filters',
+  );
 });
 
 test('edits, removes, and clears controlled search field content', async ({
