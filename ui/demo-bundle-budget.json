@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 164600,
-  "totalJavaScriptGzip": 474300,
+  "totalJavaScriptGzip": 474500,
   "measuredLargestJavaScriptGzip": 164547,
-  "measuredTotalJavaScriptGzip": 474251,
+  "measuredTotalJavaScriptGzip": 474413,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -7795,6 +7795,22 @@
         "measuredTotalJavaScriptGzip": 474251,
         "largestJavaScriptGzip": 164600,
         "totalJavaScriptGzip": 474300
+      }
+    },
+    {
+      "at": "2026-11-28T03:06:55.564Z",
+      "reason": "KF-TBH48Z and KF-WDQE0R preserve the native SearchField undo edit and keep keyed popover hosts connected; measured both fixes in the pinned UX demo build.",
+      "old": {
+        "measuredLargestJavaScriptGzip": 164547,
+        "measuredTotalJavaScriptGzip": 474251,
+        "largestJavaScriptGzip": 164600,
+        "totalJavaScriptGzip": 474300
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 164547,
+        "measuredTotalJavaScriptGzip": 474413,
+        "largestJavaScriptGzip": 164600,
+        "totalJavaScriptGzip": 474500
       }
     }
   ]
