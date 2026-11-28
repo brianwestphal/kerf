@@ -285,6 +285,7 @@ function morphChildren(
 
   let fromChild: Node | null = skipOwned(fromParent.firstChild, ownedItems);
   let toChild: Node | null = toParent.firstChild;
+  let remainingTags: Map<string, number> | undefined;
 
   while (toChild !== null) {
     const toNext = toChild.nextSibling;
@@ -295,6 +296,31 @@ function morphChildren(
     if (toKey !== undefined && keyed.has(toKey)) {
       matched = keyed.get(toKey) as Element;
       keyed.delete(toKey);
+      while (
+        fromChild !== matched &&
+        fromChild?.nodeType === ELEMENT_NODE &&
+        getNodeKey(fromChild) === undefined &&
+        !(fromChild as Element).hasAttribute('data-morph-preserve')
+      ) {
+        // Remove an unkeyed prefix that no future positional match can use.
+        // The keyed host can then stay connected even without moveBefore.
+        if (remainingTags === undefined) {
+          remainingTags = new Map();
+          for (let node = toNext; node !== null; node = node.nextSibling) {
+            if (
+              node.nodeType !== ELEMENT_NODE ||
+              getNodeKey(node) !== undefined
+            )
+              continue;
+            const tag = node.nodeName;
+            remainingTags.set(tag, (remainingTags.get(tag) ?? 0) + 1);
+          }
+        }
+        if (remainingTags.has(fromChild.nodeName)) break;
+        const next = fromChild.nextSibling;
+        fromParent.removeChild(fromChild);
+        fromChild = skipOwned(next, ownedItems);
+      }
       if (matched !== fromChild) {
         // A keyed match found elsewhere is a genuine move of a connected node —
         // `moveNode` preserves its live state (focus / animation / iframe) via
@@ -470,6 +496,16 @@ function morphChildren(
       fromParent.insertBefore(cloned, fromChild);
     }
 
+    if (
+      remainingTags &&
+      toChild.nodeType === ELEMENT_NODE &&
+      toKey === undefined
+    ) {
+      const tag = toChild.nodeName;
+      const count = remainingTags.get(tag)!;
+      if (count === 1) remainingTags.delete(tag);
+      else remainingTags.set(tag, count - 1);
+    }
     toChild = toNext;
   }
 

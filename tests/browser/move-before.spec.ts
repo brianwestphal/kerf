@@ -88,6 +88,45 @@ test('a keyed reorder preserves focus + caret in the moved row (all engines)', a
   expect(await live.evaluate((el) => document.activeElement === el)).toBe(true);
 });
 
+test('removing a stale prefix leaves a keyed host and its native popover connected', async ({
+  page,
+}, testInfo) => {
+  expect(
+    await page.evaluate(() => {
+      const { morph } = (window as any).kerf;
+      const root = document.createElement('div');
+      root.innerHTML =
+        '<header>Conditional</header><main data-key="page"><section popover>Editor</section></main><footer>Footer</footer>';
+      document.body.append(root);
+      const header = root.firstChild!;
+      const host = root.querySelector('main')!;
+      const footer = root.querySelector('footer')!;
+      const popover = host.querySelector('section')!;
+      popover.showPopover();
+      const observer = new MutationObserver(() => {});
+      observer.observe(root, { childList: true });
+      morph(
+        root,
+        '<main data-key="page"><section popover>Editor</section></main><footer>Footer</footer>',
+      );
+      const records = observer.takeRecords();
+      observer.disconnect();
+      return {
+        stayedOpen: popover.matches(':popover-open'),
+        retained: root.firstChild === host && root.lastChild === footer,
+        removedOnlyHeader:
+          records.length === 1 &&
+          records[0].removedNodes.length === 1 &&
+          records[0].removedNodes[0] === header &&
+          records[0].addedNodes.length === 0,
+      };
+    }),
+  ).toEqual({ stayedOpen: true, retained: true, removedOnlyHeader: true });
+  await page.locator('main[data-key="page"] > :popover-open').screenshot({
+    path: testInfo.outputPath('morph-keyed-popover.png'),
+  });
+});
+
 test('where moveBefore is supported, a running CSS animation survives the reorder without restarting', async ({
   page,
 }) => {

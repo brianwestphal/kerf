@@ -68,6 +68,8 @@ const DIST = resolve(ROOT, 'dist');
  */
 // KF-ZMER8Y: mount retains and retargets global slots (+0.20 KB main, +0.20–0.22 KB
 // on core-dependent entries). Budgets below include the measured production change.
+// KF-WDQE0R: the morph keeps keyed hosts connected when removing stale
+// unkeyed siblings. The affected core entries grow by about 0.12 KB gzip.
 const SLACK_KB = 0.35;
 
 const BUDGETS = [
@@ -93,7 +95,7 @@ const BUDGETS = [
     // delegate snapshot records its path (+0.03), and both list reconcilers
     // share one bulk row parse and offender diagnosis (parseRows), each() one
     // renderRow helper, and mount() a shorter nested-mount walk.
-    budgetKb: 15.35,
+    budgetKb: 15.46,
     description: 'realistic app import — the number the docs advertise',
     entry: `
       import { signal, computed, effect, batch, mount, each, delegate } from '${DIST}/index.js';
@@ -122,7 +124,7 @@ const BUDGETS = [
     // delegate snapshot records its path (+0.03), and both list reconcilers
     // share one bulk row parse and offender diagnosis (parseRows), each() one
     // renderRow helper, and mount() a shorter nested-mount walk.
-    budgetKb: 17.65,
+    budgetKb: 17.72,
     description: 'the whole public barrel — worst case for a consumer',
     entry: `
       import * as kerf from '${DIST}/index.js';
@@ -247,7 +249,7 @@ const BUDGETS = [
     // delegate snapshot records its path (+0.03), and both list reconcilers
     // share one bulk row parse and offender diagnosis (parseRows), each() one
     // renderRow helper, and mount() a shorter nested-mount walk.
-    budgetKb: 23.6,
+    budgetKb: 23.73,
     description:
       'the overlay/modal subpath (overlay + confirm + prompt + form + choice + popover + tooltip + positioning + toast) — includes shared core',
     entry: `
@@ -273,7 +275,7 @@ const BUDGETS = [
     // delegate snapshot records its path (+0.03), and both list reconcilers
     // share one bulk row parse and offender diagnosis (parseRows), each() one
     // renderRow helper, and mount() a shorter nested-mount walk.
-    budgetKb: 13.75,
+    budgetKb: 13.87,
     description:
       'the dispose-scope subpath (disposeScope + disposeSubtree + observeRemovals) — includes shared core',
     entry: `
@@ -317,7 +319,7 @@ const BUDGETS = [
     // throw and frozen virtualized frames after rejected arraySignal keys.
     // KF-ZMER8Y: Node 22.23.5 gzips this entry to 16,487 bytes (16.1006 KiB).
     // A 16.10 KiB cap admits 16,486 whole bytes; 16.11 leaves 9 bytes.
-    budgetKb: 16.11,
+    budgetKb: 16.23,
     description:
       'the bindList subpath (keyed per-row mount + virtualization) — includes shared core',
     entry: `
@@ -370,7 +372,7 @@ const BUDGETS = [
     // delegate snapshot records its path (+0.03), and both list reconcilers
     // share one bulk row parse and offender diagnosis (parseRows), each() one
     // renderRow helper, and mount() a shorter nested-mount walk.
-    budgetKb: 13.25,
+    budgetKb: 13.32,
     description:
       'the remount subpath (remountOn — keyed subtree replacement) — includes shared core',
     entry: `
@@ -401,7 +403,7 @@ const BUDGETS = [
     // Same figure as `main` (see its KF-G7N4PK note).
     // KF-GS850A: same measured growth as `main`, with the dev-code guard intact.
     // KF-FMGEJ6 + KF-7HMTZQ: same as `main`.
-    budgetKb: 15.35,
+    budgetKb: 15.46,
     description:
       'same as `main`, and asserts zero dev-diagnostic code leaked in',
     forbid: [

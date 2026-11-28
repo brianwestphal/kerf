@@ -71,6 +71,39 @@ describe('morph()', () => {
     expect(live.children[1]).toBe(before[0]);
   });
 
+  it('removes a stale prefix and retains an unkeyed sibling needed later', () => {
+    live.innerHTML =
+      '<header>old</header><aside>old</aside><main data-key="a">A</main><footer>Keep</footer><main data-key="b">B</main>';
+    const [, , a, footer, b] = Array.from(live.children);
+    morph(
+      live,
+      renderTemplate(
+        '<main data-key="a">A</main><main data-key="b">B</main><footer>Kept</footer>',
+      ),
+    );
+    expect(Array.from(live.children)).toEqual([a, b, footer]);
+    expect(footer.textContent).toBe('Kept');
+  });
+
+  it('forgets a template tag once its last positional match is consumed', () => {
+    live.innerHTML =
+      '<header>old</header><main data-key="a">A</main><footer>Keep</footer><footer>stale</footer><main data-key="b">B</main>';
+    const [, a, footer, , b] = Array.from(live.children);
+    const observer = new MutationObserver(() => {});
+    observer.observe(live, { childList: true });
+    morph(
+      live,
+      renderTemplate(
+        '<main data-key="a">A</main><footer>Keep</footer><main data-key="b">B</main>',
+      ),
+    );
+    expect(Array.from(live.children)).toEqual([a, footer, b]);
+    expect(
+      observer.takeRecords().flatMap((record) => [...record.addedNodes]),
+    ).toEqual([]);
+    observer.disconnect();
+  });
+
   it('removes a keyed live node that is missing from the template (orphan path)', () => {
     live.innerHTML = '<p id="a">A</p><p id="b">B</p><p id="c">C</p>';
     // Template skips "b" but keeps "a" and "c".

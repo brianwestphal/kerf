@@ -43,6 +43,11 @@ The rule of thumb: **bind values, re-render structure.** A signal handed straigh
 - **`id`** — wins over any other key. Useful for singletons.
 - **`data-key`** — generic per-row key for list items.
 
+When a keyed element follows ordinary unkeyed siblings whose tags have no
+remaining match in the template, the morph removes those siblings in place.
+The keyed element stays connected, preserving native state such as an open
+popover inside it.
+
 Elements without a key are matched positionally by tag name, with a forward lookahead: when the element at a position doesn't match (say, a conditional banner was removed this render, shifting everything after it), the diff scans later live siblings for the first same-tag unkeyed element and moves it up instead of rebuilding it from the template. Stateful subtrees — most importantly the parent of an `each()` list — keep their node identity when a sibling before them appears or disappears. Pure-HTML diffs work fine without keys; you only need keys when list rows reorder, are inserted in the middle, or removed.
 
 The lookahead also covers the `each()` list marker itself. A list's begin-anchor is a comment node, and its rows live only in the live tree (the template carries the bare marker), so a conditional sibling _inside_ the list's parent — a header row that comes and goes above the list — would otherwise leave the marker un-matched at the cursor. kerf matches it by its exact marker data and moves it up, carrying its whole run of rows with it, so the list binding never detaches and every row keeps its DOM identity, focus, and caret. Moving the marker and its rows as one unit is what stops a later template sibling (a trailing button, say) from landing between the anchor and the rows it anchors.
