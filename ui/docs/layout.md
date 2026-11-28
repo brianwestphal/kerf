@@ -931,11 +931,18 @@ application wiring for this.
 
 ## Row and List alignment
 
+Use `<Row vAlign="control" wrap>` to align Select and TextField control
+centers with standalone controls on the same flex line. A longer label,
+hint, or error can use its own height while the associated control box
+stays aligned. Call `wireRowControlAlignment(formRoot)` once and dispose
+it with the form. Both exports are available from `@kerfjs/ui/row`.
+A custom field can mark its direct control box with `data-row-control`.
+
 Use `Row` for a horizontal flex layout and `List` for a vertical one. `Row`
 defaults to `hAlign="left"`, `vAlign="full"`, `gap="xs"`, and no wrapping;
 `List` retains its existing full-width, top-aligned defaults and zero gap.
-Both components accept the same physical-axis vocabulary, with baseline
-alignment additionally available on the horizontal `Row` cross axis:
+Both components accept the same physical-axis vocabulary, plus `baseline`
+and `control` on the horizontal `Row` cross axis.
 
 | Axis       | Values and aliases                                                                                                                                 | Flex behavior                                                             |
 | ---------- | -------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------- |

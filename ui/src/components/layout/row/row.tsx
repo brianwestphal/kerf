@@ -44,8 +44,12 @@ export interface RowProps {
   children?: KerfUiContent;
   /** Horizontal distribution. Defaults to left. */
   hAlign?: HorizontalAlignment;
-  /** Vertical alignment and wrapped-line distribution. Defaults to full. */
-  vAlign?: VerticalAlignment;
+  /**
+   * Vertical alignment and wrapped-line distribution. Defaults to full.
+   * `control` aligns the centers of control boxes on each flex line.
+   * Use it with `wireRowControlAlignment` from `@kerfjs/ui/row`.
+   */
+  vAlign?: VerticalAlignment | 'control';
   /** One spacing value or separate column and row values. Defaults to xs. */
   gap?: UiGap;
   /** Allow this row to grow/shrink, use a keyword, or supply a typed CSS flex shorthand. */
@@ -113,7 +117,7 @@ export function Row({
       class={`kui-row ${className}`.trim()}
       data-component="row"
       data-h-align={horizontalAlignment(hAlign)}
-      data-v-align={verticalAlignment(vAlign)}
+      data-v-align={vAlign === 'control' ? vAlign : verticalAlignment(vAlign)}
       data-flex={String(Boolean(flex))}
       data-fill={fill ? 'true' : undefined}
       data-wrap={String(wrap)}
@@ -140,3 +144,4 @@ export type {
   UiGapValue,
   UiSpaceName,
 } from '../../../shared/styles/css-values.js';
+export { wireRowControlAlignment } from './wiring/wire-row-control-alignment.js';

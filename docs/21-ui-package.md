@@ -631,6 +631,9 @@ runs catalog/conformance preflights and builds current source before preview;
 the emitted source-freshness digest is compared with current `src/` and
 `ux-demo/` inputs so a focused run cannot silently exercise stale output.
 
+`wireRowControlAlignment` aligns field boxes and standalone actions per
+flex line in a `Row` with `vAlign="control"`.
+
 `Row` and `List` share the same typed flex-participation contract: boolean
 growth, finite CSS keywords, or a branded `CssFlex` from `flex()`; raw flex
 strings and length-only values are rejected.

@@ -3985,7 +3985,8 @@
       "uses": [],
       "purpose": "Arrange related content horizontally with consistent spacing, optional physical-side text/control insets, and explicit left/center/right/full plus top/middle/bottom/full/baseline alignment instead of application-owned flex wrappers.",
       "publicExports": [
-        "Row"
+        "Row",
+        "wireRowControlAlignment"
       ],
       "cssValueProps": [
         {
@@ -4088,6 +4089,7 @@
       "variants": [
         "left/center/right/full horizontal alignment with l/c/r/f and flex aliases",
         "top/middle/bottom/full vertical alignment with t/m/c/b/f and flex aliases, plus baseline alignment",
+        "vAlign=control with wireRowControlAlignment aligns field boxes with standalone actions on each wrapped line",
         "named none/2xs/xs/s/m/l/xl token gap",
         "typed CssLength gap",
         "boolean, finite-keyword, or typed CssFlex flex",
@@ -4115,7 +4117,13 @@
           "browser-condition-css"
         ]
       },
-      "wiring": [],
+      "wiring": [
+        {
+          "export": "wireRowControlAlignment",
+          "import": "@kerfjs/ui/row",
+          "required": false
+        }
+      ],
       "publicClasses": [
         "kui-row"
       ],

@@ -338,6 +338,7 @@ export function Select<Value extends string>(props: SelectProps<Value>) {
         {label && <span class="kui-select__label">{label}</span>}
         <span
           class="kui-select__placeholder-box"
+          data-row-control
           aria-label={ariaLabel}
           role="img"
         >
@@ -419,6 +420,7 @@ export function Select<Value extends string>(props: SelectProps<Value>) {
       <button
         type="button"
         class="kui-select__trigger"
+        data-row-control
         role="combobox"
         // Safari's default Tab order skips buttons; a select stays in it.
         tabindex={0}

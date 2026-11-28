@@ -93,9 +93,13 @@
   justify-content: space-between;
 }
 
-.kui-row[data-v-align="top"] {
+.kui-row:is([data-v-align="top"], [data-v-align="control"]) {
   align-items: flex-start;
   align-content: flex-start;
+}
+
+.kui-row[data-v-align="control"] > [data-row-control-shifted] {
+  margin-block-start: var(--_kui-row-control-offset, 0px);
 }
 
 .kui-row[data-v-align="middle"] {

@@ -233,7 +233,7 @@ export function TextField({
           ) : null}
         </span>
       )}
-      <span class="kui-text-field__box">
+      <span class="kui-text-field__box" data-row-control>
         {icon === undefined || multiline ? null : (
           <span class="kui-text-field__icon" aria-hidden="true">
             {icon}

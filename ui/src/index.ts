@@ -385,6 +385,7 @@ export {
   Row,
   type RowProps,
   type VerticalAlignment,
+  wireRowControlAlignment,
 } from './components/layout/row/row.js';
 export {
   SizedRegion,

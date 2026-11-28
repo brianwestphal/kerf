@@ -29,8 +29,9 @@ Arrange related content horizontally with consistent spacing, optional physical-
 
 ## Imports
 
-- JavaScript: `@kerfjs/ui/row` — exports `Row`.
+- JavaScript: `@kerfjs/ui/row` — exports `Row`, `wireRowControlAlignment`.
 - CSS: the browser build of `@kerfjs/ui/row` pulls its CSS automatically; import `@kerfjs/ui/row.css` manually only without the `browser` export condition.
+- Wiring: `wireRowControlAlignment` from `@kerfjs/ui/row` (optional).
 - Declared side effects: browser-condition-css.
 
 ## Props
@@ -41,6 +42,7 @@ Exact prop names and types: [`@kerfjs/ui/row`](../public-api-signatures-v1.md#ke
 
 - left/center/right/full horizontal alignment with l/c/r/f and flex aliases
 - top/middle/bottom/full vertical alignment with t/m/c/b/f and flex aliases, plus baseline alignment
+- vAlign=control with wireRowControlAlignment aligns field boxes with standalone actions on each wrapped line
 - named none/2xs/xs/s/m/l/xl token gap
 - typed CssLength gap
 - boolean, finite-keyword, or typed CssFlex flex
@@ -64,7 +66,7 @@ Exact prop names and types: [`@kerfjs/ui/row`](../public-api-signatures-v1.md#ke
 
 **The app owns:** child semantics and content; alignment and wrapping policy; typed gap and flex choices.
 
-No wiring helper.
+**Wiring:** `wireRowControlAlignment` is optional.
 
 ## Geometry
 

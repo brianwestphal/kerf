@@ -134,6 +134,10 @@ subtree with a different identity, use a scoped `tint` accent instead.
 
 ### Typed runtime dimensions
 
+Use `Row` with `vAlign="control"` and `wireRowControlAlignment` when a
+standalone action should line up with the control boxes of adjacent `Select`
+or `TextField` components as labels wrap or supporting messages change.
+
 Use `Row`, `Grid`, or `List` spacing shorthands for repeated sibling spacing: `gap="xs"`,
 `gap="m"`, and the other `UiSpaceName` values resolve to their matching
 `--kui-space-*` token. Use `Spacer` for one deliberate empty width or height, or

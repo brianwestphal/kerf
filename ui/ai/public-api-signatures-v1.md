@@ -6620,6 +6620,14 @@ import { S as Sides } from './sides-BPSWde0A.js';
 import { UiGap, CssFlexKeyword, CssFlex } from './css-values.js';
 export { CssLength, UiGapValue, UiSpaceName } from './css-values.js';
 
+/**
+ * Align control boxes in Rows that use `vAlign="control"`. Wire once on the
+ * containing form or layout and dispose with it. A direct child's own box is
+ * used unless a direct descendant carries `data-row-control`, as in Select
+ * and TextField.
+ */
+declare function wireRowControlAlignment(root: HTMLElement): () => void;
+
 type RowRootAttributes = StructuralRootAttributes & Readonly<{
     'data-component'?: never;
     'data-h-align'?: never;
@@ -6634,8 +6642,12 @@ interface RowProps {
     children?: KerfUiContent;
     /** Horizontal distribution. Defaults to left. */
     hAlign?: HorizontalAlignment;
-    /** Vertical alignment and wrapped-line distribution. Defaults to full. */
-    vAlign?: VerticalAlignment;
+    /**
+     * Vertical alignment and wrapped-line distribution. Defaults to full.
+     * `control` aligns the centers of control boxes on each flex line.
+     * Use it with `wireRowControlAlignment` from `@kerfjs/ui/row`.
+     */
+    vAlign?: VerticalAlignment | 'control';
     /** One spacing value or separate column and row values. Defaults to xs. */
     gap?: UiGap;
     /** Allow this row to grow/shrink, use a keyword, or supply a typed CSS flex shorthand. */
@@ -6669,7 +6681,7 @@ interface RowProps {
 /** A horizontal flex row with explicit physical-axis alignment and spacing. */
 declare function Row({ children, hAlign, vAlign, gap, flex, fill, wrap, textInsets, controlInsets, className, ariaLabel, rootAttributes, slot, }: RowProps): kerfjs.SafeHtml;
 
-export { CssFlex, CssFlexKeyword, HorizontalAlignment, Row, type RowProps, Sides, UiGap, VerticalAlignment };
+export { CssFlex, CssFlexKeyword, HorizontalAlignment, Row, type RowProps, Sides, UiGap, VerticalAlignment, wireRowControlAlignment };
 ```
 
 ## `@kerfjs/ui/grid`
